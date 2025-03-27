@@ -1,3 +1,16 @@
 export default function Page() {
-    return <h1>Hello, Next.js!</h1>
-}
+    const backgroundImage = '/uplb.png'; 
+    const title = 'Welcome to ICS-ASTRA'; 
+  
+    return (
+      <div
+        className="landing-page"
+        style={{ backgroundImage: `url(${backgroundImage})` }}
+      >
+        <div className="landing-container">
+          <h1 className="landing-title">{title}</h1>
+        </div>
+      </div>
+    );
+  }
+  
