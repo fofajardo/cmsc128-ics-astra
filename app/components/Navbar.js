@@ -1,12 +1,13 @@
 "use client";
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export default function Navbar() {
+  const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 0);
+      setScrolled(window.scrollY > 0); 
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -16,22 +17,26 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav className={`navbar-main ${scrolled ? "scrolled" : ""}`}>
+    <nav className={`navbar-main ${scrolled ? "navbar-scrolled" : ""}`}>
       <div className="navbar-container">
-        <div className="navbar-logo">
+        <a href="#" className="navbar-logo-section">
           <img
             src="https://flowbite.com/docs/images/logo.svg"
-            className="navbar-logo-img"
+            className="navbar-logo-image"
             alt="Flowbite Logo"
           />
-          <span className="navbar-logo-text">Flowbite</span>
-        </div>
+          <span className="navbar-logo-text">
+            Flowbite
+          </span>
+        </a>
+
         <button
+          onClick={() => setMenuOpen(!menuOpen)}
           data-collapse-toggle="navbar-default"
           type="button"
           className="navbar-menu-button"
           aria-controls="navbar-default"
-          aria-expanded="false"
+          aria-expanded={menuOpen ? "true" : "false"}
         >
           <span className="sr-only">Open main menu</span>
           <svg
@@ -50,44 +55,47 @@ export default function Navbar() {
             />
           </svg>
         </button>
-        <div className="navbar-menu-container" id="navbar-default">
-          <ul className="navbar-menu">
+
+        <div
+          className={`${menuOpen ? "" : "hidden"} w-full md:block md:w-auto`}
+          id="navbar-default"
+        >
+          <ul className="navbar-menu-container">
             <li>
-              <a href="/" className="navbar-menu-item">
+              <a href="#" className="navbar-link">
                 Home
               </a>
             </li>
             <li>
-              <a href="/about" className="navbar-menu-item">
-                About
+              <a href="#" className="navbar-link">
+                Services
               </a>
             </li>
             <li>
-              <a href="/events" className="navbar-menu-item">
-                Events
+              <a href="#" className="navbar-link">
+                Pricing
               </a>
             </li>
             <li>
-              <a href="/projects" className="navbar-menu-item">
-                Projects
+              <a href="#" className="navbar-link">
+                Contact
               </a>
             </li>
             <li>
-              <a href="/whats-up" className="navbar-menu-item">
-                What's Up
-              </a>
-            </li>
-            <li>
-              <a href="/login" className="navbar-menu-item">
+              <a href="#" className="navbar-link">
                 Login
               </a>
             </li>
             <li>
               <a
-                href="/signup"
-                className={`navbar-sign-up-btn ${
-                  scrolled ? "scrolled-sign-up" : ""
-                }`}
+                href="#"
+                className={`${
+                  menuOpen
+                    ? "navbar-link"
+                    : scrolled
+                    ? "navbar-sign-up-button hover:bg-black hover:text-white"
+                    : "navbar-sign-up-button"
+                } md:navbar-sign-up-button`}
               >
                 Sign Up
               </a>
