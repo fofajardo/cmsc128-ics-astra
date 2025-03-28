@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -62,9 +63,9 @@ export default function Navbar() {
         >
           <ul className="navbar-menu-container">
             <li>
-              <a href="#" className="navbar-link">
+              <Link href="/" className="navbar-link">
                 Home
-              </a>
+              </Link>
             </li>
             <li>
               <a href="#" className="navbar-link">
@@ -82,13 +83,12 @@ export default function Navbar() {
               </a>
             </li>
             <li>
-              <a href="#" className="navbar-link">
+              <Link href="/login" className="navbar-link">
                 Login
-              </a>
+              </Link>
             </li>
             <li>
-              <a
-                href="#"
+              <Link href="/signup"
                 className={`${
                   menuOpen
                     ? "navbar-link"
@@ -98,7 +98,7 @@ export default function Navbar() {
                 } md:navbar-sign-up-button`}
               >
                 Sign Up
-              </a>
+              </Link>
             </li>
           </ul>
         </div>
