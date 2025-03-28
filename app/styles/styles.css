@@ -62,3 +62,37 @@
 .landing-container {
     @apply h-full w-full flex justify-center items-center;
 }
+
+/* Login Page */
+.form-input {
+    @apply w-full px-3 py-2 border border-[var(--border-color)] rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--primary)];
+}
+
+.btn-primary {
+    @apply bg-[var(--primary)] text-white py-2 px-4 rounded-md hover:bg-[var(--secondary)] transition-colors;
+}
+
+.btn-outline {
+    @apply border border-[var(--primary)] text-[var(--primary)] py-2 px-4 rounded-md hover:bg-[var(--light-blue)] transition-colors;
+}
+
+.form-card {
+    @apply bg-white p-6 rounded-lg shadow-md w-full max-w-lg;
+}
+
+.form-background {
+    @apply min-h-screen bg-cover bg-center flex items-center justify-center p-4;
+    background-image: url("/blue-bg.png")
+}
+
+.pagination-dot {
+    @apply w-2 h-2 rounded-full bg-[var(--medium-gray)] mx-1;
+}
+
+.pagination-dot.active {
+    @apply bg-[var(--primary)];
+}
+
+.user-icon {
+    @apply w-5 h-5 rounded-full bg-[var(--light-blue)] flex items-center justify-center mr-2;
+}
