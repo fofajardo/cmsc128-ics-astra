@@ -1,11 +1,18 @@
 @import "tailwindcss";
 @import "@fortawesome/fontawesome-free/css/all.css";
 
-
 :root {
   --background: #ffffff;
   --foreground: #171717;
   --maroon: #5d0000;
+  --primary: #0e6cf3;
+  --secondary: #215299;
+  --navy: #062441;
+  --light-blue: #e6eefe;
+  --very-light-blue: #fbfdff;
+  --light-gray: #f6f8fc;
+  --medium-gray: #8595a4;
+  --border-color: #c4c4c4;
 }
 
 @theme inline {
@@ -15,12 +22,12 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
   }
-}
+} */
 
 body {
   background: var(--background);
