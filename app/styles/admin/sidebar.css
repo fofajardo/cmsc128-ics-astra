@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+.sidebar {
+    @apply w-64 h-screen bg-transparent shadow-lg relative flex flex-col justify-between transition-all duration-300;
+}
+
+.collapsed {
+    @apply w-20;
+}
+
+.sidebar-header {
+    @apply flex items-center justify-between p-4 border-b;
+}
+
+.logo-container {
+    @apply flex items-center gap-2;
+}
+
+.logo-circle {
+    @apply w-10 h-10 bg-gray-300 rounded-full;
+}
+
+.logo-text {
+     @apply text-lg font-semibold text-gray-900;
+}
+
+.collapse-button {
+    @apply p-2 rounded-md hover:bg-gray-100;
+}
+
+.sidebar-nav {
+    @apply flex-1 overflow-y-auto;
+}
+
+.nav-item {
+    @apply flex items-center p-4 space-x-3 text-gray-700 hover:bg-gray-100 transition;
+}
+
+.nav-item-content {
+    @apply flex items-center space-x-3;
+}
+
+.nav-icon {
+    @apply text-xl;
+}
+
+.nav-text {
+    @apply text-base;
+}
+
+.user-profile {
+    @apply flex items-center p-4 border-t;
+}
+
+.user-info {
+    @apply flex items-center gap-3;
+}
+
+.user-avatar {
+    @apply w-10 h-10 bg-gray-300 rounded-full;
+}
+
+.user-name {
+    @apply text-gray-900;
+}
+
+.sign-out-button {
+    @apply mx-4 my-4 p-2 w-auto bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition;
+}
