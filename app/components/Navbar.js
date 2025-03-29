@@ -1,14 +1,15 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { getRole } from "../utils/auth"; 
 
-export default function Navbar() {
+export default function Navbar({ user }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 0); 
+      setScrolled(window.scrollY > 0);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -16,6 +17,12 @@ export default function Navbar() {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  const role = getRole(user);
+
+  if (role !== "visitor" && role !== "alumni") {
+    return null;
+  }
 
   return (
     <nav className={`navbar-main ${scrolled ? "navbar-scrolled" : ""}`}>
@@ -26,9 +33,7 @@ export default function Navbar() {
             className="navbar-logo-image"
             alt="Flowbite Logo"
           />
-          <span className="navbar-logo-text">
-            Flowbite
-          </span>
+          <span className="navbar-logo-text">Flowbite</span>
         </a>
 
         <button
@@ -62,44 +67,80 @@ export default function Navbar() {
           id="navbar-default"
         >
           <ul className="navbar-menu-container">
-            <li>
-              <Link href="/" className="navbar-link">
-                Home
-              </Link>
-            </li>
-            <li>
-              <a href="#" className="navbar-link">
-                Services
-              </a>
-            </li>
-            <li>
-              <a href="#" className="navbar-link">
-                Pricing
-              </a>
-            </li>
-            <li>
-              <a href="#" className="navbar-link">
-                Contact
-              </a>
-            </li>
-            <li>
-              <Link href="/login" className="navbar-link">
-                Login
-              </Link>
-            </li>
-            <li>
-              <Link href="/signup"
-                className={`${
-                  menuOpen
-                    ? "navbar-link"
-                    : scrolled
-                    ? "navbar-sign-up-button hover:bg-black hover:text-white"
-                    : "navbar-sign-up-button"
-                } md:navbar-sign-up-button`}
-              >
-                Sign Up
-              </Link>
-            </li>
+            {role === "visitor" && (
+              <>
+                <li>
+                  <Link href="/" className="navbar-link">
+                    Home
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/about" className="navbar-link">
+                    About
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/events" className="navbar-link">
+                    Events
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/projects" className="navbar-link">
+                    Projects
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/announcements" className="navbar-link">
+                    What's Up
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/login" className="navbar-log-in-button">
+                    Log in
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/signup" className="navbar-sign-up-button">
+                    Sign Up
+                  </Link>
+                </li>
+              </>
+            )}
+
+            {role === "alumni" && (
+              <>
+                <li>
+                  <Link href="/" className="navbar-link">
+                    Home
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/about" className="navbar-link">
+                    About
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/events" className="navbar-link">
+                    Events
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/projects" className="navbar-link">
+                    Projects
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/jobs" className="navbar-link">
+                    Jobs
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/announcements" className="navbar-link">
+                    What's Up
+                  </Link>
+                </li>
+              </>
+            )}
           </ul>
         </div>
       </div>

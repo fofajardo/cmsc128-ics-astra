@@ -2,10 +2,10 @@
 
 /*Navigation bar*/
 .navbar-main {
-    @apply fixed left-0 right-0 bg-transparent backdrop-blur-md transition-colors duration-300 text-white;
+    @apply fixed left-0 right-0 z-10 bg-transparent backdrop-blur-md transition-colors duration-300 text-white;
 }
 .navbar-scrolled {
-    @apply bg-[var(--maroon)] text-white;
+    @apply bg-[var(--secondary)] text-white;
 }
 .navbar-container {
     @apply max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4;
@@ -26,14 +26,28 @@
     @apply flex flex-col font-medium p-4 mt-4 border border-transparent rounded-lg bg-transparent text-white md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-transparent;
 }
 .navbar-link {
-    @apply text-white py-2 px-3 rounded-full hover:bg-white hover:text-black dark:hover:bg-white dark:hover:text-black font-semibold;
+    @apply text-white py-2 px-3 rounded-full hover:bg-[var(--secondary)] hover:text-black dark:hover:bg-[var(--secondary)] dark:hover:text-white font-semibold;
 }
+
+.navbar-scrolled .navbar-link {
+    @apply  hover:bg-gray-300 hover:text-black;
+}
+
+.navbar-log-in-button {
+    @apply bg-transparent text-white py-2 px-3 rounded-full font-semibold hover:bg-[var(--secondary)] hover:text-white ;
+}
+.navbar-scrolled .navbar-log-in-button {
+    @apply bg-transparent text-white border-[1px] border-white hover:bg-gray-300 hover:text-black;
+}
+
 .navbar-sign-up-button {
-    @apply bg-white text-[var(--maroon)] py-2 px-3 rounded-full font-semibold hover:bg-[var(--maroon)] hover:text-white;
+    @apply bg-white text-[var(--maroon)] py-2 px-3 rounded-full font-semibold hover:bg-[var(--secondary)] hover:text-white ;
 }
-.navbar-scrolled .navbar-sign-up-button:hover {
-    @apply bg-black text-white;
+.navbar-scrolled .navbar-sign-up-button {
+    @apply bg-white text-black hover:bg-gray-300;
 }
+
+
 
 /* Footer */
 .footer {
@@ -65,11 +79,11 @@
 
 /* Login Page */
 .form-input {
-    @apply w-full px-3 py-2 border border-[var(--border-color)] rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--primary)];
+    @apply w-full px-3 py-2 border border-[var(--border-color)] rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--primary)] text-black;
 }
 
 .btn-primary {
-    @apply bg-[var(--primary)] text-white py-2 px-4 rounded-md hover:bg-[var(--secondary)] transition-colors;
+    @apply bg-[var(--primary)] text-white py-2 px-4 rounded-md hover:bg-[var(--secondary)] hover:text-white transition-colors;
 }
 
 .btn-outline {
@@ -96,3 +110,21 @@
 .user-icon {
     @apply w-5 h-5 rounded-full bg-[var(--light-blue)] flex items-center justify-center mr-2;
 }
+
+
+
+/*Sign Up  Page*/
+.signup-additional-steps-text {
+    @apply block text-sm font-medium text-gray-700;
+  }
+  
+
+  .notice-consent-privacy-title {
+    @apply text-white text-2xl font-bold text-center;
+  }
+  
+
+  .notice-consent-privacy-body {
+    @apply text-white text-sm text-center mt-4;
+  }
+  

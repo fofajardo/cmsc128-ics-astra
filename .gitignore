@@ -37,3 +37,5 @@ next-env.d.ts
 
 # uploads
 /private
+package-lock.json
+postcss.config.mjs
