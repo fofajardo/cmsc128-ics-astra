@@ -5,7 +5,7 @@ export default function SignupPage() {
       <div className="form-card">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-semibold text-black">Sign Up</h2>
-          <Link href="/login" className="text-white text-sm hover:underline">
+          <Link href="/login" className="text-[var(--primary)] text-sm hover:underline">
             I have an account
           </Link>
         </div>
