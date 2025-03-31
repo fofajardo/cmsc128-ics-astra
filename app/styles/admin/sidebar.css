@@ -1,69 +1,176 @@
 @import "tailwindcss";
 
+/* Sidebar Styles */
 .sidebar {
-    @apply w-64 h-screen bg-transparent shadow-lg relative flex flex-col justify-between transition-all duration-300;
+  @apply w-64 h-screen bg-white shadow-lg relative flex flex-col justify-between transition-all duration-500 ease-in-out overflow-hidden;
 }
 
+/* Collapsed Sidebar */
 .collapsed {
-    @apply w-20;
+  @apply w-20 bg-white;
 }
 
+/* Sidebar Header */
 .sidebar-header {
-    @apply flex items-center justify-between p-4 border-b;
+  @apply flex items-center justify-between p-4;
 }
 
+/* Logo & Collapse Button */
 .logo-container {
-    @apply flex items-center gap-2;
+  @apply flex items-center gap-2 transition-all duration-500 ease-in-out;
 }
 
+/* Logo Circle */
 .logo-circle {
-    @apply w-10 h-10 bg-gray-300 rounded-full;
+  @apply w-10 h-10 bg-blue-500 rounded-full shadow-md transition-all duration-500 ease-in-out;
 }
 
+.collapsed .logo-circle {
+  @apply hidden;
+}
+
+/* Logo Text */
 .logo-text {
-     @apply text-lg font-semibold text-gray-900;
+  @apply text-lg font-semibold text-gray-900 transition-all duration-500 ease-in-out;
 }
 
+/* Collapse Button */
 .collapse-button {
-    @apply p-2 rounded-md hover:bg-gray-100;
+  @apply flex items-center justify-center w-10 h-10 bg-blue-500 text-white rounded-full shadow-md transition-all duration-500 ease-in-out hover:bg-blue-600 transform hover:scale-110 hover:shadow-lg cursor-pointer;
 }
 
+/* Collapsed Collapse Button */
+.collapsed .collapse-button {
+  @apply mx-auto;
+}
+
+/* Sidebar Navigation */
 .sidebar-nav {
-    @apply flex-1 overflow-y-auto;
+  @apply flex-1 overflow-y-auto mt-2;
+  overflow-x: hidden;
 }
 
+/* Navigation Items */
 .nav-item {
-    @apply flex items-center p-4 space-x-3 text-gray-700 hover:bg-gray-100 transition;
+  @apply flex items-center p-3 space-x-3 text-gray-700 hover:bg-gray-100 transition-all duration-500 ease-in-out rounded-lg transform hover:scale-105 hover:shadow-md cursor-pointer relative;
 }
 
+/* Active Navigation Styling */
+.nav-item.active {
+  @apply bg-white text-blue-600 shadow-md border border-gray-300;
+  border-radius: 12px; /* Rounded corners */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Left Blue Bar for Active Item */
+.nav-item.active::before {
+  content: "";
+  @apply absolute left-0 top-1/2 transform -translate-y-1/2 h-3/4 w-2 bg-blue-600 rounded-r-md;
+}
+
+/* Navigation Content */
 .nav-item-content {
-    @apply flex items-center space-x-3;
+  @apply flex items-center space-x-3 transition-all duration-500 ease-in-out;
 }
 
+/* Icon & Text */
 .nav-icon {
-    @apply text-xl;
+  @apply text-xl text-gray-700 flex-shrink-0 w-6 h-6 transition-all duration-500 ease-in-out transform scale-100;
 }
 
+/* Prevent Icon Shrinking */
+.nav-item.active .nav-icon {
+  @apply text-blue-600;
+}
+
+/* Text Style */
 .nav-text {
-    @apply text-base;
+  @apply text-base transition-all duration-500 ease-in-out;
 }
 
+/* Collapsed Icon Centering */
+.collapsed .nav-item {
+  @apply flex justify-center items-center p-3;
+}
+
+/* Center Navigation Icon in Collapsed Mode */
+.collapsed .nav-icon {
+  @apply mx-auto text-2xl transition-all duration-500 ease-in-out scale-100;
+}
+
+/* Hide Text in Collapsed State */
+.collapsed .nav-text {
+  @apply hidden;
+}
+
+/* Prevent Shrinking on Transition */
+.collapsed .nav-item-content {
+  @apply justify-center space-x-0;
+}
+
+/* User Profile Styled Similar to Sign Out */
 .user-profile {
-    @apply flex items-center p-4 border-t;
+  @apply flex items-center justify-between mx-4 my-4 p-3 w-auto bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-all duration-500 ease-in-out cursor-pointer shadow-md;
 }
 
+/* Collapsed State - Show Gray Circular Avatar */
+.collapsed .user-profile {
+  @apply flex justify-center items-center mx-auto p-3 w-12 h-12 rounded-full bg-gray-300 border border-gray-300 cursor-pointer transition-all duration-500 ease-in-out;
+}
+
+/* Show Only Avatar Icon in Collapsed Mode */
+.collapsed .user-avatar {
+  @apply w-10 h-10 bg-gray-300 rounded-full;
+}
+
+/* Hide Text When Collapsed */
+.collapsed .user-name {
+  @apply hidden;
+}
+
+/* User Info */
 .user-info {
-    @apply flex items-center gap-3;
+  @apply flex items-center gap-3;
 }
 
+/* Gray Profile Avatar */
 .user-avatar {
-    @apply w-10 h-10 bg-gray-300 rounded-full;
+  @apply w-10 h-10 bg-gray-300 rounded-full;
 }
 
+/* User Name */
 .user-name {
-    @apply text-gray-900;
+  @apply text-gray-900;
 }
 
+/* Settings Icon */
+.settings-icon {
+  @apply text-gray-500 cursor-pointer hover:text-gray-700;
+}
+
+/* Sign Out Button */
 .sign-out-button {
-    @apply mx-4 my-4 p-2 w-auto bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition;
+  @apply flex items-center justify-center space-x-3 mx-4 my-4 p-3 w-auto bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-500 ease-in-out shadow-md transform hover:scale-105 cursor-pointer;
+}
+
+/* Collapsed Sign Out Button - Centered Layout */
+.collapsed .sign-out-button {
+  @apply mx-auto p-2 rounded-full flex justify-center items-center;
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+/* Properly Align Icon and Text in Expanded Mode */
+.sign-out-button .sign-out-content {
+  @apply flex items-center justify-center space-x-3 w-full;
+}
+
+/* Sign Out Icon */
+.sign-out-icon {
+  @apply text-white transition-all duration-500 ease-in-out;
+}
+
+/* Collapsed Sign Out Icon Centering */
+.collapsed .sign-out-icon {
+  @apply mx-auto text-xl;
 }

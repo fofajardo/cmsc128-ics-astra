@@ -1,55 +1,98 @@
 // components/admin/sidebar.js
 "use client";
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { Icon } from '@iconify/react';
-import { SideNavItem } from './routes';
-import '../../styles/admin/sidebar.css'; // Import the CSS file
-import { useRouter, usePathname } from 'next/navigation'; // Import useRouter and usePathname
+
+import React, { useState } from "react";
+import Link from "next/link";
+import { Icon } from "@iconify/react";
+import "../../styles/admin/sidebar.css";
+import { usePathname } from "next/navigation";
+import { SideNavItem } from "./routes";
 
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const pathname = usePathname(); // Get the current pathname
+  const pathname = usePathname();
 
+  // Toggle Collapse State
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed);
   };
 
   return (
-    <div className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
+    <div className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
+      {/* Sidebar Header */}
       <div className="sidebar-header">
+        {/* Logo and Collapse Button */}
         <div className="logo-container">
-          <div className="logo-circle"></div>
-          {!isCollapsed && <span className="logo-text">ICS ASTRA</span>}
+          {!isCollapsed && (
+            <>
+              <div className="logo-circle"></div>
+              <span className="logo-text">ICS ASTRA</span>
+            </>
+          )}
         </div>
+        {/* Collapse Button */}
         <button onClick={toggleCollapse} className="collapse-button">
-          <Icon icon={isCollapsed ? 'mdi:menu-open' : 'mdi:menu'} width="24" height="24" />
+          <Icon
+            icon={isCollapsed ? "mdi:menu-open" : "mdi:menu"}
+            width="24"
+            height="24"
+          />
         </button>
       </div>
 
+      {/* Sidebar Navigation */}
       <nav className="sidebar-nav">
         {SideNavItem.map((item) => (
           <Link
             key={item.path}
             href={item.path}
-            className={`nav-item ${pathname === item.path ? 'active' : ''}`}
+            className={`nav-item ${
+              pathname === item.path ? "active" : ""
+            }`}
           >
             <div className="nav-item-content">
-              <span className="nav-icon">{item.icon}</span>
-              {!isCollapsed && <span className="nav-text">{item.title}</span>}
+              <Icon
+                icon={item.icon}
+                width="20"
+                height="20"
+                className="nav-icon"
+              />
+              {!isCollapsed && (
+                <span className="nav-text">{item.title}</span>
+              )}
             </div>
           </Link>
         ))}
       </nav>
 
+      {/* User Profile - ICS Admin */}
       <div className="user-profile">
         <div className="user-info">
-          <div className="user-avatar"></div>
+          {/* Gray Circle Icon when Collapsed */}
+          <div
+            className={`user-avatar ${
+              isCollapsed ? "collapsed-avatar" : ""
+            }`}
+          />
           {!isCollapsed && <span className="user-name">ICS Admin</span>}
         </div>
-        {!isCollapsed && <Icon icon="mdi:cog" width="24" height="24" />}
+        {!isCollapsed && (
+          <Icon icon="mdi:cog" width="24" height="24" className="settings-icon" />
+        )}
       </div>
-      <button className="sign-out-button">Sign Out</button>
+
+      {/* Sign Out Button */}
+      <button className="sign-out-button">
+        <div className="sign-out-content">
+          <Icon
+            icon="mdi:logout"
+            width="20"
+            height="20"
+            className="sign-out-icon"
+          />
+          {!isCollapsed && <span className="sign-out-text">Sign Out</span>}
+        </div>
+      </button>
     </div>
   );
 };

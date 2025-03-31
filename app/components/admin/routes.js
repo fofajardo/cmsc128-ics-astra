@@ -1,14 +1,8 @@
-import {Icon} from "@iconify/react";
-
 export const SideNavItem = [
-    {
-        title: "Dashboard",
-        path: "/admin/dashboard",
-        icon: <Icon icon="lucide:home" width="24" height="24" />
-    },
-    {
-        title: "Alumni",
-        path: "/admin/alumni",
-        icon: <Icon icon="lucide:graduation-cap" width="24" height="24" />
-    }
-]
+    { title: "Dashboard", path: "/admin/dashboard", icon: "lucide:home" },
+    { title: "Navbar Option", path: "/admin/option1", icon: "lucide:cog" },
+    { title: "Alumni", path: "/admin/alumni", icon: "lucide:graduation-cap" },
+    { title: "Navbar Option", path: "/admin/option2", icon: "lucide:cog" },
+    { title: "Navbar Option", path: "/admin/option3", icon: "lucide:cog" }
+  ];
+  
