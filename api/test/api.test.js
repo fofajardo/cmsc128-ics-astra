@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { expect } from 'chai';
-import app from '../api/index.js';
+import app from '../index.js';
 import httpStatus from "http-status-codes";
 
 describe('API Tests', function () {
