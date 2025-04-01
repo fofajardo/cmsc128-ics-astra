@@ -10,7 +10,6 @@
         "build": "next build",
         "start": "next start",
         "lint": "next lint",
-        "test": "mocha tests --exit",
         "api": "node ./api/index.js",
         "api-watch": "node --watch-path=./api ./api/index.js",
         "test-api": "cd api && mocha"
