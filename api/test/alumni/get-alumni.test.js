@@ -25,18 +25,25 @@ describe('Alumni API Tests', function () {
 
             expect(res.status).to.equal(httpStatus.OK);
             expect(res.body).to.be.an('object');
+
             expect(res.body).to.have.property('birthdate');
+            expect(new Date(res.body.birthdate).toString()).to.not.equal('Invalid Date');
+
             expect(res.body).to.have.property('location').that.is.a('string');
             expect(res.body).to.have.property('address').that.is.a('string');
             expect(res.body).to.have.property('gender').that.is.a('string');
             expect(res.body).to.have.property('studentNum').that.is.a('string');
             expect(res.body).to.have.property('citizenship').that.is.a('string');
             expect(res.body).to.have.property('degreeProgram').that.is.a('string');
+
             expect(res.body).to.have.property('yearGraduated');
+            expect(new Date(res.body.yearGraduated).toString()).to.not.equal('Invalid Date');
+
             expect(res.body).to.have.property('skills').that.is.a('string');
             expect(res.body).to.have.property('field').that.is.a('string');
             expect(res.body).to.have.property('jobTitle').that.is.a('string');
             expect(res.body).to.have.property('company').that.is.a('string');
+
         });
     });
 });
