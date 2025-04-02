@@ -12,7 +12,7 @@
         "lint": "next lint",
         "api": "node ./api/index.js",
         "api-watch": "node --watch-path=./api ./api/index.js",
-        "test-api": "cd api && mocha"
+        "test-api": "cd api && mocha \"test/**\""
     },
     "keywords": [],
     "author": "",
