@@ -2,7 +2,8 @@ import express from "express";
 import env from "dotenv";
 import { createClient } from "@supabase/supabase-js";
 import httpStatus from "http-status-codes";
-import getJobsRouter from "./routes/jobs/get-jobs.js";
+// import getJobsRouter from "./routes/jobs/get-jobs.js";
+import getEventsRouter from "./routes/events/get-events.js";
 // import getAlumniRouter from "./routes/alumni/get-alumni.js";
 
 env.config();
@@ -19,7 +20,7 @@ gServer.get("/", (req, res) => {
     res.status(httpStatus.OK).json({ message: "API is working!" });
 });
 
-gServer.use('/v1/jobs', getJobsRouter(testingSupabase));
+gServer.use('/v1/events', getEventsRouter(testingSupabase));
 
 export default gServer;
 
