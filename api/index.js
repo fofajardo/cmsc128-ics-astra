@@ -5,6 +5,7 @@ import httpStatus from "http-status-codes";
 import getUsersRouter from "./routes/users/get-users.js";
 import getAlumniRouter from "./routes/alumni/get-alumni.js";
 import getJobsRouter from "./routes/jobs/get-jobs.js";
+import getEventsRouter from "./routes/events/get-events.js";
 
 env.config();
 
@@ -23,6 +24,7 @@ gServer.get("/", (req, res) => {
 gServer.use('/v1/users', getUsersRouter(testingSupabase));
 gServer.use('/v1/alumni', getAlumniRouter(testingSupabase));
 gServer.use('/v1/jobs', getJobsRouter(testingSupabase));
+gServer.use('/v1/events', getEventsRouter(testingSupabase));
 
 export default gServer;
 
