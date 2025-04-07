@@ -7,6 +7,9 @@ import getAlumniRouter from "./routes/alumni/get-alumni.js";
 import getJobsRouter from "./routes/jobs/get-jobs.js";
 import getEventsRouter from "./routes/events/get-events.js";
 
+import putJobsRouter from "./routes/jobs/put-jobs.js";
+import putEventsRouter from "./routes/events/put-events.js";
+
 env.config();
 
 const gServer = express();
@@ -25,6 +28,9 @@ gServer.use('/v1/users', getUsersRouter(testingSupabase));
 gServer.use('/v1/alumni', getAlumniRouter(testingSupabase));
 gServer.use('/v1/jobs', getJobsRouter(testingSupabase));
 gServer.use('/v1/events', getEventsRouter(testingSupabase));
+
+gServer.use('/v1/jobs', putJobsRouter(testingSupabase));
+gServer.use('/v1/events', putEventsRouter(testingSupabase));
 
 export default gServer;
 
