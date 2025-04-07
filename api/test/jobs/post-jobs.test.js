@@ -20,6 +20,8 @@ describe('Jobs API Tests', function () {
             expect(res.status).to.equal(httpStatus.CREATED);
             expect(res.body).to.be.an('object');
             expect(res.body).to.have.property('status').that.is.oneOf(['CREATED', 'FAILED']);
+            expect(res.body).to.have.property('message').that.is.a('string');
+            expect(res.body).to.have.property('id').that.is.a('string');
         });
 
         // Test case #2: Failed Job Creation due to missing required fields
@@ -36,6 +38,7 @@ describe('Jobs API Tests', function () {
             expect(res.status).to.equal(httpStatus.BAD_REQUEST);
             expect(res.body).to.be.an('object');
             expect(res.body).to.have.property('status').that.is.oneOf(['CREATED', 'FAILED']);
+            expect(res.body).to.have.property('message').that.is.a('string');
         });
 
         // Test case #3: Failed Job Creation due to invalid data type in fields
@@ -53,6 +56,7 @@ describe('Jobs API Tests', function () {
             expect(res.status).to.equal(httpStatus.BAD_REQUEST);
             expect(res.body).to.be.an('object');
             expect(res.body).to.have.property('status').that.is.oneOf(['CREATED', 'FAILED']);
+            expect(res.body).to.have.property('message').that.is.a('string');
         });
 
     });
