@@ -7,7 +7,7 @@ describe('Alumni API Tests', function () {
 
     describe('PUT /v1/alumni/:userId', function () {
         it('should return 200 and update valid alumni details', async function () {
-            const userId = '12345'; //Example userId
+            const userId = '75b6e610-9d0b-4884-b405-1e682e3aa3de';
 
             //Precondition: Ensure the row exists before updating
             const preCheckRes = await request(app).get(`/v1/alumni/${userId}`);
@@ -44,7 +44,7 @@ describe('Alumni API Tests', function () {
         });
 
         it('should not allow editing of birthdate or student_num', async function () {
-            const userId = '12345'; //Example userId
+            const userId = '75b6e610-9d0b-4884-b405-1e682e3aa3de';
             const invalidUpdateData = {
                 birthdate: '2000-01-01', //Attempt to change birthdate
                 student_num: '12345' //Attempt to change student number
