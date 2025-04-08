@@ -1,13 +1,13 @@
 import request from 'supertest';
 import { expect } from 'chai';
-import app from '../index.js';
+import app from '../../index.js';
 import httpStatus from 'http-status-codes';
 
 describe('Alumni API Tests', function () {
 
     describe('PUT /v1/alumni/:userId', function () {
         it('should return 200 and update valid alumni details', async function () {
-            const userId = '12345'; //Example userId
+            const userId = '75b6e610-9d0b-4884-b405-1e682e3aa3de'; //Example userId
 
             //Precondition: Ensure the row exists before updating
             const preCheckRes = await request(app).get(`/v1/alumni/${userId}`);
@@ -17,7 +17,7 @@ describe('Alumni API Tests', function () {
             const validUpdateData = {
                 location: 'Los Banos',
                 address: 'Batong Malake',
-                gender: 'Male',
+                gender: 'Female',
                 citizenship: 'Filipino',
                 degree_program: 'Computer Science', 
                 year_graduated: '2020-08-01', 
