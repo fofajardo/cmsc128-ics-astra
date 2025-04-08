@@ -10,6 +10,9 @@ describe('Jobs API Tests', function () {
             const res = await request(app)
                 .post('/v1/jobs')
                 .send({
+                    title: 'Hiring Now',
+                    details: 'Welcome to Fresh Grads',
+                    user_id: '75b6e610-9d0b-4884-b405-1e682e3aa3de',
                     job_title: 'Junior Frontend Developer',
                     hiring_manager: 'Juan dela Cruz',
                     company_name: 'Astra Devs',
@@ -29,6 +32,9 @@ describe('Jobs API Tests', function () {
             const res = await request(app)
                 .post('/v1/jobs')
                 .send({
+                    title: 'Hiring Now',
+                    details: 'Welcome to Fresh Grads',
+                    user_id: '75b6e610-9d0b-4884-b405-1e682e3aa3de',
                     hiring_manager: 'Juan dela Cruz', // job title is missing
                     company_name: 'Astra Devs',
                     salary: 37500,
@@ -46,6 +52,9 @@ describe('Jobs API Tests', function () {
             const res = await request(app)
                 .post('/v1/jobs')
                 .send({
+                    title: 'Hiring Now',
+                    details: 'Welcome to Fresh Grads',
+                    user_id: '75b6e610-9d0b-4884-b405-1e682e3aa3d', // invalid user_id
                     job_title: 'UI/UX Designer',
                     hiring_manager: 'Anish Guru',
                     company_name: 'Astra Devs',
