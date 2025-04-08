@@ -61,39 +61,18 @@ const postJobsRouter = (supabase) => {
                 });
             }
             
-            // TODO: Implement transaction and rollbacl for better error handling 
-            // since there are 2 queries in one API call
-
-            // insert data to contents
-            let { data, error } = await supabase
-            .from('contents')
-                .insert({
-                    title: title,
-                    details: details,
-                    user_id: user_id,
-                }).select();
-
-            if (error) {
-                return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-                    status: "FAILED",
-                    message: error
-                });
-            }
-            
-            const job_id = data[0].id;
-
-            // insert data to jobs
-            ({ data, error } = await supabase
-                .from('jobs')
-                .insert({
-                    job_id: job_id,
-                    job_title: job_title,
-                    company_name: company_name,
-                    hiring_manager: hiring_manager,
-                    access_link: access_link,
-                    salary: salary,
-                    apply_link: apply_link
-                }));
+            // 2 insert queries (insert content, insert job) merged into atomic function in supabase
+            // link to query: https://supabase.com/dashboard/project/lgehxciwuxmrtcnanuxp/sql/55bd00fe-d1ce-42e9-a9aa-e8ebc974d544
+            const { data, error } = await supabase.rpc('atomic_post_job_content', {
+                title: title,
+                details: details,
+                user_id: user_id,
+                job_title: job_title,
+                company_name: company_name,
+                hiring_manager: hiring_manager ?? null, // hiring manager is nullable
+                salary: salary,
+                apply_link: apply_link
+              });
 
             if (error) {
                 return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -105,7 +84,7 @@ const postJobsRouter = (supabase) => {
             return res.status(httpStatus.CREATED).json({
                 status: 'CREATED',
                 message: 'Job posting successfully created',
-                id: job_id,
+                id: data,
             });
 
         } catch (error) {
