@@ -77,7 +77,7 @@ const postJobsRouter = (supabase) => {
             if (error) {
                 return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
                     status: "FAILED",
-                    message: error
+                    message: error.message
                 });
             }
 
