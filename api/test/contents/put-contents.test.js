@@ -5,8 +5,8 @@ import httpStatus from 'http-status-codes';
 
 describe('Contents API - PUT /v1/contents/:contentId', function () {
 
-    const contentId = '7f857ca0-fcca-4c5b-b619-d0612597dbb1'; 
-    const alumId = '713a81be-4988-4163-896c-71d5c3066d63'; 
+    const contentId = '4b02a71e-8e52-42ce-b545-a2f0960f1d16'; 
+    const userId = '75b6e610-9d0b-4884-b405-1e682e3aa3de'; 
 
     it('should return 200 and update valid content fields', async function () {
         const updatePayload = {
@@ -38,7 +38,7 @@ describe('Contents API - PUT /v1/contents/:contentId', function () {
             });
 
         expect(res.status).to.equal(httpStatus.BAD_REQUEST);
-        expect(res.body.message).to.include('title');
+        expect(res.body.message).to.include('Title cannot be empty');
     });
 
     it('should return 400 when details is empty', async function () {
@@ -50,24 +50,24 @@ describe('Contents API - PUT /v1/contents/:contentId', function () {
             });
 
         expect(res.status).to.equal(httpStatus.BAD_REQUEST);
-        expect(res.body.message).to.include('details');
+        expect(res.body.message).to.include('Details cannot be empty');
     });
 
-    it('should return 400 when alum_id is included (not allowed to edit)', async function () {
+    it('should return 400 when user_id is included (not allowed to edit)', async function () {
         const res = await request(app)
             .put(`/v1/contents/${contentId}`)
             .send({
-                alum_id: alumId, //Changing alumId is not allowed
+                user_id: userId, //Changing userId is not allowed
                 title: 'New Title',
                 details: 'New Details'
             });
 
         expect(res.status).to.equal(httpStatus.BAD_REQUEST);
-        expect(res.body.message).to.include('alum_id');
+        expect(res.body.message).to.include('Updating user_id is not allowed');
     });
 
     it('should return 404 if contentId does not exist', async function () {
-        const fakeId = '00000000-0000-0000-0000-000000000000';
+        const fakeId = 'e1ed08c9-7545-4572-bfed-968085897950'; //Currently not in database
         const res = await request(app)
             .put(`/v1/contents/${fakeId}`)
             .send({
@@ -89,6 +89,6 @@ describe('Contents API - PUT /v1/contents/:contentId', function () {
             });
 
         expect(res.status).to.equal(httpStatus.BAD_REQUEST);
-        expect(res.body.message).to.include('contentId');
+        expect(res.body.message).to.include('Invalid contentId format');
     });
 });

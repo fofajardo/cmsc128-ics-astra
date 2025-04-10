@@ -7,30 +7,33 @@ describe('Contents API - DELETE /v1/contents/:contentId', function () {
 
     let createdContentId;
 
-    beforeEach(async function () {
-        //Create a content item to delete
+    // Create a new dummy data for deletion test
+    before(async function () {
         const createRes = await request(app)
             .post('/v1/contents')
             .send({
-                alum_id: '713a81be-4988-4163-896c-71d5c3066d63', 
+                user_id: '75b6e610-9d0b-4884-b405-1e682e3aa3de', 
                 title: 'To Be Deleted',
-                details: 'This content is for deletion test'
+                details: 'This content is for deletion test',
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
             });
-
+        console.log(createRes.body);
         createdContentId = createRes.body.content.id;
     });
-
+    
     it('should delete an existing content and return 200', async function () {
         const res = await request(app)
+
             .delete(`/v1/contents/${createdContentId}`);
 
         expect(res.status).to.equal(httpStatus.OK);
         expect(res.body.status).to.equal('DELETED');
-        expect(res.body.message).to.include('successfully');
+        expect(res.body.message).to.include('successfully deleted');
     });
 
     it('should return 404 when trying to delete non-existent content', async function () {
-        const nonExistentId = '00000000-0000-0000-0000-000000000000';
+        const nonExistentId = '38c2ba8e-2202-4bb8-b0fd-87595d7eb6aa'; //currently not in the database
         const res = await request(app)
             .delete(`/v1/contents/${nonExistentId}`);
 

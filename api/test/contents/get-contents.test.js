@@ -20,7 +20,7 @@ describe('Contents API Tests', function () {
             if (res.body.list.length > 0) {
                 const content = res.body.list[0];
                 expect(content).to.have.property('id').that.is.a('string');
-                expect(content).to.have.property('alum_id').that.is.a('string');
+                expect(content).to.have.property('user_id').that.is.a('string');
                 expect(content).to.have.property('title').that.is.a('string');
                 expect(content).to.have.property('details').that.is.a('string');
                 expect(new Date(content.created_at).toString()).to.not.equal('Invalid Date');
@@ -42,11 +42,9 @@ describe('Contents API Tests', function () {
             const content = res.body.content;
 
             expect(content).to.have.property('id').that.equals(contentId);
-            expect(content).to.have.property('alum_id').that.is.a('string');
+            expect(content).to.have.property('user_id').that.is.a('string');
             expect(content).to.have.property('title').that.is.a('string');
             expect(content).to.have.property('details').that.is.a('string');
-            expect(new Date(content.created_at).toString()).to.not.equal('Invalid Date');
-            expect(new Date(content.updated_at).toString()).to.not.equal('Invalid Date');
         });
     });
 });

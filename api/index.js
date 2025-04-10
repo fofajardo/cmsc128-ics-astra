@@ -6,7 +6,10 @@ import getUsersRouter from "./routes/users/get-users.js";
 import getAlumniRouter from "./routes/alumni/get-alumni.js";
 import getJobsRouter from "./routes/jobs/get-jobs.js";
 import getEventsRouter from "./routes/events/get-events.js";
-
+import getContentsRouter from "./routes/contents/get-contents.js";
+import postContentRouter from "./routes/contents/post-contents.js";
+import putContentRouter from "./routes/contents/put-contents.js";
+import deleteContentRouter from "./routes/contents/delete-content.js"
 env.config();
 
 const gServer = express();
@@ -25,6 +28,13 @@ gServer.use('/v1/users', getUsersRouter(testingSupabase));
 gServer.use('/v1/alumni', getAlumniRouter(testingSupabase));
 gServer.use('/v1/jobs', getJobsRouter(testingSupabase));
 gServer.use('/v1/events', getEventsRouter(testingSupabase));
+gServer.use(
+    '/v1/contents', 
+    getContentsRouter(testingSupabase), 
+    postContentRouter(testingSupabase), 
+    putContentRouter(testingSupabase), 
+    deleteContentRouter(testingSupabase)
+);
 
 export default gServer;
 
