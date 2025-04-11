@@ -49,8 +49,6 @@ const getProjectsRouter = (supabase) => {
                 .eq("project_id", projectId)
                 .single();
 
-            console.log(data);
-
             if (error) {
                 return res.status(httpStatus.NOT_FOUND).json({
                     status: "FAILED",
