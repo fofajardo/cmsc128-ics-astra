@@ -55,4 +55,17 @@ describe('Projects API Tests', function () {
             expect(res.statusCode).to.equal(httpStatus.NOT_FOUND);
         });
     });
+
+    describe('GET /v1/projects/:projectId/donations', function () {
+        it('should return 200 and a list of donations to the project', async function () {
+            const projectId = '7f857ca0-fcca-4c5b-b619-d0612597dbb1'; // Actual project_id
+            const res = await request(app).get(`/v1/projects/${projectId}/donations`);
+
+            expect(res.status).to.equal(httpStatus.OK);
+            expect(res.body).to.be.an('object');
+
+            expect(res.body).to.have.property('status', 'OK');
+            expect(res.body).to.have.property('donations').to.be.an('array');
+        });
+    });
 });
