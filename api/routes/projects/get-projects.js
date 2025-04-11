@@ -26,7 +26,7 @@ const getProjectsRouter = (supabase) => {
 
             return res.status(httpStatus.OK).json({
                 status: "OK",
-                list: data || [],
+                projects: data || [],
             });
 
         } catch (error) {

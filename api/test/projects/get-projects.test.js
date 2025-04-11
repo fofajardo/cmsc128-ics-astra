@@ -14,7 +14,7 @@ describe('Projects API Tests', function () {
             expect(res.status).to.equal(httpStatus.OK);
             expect(res.body).to.be.an('object');
             expect(res.body).to.have.property('status', 'OK');
-            expect(res.body).to.have.property('list').that.is.an('array');
+            expect(res.body).to.have.property('projects').that.is.an('array');
         });
     });
 
