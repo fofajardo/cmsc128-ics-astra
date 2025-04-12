@@ -110,7 +110,7 @@ const putProjectsRouter = (supabase) => {
             // Return success response with updated project
             return res.status(httpStatus.OK).json({
                 status: 'UPDATED',
-                message: `Project updated successfully ${typeof req.body['status']}`,
+                message: 'Project updated successfully',
             });
 
         } catch (error) {
