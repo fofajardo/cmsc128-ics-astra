@@ -1,11 +1,17 @@
-import express from "express";
 import env from "dotenv";
-import { createClient } from "@supabase/supabase-js";
+import express from "express";
+import session from "express-session";
 import httpStatus from "http-status-codes";
-import getUsersRouter from "./routes/users/get-users.js";
+import passport from "passport";
+
+import { createClient } from "@supabase/supabase-js";
+
 import getAlumniRouter from "./routes/alumni/get-alumni.js";
-import getJobsRouter from "./routes/jobs/get-jobs.js";
+import authRouter from "./routes/auth/auth-router.js";
+import { registerStrategies } from "./routes/auth/passport-strategies.js";
 import getEventsRouter from "./routes/events/get-events.js";
+import getJobsRouter from "./routes/jobs/get-jobs.js";
+import getUsersRouter from "./routes/users/get-users.js";
 
 env.config();
 
@@ -21,10 +27,24 @@ gServer.get("/", (req, res) => {
     res.status(httpStatus.OK).json({ message: "API is working!" });
 });
 
+// Set up session handling to use .
+gServer.use(session({
+    resave: false,
+    saveUninitialized: false,
+    secret: "047afa6b-829a-432a-b962-e7a4e9fe7d9d",
+    // FIXME: sessions are not persisted.
+}));
+
+// Set up Passport.js authentication.
+gServer.use(passport.authenticate("session"));
+
+registerStrategies(testingSupabase);
+
 gServer.use('/v1/users', getUsersRouter(testingSupabase));
 gServer.use('/v1/alumni', getAlumniRouter(testingSupabase));
 gServer.use('/v1/jobs', getJobsRouter(testingSupabase));
 gServer.use('/v1/events', getEventsRouter(testingSupabase));
+gServer.use('/v1/auth', authRouter());
 
 export default gServer;
 
