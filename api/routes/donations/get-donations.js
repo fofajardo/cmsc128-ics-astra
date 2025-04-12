@@ -66,7 +66,7 @@ const getDonationsRouter = (supabase) => {
             if (error) {
                 return res.status(httpStatus.NOT_FOUND).json({
                     status: 'FAILED',
-                    message: `Project not found ${error}`
+                    message: 'Project not found'
                 });
             }
 
