@@ -7,6 +7,7 @@ import getAlumniRouter from "./routes/alumni/get-alumni.js";
 import getJobsRouter from "./routes/jobs/get-jobs.js";
 import getEventsRouter from "./routes/events/get-events.js";
 import getDonationsRouter from "./routes/donations/get-donations.js";
+import postDonationsRouter from "./routes/donations/post-donations.js";
 
 env.config();
 
@@ -27,6 +28,7 @@ gServer.use('/v1/alumni', getAlumniRouter(testingSupabase));
 gServer.use('/v1/jobs', getJobsRouter(testingSupabase));
 gServer.use('/v1/events', getEventsRouter(testingSupabase));
 gServer.use('/v1/donations', getDonationsRouter(testingSupabase));
+gServer.use('/v1/donations', postDonationsRouter(testingSupabase));
 
 export default gServer;
 
