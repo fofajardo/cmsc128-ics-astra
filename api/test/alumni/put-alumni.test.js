@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { expect } from 'chai';
-import app from '../index.js';
+import app from '../../index.js';
 import httpStatus from 'http-status-codes';
 
 describe('Alumni API Tests', function () {
@@ -13,17 +13,17 @@ describe('Alumni API Tests', function () {
             const preCheckRes = await request(app).get(`/v1/alumni/${userId}`);
             expect(preCheckRes.status).to.equal(httpStatus.OK);
             expect(preCheckRes.body).to.be.an('object');
-            
+
             const validUpdateData = {
                 location: 'Los Banos',
                 address: 'Batong Malake',
                 gender: 'Male',
                 citizenship: 'Filipino',
-                degree_program: 'Computer Science', 
-                year_graduated: '2020-08-01', 
+                degree_program: 'Computer Science',
+                year_graduated: '2020-08-01',
                 skills: 'JavaScript, Python',
                 field: 'Software Development',
-                job_title: 'Software Engineer', 
+                job_title: 'Software Engineer',
                 company: 'Microsoft',
                 honorifics: 'Dr.'
             };

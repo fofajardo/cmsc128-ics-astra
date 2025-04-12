@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { expect } from 'chai';
-import app from '../index.js';
+import app from '../../index.js';
 import httpStatus from 'http-status-codes';
 
 describe('User API Tests', function () {
@@ -13,7 +13,7 @@ describe('User API Tests', function () {
             const preCheckRes = await request(app).get(`/v1/users/${userId}`);
             expect(preCheckRes.status).to.equal(httpStatus.OK);
             expect(preCheckRes.body).to.be.an('object');
-            
+
             const validUpdateData = {
                 username: "user",
                 email: "email@email.com",
@@ -39,8 +39,8 @@ describe('User API Tests', function () {
             const userId = '12345'; //Example userId
             const invalidUpdateData = {
                 firstName: "User",  // attempt to change name
-                middleName: 'User',  
-                lastName: 'User',  
+                middleName: 'User',
+                lastName: 'User',
                 role: "User", //attempt to change role
             };
 
