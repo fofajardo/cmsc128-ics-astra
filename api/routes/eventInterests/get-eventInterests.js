@@ -50,7 +50,7 @@ const getEventInterestsRouter = (supabase) => {
             if (error) {
                 return res.status(httpStatus.NOT_FOUND).json({
                     status: "FAILED",
-                    message: "No contents in event interests found"
+                    message: "No contents in event interests found."
                 });
             }
 
@@ -82,7 +82,7 @@ const getEventInterestsRouter = (supabase) => {
             if (error) {
                 return res.status(httpStatus.NOT_FOUND).json({
                     status: "FAILED",
-                    message: "No alumni in event interests found"
+                    message: "No alumni in event interests found."
                 });
             }
 

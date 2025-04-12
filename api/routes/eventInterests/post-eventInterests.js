@@ -15,14 +15,14 @@ const postEventInterestsRouter = (supabase) => {
             if (!isValidUUID(alumnId)) {
                 return res.status(httpStatus.BAD_REQUEST).json({
                     status: 'FAILED',
-                    message: 'Invalid alumnId format'
+                    message: 'Invalid alumnId format.'
                 });
             }
 
             if (!isValidUUID(contentId)) {
                 return res.status(httpStatus.BAD_REQUEST).json({
                     status: 'FAILED',
-                    message: 'Invalid contentId format'
+                    message: 'Invalid contentId format.'
                 });
             }
 
@@ -42,7 +42,7 @@ const postEventInterestsRouter = (supabase) => {
 
             return res.status(httpStatus.CREATED).json({
                 status: 'CREATED',
-                message: 'Event Interest successfully created',
+                message: 'Event Interest successfully created.',
             });
 
         } catch (error) {
