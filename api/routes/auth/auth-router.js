@@ -30,7 +30,7 @@ const authRouter = () => {
 
     async function signOut(aRequest, aResponse) {
         if (aRequest.isUnauthenticated()) {
-            return aResponse.status(httpStatus.OK).send(false);
+            return aResponse.status(httpStatus.NO_CONTENT).json({ status: "NO_CONTENT" });
         }
         return aRequest.logout(function (aError) {
             if (aError) {
