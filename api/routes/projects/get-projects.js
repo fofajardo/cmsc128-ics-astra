@@ -1,6 +1,11 @@
 import express from 'express';
 import httpStatus from 'http-status-codes';
 
+// Function to validate UUID format
+const isValidUUID = (id) => {
+    return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);
+};
+
 const getProjectsRouter = (supabase) => {
     const router = express.Router();
 
@@ -40,6 +45,14 @@ const getProjectsRouter = (supabase) => {
     router.get("/:projectId", async (req, res) => {
         try {
             const { projectId } = req.params;
+
+            if (!isValidUUID(projectId)) {
+                return res.status(httpStatus.BAD_REQUEST).json({
+                    status: 'FAILED',
+                    message: 'Invalid projectId format',
+                    id: null
+                });
+            }
 
             const { data, error } = await supabase
                 .from("projects")
