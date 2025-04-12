@@ -9,6 +9,7 @@ import getEventsRouter from "./routes/events/get-events.js";
 import getProjectsRouter from "./routes/projects/get-projects.js";
 import postProjectsRouter from "./routes/projects/post-projects.js";
 import putProjectsRouter from "./routes/projects/put-projects.js";
+import deleteProjectsRouter from "./routes/projects/delete-projects.js";
 
 env.config();
 
@@ -31,6 +32,7 @@ gServer.use('/v1/events', getEventsRouter(testingSupabase));
 gServer.use('/v1/projects', getProjectsRouter(testingSupabase));
 gServer.use('/v1/projects', postProjectsRouter(testingSupabase));
 gServer.use('/v1/projects', putProjectsRouter(testingSupabase));
+gServer.use('/v1/projects', deleteProjectsRouter(testingSupabase));
 
 export default gServer;
 
