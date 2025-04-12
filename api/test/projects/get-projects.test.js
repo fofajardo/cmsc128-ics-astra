@@ -45,6 +45,20 @@ describe('Projects API Tests', function () {
             expect(projectData).to.have.property('donation_link').that.is.a('string');
         });
 
+        // Test case to verify that the API returns 400 if invalid projectId
+        it('should return 400, status FAILED, and a message when projectId is invalid', async function () {
+            const invalidProjectId = '00000000-0000-0000-0000-000000000000'; // Invalid project ID
+            const res = await request(app).get(`/v1/projects/${invalidProjectId}`);
+
+            // console.log(res.body);
+
+            expect(res.status).to.equal(httpStatus.BAD_REQUEST);
+            expect(res.body).to.be.an('object');
+
+            expect(res.body).to.have.property('status').to.equal('FAILED');
+            expect(res.body).to.have.property('message').that.is.a('string');
+        });
+
         // Test case to verify that the API returns 404 if the projectId does not exist in the system
         it('should return 404, status FAILED, and a message when project does not exist', async function () {
             const notExistingProjectId = '7f857ca0-fcca-4c5b-b619-d0612597dbb2'; // Non-existing projectId
