@@ -10,7 +10,7 @@ describe('Event Interests API Tests', function () {
         // Test case for successful deletion of an event interest
         it('should return 200 with DELETED status for event interest', async function () {
             const testAlumId = "75b6e610-9d0b-4884-b405-1e682e3aa3de";    // always replace with existing ids after running the test
-            const testContentId = "7f857ca0-fcca-4c5b-b619-d0612597dbb1";
+            const testContentId = "885b0b2e-ced1-4c0f-8aac-1fb6857548ec";
 
             const res = await request(app)
                 .delete(`/v1/eventInterests/${testAlumId}/${testContentId}`);
