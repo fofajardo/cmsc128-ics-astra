@@ -18,10 +18,58 @@ describe('Projects API Tests', function () {
 
             expect(res.body).to.have.property('status').to.equal('FAILED');
             expect(res.body).to.have.property('message').that.is.a('string');
-            expect(res.body).to.have.property('id').to.equal('');
+            expect(res.body).to.have.property('id').that.is.a('null');
         });
 
-        // Test case to verify that the project is created successfully
+        // Test case to verify that the API returns 400 if invalid status
+        it('should return 400, status FAILED, and a message when status is invalid', async function () {
+            const invalidContentId = '389517e7-4a0b-4c96-84f9-3a7080186892'; // Invalid content ID
+            const res = await request(app)
+                .post(`/v1/projects`)
+                .send({
+                    project_id: invalidContentId,
+                    status: '0',    // should be int
+                    due_date: new Date('2025-04-01'),
+                    date_completed: null,
+                    goal_amount: 100000,
+                    donation_link: 'astra.com/amis-server-upgrade',
+                });
+
+            // console.log(res.body);
+
+            expect(res.status).to.equal(httpStatus.BAD_REQUEST);
+            expect(res.body).to.be.an('object');
+
+            expect(res.body).to.have.property('status').to.equal('FAILED');
+            expect(res.body).to.have.property('message').that.is.a('string');
+            expect(res.body).to.have.property('id').that.is.a('null');
+        });
+
+        // Test case to verify that the API returns 400 if invalid date
+        it('should return 400, status FAILED, and a message when date is invalid', async function () {
+            const invalidContentId = '389517e7-4a0b-4c96-84f9-3a7080186892'; // Invalid content ID
+            const res = await request(app)
+                .post(`/v1/projects`)
+                .send({
+                    project_id: invalidContentId,
+                    status: 0,
+                    due_date: new Date('invalid-date-string'),  // invalid date
+                    date_completed: null,
+                    goal_amount: 100000,
+                    donation_link: 'astra.com/amis-server-upgrade',
+                });
+
+            // console.log(res.body);
+
+            expect(res.status).to.equal(httpStatus.BAD_REQUEST);
+            expect(res.body).to.be.an('object');
+
+            expect(res.body).to.have.property('status').to.equal('FAILED');
+            expect(res.body).to.have.property('message').that.is.a('string');
+            expect(res.body).to.have.property('id').that.is.a('null');
+        });
+
+        // // Test case to verify that the project is created successfully
         it('should return 201, status CREATED, a message, and an id', async function () {
             const contentId = '389517e7-4a0b-4c96-84f9-3a7080186892'; // Actual test content ID
             const res = await request(app)
@@ -29,9 +77,9 @@ describe('Projects API Tests', function () {
                 .send({
                     project_id: contentId,
                     status: 0,
-                    due_date: new Date('2025-04-01').toISOString(),
+                    due_date: new Date('2025-04-01'),
                     date_completed: null,
-                    goal_amount: '100000',
+                    goal_amount: 100000,
                     donation_link: 'astra.com/amis-server-upgrade',
                 });
 
@@ -45,7 +93,31 @@ describe('Projects API Tests', function () {
             expect(res.body).to.have.property('id').to.equal(contentId);
         });
 
-        // TODO: Test case to verify that the API returns 404 if the contentId does not exist in the system
+        // Test case to verify that the API returns 400 if invalid contentId
+        it('should return 400, status FAILED, and a message when projectId is invalid', async function () {
+            const invalidContentId = '00000000-0000-0000-0000-000000000000'; // Invalid content ID
+            const res = await request(app)
+                .post(`/v1/projects`)
+                .send({
+                    project_id: invalidContentId,
+                    status: 0,
+                    due_date: new Date('2025-04-01'),
+                    date_completed: null,
+                    goal_amount: 100000,
+                    donation_link: 'astra.com/amis-server-upgrade',
+                });
+
+            // console.log(res.body);
+
+            expect(res.status).to.equal(httpStatus.BAD_REQUEST);
+            expect(res.body).to.be.an('object');
+
+            expect(res.body).to.have.property('status').to.equal('FAILED');
+            expect(res.body).to.have.property('message').that.is.a('string');
+            expect(res.body).to.have.property('id').that.is.a('null');
+        });
+
+        // Test case to verify that the API returns 404 if the contentId does not exist in the system
         it('should return 404, status FAILED, and a message when contentId does not exist', async function () {
             const contentId = '389517e7-4a0b-4c96-84f9-3a7080186893'; // Non-existing content ID
             const res = await request(app)
@@ -53,9 +125,9 @@ describe('Projects API Tests', function () {
                 .send({
                     project_id: contentId,
                     status: 0,
-                    due_date: new Date('2025-04-01').toISOString(),
+                    due_date: new Date('2025-04-01'),
                     date_completed: null,
-                    goal_amount: '100000',
+                    goal_amount: 100000,
                     donation_link: 'astra.com/amis-server-upgrade',
                 });
 
@@ -72,9 +144,9 @@ describe('Projects API Tests', function () {
                 .send({
                     project_id: contentId,
                     status: 0,
-                    due_date: new Date('2025-04-01').toISOString(),
+                    due_date: new Date('2025-04-01'),
                     date_completed: null,
-                    goal_amount: '100000',
+                    goal_amount: 100000,
                     donation_link: 'astra.com/amis-server-upgrade',
                 });
 
@@ -85,7 +157,7 @@ describe('Projects API Tests', function () {
 
             expect(res.body).to.have.property('status').to.equal('FAILED');
             expect(res.body).to.have.property('message').that.is.a('string');
-            expect(res.body).to.have.property('id').to.equal('');
+            expect(res.body).to.have.property('id').that.is.a('null');
         });
     });
 });
