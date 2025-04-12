@@ -50,7 +50,6 @@ const getProjectsRouter = (supabase) => {
                 return res.status(httpStatus.BAD_REQUEST).json({
                     status: 'FAILED',
                     message: 'Invalid projectId format',
-                    id: null
                 });
             }
 
