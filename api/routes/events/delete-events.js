@@ -24,7 +24,7 @@ const deleteEventsRouter = (supabase) => {
             const { data: existingEvent, error: fetchError } = await supabase
                 .from('events')
                 .select()
-                .eq('id', eventId)
+                .eq('event_id', eventId)
                 .single();
             if (fetchError || !existingEvent) {
                 return res.status(httpStatus.NOT_FOUND).json({
@@ -36,7 +36,7 @@ const deleteEventsRouter = (supabase) => {
             const { error: deleteError } = await supabase
                 .from('events')
                 .delete()
-                .eq('id', eventId);
+                .eq('event_id', eventId);
 
             if (deleteError) {
                 return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
