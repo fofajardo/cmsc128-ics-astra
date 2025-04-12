@@ -6,19 +6,19 @@ const postEventInterestsRouter = (supabase) => {
 
     router.post('/', async (req, res) => {
         try {
-            const {alumId, contentId} = req.body;
+            const {alumnId, contentId} = req.body;
 
-            // Check if userId valid
             const isValidUUID = (id) => {
                 return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);
             };
 
-            if (!isValidUUID(alumId)) {
+            if (!isValidUUID(alumnId)) {
                 return res.status(httpStatus.BAD_REQUEST).json({
                     status: 'FAILED',
-                    message: 'Invalid alumId format'
+                    message: 'Invalid alumnId format'
                 });
             }
+
             if (!isValidUUID(contentId)) {
                 return res.status(httpStatus.BAD_REQUEST).json({
                     status: 'FAILED',
@@ -26,31 +26,23 @@ const postEventInterestsRouter = (supabase) => {
                 });
             }
 
-
-            // insert data to supabase
-            const {
-                alum_id,
-                content_id
-            } = req.body;
-
             const { data, error } = await supabase
                 .from('event_interests')
                 .insert({
-                    alum_id: alum_id,
-                    contentId: content_id
+                    alumn_id: alumnId,
+                    content_id: contentId
                 });
 
             if (error) {
                 return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
                     status: "FAILED",
-                    message: error
+                    message: error.message
                 });
             }
 
             return res.status(httpStatus.CREATED).json({
                 status: 'CREATED',
                 message: 'Event Interest successfully created',
-                id: userId
             });
 
         } catch (error) {

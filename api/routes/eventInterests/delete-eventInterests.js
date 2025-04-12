@@ -4,10 +4,23 @@ import httpStatus from "http-status-codes";
 const deleteEventInterestsRouter = (supabase) => {
     const router = express.Router();
 
+    router.delete('/', (req, res) => {
+        return res.status(httpStatus.BAD_REQUEST).json({
+            status: 'FAILED',
+            message: 'invalid deletion. AlumId and contentId parameters are missing'
+        });
+    });
+
+    router.delete('/:alumId', (req, res) => {
+        return res.status(httpStatus.BAD_REQUEST).json({
+            status: 'FAILED',
+            message: 'Missing contentId parameter'
+        });
+    });
+
     router.delete('/:alumId/:contentId', async (req, res) => {
         try {
-
-            const {alumId,contentId}  = req.params;
+            const {alumId, contentId} = req.params;
 
             const isValidUUID = (id) => {
                 return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);
@@ -26,28 +39,20 @@ const deleteEventInterestsRouter = (supabase) => {
                 });
             }
 
-            const { data: existingAlumnus, error: fetchError } = await supabase
+            const { data: existingInterest, error: fetchError } = await supabase
                 .from('event_interests')
                 .select()
                 .eq('alum_id', alumId)
+                .eq('content_id', contentId)
                 .single();
-            if (fetchError || !existingAlumnus) {
+
+            if (fetchError || !existingInterest) {
                 return res.status(httpStatus.NOT_FOUND).json({
                     status: 'FAILED',
-                    message: 'Alumnus not found',
+                    message: 'Event interest not found'
                 });
             }
-            const { data: existingContent, error: fetchErrors } = await supabase
-                .from('event_interests')
-                .select()
-                .eq('content_id', alumId)
-                .single();
-            if (fetchErrors || !existingContent) {
-                return res.status(httpStatus.NOT_FOUND).json({
-                    status: 'FAILED',
-                    message: 'Content not found',
-                });
-            }
+
 
             const { error: deleteError } = await supabase
                 .from('event_interests')
@@ -63,7 +68,7 @@ const deleteEventInterestsRouter = (supabase) => {
 
             return res.status(httpStatus.OK).json({
                 status: 'DELETED',
-                message: `Alumnus ${eventId} and Content ${contentId} has been successfully deleted.`
+                message: `Event interest for alumnus ${alumId} and content ${contentId} has been successfully deleted.`
             });
 
         } catch (error) {
@@ -73,6 +78,7 @@ const deleteEventInterestsRouter = (supabase) => {
             });
         }
     });
+
 
     return router;
 };

@@ -38,14 +38,14 @@ const getEventInterestsRouter = (supabase) => {
     });
 
     // GET all the event interests of an alumnus
-    router.get("/alumnus/:userId", async (req, res) => {
+    router.get("/alumnus/:alumnId", async (req, res) => {
         try {
-            const { userId } = req.params;
+            const { alumnId } = req.params;
 
             const { data, error } = await supabase
                 .from("event_interests")
                 .select("content_id")
-                .eq("alum_id", userId);
+                .eq("alum_id", alumnId);
 
             if (error) {
                 return res.status(httpStatus.NOT_FOUND).json({
@@ -58,7 +58,7 @@ const getEventInterestsRouter = (supabase) => {
 
             return res.status(httpStatus.OK).json({
                 status: "OK",
-                event: data
+                list: data || []
             });
 
         } catch (error) {
@@ -90,7 +90,7 @@ const getEventInterestsRouter = (supabase) => {
 
             return res.status(httpStatus.OK).json({
                 status: "OK",
-                event: data
+                list: data || []
             });
 
         } catch (error) {
