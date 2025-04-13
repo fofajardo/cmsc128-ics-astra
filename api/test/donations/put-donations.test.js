@@ -4,8 +4,27 @@ import app from '../../index.js';
 import httpStatus from 'http-status-codes';
 
 describe('Donations API Tests', function () {
-
     describe('PUT /v1/donations/:donationId', function () {
+        after(async function () {
+            const donationId = '39f817bf-7301-4a60-bb59-7f29c05d7f91';
+            const originalData = {
+                alum_id: 'b4a6b230-20b9-4137-af62-8b535841c391',
+                project_id: '7f857ca0-fcca-4c5b-b619-d0612597dbb1',
+                donation_date: new Date('2025-04-06').toISOString(),
+                reference_num: '1234-abvc-1234',
+                mode_of_payment: 0,
+                amount: 10000
+            };
+
+            const res = await request(app)
+                .put(`/v1/donations/${donationId}`)
+                .send(originalData);
+            if (res.body.status === 'UPDATED') {
+                console.log('Successfully revert donation fields');
+            } else
+                console.log('Failed to revert donation fieldsn');
+        });
+
         it('should return 200 and update valid donation details', async function () {
             const donationId = '39f817bf-7301-4a60-bb59-7f29c05d7f91'; // Actual donationId
             const alumId = 'b7085d72-f174-4b81-b106-ef68b27a48ee';
