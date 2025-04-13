@@ -5,6 +5,17 @@ import httpStatus from 'http-status-codes';
 
 describe('Donations API Tests', function () {
     describe('POST /v1/donations', function () {
+        let donationId;
+
+        after(async function () {
+            const res = await request(app)
+                .delete(`/v1/donations/${donationId}`);
+            if (res.body.status === 'DELETED') {
+                console.log('Successfully deleted dummy donation');
+            } else
+                console.log('Failed to delete dummy donation');
+        });
+
         // Test case to verify that the API returns 400 if required fields are missing
         it('should return 400, status FAILED, and a message when required fields are missing', async function () {
             const res = await request(app)
@@ -119,6 +130,7 @@ describe('Donations API Tests', function () {
             expect(res.body).to.have.property('status').to.equal('CREATED');
             expect(res.body).to.have.property('message').that.is.a('string');
             expect(res.body).to.have.property('id').that.is.a('string');
+            donationId = res.body['id'];
             console.log(res.body['id']);
         });
 
