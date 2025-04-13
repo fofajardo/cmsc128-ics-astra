@@ -9,6 +9,7 @@ import getEventsRouter from "./routes/events/get-events.js";
 import getDonationsRouter from "./routes/donations/get-donations.js";
 import postDonationsRouter from "./routes/donations/post-donations.js";
 import putDonationsRouter from "./routes/donations/put-donations.js";
+import deleteDonationsRouter from "./routes/donations/delete-donations.js";
 
 env.config();
 
@@ -31,6 +32,7 @@ gServer.use('/v1/events', getEventsRouter(testingSupabase));
 gServer.use('/v1/donations', getDonationsRouter(testingSupabase));
 gServer.use('/v1/donations', postDonationsRouter(testingSupabase));
 gServer.use('/v1/donations', putDonationsRouter(testingSupabase));
+gServer.use('/v1/donations', deleteDonationsRouter(testingSupabase));
 
 export default gServer;
 
