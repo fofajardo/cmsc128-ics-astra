@@ -4,7 +4,7 @@ import httpStatus from 'http-status-codes';
 // TODO: no CASL auth yet
 const putUsersRouter = (supabase) => {
     const router = express.Router();
-
+    
     router.put('/:userId', async (req, res) => {
         try {
             const userId = req.params.userId;
@@ -28,17 +28,17 @@ const putUsersRouter = (supabase) => {
                 username,
                 email,
                 password,
-                firstName,
-                middleName,
-                lastName,
+                first_name,
+                middle_name,
+                last_name,
                 role
             } = req.body;
 
             // Check if restricted fields are being updated
             const hasRestrictedFieldChanges = 
-                firstName !== undefined || 
-                middleName !== undefined || 
-                lastName !== undefined || 
+                first_name !== undefined || 
+                middle_name !== undefined || 
+                last_name !== undefined || 
                 role !== undefined;
             
             // basing on test, regular users can't update these fields at all
@@ -62,9 +62,10 @@ const putUsersRouter = (supabase) => {
                     message: 'No valid fields to update'
                 });
             }
+
             
             // Always update the updatedAt field
-            updateData.updatedAt = new Date().toISOString();
+            updateData.updated_at = new Date().toISOString();
 
             // Update user in database
             const { error: updateError } = await supabase

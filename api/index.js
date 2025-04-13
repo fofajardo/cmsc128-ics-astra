@@ -3,11 +3,14 @@ import env from "dotenv";
 import { createClient } from "@supabase/supabase-js";
 import httpStatus from "http-status-codes";
 import getUsersRouter from "./routes/users/get-users.js";
+import postUsersRouter from "./routes/users/post-users.js";
+import putUsersRouter from "./routes/users/put-users.js";
+import deleteUsersRouter from "./routes/users/delete-users.js";
 import getAlumniRouter from "./routes/alumni/get-alumni.js";
 import postAlumniRouter from "./routes/alumni/post-alumni.js";
 import putAlumniRouter from "./routes/alumni/put-alumni.js";
-import getJobsRouter from "./routes/jobs/get-jobs.js";
 import getEventsRouter from "./routes/events/get-events.js";
+import getJobsRouter from "./routes/jobs/get-jobs.js";
 
 env.config();
 
@@ -24,6 +27,9 @@ gServer.get("/", (req, res) => {
 });
 
 gServer.use('/v1/users', getUsersRouter(testingSupabase));
+gServer.use('/v1/users', postUsersRouter(testingSupabase));
+gServer.use('/v1/users', putUsersRouter(testingSupabase));
+gServer.use('/v1/users', deleteUsersRouter(testingSupabase));
 gServer.use('/v1/alumni', getAlumniRouter(testingSupabase));
 gServer.use('/v1/alumni', postAlumniRouter(testingSupabase));
 gServer.use('/v1/alumni', putAlumniRouter(testingSupabase));
