@@ -37,7 +37,7 @@ const postAlumniRouter = (supabase) => {
             // TODO check if alumni profile already exists (GET /v1/alumni/:userId)
             const { data: alumniData, error: alumniError } = await supabase
                 .from('alumni_profiles')
-                .select()
+                .select() 
                 .eq('alum_id', userId)
                 .single();
 
@@ -90,6 +90,7 @@ const postAlumniRouter = (supabase) => {
                 field,
                 job_title,
                 company,
+                honorifics,
                 citizenship,
                 sex
             } = req.body;
@@ -109,6 +110,7 @@ const postAlumniRouter = (supabase) => {
                     field: field,
                     job_title: job_title,
                     company: company,
+                    honorifics: honorifics,
                     citizenship: citizenship,
                     sex: sex,
                 });
