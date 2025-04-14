@@ -4,12 +4,12 @@ import app from '../../index.js';
 import httpStatus from 'http-status-codes';
 
 describe('Organizations API Tests', function () {
-    describe('POST /v1/organizations/', function () {
+    describe('POST /v1/organizations', function () {
         const testOrg = {
             name: 'UPLB University Student Council',
             acronym: 'USC',
             type: 0,
-            founded_date: '2005-10-20'
+            founded_date: new Date('2005-10-20').toISOString()
         };
 
         let createdOrgId = null;
@@ -17,10 +17,8 @@ describe('Organizations API Tests', function () {
         // ✅ Successfully creates an org
         it('should return 201, status CREATED, a message, and an id', async function () {
             const res = await request(app)
-                .post('/v1/organizations/')
+                .post('/v1/organizations')
                 .send(testOrg);
-
-            console.log(`response: ${res.body.id}`);
 
             expect(res.status).to.equal(httpStatus.CREATED);
             expect(res.body).to.be.an('object');
@@ -34,7 +32,7 @@ describe('Organizations API Tests', function () {
         // ❌ Required fields missing
         it('should return 400, status FAILED, and a message when required fields are missing', async function () {
             const res = await request(app)
-                .post(`/v1/organizations/`)
+                .post(`/v1/organizations`)
                 .send({});
 
             expect(res.status).to.equal(httpStatus.BAD_REQUEST);
@@ -44,7 +42,7 @@ describe('Organizations API Tests', function () {
         });
 
         // ❌ Duplicate organization
-        it('should return 409, status FAILED, and a message when username or email already exists', async function () {
+        it('should return 409, status FAILED, and a message when organization already exists', async function () {
             const res = await request(app)
                 .post(`/v1/organizations`)
                 .send(testOrg); // sending same org as before

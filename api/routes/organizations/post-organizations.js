@@ -10,7 +10,7 @@ const postOrganizationsRouter = (supabase) => {
             const requiredFields = [
                 "name",
                 "acronym",
-                "type",
+                // "type",
                 "founded_date"
             ];
 
@@ -31,10 +31,10 @@ const postOrganizationsRouter = (supabase) => {
             } = req.body;
 
             // Check if organization ID exists
-            const { data: existingUsers, error: checkError } = await supabase
-                .from('organizations')
-                .select('id')
-                .or(`username.eq.${username},email.eq.${email}`);
+            const { data: existingOrgs, error: checkError } = await supabase
+            .from('organizations')
+            .select('id')
+            .or(`name.eq.${encodeURIComponent(name)},acronym.eq.${encodeURIComponent(acronym)}`);        
 
 
             if (checkError) {
@@ -44,7 +44,7 @@ const postOrganizationsRouter = (supabase) => {
                 });
             }
 
-            if (existingUsers.length > 0) {
+            if (existingOrgs.length > 0) {
                 return res.status(httpStatus.CONFLICT).json({
                     status: 'FAILED',
                     message: 'Organization already exists'
@@ -57,7 +57,7 @@ const postOrganizationsRouter = (supabase) => {
                 .insert({
                     name: name,
                     acronym: acronym,
-                    type: type,
+                    type: parseInt(type) || 0, // Default to null if not provided
                     founded_date: founded_date
                 })
                 .select('id') // Select to return the ID
