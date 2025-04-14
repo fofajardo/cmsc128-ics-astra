@@ -13,7 +13,7 @@
         "api": "node ./api/index.js",
         "api-watch": "node --watch-path=./api ./api/index.js",
         "test-api": "cd api && mocha \"test/**\"",
-        "test-api-entity": "cd api && mocha"
+        "test-api-entity": "cd api && mocha test/organizations/post-organizations.test.js"
     },
     "keywords": [],
     "author": "",

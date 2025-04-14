@@ -12,15 +12,15 @@ describe('Organizations API Tests', function () {
             founded_date: '2005-10-20'
         };
 
-        let createdUserId = null;
+        let createdOrgId = null;
 
         // ✅ Successfully creates an org
         it('should return 201, status CREATED, a message, and an id', async function () {
             const res = await request(app)
-                .post(`/v1/organizations/`)
+                .post('/v1/organizations/')
                 .send(testOrg);
 
-            console.log(res.body);
+            console.log(`response: ${res.body.id}`);
 
             expect(res.status).to.equal(httpStatus.CREATED);
             expect(res.body).to.be.an('object');
@@ -28,7 +28,7 @@ describe('Organizations API Tests', function () {
             expect(res.body).to.have.property('message');
             expect(res.body).to.have.property('id');
 
-            createdUserId = res.body.id;
+            createdOrgId = res.body.id;
         });
 
         // ❌ Required fields missing
@@ -46,7 +46,7 @@ describe('Organizations API Tests', function () {
         // ❌ Duplicate organization
         it('should return 409, status FAILED, and a message when username or email already exists', async function () {
             const res = await request(app)
-                .post(`/v1/organizations/`)
+                .post(`/v1/organizations`)
                 .send(testOrg); // sending same org as before
 
             expect(res.status).to.equal(httpStatus.CONFLICT);
@@ -57,9 +57,9 @@ describe('Organizations API Tests', function () {
 
         // 🧹 Clean up using DELETE route
         after(async function () {
-            if (createdUserId) {
+            if (createdOrgId) {
                 const res = await request(app)
-                    .delete(`/v1/organizations/${createdUserId}`);
+                    .delete(`/v1/organizations/${createdOrgId}`);
                 expect(res.status).to.be.oneOf([httpStatus.OK, httpStatus.NO_CONTENT]);
             }
         });

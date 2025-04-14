@@ -11,7 +11,7 @@ const postOrganizationsRouter = (supabase) => {
                 "name",
                 "acronym",
                 "type",
-                "founded_at"
+                "founded_date"
             ];
 
             const missingFields = requiredFields.filter(field => !req.body[field]);
@@ -27,14 +27,15 @@ const postOrganizationsRouter = (supabase) => {
                 name,
                 acronym,
                 type,
-                founded_at
+                founded_date
             } = req.body;
 
             // Check if organization ID exists
             const { data: existingUsers, error: checkError } = await supabase
                 .from('organizations')
-                .select('*')
-                .or(`name.eq.${name}, founded_at.eq.${founded_at}`);
+                .select('id')
+                .or(`username.eq.${username},email.eq.${email}`);
+
 
             if (checkError) {
                 return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -49,15 +50,15 @@ const postOrganizationsRouter = (supabase) => {
                     message: 'Organization already exists'
                 });
             }
-
+ 
             // Insert new user
             const { data, error } = await supabase
                 .from('organizations')
                 .insert({
-                    name,
-                    acronym,
-                    type,
-                    founded_at
+                    name: name,
+                    acronym: acronym,
+                    type: type,
+                    founded_date: founded_date
                 })
                 .select('id') // Select to return the ID
 

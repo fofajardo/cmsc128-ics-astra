@@ -26,7 +26,7 @@ const getOrganizationsRouter = (supabase) => {
 
             return res.status(httpStatus.OK).json({
                 status: "OK",
-                list: data || [],
+                organization: data || [],
             });
 
         } catch (error) {
@@ -37,18 +37,16 @@ const getOrganizationsRouter = (supabase) => {
         }
     });
 
-    router.get("/:orgId", async (req, res) => {
+    router.get("/:id", async (req, res) => {
         try {
-            const { orgId } = req.params;
+            const { id } = req.params;
 
-            console.log(orgId);
+            console.log(id);
 
             const { data, error } = await supabase
                 .from("organizations")
-                .select(
-                    "name, acronym, type, founded_date"
-                )
-                .eq("id", orgId)
+                .select()
+                .eq("id", id)
                 .single();
 
             if (error) {
@@ -58,13 +56,13 @@ const getOrganizationsRouter = (supabase) => {
                 });
             }
 
-            // console.log(data);
+            console.log(data);
 
             return res.status(httpStatus.OK).json({
                 status: "OK",
-                user: data
+                organization: data
             });
-
+S
         } catch (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
                 status: "FAILED",

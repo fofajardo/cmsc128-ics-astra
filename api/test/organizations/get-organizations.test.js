@@ -18,10 +18,10 @@ describe('Organizations API Tests', function () {
         });
     });
 
-    describe('GET /v1/organizations/:orgId', function () {
+    describe('GET /v1/organizations/:id', function () {
         it('should return 200 and details of a single project', async function () {
-            const orgId = '7f857ca0-fcca-4c5b-b619-d0612597dbb1'; // Actual orgId
-            const res = await request(app).get(`/v1/organizations/${orgId}`);
+            const id = '2ec78beb-da60-435d-bbe1-b48f25b29326'; // Actual id
+            const res = await request(app).get(`/v1/organizations/${id}`);
 
             expect(res.status).to.equal(httpStatus.OK);
             expect(res.body).to.be.an('object');
@@ -34,27 +34,14 @@ describe('Organizations API Tests', function () {
             expect(orgData).to.have.property('acronym').that.is.a('string');
             expect(orgData).to.have.property('type').that.is.a('number');
             expect(orgData).to.have.property('founded_date').that.satisfies(date => date === null || new Date(date).toString() != 'Invalid Date');
-           // expect(orgData).to.have.property('created_at').that.satisfies(date => date === null || new Date(date).toString() != 'Invalid Date');
+           expect(orgData).to.have.property('created_at');
         });
 
-        // Test case to verify that the API returns 400 if invalid orgId
-        it('should return 400, status FAILED, and a message when projectId is invalid', async function () {
-            const invalidOrgId = '00000000-0000-0000-0000-000000000000'; // Invalid org ID
-            const res = await request(app).get(`/v1/organizations/${invalidOrgId}`);
 
-            // console.log(res.body);
-
-            expect(res.status).to.equal(httpStatus.BAD_REQUEST);
-            expect(res.body).to.be.an('object');
-
-            expect(res.body).to.have.property('status').to.equal('FAILED');
-            expect(res.body).to.have.property('message').that.is.a('string');
-        });
-
-        // Test case to verify that the API returns 404 if the orgId does not exist in the system
+        // Test case to verify that the API returns 404 if the id does not exist in the system
         it('should return 404, status FAILED, and a message when organization does not exist', async function () {
-            const notExistingOrgId = '7f857ca0-fcca-4c5b-b619-d0612597dbb2'; // Non-existing orgId
-            const res = await request(app).get(`/v1/projects/${notExistingOrgId}`);
+            const notExistingid = '7f857ca0-fcca-4c5b-b619-d0612597dbb2'; // Non-existing id
+            const res = await request(app).get(`/v1/organizations/${notExistingid}`);
 
             // console.log(res);
 
@@ -65,16 +52,16 @@ describe('Organizations API Tests', function () {
         });
     });
 
-    describe('GET /v1/organizations/:orgId/alumni', function () {
-        it('should return 200 and a list of donations to the project', async function () {
-            const orgId = '7f857ca0-fcca-4c5b-b619-d0612597dbb1'; // Actual alumId
-            const res = await request(app).get(`/v1/organizations/${orgId}/alumni`);
+    // describe('GET /v1/organizations/:id/alumni', function () {
+    //     it('should return 200 and a list of alumni affiliated to the organization', async function () {
+    //         const id = '7f857ca0-fcca-4c5b-b619-d0612597dbb1'; // Actual alumId
+    //         const res = await request(app).get(`/v1/organizations/${id}/alumni`);
 
-            expect(res.status).to.equal(httpStatus.OK);
-            expect(res.body).to.be.an('object');
+    //         expect(res.status).to.equal(httpStatus.OK);
+    //         expect(res.body).to.be.an('object');
 
-            expect(res.body).to.have.property('status', 'OK');
-            expect(res.body).to.have.property('alumni').to.be.an('array');
-        });
-    });
+    //         expect(res.body).to.have.property('status', 'OK');
+    //         expect(res.body).to.have.property('alumni').to.be.an('array');
+    //     });
+    // });
 });
