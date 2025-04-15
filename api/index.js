@@ -15,6 +15,9 @@ import getOrganizationsRouter from "./routes/organizations/get-organizations.js"
 import postOrganizationsRouter from "./routes/organizations/post-organizations.js"
 import deleteOrganizationsRouter from "./routes/organizations/delete-organizations.js"
 import putOrganizationsRouter from "./routes/organizations/put-organizations.js";
+import getOrganizationAffiliationsRouter from "./routes/organization_affiliations/get-organization_affiliations.js";
+import postOrganizationAffiliationsRouter from "./routes/organization_affiliations/post-organization_affiliations.js";
+import deleteOrganizationAffiliationsRouter from "./routes/organization_affiliations/delete-organization_affiliations.js";
 
 env.config();
 
@@ -43,6 +46,9 @@ gServer.use('/v1/organizations', getOrganizationsRouter(testingSupabase));
 gServer.use('/v1/organizations', postOrganizationsRouter(testingSupabase));
 gServer.use('/v1/organizations', deleteOrganizationsRouter(testingSupabase));
 gServer.use('/v1/organizations', putOrganizationsRouter(testingSupabase));
+gServer.use('/v1/users', getOrganizationAffiliationsRouter(testingSupabase));
+gServer.use('/v1/users', postOrganizationAffiliationsRouter(testingSupabase));
+gServer.use('/v1/users', deleteOrganizationAffiliationsRouter(testingSupabase));
 
 export default gServer;
 
