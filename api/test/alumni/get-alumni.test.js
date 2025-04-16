@@ -20,7 +20,7 @@ describe('Alumni API Tests', function () {
 
     describe('GET /v1/alumni/:userId', function () {
         it('should return 200 and details of a single alumnus', async function () {
-            const userId = '713a81be-4988-4163-896c-71d5c3066d63'; // Example userId, replace with an actual test user ID
+            const userId = 'b4a6b230-20b9-4137-af62-8b535841c391'; // Example userId, replace with an actual test user ID
             const res = await request(app).get(`/v1/alumni/${userId}`);
 
             expect(res.status).to.equal(httpStatus.OK);
