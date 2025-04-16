@@ -1,7 +1,11 @@
-import express from "express";
 import env from "dotenv";
-import { createClient } from "@supabase/supabase-js";
+import express from "express";
+import session from "express-session";
 import httpStatus from "http-status-codes";
+import passport from "passport";
+import { createClient } from "@supabase/supabase-js";
+import authRouter from "./routes/auth/auth-router.js";
+import { registerStrategies } from "./routes/auth/passport-strategies.js";
 import getUsersRouter from "./routes/users/get-users.js";
 import postUsersRouter from "./routes/users/post-users.js";
 import putUsersRouter from "./routes/users/put-users.js";
@@ -34,6 +38,19 @@ gServer.get("/", (req, res) => {
     res.status(httpStatus.OK).json({ message: "API is working!" });
 });
 
+// Set up session handling to use .
+gServer.use(session({
+    resave: false,
+    saveUninitialized: false,
+    secret: "047afa6b-829a-432a-b962-e7a4e9fe7d9d",
+    // FIXME: sessions are not persisted.
+}));
+
+// Set up Passport.js authentication.
+gServer.use(passport.authenticate("session"));
+
+registerStrategies(testingSupabase);
+
 gServer.use('/v1/users', getUsersRouter(testingSupabase));
 gServer.use('/v1/users', postUsersRouter(testingSupabase));
 gServer.use('/v1/users', putUsersRouter(testingSupabase));
@@ -43,6 +60,7 @@ gServer.use('/v1/alumni', postAlumniRouter(testingSupabase));
 gServer.use('/v1/alumni', putAlumniRouter(testingSupabase));
 gServer.use('/v1/jobs', getJobsRouter(testingSupabase));
 gServer.use('/v1/events', getEventsRouter(testingSupabase));
+gServer.use('/v1/auth', authRouter());
 gServer.use('/v1/donations', getDonationsRouter(testingSupabase));
 gServer.use('/v1/donations', postDonationsRouter(testingSupabase));
 gServer.use('/v1/donations', putDonationsRouter(testingSupabase));
