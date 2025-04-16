@@ -1,5 +1,5 @@
 import express from "express";
-import usersController from "./usersController.js";
+import usersController from "../controllers/usersController.js";
 
 const usersRouter = (supabase) => {
     const router = express.Router();

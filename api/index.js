@@ -6,10 +6,7 @@ import passport from "passport";
 import { createClient } from "@supabase/supabase-js";
 import authRouter from "./routes/auth/auth-router.js";
 import { registerStrategies } from "./routes/auth/passport-strategies.js";
-import getUsersRouter from "./routes/users/get-users.js";
-import postUsersRouter from "./routes/users/post-users.js";
-import putUsersRouter from "./routes/users/put-users.js";
-import deleteUsersRouter from "./routes/users/delete-users.js";
+import usersRouter from "./routes/usersRoutes.js";
 import getAlumniRouter from "./routes/alumni/get-alumni.js";
 import postAlumniRouter from "./routes/alumni/post-alumni.js";
 import putAlumniRouter from "./routes/alumni/put-alumni.js";
@@ -35,14 +32,13 @@ import getOrganizationsRouter from "./routes/organizations/get-organizations.js"
 import postOrganizationsRouter from "./routes/organizations/post-organizations.js"
 import deleteOrganizationsRouter from "./routes/organizations/delete-organizations.js"
 import putOrganizationsRouter from "./routes/organizations/put-organizations.js";
-
 import putJobsRouter from "./routes/jobs/put-jobs.js";
 import putEventsRouter from "./routes/events/put-events.js";
 
 env.config();
 
 const gServer = express();
-const supabase = createClient(process.env.DATABASE_URL, process.env.DATABASE_ANONYMOUS_KEY);
+// const supabase = createClient(process.env.DATABASE_URL, process.env.DATABASE_ANONYMOUS_KEY);
 const testingSupabase = createClient(process.env.DATABASE_URL, process.env.DATABASE_SERVICE_KEY);
 
 // Use appropriate parsers to access the request/response body directly.
@@ -66,10 +62,7 @@ gServer.use(passport.authenticate("session"));
 
 registerStrategies(testingSupabase);
 
-gServer.use('/v1/users', getUsersRouter(testingSupabase));
-gServer.use('/v1/users', postUsersRouter(testingSupabase));
-gServer.use('/v1/users', putUsersRouter(testingSupabase));
-gServer.use('/v1/users', deleteUsersRouter(testingSupabase));
+gServer.use('/v1/users', usersRouter(testingSupabase));
 gServer.use('/v1/alumni', getAlumniRouter(testingSupabase));
 gServer.use('/v1/alumni', postAlumniRouter(testingSupabase));
 gServer.use('/v1/alumni', putAlumniRouter(testingSupabase));
@@ -80,13 +73,13 @@ gServer.use('/v1/projects', postProjectsRouter(testingSupabase));
 gServer.use('/v1/projects', putProjectsRouter(testingSupabase));
 gServer.use('/v1/projects', deleteProjectsRouter(testingSupabase));
 gServer.use(
-    '/v1/contents', 
-    getContentsRouter(testingSupabase), 
-    postContentRouter(testingSupabase), 
-    putContentRouter(testingSupabase), 
+    '/v1/contents',
+    getContentsRouter(testingSupabase),
+    postContentRouter(testingSupabase),
+    putContentRouter(testingSupabase),
     deleteContentRouter(testingSupabase)
 );
-gServer.use('/v1/eventInterests', getEventInterestsRouter(testingSupabase),postEventInterestsRouter(testingSupabase), deleteEventInterestsRouter(testingSupabase));
+gServer.use('/v1/eventInterests', getEventInterestsRouter(testingSupabase), postEventInterestsRouter(testingSupabase), deleteEventInterestsRouter(testingSupabase));
 gServer.use('/v1/auth', authRouter());
 gServer.use('/v1/donations', getDonationsRouter(testingSupabase));
 gServer.use('/v1/donations', postDonationsRouter(testingSupabase));
