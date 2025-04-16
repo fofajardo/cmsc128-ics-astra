@@ -14,6 +14,7 @@ import getAlumniRouter from "./routes/alumni/get-alumni.js";
 import postAlumniRouter from "./routes/alumni/post-alumni.js";
 import putAlumniRouter from "./routes/alumni/put-alumni.js";
 import getEventsRouter from "./routes/events/get-events.js";
+import deleteEventsRouter from "./routes/events/delete-events.js";
 import getProjectsRouter from "./routes/projects/get-projects.js";
 import postProjectsRouter from "./routes/projects/post-projects.js";
 import putProjectsRouter from "./routes/projects/put-projects.js";
@@ -34,6 +35,9 @@ import getOrganizationsRouter from "./routes/organizations/get-organizations.js"
 import postOrganizationsRouter from "./routes/organizations/post-organizations.js"
 import deleteOrganizationsRouter from "./routes/organizations/delete-organizations.js"
 import putOrganizationsRouter from "./routes/organizations/put-organizations.js";
+
+import putJobsRouter from "./routes/jobs/put-jobs.js";
+import putEventsRouter from "./routes/events/put-events.js";
 
 env.config();
 
@@ -70,7 +74,7 @@ gServer.use('/v1/alumni', getAlumniRouter(testingSupabase));
 gServer.use('/v1/alumni', postAlumniRouter(testingSupabase));
 gServer.use('/v1/alumni', putAlumniRouter(testingSupabase));
 gServer.use('/v1/jobs', getJobsRouter(testingSupabase));
-gServer.use('/v1/events', getEventsRouter(testingSupabase));
+gServer.use('/v1/events', getEventsRouter(testingSupabase), deleteEventsRouter(testingSupabase));
 gServer.use('/v1/projects', getProjectsRouter(testingSupabase));
 gServer.use('/v1/projects', postProjectsRouter(testingSupabase));
 gServer.use('/v1/projects', putProjectsRouter(testingSupabase));
@@ -92,6 +96,9 @@ gServer.use('/v1/organizations', getOrganizationsRouter(testingSupabase));
 gServer.use('/v1/organizations', postOrganizationsRouter(testingSupabase));
 gServer.use('/v1/organizations', deleteOrganizationsRouter(testingSupabase));
 gServer.use('/v1/organizations', putOrganizationsRouter(testingSupabase));
+
+gServer.use('/v1/jobs', putJobsRouter(testingSupabase));
+gServer.use('/v1/events', putEventsRouter(testingSupabase));
 
 export default gServer;
 
