@@ -21,8 +21,32 @@ const postAlumniRouter = (supabase) => {
             }
 
             // TODO Check if userId exists (GET /v1/users/:userId)
+            const { data: userData, error: userError } = await supabase
+                .from('users')
+                .select()
+                .eq('id', userId)
+                .single();
+
+            if (userError || !userData) {
+                return res.status(httpStatus.NOT_FOUND).json({
+                    status: 'FAILED',
+                    message: 'User not found'
+                });
+            }
 
             // TODO check if alumni profile already exists (GET /v1/alumni/:userId)
+            const { data: alumniData, error: alumniError } = await supabase
+                .from('alumni_profiles')
+                .select() 
+                .eq('alum_id', userId)
+                .single();
+
+            if (alumniData) {
+                return res.status(httpStatus.CONFLICT).json({
+                    status: 'FAILED',
+                    message: 'Alumni profile already exists for this user'
+                });
+            }
 
             // check required fields
             const requiredFields = [
@@ -39,10 +63,11 @@ const postAlumniRouter = (supabase) => {
                 // "job_title",
                 // "company",
                 // "honorifics",
-                // "citizenship"
+                // "citizenship",
+                "sex"
             ];
 
-            const missingFields = requiredFields.filter(field => !req.body[field]);
+            const missingFields = requiredFields.filter(field => req.body[field] === undefined || req.body[field] === null);
 
             if (missingFields.length > 0) {
                 return res.status(httpStatus.BAD_REQUEST).json({
@@ -65,7 +90,9 @@ const postAlumniRouter = (supabase) => {
                 field,
                 job_title,
                 company,
-                citizenship
+                honorifics,
+                citizenship,
+                sex
             } = req.body;
 
             const { data, error } = await supabase
@@ -83,7 +110,9 @@ const postAlumniRouter = (supabase) => {
                     field: field,
                     job_title: job_title,
                     company: company,
+                    honorifics: honorifics,
                     citizenship: citizenship,
+                    sex: sex,
                 });
 
             if (error) {
