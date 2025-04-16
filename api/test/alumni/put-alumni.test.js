@@ -13,7 +13,7 @@ describe('Alumni API Tests', function () {
             const preCheckRes = await request(app).get(`/v1/alumni/${userId}`);
             expect(preCheckRes.status).to.equal(httpStatus.OK);
             expect(preCheckRes.body).to.be.an('object');
-            
+
             const validUpdateData = {
                 location: 'Los Banos',
                 address: 'Batong Malake',
@@ -23,7 +23,7 @@ describe('Alumni API Tests', function () {
                 year_graduated: '2020-08-01', 
                 skills: 'JavaScript, Python',
                 field: 'Software Development',
-                job_title: 'Software Engineer', 
+                job_title: 'Software Engineer',
                 company: 'Microsoft',
                 honorifics: 'Dr.'
             };

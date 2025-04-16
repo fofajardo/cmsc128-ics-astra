@@ -6,7 +6,7 @@ import httpStatus from 'http-status-codes';
 describe('Users API Tests', function () {
     describe('PUT /v1/users/:userId', function () {
         let userId = null;
-
+      
         // ✅ Precondition: Create a user before running put tests
         before(async function () {
             const testUser = {
