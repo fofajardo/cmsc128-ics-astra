@@ -32,6 +32,9 @@ import postOrganizationsRouter from "./routes/organizations/post-organizations.j
 import deleteOrganizationsRouter from "./routes/organizations/delete-organizations.js"
 import putOrganizationsRouter from "./routes/organizations/put-organizations.js";
 
+import putJobsRouter from "./routes/jobs/put-jobs.js";
+import putEventsRouter from "./routes/events/put-events.js";
+
 env.config();
 
 const gServer = express();
@@ -85,6 +88,9 @@ gServer.use('/v1/organizations', getOrganizationsRouter(testingSupabase));
 gServer.use('/v1/organizations', postOrganizationsRouter(testingSupabase));
 gServer.use('/v1/organizations', deleteOrganizationsRouter(testingSupabase));
 gServer.use('/v1/organizations', putOrganizationsRouter(testingSupabase));
+
+gServer.use('/v1/jobs', putJobsRouter(testingSupabase));
+gServer.use('/v1/events', putEventsRouter(testingSupabase));
 
 export default gServer;
 
