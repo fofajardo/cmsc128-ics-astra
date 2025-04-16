@@ -20,7 +20,7 @@ const postAlumniRouter = (supabase) => {
                 });
             }
 
-            // TODO Check if userId exists (GET /v1/users/:userId)
+            // Check if userId exists (GET /v1/users/:userId)
             const { data: userData, error: userError } = await supabase
                 .from('users')
                 .select()
@@ -34,7 +34,7 @@ const postAlumniRouter = (supabase) => {
                 });
             }
 
-            // TODO check if alumni profile already exists (GET /v1/alumni/:userId)
+            // Check if alumni profile already exists (GET /v1/alumni/:userId)
             const { data: alumniData, error: alumniError } = await supabase
                 .from('alumni_profiles')
                 .select() 
@@ -48,7 +48,7 @@ const postAlumniRouter = (supabase) => {
                 });
             }
 
-            // check required fields
+            // Check required fields
             const requiredFields = [
                 "alum_id",
                 "birthdate",
@@ -76,7 +76,7 @@ const postAlumniRouter = (supabase) => {
                 });
             }
 
-            // insert data to supabase
+            // Insert data to supabase
             const {
                 alum_id,
                 birthdate,
@@ -98,21 +98,21 @@ const postAlumniRouter = (supabase) => {
             const { data, error } = await supabase
                 .from('alumni_profiles')
                 .insert({
-                    alum_id: alum_id,
-                    birthdate: birthdate,
-                    location: location,
-                    address: address,
-                    gender: gender,
-                    student_num: student_num,
-                    degree_program: degree_program,
-                    year_graduated: year_graduated,
-                    skills: skills,
-                    field: field,
-                    job_title: job_title,
-                    company: company,
-                    honorifics: honorifics,
-                    citizenship: citizenship,
-                    sex: sex,
+                    alum_id,
+                    birthdate,
+                    location,
+                    address,
+                    gender,
+                    student_num,
+                    degree_program,
+                    year_graduated,
+                    skills,
+                    field,
+                    job_title,
+                    company,
+                    honorifics,
+                    citizenship,
+                    sex
                 });
 
             if (error) {

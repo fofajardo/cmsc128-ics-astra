@@ -146,7 +146,7 @@ const updateUser = (supabase) => async (req, res) => {
     try {
         const userId = req.params.userId;
 
-        const { data: existingUser, error: fetchError } = await usersService.findUser(supabase, userId);
+        const { data: existingUser, error: fetchError } = await usersService.fetchUserById(supabase, userId);
 
         if (fetchError || !existingUser) {
             return res.status(httpStatus.NOT_FOUND).json({
