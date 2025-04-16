@@ -22,7 +22,7 @@ describe('Users API Tests', function () {
                 updated_at: new Date().toISOString(),
                 role: 'alumnus'
             };
-
+          
             const res = await request(app)
                 .post('/v1/users/')
                 .send(testUser);
