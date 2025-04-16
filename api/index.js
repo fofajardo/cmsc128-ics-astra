@@ -15,6 +15,10 @@ import postAlumniRouter from "./routes/alumni/post-alumni.js";
 import putAlumniRouter from "./routes/alumni/put-alumni.js";
 import getEventsRouter from "./routes/events/get-events.js";
 import deleteEventsRouter from "./routes/events/delete-events.js";
+import getProjectsRouter from "./routes/projects/get-projects.js";
+import postProjectsRouter from "./routes/projects/post-projects.js";
+import putProjectsRouter from "./routes/projects/put-projects.js";
+import deleteProjectsRouter from "./routes/projects/delete-projects.js";
 import getContentsRouter from "./routes/contents/get-contents.js";
 import postContentRouter from "./routes/contents/post-contents.js";
 import putContentRouter from "./routes/contents/put-contents.js";
@@ -70,7 +74,11 @@ gServer.use('/v1/alumni', getAlumniRouter(testingSupabase));
 gServer.use('/v1/alumni', postAlumniRouter(testingSupabase));
 gServer.use('/v1/alumni', putAlumniRouter(testingSupabase));
 gServer.use('/v1/jobs', getJobsRouter(testingSupabase));
-gServer.use('/v1/events', getEventsRouter(testingSupabase),deleteEventsRouter(testingSupabase));
+gServer.use('/v1/events', getEventsRouter(testingSupabase), deleteEventsRouter(testingSupabase));
+gServer.use('/v1/projects', getProjectsRouter(testingSupabase));
+gServer.use('/v1/projects', postProjectsRouter(testingSupabase));
+gServer.use('/v1/projects', putProjectsRouter(testingSupabase));
+gServer.use('/v1/projects', deleteProjectsRouter(testingSupabase));
 gServer.use(
     '/v1/contents', 
     getContentsRouter(testingSupabase), 
