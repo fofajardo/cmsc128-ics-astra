@@ -1,5 +1,6 @@
 import httpStatus from "http-status-codes";
 import eventsService from "../services/eventsService.js";
+import { isValidUUID } from "../utils/validators.js";
 
 const getEvents = (supabase) => async (req, res) => {
     try {
@@ -54,6 +55,7 @@ const getEventById = (supabase) => async (req, res) => {
 
 const createEvent = (supabase) => async (req, res) => {
     try {
+
         const requiredFields = [
             "event_date",
             "venue",
@@ -137,6 +139,12 @@ const updateEvent = (supabase) => async (req, res) => {
     try {
         const eventId = req.params.eventId;
 
+        if (!isValidUUID(eventId)) {
+            return res.status(httpStatus.BAD_REQUEST).json({
+                status: 'FAILED',
+                message: 'Invalid eventId format'
+            });
+        }
         const { data: existingUser, error: fetchError } = await eventsService.findEvent(supabase, eventId);
 
         if (fetchError || !existingUser) {
@@ -201,6 +209,12 @@ const deleteEvent = (supabase) => async (req, res) => {
     try {
         const { eventId } = req.params;
 
+        if (!isValidUUID(eventId)) {
+            return res.status(httpStatus.BAD_REQUEST).json({
+                status: 'FAILED',
+                message: 'Invalid userId format'
+            });
+        }
         const { error } = await eventsService.deleteEvent(supabase, eventId);
 
         if (error) {
