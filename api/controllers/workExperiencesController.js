@@ -152,7 +152,7 @@ const createWorkExperience = (supabase) => async (req, res) => {
 
 const updateWorkExperience = (supabase) => async (req, res) => {
     try {
-        const { workExperienceId } = req.params.workExperienceId;
+        const { workExperienceId } = req.params;
 
         const { data: existingWorkExperience, error: fetchError } = await workExperiencesService.fetchWorkExperienceById(supabase, workExperienceId);
         
@@ -163,13 +163,24 @@ const updateWorkExperience = (supabase) => async (req, res) => {
             });
         }
         
-        const { 
+        const {
+            alum_id, 
             title, 
             field,
             company, 
             year_started, 
             year_ended 
         } = req.body;
+
+        const hasRestrictedFieldChanges = 
+            alum_id !== undefined;
+
+        if (hasRestrictedFieldChanges) {
+            return res.status(httpStatus.FORBIDDEN).json({
+                status: 'FORBIDDEN',
+                message: 'Cannot update alum_id',
+            });
+        }
 
         const updateData = {};
         if (title !== undefined) updateData.title = title;
@@ -218,8 +229,6 @@ const updateWorkExperience = (supabase) => async (req, res) => {
 const deleteWorkExperience = (supabase) => async (req, res) => {
     try {
         const { workExperienceId } = req.params;
-
-        console.log('workExperienceId', workExperienceId);
 
         const { data: existingWorkExperience, error: fetchError } = await workExperiencesService.fetchWorkExperienceById(supabase, workExperienceId);
         
