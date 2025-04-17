@@ -136,7 +136,7 @@ const createWorkExperience = (supabase) => async (req, res) => {
         }
 
         return res.status(httpStatus.CREATED).json({
-            status: 'OK',
+            status: 'CREATED',
             message: 'Work experience created successfully',
             id: data[0].id,
         });
@@ -202,7 +202,7 @@ const updateWorkExperience = (supabase) => async (req, res) => {
         }
 
         return res.status(httpStatus.OK).json({
-            status: 'OK',
+            status: 'UPDATED',
             message: 'Work experience updated successfully',
         });
 
@@ -217,7 +217,9 @@ const updateWorkExperience = (supabase) => async (req, res) => {
 
 const deleteWorkExperience = (supabase) => async (req, res) => {
     try {
-        const { workExperienceId } = req.params.workExperienceId;
+        const { workExperienceId } = req.params;
+
+        console.log('workExperienceId', workExperienceId);
 
         const { data: existingWorkExperience, error: fetchError } = await workExperiencesService.fetchWorkExperienceById(supabase, workExperienceId);
         
@@ -238,8 +240,8 @@ const deleteWorkExperience = (supabase) => async (req, res) => {
         }
 
         return res.status(httpStatus.OK).json({
-            status: 'OK',
-            message: 'Work experience deleted successfully',
+            status: 'DELETED',
+            message: `Work experience ${workExperienceId} has been deleted successfully`,
         });
 
     } catch (error) {
