@@ -5,10 +5,7 @@ import httpStatus from 'http-status-codes';
 
 const kRoutePrefix = "/v1/work_experiences";
 
-describe('Work Experiences API Tests', function() {
-
-    this.timeout(4000);
-    
+describe('Work Experiences API Tests', function() {    
     // Gets all work experiences
     // Should return 200.
     describe('GET /v1/work_experiences', function() {
