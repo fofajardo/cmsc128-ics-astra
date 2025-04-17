@@ -30,14 +30,6 @@ const insertUser = async (supabase, userData) => {
         .select("id");
 };
 
-const findUser = async (supabase, userId) => {
-    return await supabase
-        .from("users")
-        .select("*")
-        .eq("id", userId)
-        .single();
-};
-
 const updateUserData = async (supabase, userId, updateData) => {
     return await supabase
         .from("users")
@@ -64,7 +56,6 @@ const usersService = {
     fetchUserById,
     checkExistingUser,
     insertUser,
-    findUser,
     updateUserData,
     softDeleteUser,
     hardDeleteUser
