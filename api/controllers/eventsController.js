@@ -36,13 +36,13 @@ const getEventById = (supabase) => async (req, res) => {
         if (error) {
             return res.status(httpStatus.NOT_FOUND).json({
                 status: "FAILED",
-                message: "User not found"
+                message: "Event not found"
             });
         }
 
         return res.status(httpStatus.OK).json({
             status: "OK",
-            user: data
+            event: data
         });
 
     } catch (error) {
@@ -145,9 +145,9 @@ const updateEvent = (supabase) => async (req, res) => {
                 message: 'Invalid eventId format'
             });
         }
-        const { data: existingUser, error: fetchError } = await eventsService.findEvent(supabase, eventId);
+        const { data: existingEvent, error: fetchError } = await eventsService.findEvent(supabase, eventId);
 
-        if (fetchError || !existingUser) {
+        if (fetchError || !existingEvent) {
             return res.status(httpStatus.NOT_FOUND).json({
                 status: 'FAILED',
                 message: 'Event not found'
@@ -212,7 +212,7 @@ const deleteEvent = (supabase) => async (req, res) => {
         if (!isValidUUID(eventId)) {
             return res.status(httpStatus.BAD_REQUEST).json({
                 status: 'FAILED',
-                message: 'Invalid userId format'
+                message: 'Invalid eventId format'
             });
         }
         const { error } = await eventsService.deleteEvent(supabase, eventId);

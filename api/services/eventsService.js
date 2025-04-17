@@ -33,7 +33,7 @@ const insertEvent = async (supabase, eventData) => {
 
 const findEvent = async (supabase, eventId) => {
     return await supabase
-        .from("users")
+        .from("events")
         .select("*")
         .eq("event_id", eventId)
         .single();
