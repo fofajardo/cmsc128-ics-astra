@@ -1,36 +1,82 @@
 @import "tailwindcss";
 @import "@fortawesome/fontawesome-free/css/all.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --maroon: #550000;
-  --primary: #0e6cf3;
-  --secondary: #215299;
-  --navy: #062441;
-  --light-blue: #e6eefe;
-  --very-light-blue: #fbfdff;
-  --light-gray: #f6f8fc;
-  --medium-gray: #8595a4;
-  --border-color: #c4c4c4;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --font-display: "Inter", sans-serif;
 
-/* @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-} */
+  --color-astraprimary: #0E6CF3;
+  --color-astradark: #0F59C3;
+  --color-astralight: #64A4FF;
+
+  --color-astrablack: #061A37;
+  --color-astragray: #E4E5E5;
+  --color-astradarkgray: #526683;
+  --color-astralightgray: #99AFCE;
+
+  --color-astrawhite: #FFFFFF;
+  --color-astradirtywhite: #F3F5F9;
+  --color-astratintedwhite: #EFF2FA;
+}
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-display);
+  color: var(--color-astrablack);
 }
+
+@layer utilities {
+  /* Base font classes (to be used for desktop version) */
+  .font-h1 {
+    @apply text-5xl font-semibold;
+  }
+  .font-h2 {
+    @apply text-4xl font-semibold;
+  }
+  .font-l {
+    @apply text-2xl;
+  }
+  .font-lb {
+    @apply text-2xl font-semibold;
+  }
+  .font-r {
+    @apply text-lg;
+  }
+  .font-rb {
+    @apply text-lg font-semibold;
+  }
+  .font-s {
+    @apply text-sm;
+  }
+  .font-sb {
+    @apply text-sm font-semibold;
+  }
+
+  /* Responsive variants */
+  @media (max-width: 768px) {
+    .font-h1 {
+      @apply text-4xl font-semibold;
+    }
+    .font-h2 {
+      @apply text-3xl font-semibold;
+    }
+    .font-l {
+      @apply text-xl;
+    }
+    .font-lb {
+      @apply text-xl font-semibold;
+    }
+    .font-r {
+      @apply text-base;
+    }
+    .font-rb {
+      @apply text-base font-semibold;
+    }
+    .font-s {
+      @apply text-sm;
+    }
+    .font-sb {
+      @apply text-sm font-semibold;
+    }
+  }
+
+}
+
