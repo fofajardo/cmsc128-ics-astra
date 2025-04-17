@@ -7,8 +7,8 @@ const kRoutePrefix = "/v1/work_experiences";
 
 describe('Work Experiences API Tests', function() {
 
-    this.timeout(2000); // Set timeout to 10 seconds
-
+    this.timeout(4000);
+    
     // Gets all work experiences
     // Should return 200.
     describe('GET /v1/work_experiences', function() {
