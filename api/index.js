@@ -7,6 +7,7 @@ import { createClient } from "@supabase/supabase-js";
 import authRouter from "./routes/auth/auth-router.js";
 import { registerStrategies } from "./routes/auth/passport-strategies.js";
 import usersRouter from "./routes/usersRoutes.js";
+import eventsRouter from "./routes/eventsRoutes.js";
 import getAlumniRouter from "./routes/alumni/get-alumni.js";
 import postAlumniRouter from "./routes/alumni/post-alumni.js";
 import putAlumniRouter from "./routes/alumni/put-alumni.js";
@@ -63,11 +64,11 @@ gServer.use(passport.authenticate("session"));
 registerStrategies(testingSupabase);
 
 gServer.use('/v1/users', usersRouter(testingSupabase));
+gServer.use('/v1/events', eventsRouter(testingSupabase));
 gServer.use('/v1/alumni', getAlumniRouter(testingSupabase));
 gServer.use('/v1/alumni', postAlumniRouter(testingSupabase));
 gServer.use('/v1/alumni', putAlumniRouter(testingSupabase));
 gServer.use('/v1/jobs', getJobsRouter(testingSupabase));
-gServer.use('/v1/events', getEventsRouter(testingSupabase), deleteEventsRouter(testingSupabase));
 gServer.use('/v1/projects', getProjectsRouter(testingSupabase));
 gServer.use('/v1/projects', postProjectsRouter(testingSupabase));
 gServer.use('/v1/projects', putProjectsRouter(testingSupabase));
@@ -91,7 +92,6 @@ gServer.use('/v1/organizations', deleteOrganizationsRouter(testingSupabase));
 gServer.use('/v1/organizations', putOrganizationsRouter(testingSupabase));
 
 gServer.use('/v1/jobs', putJobsRouter(testingSupabase));
-gServer.use('/v1/events', putEventsRouter(testingSupabase));
 
 export default gServer;
 
