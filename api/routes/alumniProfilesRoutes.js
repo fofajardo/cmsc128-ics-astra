@@ -6,7 +6,7 @@ const alumniProfilesRouter = (supabase) => {
 
     router.get("/", alumniProfilesController.getAlumniProfiles(supabase));
     router.get("/:userId", alumniProfilesController.getAlumniProfileById(supabase));
-    router.post("/", alumniProfilesController.createAlumniProfile(supabase));
+    router.post("/:userId", alumniProfilesController.createAlumniProfile(supabase));
     router.put("/:userId", alumniProfilesController.updateAlumniProfile(supabase));
 
     return router;
