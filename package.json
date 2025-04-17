@@ -10,7 +10,7 @@
         "build": "next build",
         "start": "next start",
         "lint": "next lint",
-        "api": "node ./api/index.js",
+        "api": "cd api && node index.js",
         "api-watch": "node --watch-path=./api ./api/index.js",
         "test-api": "cd api && mocha \"test/**\"",
         "test-api-entity": "cd api && mocha"
