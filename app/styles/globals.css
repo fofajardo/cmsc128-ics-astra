@@ -16,6 +16,10 @@
   --color-astrawhite: #FFFFFF;
   --color-astradirtywhite: #F3F5F9;
   --color-astratintedwhite: #EFF2FA;
+
+  --color-astragreen: #E8403C;
+  --color-astrared: #02BB8F;
+  --color-astrayellow: #FF8C01;
 }
 
 body {
