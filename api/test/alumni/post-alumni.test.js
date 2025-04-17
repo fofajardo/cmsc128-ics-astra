@@ -21,11 +21,10 @@ describe('Alumni API Tests', function () {
                     degree_program: '904b3aaa-87f3-4493-b994-e5681d4f06a9',
                     year_graduated: new Date('2003-11-19').toISOString(),
                     skills: 'Management',
-                    field: 'Human Resources',
-                    job_title: 'Head of HR',
-                    company: 'XYZ Company',
+                    honorifics: 'Dr.',
                     citizenship: nationalities.getAlpha3Code("Filipino", "en"),
-                    sex: 0
+                    sex: 0,
+                    primary_work_experience_id: 'c779d9f8-535b-4b51-938d-a656057e9512'
                 });
 
             console.log(res.body.message);

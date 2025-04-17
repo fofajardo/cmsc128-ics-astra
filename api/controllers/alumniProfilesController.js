@@ -1,7 +1,7 @@
 import httpStatus from "http-status-codes";
 import usersService from "../services/usersService.js";
 import alumniProfilesService from "../services/alumniProfilesService.js";
-import { isValidUUID } from "../utils/validator.js";
+import { isValidUUID } from "../utils/validators.js";
 
 const getAlumniProfiles = (supabase) => async (req, res) => {
     try {
@@ -32,7 +32,7 @@ const getAlumniProfileById = (supabase) => async (req, res) => {
     try {
         const { userId } = req.params;
 
-        const { data, error } = await alumniProfilesService.fetchAlumniProfilesById(supabase, userId);
+        const { data, error } = await alumniProfilesService.fetchAlumniProfileById(supabase, userId);
 
         if (error) {
             return res.status(httpStatus.NOT_FOUND).json({
@@ -43,7 +43,7 @@ const getAlumniProfileById = (supabase) => async (req, res) => {
 
         return res.status(httpStatus.OK).json({
             status: "OK",
-            alumni: data
+            alumniProfile: data
         });
 
     } catch (error) {
