@@ -7,6 +7,7 @@ import { createClient } from "@supabase/supabase-js";
 import authRouter from "./routes/auth/auth-router.js";
 import { registerStrategies } from "./routes/auth/passport-strategies.js";
 import usersRouter from "./routes/usersRoutes.js";
+import contentsRouter from "./routes/contentRoutes.js";
 import getAlumniRouter from "./routes/alumni/get-alumni.js";
 import postAlumniRouter from "./routes/alumni/post-alumni.js";
 import putAlumniRouter from "./routes/alumni/put-alumni.js";
@@ -16,10 +17,6 @@ import getProjectsRouter from "./routes/projects/get-projects.js";
 import postProjectsRouter from "./routes/projects/post-projects.js";
 import putProjectsRouter from "./routes/projects/put-projects.js";
 import deleteProjectsRouter from "./routes/projects/delete-projects.js";
-import getContentsRouter from "./routes/contents/get-contents.js";
-import postContentRouter from "./routes/contents/post-contents.js";
-import putContentRouter from "./routes/contents/put-contents.js";
-import deleteContentRouter from "./routes/contents/delete-content.js"
 import getEventInterestsRouter from "./routes/eventInterests/get-eventInterests.js";
 import deleteEventInterestsRouter from "./routes/eventInterests/delete-eventInterests.js";
 import postEventInterestsRouter from "./routes/eventInterests/post-eventInterests.js";
@@ -72,13 +69,7 @@ gServer.use('/v1/projects', getProjectsRouter(testingSupabase));
 gServer.use('/v1/projects', postProjectsRouter(testingSupabase));
 gServer.use('/v1/projects', putProjectsRouter(testingSupabase));
 gServer.use('/v1/projects', deleteProjectsRouter(testingSupabase));
-gServer.use(
-    '/v1/contents',
-    getContentsRouter(testingSupabase),
-    postContentRouter(testingSupabase),
-    putContentRouter(testingSupabase),
-    deleteContentRouter(testingSupabase)
-);
+gServer.use('/v1/contents', contentsRouter(testingSupabase));
 gServer.use('/v1/eventInterests', getEventInterestsRouter(testingSupabase), postEventInterestsRouter(testingSupabase), deleteEventInterestsRouter(testingSupabase));
 gServer.use('/v1/auth', authRouter());
 gServer.use('/v1/donations', getDonationsRouter(testingSupabase));
