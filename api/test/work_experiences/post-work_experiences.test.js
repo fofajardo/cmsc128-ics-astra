@@ -22,8 +22,6 @@ describe('Work Experiences API Tests', function() {
                 .post(`/v1/work_experiences/`)
                 .send(testWorkExperience);
 
-            console.log(res.body);
-
             expect(res.status).to.equal(httpStatus.CREATED);
             expect(res.body).to.be.an('object');
             expect(res.body).to.have.property('status').to.equal('CREATED');
@@ -54,8 +52,6 @@ describe('Work Experiences API Tests', function() {
                     alum_id: '00000000-0000-0000-0000-000000000000', // Invalid UUID
                 });
             
-            console.log(res.body);
-
             expect(res.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
             expect(res.body).to.be.an('object');
             expect(res.body).to.have.property('status').to.equal('FAILED');
@@ -68,8 +64,6 @@ describe('Work Experiences API Tests', function() {
                 const res = await request(app)
                     .delete(`/v1/work_experiences/${createdWorkExperienceId}`);
                 
-                console.log(res.body);
-
                 expect(res.status).to.be.oneOf([httpStatus.OK, httpStatus.NO_CONTENT]);
             }
         });

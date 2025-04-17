@@ -67,8 +67,6 @@ describe('Work Experiences API Tests', function() {
             const alumID = 'b7085d72-f174-4b81-b106-ef68b27a48ee';
             const res = await request(app).get(`${kRoutePrefix}/alum/${alumID}`);
 
-            console.log(res.status, res.body); // Log the response status and body for debugging
-
             expect(res.status).to.equal(httpStatus.OK);
             expect(res.body).to.be.an('object');
             expect(res.body).to.have.property('status').that.is.oneOf(['OK', 'FAILED']);
