@@ -1,147 +1,77 @@
 "use client";
-import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { getRole } from "../utils/auth"; 
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import logo from "../assets/logo.png"; // Make sure the path is correct
 
-export default function Navbar({ user }) {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+export default function Navbar() {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [activeLink, setActiveLink] = useState("/");
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 0);
-    };
-
+    const handleScroll = () => setIsScrolled(window.scrollY > 0);
     window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const role = getRole(user);
-
-  if (role !== "visitor" && role !== "alumni") {
-    return null;
-  }
+  const navLinks = [
+    { name: "Home", href: "/" },
+    { name: "About", href: "/about" },
+    { name: "Events", href: "/events" },
+    { name: "Projects", href: "/projects" },
+    { name: "What’s Up?", href: "/whatsup" },
+  ];
 
   return (
-    <nav className={`navbar-main ${scrolled ? "navbar-scrolled" : ""}`}>
-      <div className="navbar-container">
-        <a href="#" className="navbar-logo-section">
-          <img
-            src="https://flowbite.com/docs/images/logo.svg"
-            className="navbar-logo-image"
-            alt="Flowbite Logo"
-          />
-          <span className="navbar-logo-text">Flowbite</span>
-        </a>
+    <nav
+      className={`fixed top-0 z-50 w-full transition-all duration-300 ${
+        isScrolled ? "shadow-lg bg-white/80 backdrop-blur-md" : "bg-[var(--color-astrawhite)]"
+      }`}
+      style={{ height: "80px" }}
+    >
+      <div className="flex items-center justify-between max-w-screen-xl mx-auto h-full px-12 w-[1440px]">
+        {/* Logo */}
+        <Link href="/" className="flex items-center space-x-3 cursor-pointer">
+          <Image src={logo} alt="Logo" width={56} height={56} className="rounded-full" />
+        </Link>
 
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          data-collapse-toggle="navbar-default"
-          type="button"
-          className="navbar-menu-button"
-          aria-controls="navbar-default"
-          aria-expanded={menuOpen ? "true" : "false"}
-        >
-          <span className="sr-only">Open main menu</span>
-          <svg
-            className="w-5 h-5"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 17 14"
-          >
-            <path
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M1 1h15M1 7h15M1 13h15"
-            />
-          </svg>
-        </button>
+        {/* Navigation Links */}
+        <div className="flex gap-[75px] text-[15px] font-semibold relative">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={() => setActiveLink(link.href)}
+              className={`relative transition-all duration-300 ease-in-out text-[var(--color-astrablack)] hover:text-[var(--color-astraprimary)] 
+              ${activeLink === link.href ? "text-[var(--color-astraprimary)]" : ""}
+              group`}
+            >
+              <span className="z-10 relative">{link.name}</span>
+              {/* Active Underline */}
+              <span
+                className={`absolute left-1/2 -translate-x-1/2 bottom-[-16px] h-[8px] w-[100px] rounded-tl-[10px] rounded-tr-[10px] transition-all duration-300
+                ${
+                  activeLink === link.href
+                    ? "bg-[var(--color-astraprimary)] opacity-100"
+                    : "opacity-0"
+                }`}
+              />
+            </Link>
+          ))}
+        </div>
 
-        <div
-          className={`${menuOpen ? "" : "hidden"} w-full md:block md:w-auto`}
-          id="navbar-default"
-        >
-          <ul className="navbar-menu-container">
-            {role === "visitor" && (
-              <>
-                <li>
-                  <Link href="/" className="navbar-link">
-                    Home
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/about" className="navbar-link">
-                    About
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/events" className="navbar-link">
-                    Events
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/projects" className="navbar-link">
-                    Projects
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/announcements" className="navbar-link">
-                    What's Up
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/login" className="navbar-log-in-button">
-                    Log in
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/signup" className="navbar-sign-up-button">
-                    Sign Up
-                  </Link>
-                </li>
-              </>
-            )}
-
-            {role === "alumni" && (
-              <>
-                <li>
-                  <Link href="/" className="navbar-link">
-                    Home
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/about" className="navbar-link">
-                    About
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/events" className="navbar-link">
-                    Events
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/projects" className="navbar-link">
-                    Projects
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/jobs" className="navbar-link">
-                    Jobs
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/announcements" className="navbar-link">
-                    What's Up
-                  </Link>
-                </li>
-              </>
-            )}
-          </ul>
+        {/* Auth Buttons */}
+        <div className="flex items-center space-x-3">
+          <Link href="/signin">
+            <button className="cursor-pointer px-5 py-1.5 min-w-[110px] h-[42px] font-bold text-white bg-[var(--color-astraprimary)] border-2 border-[var(--color-astraprimary)] rounded-[15px] transition-all duration-300 transform hover:scale-105 hover:shadow-[0_0_10px_var(--color-astraprimary)]">
+              Sign In
+            </button>
+          </Link>
+          <Link href="/signup">
+            <button className="cursor-pointer px-5 py-1.5 min-w-[110px] h-[42px] font-bold text-[var(--color-astraprimary)] bg-white border-2 border-[var(--color-astraprimary)] rounded-[15px] transition-all duration-300 transform hover:scale-105 hover:shadow-[0_0_10px_var(--color-astraprimary)]">
+              Sign Up
+            </button>
+          </Link>
         </div>
       </div>
     </nav>
