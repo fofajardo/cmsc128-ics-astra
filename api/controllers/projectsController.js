@@ -159,7 +159,10 @@ const createProject = (supabase) => async (req, res) => {
         });
 
     } catch (error) {
-
+        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+            status: 'FAILED',
+            message: error.message
+        });
     }
 };
 
