@@ -1,30 +1,39 @@
 import * as React from 'react'
 import BackButton from '@/components/BackButton'
 import SkillTag from '@/components/SkillTag'
+import { users, alumniProfiles } from '@/components/DummyData'
 import { Mail, MapPin, GraduationCap, Image } from "lucide-react";
 
 export default function AlumniSearchProfile({ params }) {
-  const { id } = params
+  const {id} = params
+
+  const user = users.find((u) => u.id === id);
+  const profile = alumniProfiles.find((p) => p.alum_id === id);
+
+
+  if (!user || !profile) {
+    return <div className="text-center mt-20 text-red-500">Alumnus not found.</div>;
+  }
 
   return (
-    <div className="p-4 bg-astradirtywhite min-h-screen">
+    <div className="mt-20 p-4 bg-astradirtywhite min-h-screen">
       <BackButton />
       {/* PROFILE SECTION */}
       <div className="max-w-6xl mx-auto flex items-center justify-between bg-white border border-astralightgray rounded-xl px-6 py-4 shadow-sm">
         {/* left section */}
         <div className="flex items-center space-x-4">
           {/* avatar placeholder */}
-          <div className="w-18 h-18 rounded-full bg-gray-200"/>
+          <img src = {user.image} alt={user.first_name}className="w-18 h-18 rounded-full bg-gray-200"/>
 
           {/* text info */}
           <div>
-            <h3 className="font-lb text-astrablack">Juan Dela Cruz</h3>
-            <a href="mailto:jdcruz@up.edu.ph" className="block font-s text-astradark hover:underline">
-            jdcruz@up.edu.ph
+            <h3 className="font-lb text-astrablack">{user.first_name} {user.middle_name} {user.last_name}</h3>
+            <a className="block font-s text-astradark hover:underline">
+            {user.email}
             </a>
             <div className="flex items-center font-s text-astradarkgray mt-0.5">
               <MapPin className="w-4 h-4 mr-1" />
-              Manila, Philippines
+              {profile.location}
             </div>
           </div>
         </div>
@@ -33,12 +42,12 @@ export default function AlumniSearchProfile({ params }) {
         <div className="flex items-center space-x-3">
           {/* ID num */}
           <span className="text-xs bg-astragray text-astradarkgray px-2 py-1 rounded-full">
-            2022-00000
+            {profile.student_num}
           </span>
           {/* year num badge */}
           <span className="text-xs bg-astragray text-astradarkgray px-2 py-1 rounded-full flex items-center space-x-1">
             <GraduationCap className="w-3 h-3" />
-            <span>2023</span>
+            <span>{new Date(profile.year_graduated).getFullYear()}</span>
           </span>
 
         {/* contact button */}
@@ -54,28 +63,28 @@ export default function AlumniSearchProfile({ params }) {
         {/* Personal Info */}
         <div className="grid grid-cols-3 gap-y-8 text-center text-sm text-astrablack py-10">
           <div>
-            <p className="font-rb">Juan Miguel</p>
+            <p className="font-rb">{user.first_name}</p>
             <p className="text-astradarkgray">First Name</p>
           </div>
           <div>
-            <p className="font-rb">Ramirez</p>
+            <p className="font-rb">{user.middle_name || "N/A"}</p>
             <p className="text-astradarkgray">Middle Name</p>
           </div>
           <div>
-            <p className="font-rb">Dela Cruz</p>
+            <p className="font-rb">{user.last_name}</p>
             <p className="text-astradarkgray">Surname</p>
           </div>
 
           <div>
-            <p className="font-rb">Mx.</p>
+            <p className="font-rb">{profile.honorifics}</p>
             <p className="text-astradarkgray">Title</p>
           </div>
           <div>
-            <p className="font-rb">Male</p>
+            <p className="font-rb">{profile.gender}</p>
             <p className="text-astradarkgray">Gender</p>
           </div>
           <div>
-            <p className="font-rb">2000/05/06</p>
+            <p className="font-rb">{profile.birthdate}</p>
             <p className="text-astradarkgray">Birthdate</p>
           </div>
 
@@ -84,8 +93,8 @@ export default function AlumniSearchProfile({ params }) {
             <p className="text-astradarkgray">Civil Status</p>
           </div>
           <div>
-            <p className="font-rb">Philippines</p>
-            <p className="text-astradarkgray">Country of Citizenship</p>
+            <p className="font-rb">{profile.citizenship}</p>
+            <p className="text-astradarkgray">Citizenship</p>
           </div>
           <div>
             <p className="font-rb">BS Computer Science</p>
