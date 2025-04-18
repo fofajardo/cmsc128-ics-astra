@@ -1,7 +1,9 @@
 "use client"
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import TableBuilder from '@/components/TableBuilder';
 import { users, alumniProfiles } from '@/components/DummyData'
+import SearchFilter from "./filter";
 
 const alumList = [
     {
@@ -109,30 +111,53 @@ const alumList = [
 
 
 export default function AlumniSearch() {
+    const [showFilter, setShowFilter] = useState(false);
     const info = { title: "Registered Alumni", search: "Search for an alumni" };
-
+  
+    const toggleFilter = () => {
+        console.log("Toggling filter modal:", !showFilter);
+        setShowFilter((prev) => !prev);
+      };
+  
     return (
-        <div>
-            {/* Header with background */}
-            <div className="relative">
-                <img
-                    src="/blue-bg.png"
-                    alt="Background"
-                    className="h-64 w-full object-cover"
-                />
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-astrawhite z-10">
-                    <h1 className="font-h1 text-center">Alumni Search</h1>
-                    <p className="font-s text-center">The ever-growing UPLB-ICS Alumni Network</p>
+      <div>
+        {/* Filter Modal */}
+        {showFilter && (
+            <div
+                onClick={toggleFilter}     
+                className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+            >
+                <div onClick={e => e.stopPropagation()}>
+                <SearchFilter onClose={toggleFilter} />
                 </div>
             </div>
-
-            {/* Table section */}
-            <div className="bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24">
-                <TableBuilder info={info} cols={cols} data={createRows()} />
-            </div>
+            )}
+        {/* Header with background */}
+        <div className="relative">
+          <img
+            src="/blue-bg.png"
+            alt="Background"
+            className="h-64 w-full object-cover"
+          />
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-astrawhite z-10">
+            <h1 className="font-h1 text-center">Alumni Search</h1>
+            <p className="font-s text-center">The ever-growing UPLB-ICS Alumni Network</p>
+            <button
+              onClick={toggleFilter}
+              className="mt-4 bg-astrablue text-white font-semibold px-4 py-2 rounded-lg hover:bg-astradarkblue transition"
+            >
+              Filter Results
+            </button>
+          </div>
         </div>
+  
+        {/* Table section */}
+        <div className="bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24">
+          <TableBuilder info={info} cols={cols} data={createRows()} toggleFilter={toggleFilter} />
+        </div>
+      </div>
     );
-}
+  }
 
 const cols = [
     { label: '', justify: 'center', visible: 'all' },

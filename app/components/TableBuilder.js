@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { Search, SlidersHorizontal, ArrowLeft, ArrowRight } from 'lucide-react';
 
-export default function TableBuilder({ info, cols, data }) {
+export default function TableBuilder({ info, cols, data, toggleFilter }) {
     const [pagination, setPagination] = useState({
         display: [1, 10],
         currPage: 1,
@@ -13,26 +13,26 @@ export default function TableBuilder({ info, cols, data }) {
 
     return (
         <div className='flex flex-col py-4 px-1 md:px-4 lg:px-8'>
-            <TableHeader info={info} pagination={pagination} />
-            <Table cols={cols} data={data} pagination={pagination} setPagination={setPagination}/>
+            <TableHeader info={info} pagination={pagination} toggleFilter={toggleFilter} />
+            <Table cols={cols} data={data} pagination={pagination} setPagination={setPagination} />
         </div>
     );
 }
 
-function TableHeader({ info, pagination }) {
+function TableHeader({ info, pagination, toggleFilter }) {
     return (
         <div>
             <div className='flex md:hidden flex-col gap-4'>
                 <SearchComponent placeholder={info.search} />
-                <Toolbar />
-                <Header title={info.title} pagination={pagination}/>
+                <Toolbar toggleFilter={toggleFilter} />
+                <Header title={info.title} pagination={pagination} />
             </div>
 
             <div className='hidden md:flex md:w-full flex-row gap-4 items-center'>
                 <Header title={info.title} pagination={pagination} />
                 <div className='flex flex-row w-full justify-end gap-4'>
                     <SearchComponent placeholder={info.search} />
-                    <Toolbar />
+                    <Toolbar toggleFilter={toggleFilter} />
                 </div>
             </div>
         </div>
@@ -61,10 +61,10 @@ function Header({ title, pagination }) {
     );
 }
 
-function Toolbar() {
+function Toolbar({ toggleFilter }) {  // Destructure toggleFilter here
     return (
         <div className="flex flex-row gap-2 justify-end h-12">
-            <button className="flex flex-grow flex-row items-center justify-center gap-2 blue-button">
+            <button onClick={toggleFilter} className="flex flex-grow flex-row items-center justify-center gap-2 blue-button">
                 <SlidersHorizontal className="w-5 h-5" />
                 <span className="flex md:hidden lg:flex">Tools</span>
             </button>
@@ -124,7 +124,6 @@ function Table({ cols, data, pagination, setPagination }) {
         </div>
     );
 }
-
 
 function PageTool({ pagination, setPagination }) {
     const { currPage, lastPage, total, numToShow } = pagination;

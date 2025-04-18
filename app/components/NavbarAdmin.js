@@ -96,7 +96,7 @@ function Navbar({ toggleSidebar, isSidebarOpen, isScrolled }) {
 function Sidebar({ menuItems, activeMenu, toggleSubmenu, openSubmenus, navigateTo, isSidebarOpen }) {
   return (
     <div
-      className={`fixed top-0 left-0 z-40 h-screen pt-20 w-[250px] bg-astrawhite border-t border-gray-300 overflow-y-auto transition-transform duration-300 ${
+      className={`fixed top-0 left-0 z-40 h-screen pt-20 w-[250px] bg-astrawhite border-t border-astradarkgray shadow-2xl overflow-y-auto transition-transform duration-300 ${
         isSidebarOpen ? "translate-x-0" : "-translate-x-full"
       }`}
     >
