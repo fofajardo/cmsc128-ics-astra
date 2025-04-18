@@ -1,5 +1,4 @@
 import httpStatus from 'http-status-codes';
-import usersService from '../services/usersService.js';
 import projectsService from '../services/projectsService.js';
 import contentsService from '../services/contentsService.js';
 import { isValidUUID, isValidDate } from '../utils/validators.js';
