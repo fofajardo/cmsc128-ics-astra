@@ -68,7 +68,7 @@ export default function NavbarAdmin() {
       {/* Top Nav */}
       <nav
         className={`fixed top-0 z-50 w-full transition-all duration-300 ${
-          isScrolled ? "shadow-lg bg-white/80 backdrop-blur-md" : "bg-white"
+          isScrolled ? "shadow-lg bg-astrawhite backdrop-blur-md" : "bg-astrawhite"
         }`}
         style={{ height: "80px" }}
       >
@@ -97,14 +97,14 @@ export default function NavbarAdmin() {
             alt="Admin Avatar"
             width={46}
             height={46}
-            className="rounded-full border-2 border-[var(--color-astraprimary)] shadow-md transition-all duration-300 hover:scale-105 hover:shadow-[0_0_12px_var(--color-astraprimary)] cursor-pointer"
+            className="rounded-full border-2 border-astraprimary shadow-md transition-all duration-300 hover:scale-105 hover:astraprimary cursor-pointer"
           />
         </div>
       </nav>
 
       {/* Sidebar */}
       <div
-        className={`fixed top-[80px] left-0 z-40 h-[calc(100vh-80px)] w-[250px] transition-transform duration-300 bg-white overflow-y-auto border-t border-gray-300 ${
+        className={`fixed top-[80px] left-0 z-40 h-[calc(100vh-80px)] w-[250px] transition-transform duration-300 bg-astrawhite overflow-y-auto border-t border-astradarkgray ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -114,8 +114,8 @@ export default function NavbarAdmin() {
               <div
                 className={`flex items-center justify-between cursor-pointer rounded-md p-2 transition-all ${
                   activeMenu === item.label
-                    ? "bg-[var(--color-astraprimary-light)] text-[var(--color-astraprimary)] font-semibold"
-                    : "hover:bg-[#dce4ff] hover:text-blue-600"
+                    ? "bg-astrawhite text-astraprimary font-semibold"
+                    : "hover:bg-astralight hover:astraprimary"
                 }`}
                 onClick={() => {
                   if (item.children) {
@@ -142,14 +142,14 @@ export default function NavbarAdmin() {
 
               {/* Submenu */}
               {item.children && openSubmenus[item.label] && (
-                <ul className="ml-6 mt-2 space-y-3 border-l border-gray-300 pl-4">
+                <ul className="ml-6 mt-2 space-y-3 border-l border-astragray pl-4">
                   {item.children.map((child, idx) => (
                     <li
                       key={idx}
                       className={`flex items-center space-x-3 text-sm cursor-pointer transition-all pl-1 ${
                         activeMenu === child.label
-                          ? "text-[var(--color-astraprimary)] font-semibold"
-                          : "text-gray-500 hover:text-blue-600 hover:scale-[1.02]"
+                          ? "text-astraprimary font-semibold"
+                          : "text-astradarkgray hover:astrablack hover:scale-[1.02]"
                       }`}
                       onClick={() => navigateTo(child.label)}
                     >
@@ -167,7 +167,7 @@ export default function NavbarAdmin() {
       {/* Overlay for mobile */}
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 z-30 bg-black/20 md:hidden"
+          className="fixed inset-0 z-30 bg-astrawhite md:hidden"
           onClick={toggleSidebar}
         />
       )}
