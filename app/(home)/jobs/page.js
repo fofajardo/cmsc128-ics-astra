@@ -1,4 +1,24 @@
+import JobCard from "../../components/jobs/jobCard";
+
 export default function JobsPage() {
-    return <h1>Welcome to the About Page!</h1>;
-  }
+    const jobs = [
+      {key:0, salary:70000, title:"Full Stack Flutter Developer", company:"iLearn Technology Solutions, Inc.", location:"Makati City, Philippines", expiryDate: new Date(), employmentType: "Full-Time", workArrangement: "Hybrid"},
+      {key:1, salary:70000, title:"Full Stack Flutter Developer", company:"iLearn Technology Solutions, Inc.", location:"Makati City, Philippines", expiryDate: new Date(), employmentType: "Full-Time", workArrangement: "Hybrid"},
+      {key:2, salary:70000, title:"Full Stack Flutter Developer", company:"iLearn Technology Solutions, Inc.", location:"Makati City, Philippines", expiryDate: new Date(), employmentType: "Full-Time", workArrangement: "Hybrid"},
+      {key:3, salary:70000, title:"Full Stack Flutter Developer", company:"iLearn Technology Solutions, Inc.", location:"Makati City, Philippines", expiryDate: new Date(), employmentType: "Full-Time", workArrangement: "Hybrid"},
+      {key:4, salary:70000, title:"Full Stack Flutter Developer", company:"iLearn Technology Solutions, Inc.", location:"Makati City, Philippines", expiryDate: new Date(), employmentType: "Full-Time", workArrangement: "Hybrid"},
+      {key:5, salary:70000, title:"Full Stack Flutter Developer", company:"iLearn Technology Solutions, Inc.", location:"Makati City, Philippines", expiryDate: new Date(), employmentType: "Full-Time", workArrangement: "Hybrid"},
+      {key:6, salary:70000, title:"Full Stack Flutter Developer", company:"iLearn Technology Solutions, Inc.", location:"Makati City, Philippines", expiryDate: new Date(), employmentType: "Full-Time", workArrangement: "Hybrid"},
+    ];
+    return (
+    <div className="mt-[80px] py-10 bg-astratintedwhite w-full">
+      <h1 className="text-astrablack font-bold text-2xl ml-33 mb-5">Recommended Jobs</h1>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 justify-items-center justify-center mx-30">
+        {jobs.map((job) => {
+          return (
+            <JobCard key={job.key} {...job}/>
+        )})}
+      </div>
+    </div>
+  )}
   
