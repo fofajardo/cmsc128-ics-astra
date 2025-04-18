@@ -1,30 +1,7 @@
-import TableBuilder from '../../../components/TableBuilder';
-
-export default function AlumniSearch() {
-
-    const info = {title: "Registered Alumni", search:"Search for an alumni"}
-
-    return <div>
-
-        <div className="flex items-center justify-center">
-            <div className="absolute px-8">
-                <div className="font-h1 text-astrawhite z-10 text-center">Alumni Search</div>
-                <div className="font-r text-astrawhite z-10 text-center">The ever-growing UPLB-ICS Alumni Network</div>
-            </div>
-
-            <img
-            src="/blue-bg.png"
-            alt="Background"
-            className="h-64 w-full object-cover"
-            />      
-        </div>
-        
-        <div className="bg-astradirtywhite w-full px-1 py-4 md:px-4 lg:px-16">
-            <TableBuilder info={info} cols={cols} data={createRows()} />
-        </div>
-
-    </div>;
-}
+"use client"
+import { useRouter } from "next/navigation";
+import TableBuilder from '@/components/TableBuilder';
+import { users, alumniProfiles } from '@/components/DummyData'
 
 const alumList = [
     {
@@ -130,82 +107,122 @@ const alumList = [
 ];
     
 
+
+export default function AlumniSearch() {
+    const info = { title: "Registered Alumni", search: "Search for an alumni" };
+
+    return (
+        <div>
+            {/* Header with background */}
+            <div className="relative">
+                <img
+                    src="/blue-bg.png"
+                    alt="Background"
+                    className="h-64 w-full object-cover"
+                />
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-astrawhite z-10">
+                    <h1 className="font-h1 text-center">Alumni Search</h1>
+                    <p className="font-s text-center">The ever-growing UPLB-ICS Alumni Network</p>
+                </div>
+            </div>
+
+            {/* Table section */}
+            <div className="bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24">
+                <TableBuilder info={info} cols={cols} data={createRows()} />
+            </div>
+        </div>
+    );
+}
+
 const cols = [
-    { label: '', justify:'center', visible: 'all' },
-    { label: 'Name', justify:'start', visible: 'all' },
-    { label: 'Graduation Year', justify:'center', visible: 'md' },
-    { label: 'Location', justify:'center', visible: 'lg' },
-    { label: 'Field Of Work', justify:'center', visible: 'lg' },
-    { label: 'Skills', justify:'start', visible: 'md' },
-    { label: 'Quick Actions', justify:'center', visible: 'all' },
+    { label: '', justify: 'center', visible: 'all' },
+    { label: 'Name', justify: 'start', visible: 'all' },
+    { label: 'Graduation Year', justify: 'center', visible: 'md' },
+    { label: 'Location', justify: 'center', visible: 'lg' },
+    { label: 'Field Of Work', justify: 'center', visible: 'lg' },
+    { label: 'Skills', justify: 'start', visible: 'md' },
+    { label: 'Quick Actions', justify: 'center', visible: 'all' },
 ];
 
 function createRows() {
-    const data = [];
+    return alumList.map((alum) => ({
+        '': renderAvatar(alum.image, alum.alumname),
+        Name: renderName(alum.alumname, alum.email),
+        'Graduation Year': renderText(alum.graduationYear),
+        Location: renderText(alum.location),
+        'Field Of Work': renderText(alum.fieldOfWork),
+        Skills: renderSkills(alum.skills),
+        'Quick Actions': renderActions(alum.id),
+    }));
+}
 
-    for (const alum of alumList) {
-        const row = {};
-
-        row[''] = (
-            <div className='w-12 h-12 m-4'>
-                <img
-                src={alum.image}
-                alt={`${alum.alumname}'s avatar`}
+function renderAvatar(image, name) {
+    return (
+        <div className="w-12 h-12 m-4">
+            <img
+                src={image}
+                alt={`${name}'s avatar`}
                 className="w-full h-full object-cover rounded-full"
             />
+        </div>
+    );
+}
+
+function renderName(name, email) {
+    return (
+        <div>
+            <div className="font-rb">{name}</div>
+            <div className="text-astradarkgray font-s">{email}</div>
+        </div>
+    );
+}
+
+function renderText(text) {
+    return <div className="text-center text-astradarkgray font-s">{text}</div>;
+}
+
+function renderSkills(skills) {
+    return (
+        <div className="relative group flex justify-center">
+            <div className="flex flex-wrap justify-center">
+                {skills.slice(0, 3).map((skill, index) => (
+                    <span
+                        key={index}
+                        className="inline-block px-4 py-1 mr-2 mb-2 font-s text-astradarkgray bg-astragray rounded-full"
+                    >
+                        {skill}
+                    </span>
+                ))}
             </div>
-            
-        );
-        
-        row['Name'] = (
-            <div>
-                <div className='font-rb'>{alum.alumname}</div>
-                <div className='font-s text-astradarkgray'>{alum.email}</div>
-            </div>
-        );
 
-        row['Graduation Year'] = <div className='font-s text-astradarkgray text-center'>{alum.graduationYear}</div>;
-
-        row['Location'] = <div className='font-s text-astradarkgray text-center'>{alum.location}</div>;
-
-        row['Field Of Work'] = <div className='font-s text-astradarkgray text-center'>{alum.fieldOfWork}</div>;
-
-        row['Skills'] = (
-            <div className="relative group w-full flex justify-center">
-                <div className="flex flex-wrap justify-center">
-                    {alum.skills.slice(0, 3).map((skill, index) => (
-                        <span
-                            key={index}
-                            className="inline-block px-4 py-1 mr-2 mb-2 text-sm text-astradarkgray bg-astragray rounded-full"
-                        >
+            {skills.length > 3 && (
+                <div className="absolute left-1/2 transform -translate-x-1/2 z-10 hidden group-hover:flex flex-col mt-2 p-4 bg-astratintedwhite text-astrablack shadow-lg rounded-xl w-max max-w-xs border border-astragray">
+                    {skills.map((skill, index) => (
+                        <div key={index} className="px-2 py-1 font-s whitespace-nowrap">
                             {skill}
-                        </span>
+                        </div>
                     ))}
                 </div>
-        
-                {alum.skills.length > 3 && (
-                    <div className="absolute left-1/2 -translate-x-1/2 z-10 hidden group-hover:flex flex-col mt-2 p-4 bg-astratintedwhite text-astrablack shadow-lg rounded-xl w-max max-w-xs border border-astragray">
-                        {alum.skills.map((skill, index) => (
-                            <div key={index} className="px-2 py-1 text-sm whitespace-nowrap">
-                                {skill}
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </div>
-        );
-        
-        
-        
-        row['Quick Actions'] = (
-            <div className='flex justify-center'>
-                <button className='gray-button font-sb'>View</button>
-            </div>
-        );
-
-        data.push(row);
-    }
-
-    return data;
+            )}
+        </div>
+    );
 }
-    
+
+function renderActions(id) {
+    const router = useRouter();
+
+    const handleClick = () => {
+        router.push(`/admin/alumni/search/${id}`); // Navigates to /id/{id}
+    };
+
+    return (
+        <div className="flex justify-center">
+            <button
+                className="gray-button font-sb"
+                onClick={handleClick}
+            >
+                View
+            </button>
+        </div>
+    );
+}

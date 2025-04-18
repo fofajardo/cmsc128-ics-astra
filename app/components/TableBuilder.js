@@ -51,10 +51,10 @@ function SearchComponent({ placeholder }) {
 function Header({ title, pagination }) {
     return (
         <div className="flex flex-row md:order-first w-full justify-center md:justify-start">
-            <div className="font-rb bg-astradark text-astrawhite rounded-tl-xl px-4 py-4">
+            <div className="font-rb bg-astradark text-astrawhite rounded-tl-xl px-4 py-4 shadow-md">
                 {title}
             </div>
-            <div className="font-s md:font-r bg-astrawhite text-astradarkgray rounded-tr-xl px-4 py-4">
+            <div className="font-s md:font-r bg-astrawhite text-astradarkgray rounded-tr-xl px-4 py-4 shadow-md">
                 Displaying <b>{pagination.display[0]}–{pagination.display[1]}</b> of <b>{pagination.total}</b> total
             </div>
         </div>
@@ -64,7 +64,7 @@ function Header({ title, pagination }) {
 function Toolbar() {
     return (
         <div className="flex flex-row gap-2 justify-end h-12">
-            <button className="flex flex-grow flex-row items-center gap-2 blue-button">
+            <button className="flex flex-grow flex-row items-center justify-center gap-2 blue-button">
                 <SlidersHorizontal className="w-5 h-5" />
                 <span className="flex md:hidden lg:flex">Tools</span>
             </button>
@@ -94,14 +94,14 @@ function getVisibilityClass(visible) {
 
 function Table({ cols, data, pagination, setPagination }) {
     return (
-        <div className='bg-astrawhite rounded-xl'>
+        <div className='bg-astrawhite rounded-xl shadow-md'>
             <table className="w-full table-auto border-collapse">
                 <thead className="bg-astratintedwhite text-astraprimary font-s">
                     <tr>
                         {cols.map((col, idx) => (
                             <th
                                 key={idx}
-                                className={`py-4 px-2 text-${col.justify === 'start' ? 'left' : col.justify} text-sm font-medium ${getVisibilityClass(col.visible)}`}
+                                className={`py-4 px-2 text-${col.justify === 'start' ? 'left' : col.justify} font-s ${getVisibilityClass(col.visible)}`}
                             >
                                 {col.label}
                             </th>
@@ -139,7 +139,7 @@ function PageTool({ pagination, setPagination }) {
         <button
             key={page}
             onClick={() => handlePageChange(page)}
-            className={`px-4 py-2 rounded-xl text-sm ${
+            className={`px-4 py-2 rounded-xl font-s ${
                 currPage === page
                     ? 'bg-astraprimary text-astrawhite'
                     : 'bg-transparent text-astradarkgray hover:bg-astratintedwhite'

@@ -16,7 +16,7 @@ export default function AlumniSearchProfile({ params }) {
   }
 
   return (
-    <div className="mt-20 p-4 bg-astradirtywhite min-h-screen">
+    <div className="p-4 bg-astradirtywhite min-h-screen">
       <BackButton />
       {/* PROFILE SECTION */}
       <div className="max-w-6xl mx-auto flex items-center justify-between bg-white border border-astralightgray rounded-xl px-6 py-4 shadow-sm">
