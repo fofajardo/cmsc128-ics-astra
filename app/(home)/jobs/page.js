@@ -20,21 +20,25 @@ export default function JobsPage() {
     return (
     <div className="mt-[80px] py-10 bg-astratintedwhite w-full">
 
-      <h1 className="text-astrablack font-bold text-2xl ml-33 mb-5">Recommended Jobs</h1>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 justify-items-center justify-center mx-30">
+      <div className="grid grid-cols-[351px] lg:grid-cols-[351px_351px_351px] md:grid-cols-[351px_351px] gap-5 justify-items-center justify-center mx-30">
+      <h1 className="text-astrablack font-bold text-2xl ml-2 lg:col-span-3 md:col-span-2 justify-self-start">Recommended Jobs</h1>
         {jobs.map((job) => {
           return (
             <JobCard key={job.key} {...job}/>
         )})}
       </div>
+      
+      <div className="flex justify-center w-full"><button className="my-10 self-center text-lg text-astraprimary border-1 border-astraprimary font-normal w-33 py-3 rounded-lg bg-astrawhite">See More</button></div>
 
-      <h1 className="text-astrablack font-bold text-2xl ml-33 mb-5">Manage My Job Postings</h1>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 justify-items-center justify-center mx-30">
+      <div className="grid grid-cols-[351px] lg:grid-cols-[351px_351px_351px] md:grid-cols-[351px_351px] gap-5 justify-items-center justify-center mx-30">
+      <h1 className="text-astrablack font-bold text-2xl ml-2 lg:col-span-3 md:col-span-2 justify-self-start">Manage My Job Postings</h1>
         {myJobs.map((job) => {
           return (
             <JobEditCard key={job.key} {...job}/>
         )})}
       </div>
+
+      <div className="flex justify-center w-full"><button className="my-10 self-center text-lg text-astraprimary border-1 border-astraprimary font-normal w-33 py-3 rounded-lg bg-astrawhite">See More</button></div>
 
     </div>
   )}
