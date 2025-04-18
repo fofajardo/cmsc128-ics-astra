@@ -43,6 +43,7 @@ const postEventInterestsRouter = (supabase) => {
             return res.status(httpStatus.CREATED).json({
                 status: 'CREATED',
                 message: 'Event Interest successfully created.',
+                data: data[0]
             });
 
         } catch (error) {
