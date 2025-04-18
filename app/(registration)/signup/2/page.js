@@ -1,187 +1,192 @@
-import Link from "next/link";
+import Link from "next/link"
 
-export default function SignupPage() {
+export default function PersonalInfoPage() {
   return (
-    <div className="flex flex-wrap">
-      <div className="w-full flex flex-col sm:w-full md:w-1/2">
-        <div className="flex justify-center pt-8 pb-10 sm:pt-12 md:-mb-24 md:justify-start md:pl-12">
-          <a
-            href="#"
-            className="border-b-gray-700 border-b-4 pb-2 text-2xl font-bold text-gray-900"
-          >
-            Personal Information
-          </a>
+    <div className="min-h-screen flex flex-col bg-[var(--color-astratintedwhite)]">
+      <div className="flex flex-1">
+        {/* Left Panel - Form */}
+        <div className="w-full md:w-1/2 p-4 md:p-8 flex items-center justify-center">
+          <div className="max-w-md w-full mx-auto">
+            <h2 className="text-2xl font-semibold text-black mb-4">Personal Information</h2>
+
+            <form className="space-y-4">
+              <div>
+                <label htmlFor="preferred-delegation" className="block text-sm font-medium text-gray-700 mb-1">
+                  Preferred Delegation
+                </label>
+                <input
+                  type="text"
+                  id="preferred-delegation"
+                  name="preferred-delegation"
+                  placeholder="Mx."
+                  className="w-full px-3 py-2 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-gray-900"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="first-name" className="block text-sm font-medium text-gray-700 mb-1">
+                  First Name
+                </label>
+                <input
+                  type="text"
+                  id="first-name"
+                  name="first-name"
+                  placeholder="First Name"
+                  className="w-full px-3 py-2 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-gray-900"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="middle-name" className="block text-sm font-medium text-gray-700 mb-1">
+                  Middle Name
+                </label>
+                <input
+                  type="text"
+                  id="middle-name"
+                  name="middle-name"
+                  placeholder="Middle Name"
+                  className="w-full px-3 py-2 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-gray-900"
+                />
+              </div>
+
+              <div className="flex space-x-4">
+                <div className="flex-1">
+                  <label htmlFor="last-name" className="block text-sm font-medium text-gray-700 mb-1">
+                    Last Name
+                  </label>
+                  <input
+                    type="text"
+                    id="last-name"
+                    name="last-name"
+                    placeholder="Last Name"
+                    className="w-full px-3 py-2 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-gray-900"
+                  />
+                </div>
+                <div className="flex-1">
+                  <label htmlFor="suffix" className="block text-sm font-medium text-gray-700 mb-1">
+                    Suffix
+                  </label>
+                  <input
+                    type="text"
+                    id="suffix"
+                    name="suffix"
+                    placeholder="Suffix"
+                    className="w-full px-3 py-2 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-gray-900"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center">
+                <input
+                  id="maiden-name-checkbox"
+                  type="checkbox"
+                  className="w-4 h-4 text-[var(--color-astraprimary)] bg-gray-100 border-gray-300 rounded-sm focus:ring-[var(--color-astraprimary)] focus:ring-2"
+                />
+                <label htmlFor="maiden-name-checkbox" className="ms-2 text-sm font-medium text-black">
+                  My last name is the same as my maiden name
+                </label>
+              </div>
+
+              <div className="flex space-x-4">
+                <div className="flex-1">
+                  <label htmlFor="birthdate" className="block text-sm font-medium text-gray-700 mb-1">
+                    Birthdate
+                  </label>
+                  <input
+                    type="text"
+                    id="birthdate"
+                    name="birthdate"
+                    placeholder="YYYY/MM/DD"
+                    className="w-full px-3 py-2 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-gray-900"
+                  />
+                </div>
+                <div className="flex-1">
+                  <label htmlFor="sex" className="block text-sm font-medium text-gray-700 mb-1">
+                    Sex
+                  </label>
+                  <input
+                    type="text"
+                    id="sex"
+                    name="sex"
+                    placeholder="Sex"
+                    className="w-full px-3 py-2 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-gray-900"
+                  />
+                </div>
+                <div className="flex-1">
+                  <label htmlFor="civil-status" className="block text-sm font-medium text-gray-700 mb-1">
+                    Civil Status
+                  </label>
+                  <input
+                    type="text"
+                    id="civil-status"
+                    name="civil-status"
+                    placeholder="Single"
+                    className="w-full px-3 py-2 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-gray-900"
+                  />
+                </div>
+              </div>
+
+              <div className="flex space-x-4">
+                <div className="flex-1">
+                  <label htmlFor="place-of-birth" className="block text-sm font-medium text-gray-700 mb-1">
+                    Place of Birth
+                  </label>
+                  <input
+                    type="text"
+                    id="place-of-birth"
+                    name="place-of-birth"
+                    placeholder="Philippines"
+                    className="w-full px-3 py-2 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-gray-900"
+                  />
+                </div>
+                <div className="flex-1">
+                  <label htmlFor="country-of-citizenship" className="block text-sm font-medium text-gray-700 mb-1">
+                    Country of Citizenship
+                  </label>
+                  <select
+                    id="country-of-citizenship"
+                    name="country-of-citizenship"
+                    className="w-full px-3 py-2 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-gray-900"
+                  >
+                    <option value="">Philippines</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex space-x-4 mt-6">
+                <Link href="/signup" className="flex-1">
+                  <button
+                    type="button"
+                    className="w-full border border-[var(--color-astraprimary)] text-[var(--color-astraprimary)] bg-[var(--color-astrawhite)] py-2 px-4 rounded-md hover:bg-[var(--color-astradirtywhite)] transition-colors"
+                  >
+                    Back
+                  </button>
+                </Link>
+                <Link href="/signup/3" className="flex-1">
+                  <button
+                    type="button"
+                    className="w-full bg-[var(--color-astraprimary)] text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
+                  >
+                    Next
+                  </button>
+                </Link>
+              </div>
+
+              <div className="flex justify-center mt-6 space-x-2">
+                <div className="w-2 h-2 rounded-full bg-gray-300"></div>
+                <div className="w-2 h-2 rounded-full bg-[var(--color-astraprimary)]"></div>
+                <div className="w-2 h-2 rounded-full bg-gray-300"></div>
+              </div>
+            </form>
+          </div>
         </div>
-        <div className="px-4 sm:px-6 lg:w-[28rem] mx-auto my-auto flex flex-col justify-center pt-8 md:pt-0">
-          <form className="space-y-3">
-            <div>
-              <label htmlFor="preferred-delegation" className="signup-additional-steps-text">
-                Preferred Delegation
-              </label>
-              <input
-                type="text"
-                id="preferred-delegation"
-                name="preferred-delegation"
-                placeholder="Mx."
-                className="form-input"
-              />
-            </div>
-            <div>
-              <label htmlFor="first-name" className="signup-additional-steps-text">
-                First Name
-              </label>
-              <input
-                type="text"
-                id="first-name"
-                name="first-name"
-                placeholder="First Name"
-                className="form-input"
-              />
-            </div>
-            <div>
-              <label htmlFor="middle-name" className="signup-additional-steps-text">
-                Middle Name
-              </label>
-              <input
-                type="text"
-                id="middle-name"
-                name="middle-name"
-                placeholder="Middle Name"
-                className="form-input"
-              />
-            </div>
-            <div className="flex space-x-4">
-              <div className="flex-1">
-                <label htmlFor="last-name" className="signup-additional-steps-text">
-                  Last Name
-                </label>
-                <input
-                  type="text"
-                  id="last-name"
-                  name="last-name"
-                  placeholder="Last Name"
-                  className="form-input"
-                />
-              </div>
-              <div className="flex-1">
-                <label htmlFor="suffix" className="signup-additional-steps-text">
-                  Suffix
-                </label>
-                <input
-                  type="text"
-                  id="suffix"
-                  name="suffix"
-                  placeholder="Suffix"
-                  className="form-input"
-                />
-              </div>
-            </div>
-            <div className="flex items-center">
-              <input
-                id="link-checkbox"
-                type="checkbox"
-                value=""
-                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 focus:ring-2"
-              />
-              <label htmlFor="link-checkbox" className="ms-2 text-sm font-medium text-black">
-                My last name is the same as my maiden name
-              </label>
-            </div>
-            <div className="flex space-x-4">
-              <div className="flex-1">
-                <label htmlFor="birthdate" className="signup-additional-steps-text">
-                  Birthdate
-                </label>
-                <input
-                  type="text"
-                  id="birthdate"
-                  name="birthdate"
-                  placeholder="YYYY/MM/DD"
-                  className="form-input"
-                />
-              </div>
-              <div className="flex-1">
-                <label htmlFor="sex" className="signup-additional-steps-text">
-                  Sex
-                </label>
-                <input
-                  type="text"
-                  id="sex"
-                  name="sex"
-                  placeholder="Sex"
-                  className="form-input"
-                />
-              </div>
-              <div className="flex-1">
-                <label htmlFor="civil-status" className="signup-additional-steps-text">
-                  Civil Status
-                </label>
-                <input
-                  type="text"
-                  id="civil-status"
-                  name="civil-status"
-                  placeholder="Single"
-                  className="form-input"
-                />
-              </div>
-            </div>
-            <div className="flex space-x-4">
-              <div className="flex-1">
-                <label htmlFor="place-of-birth" className="signup-additional-steps-text">
-                  Place of Birth
-                </label>
-                <input
-                  type="text"
-                  id="place-of-birth"
-                  name="place-of-birth"
-                  placeholder="Philippines"
-                  className="form-input"
-                />
-              </div>
-              <div className="flex-1">
-                <label htmlFor="country-of-citizenship" className="signup-additional-steps-text">
-                  Country of Citizenship
-                </label>
-                <select
-                  id="country-of-citizenship"
-                  name="country-of-citizenship"
-                  className="form-input"
-                >
-                  <option value="">Select a country</option>
-                </select>
-              </div>
-            </div>
-            <Link href="/signup/3">
-              <button type="button" className="btn-primary w-full">
-                Next
-              </button>
-              <div className="flex justify-center mt-6 space-x-1">
-                <div className="pagination-dot "></div>
-                <div className="pagination-dot active"></div>
-                <div className="pagination-dot"></div>
-              </div>
-            </Link>
-          </form>
-        </div>
-      </div>
-      <div className="relative hidden h-56 sm:h-screen md:block md:w-1/2 bg-black">
-        <img
-          src="/blue-bg.png"
-          alt="Background"
-          className="h-full w-full object-cover"
-        />
-        <div className="absolute top-0 left-0 h-full w-full flex flex-col items-center justify-center px-6">
-          <h1 className="notice-consent-privacy-title">
-            Notice and Consent to Privacy
-          </h1>
-          <p className="notice-consent-privacy-body">
-            When uploading your proof of graduation file for the University of the Philippines Los Baños (UPLB), please ensure that the document is clear, legible, and in the required format (e.g., PDF, JPEG, or PNG). This document serves as official verification of your academic achievement and will be used for alumni tracking and relations advancement.
-          </p>
-          <p className="notice-consent-privacy-body">
-            By proceeding with the upload, you acknowledge and agree that your personal data will be collected, processed, and stored in compliance with the Data Privacy Act of 2012 (Republic Act No. 10173). ICS-ASTRA adheres to this law, ensuring that your information will be handled with strict confidentiality and used solely for the stated purpose of alumni tracking and relations advancement.
-          </p>
+
+        <div className="hidden md:block md:w-1/2 bg-[var(--color-astraprimary)]">
+          <div className="relative h-full">
+            <img src="/blue-bg.png" alt="Background" className="h-full w-full object-cover" />
+          </div>
         </div>
       </div>
     </div>
-  );
+  )
 }
