@@ -1,4 +1,4 @@
-import AdminNavbar from '../components/AdminNavbar';
+import NavbarAdmin from '@/components/NavbarAdmin';
 import Footer from '../components/Footer';
 import "../styles/globals.css";
 
@@ -8,7 +8,7 @@ export default function RootLayout({ children }) {
       <body className="relative min-h-screen max-w-screen overflow-x-hidden">
         
         <div className="fixed top-0 left-0 w-full z-50">
-          <AdminNavbar />
+          <NavbarAdmin />
         </div>
 
         <div className="flex flex-col min-h-screen">
