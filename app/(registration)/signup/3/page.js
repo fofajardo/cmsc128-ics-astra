@@ -107,7 +107,7 @@ export default function EducationalInfoPage() {
             <img src="/blue-bg.png" alt="Background" className="h-full w-full object-cover" />
             <div className="absolute top-0 left-0 h-full w-full flex flex-col items-center justify-center px-6">
               <h1 className="text-2xl font-bold text-white mb-4 text-justify">Notice and Consent to Privacy</h1>
-              <p className="text-white text-sm mb-4 text-center">
+              <p className="text-white text-sm mb-4 text-justify">
                 When uploading your proof of graduation file for the University of the Philippines Los Baños (UPLB),
                 please ensure that the document is clear, legible, and in the required format (e.g., PDF, JPEG, or PNG).
                 This document serves as official verification of your academic achievement and will be used for alumni
