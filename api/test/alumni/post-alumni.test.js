@@ -5,6 +5,7 @@ import httpStatus from 'http-status-codes';
 import nationalities from 'i18n-nationality';
 
 describe('Alumni API Tests', function () {
+
     describe('POST /v1/alumni/:userId', function () {
         // Test case to verify that the alumni profile is created successfully
         it('should return 201, status CREATED, a message, and an id', async function () {
@@ -26,9 +27,9 @@ describe('Alumni API Tests', function () {
                     sex: 0,
                     primary_work_experience_id: 'c779d9f8-535b-4b51-938d-a656057e9512'
                 });
-
-            console.log(res.body.message);
-
+            
+            console.log(res.body);
+            
             expect(res.status).to.equal(httpStatus.CREATED);
             expect(res.body).to.be.an('object');
             expect(res.body).to.have.property('status').to.equal('CREATED');

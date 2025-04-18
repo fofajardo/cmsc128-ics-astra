@@ -9,7 +9,7 @@ import donationsRouter from "./donationsRoutes.js";
 
 const registerRoutes = (app, supabase) => {
     app.use("/v1/users", usersRouter(supabase));
-    app.use("/v1/alumniProfiles", alumniProfilesRouter(supabase));
+    app.use("/v1/alumni", alumniProfilesRouter(supabase));
     app.use("/v1/work_experiences", workExperienceRouter(supabase));
     app.use("/v1/events", eventsRouter(supabase));
     app.use("/v1/eventInterests", eventInterestsRouter(supabase));
