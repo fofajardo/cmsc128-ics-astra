@@ -7,7 +7,7 @@ import { createClient } from "@supabase/supabase-js";
 import authRouter from "./routes/auth/auth-router.js";
 import { registerStrategies } from "./routes/auth/passport-strategies.js";
 import usersRouter from "./routes/usersRoutes.js";
-import contentsRouter from "./routes/contentRoutes.js";
+import contentsRouter from "./routes/contentsRoutes.js";
 import getAlumniRouter from "./routes/alumni/get-alumni.js";
 import postAlumniRouter from "./routes/alumni/post-alumni.js";
 import putAlumniRouter from "./routes/alumni/put-alumni.js";
