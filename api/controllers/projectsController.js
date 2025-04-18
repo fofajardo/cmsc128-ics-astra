@@ -176,24 +176,24 @@ const updateProject = (supabase) => async (req, res) => {
         }
 
         // Check if project exists
-        const { data: projectData, error: projectError } = await usersService.fetchUserById(supabase, projectId);
+        const { data: projectData, error: projectError } = await projectsService.fetchProjectById(supabase, projectId);
 
         if (projectError || !projectData) {
             return res.status(httpStatus.NOT_FOUND).json({
                 status: 'FAILED',
-                message: 'User not found'
+                message: 'Project not found'
             });
         }
 
         // TODO: Clarify if disallow edits to donation_link
-        if (
-            ('donation_link' in req.body && req.body.donation_link !== projectData.donation_link)
-        ) {
-            return res.status(httpStatus.FORBIDDEN).json({
-                status: 'FORBIDDEN',
-                message: 'Editing donation_link is not allowed'
-            });
-        }
+        // if (
+        //     ('donation_link' in req.body && req.body.donation_link !== projectData.donation_link)
+        // ) {
+        //     return res.status(httpStatus.FORBIDDEN).json({
+        //         status: 'FORBIDDEN',
+        //         message: 'Editing donation_link is not allowed'
+        //     });
+        // }
 
         // Update only allowed fields
         const {
@@ -220,6 +220,29 @@ const updateProject = (supabase) => async (req, res) => {
                 delete updateData[key];
             }
         });
+
+        // Validate request body
+        const allowedFields = ['status', 'due_date', 'date_completed', 'goal_amount', 'donation_link'];
+
+        allowedFields.forEach(field => {
+            if (!(field in req.body)) {
+                return;
+            }; // skip if field is not present
+
+            const value = req.body[field];
+
+            if ((field === 'status' && (typeof value !== 'number' || ![0, 1, 2].includes(value))) ||
+                (field === 'due_date' && !isValidDate(value)) ||
+                (field === 'date_completed' && (value !== null && !isValidDate(value))) ||
+                (field === 'goal_amount' && typeof value !== 'number') ||
+                (field === 'donation_link' && typeof value !== 'string')
+            ) {
+                return res.status(httpStatus.BAD_REQUEST).json({
+                    status: 'FAILED',
+                    message: 'Invalid field values',
+                });
+            }
+        })
 
         const { data, error } = await projectsService.updateProjectData(supabase, projectId, updateData)
 
