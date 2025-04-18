@@ -84,7 +84,24 @@ body {
 }
 
 @layer components {
-  .style-button {
-    @apply px-3 py-2 rounded-sm shadow-sm;
+  button{
+    @apply cursor-pointer transition-all duration-150 ease-in-out;
+  }
+  button:hover{
+    @apply scale-102;
+  }
+
+  .gray-button {
+    @apply px-3 py-2 bg-astratintedwhite text-astraprimary rounded-xl shadow-sm;
+  }
+  .gray-button:hover{
+    @apply bg-astragray
+  }
+
+  .blue-button {
+    @apply px-3 py-2 bg-astraprimary text-astrawhite rounded-xl shadow-sm;
+  }
+  .blue-button:hover{
+    @apply bg-astradark
   }
 }
