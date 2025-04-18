@@ -42,7 +42,7 @@ export default function Navbar() {
               key={link.href}
               href={link.href}
               onClick={() => setActiveLink(link.href)}
-              className={`relative transition-all duration-300 ease-in-out text-[var(--color-astradarkgray)] hover:text-[var(--color-astraprimary)] 
+              className={`relative transition-all duration-300 ease-in-out text-[var(--color-astrablack)] hover:text-[var(--color-astraprimary)] 
               ${activeLink === link.href ? "text-[var(--color-astraprimary)]" : ""}
               group`}
             >
