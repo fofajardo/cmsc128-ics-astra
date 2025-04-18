@@ -15,7 +15,9 @@ function registerStrategies(supabase) {
             if (!user) {
                 return aCallback(null, false, kInvalidUsernameOrEmail);
             }
-            const matched = await IdentityService.matchesPassword(aPassword, user.salt, user.password);
+            user = user.data;
+            const matched = await IdentityService.matchesPassword(
+                aPassword, user.salt, user.password);
             if (matched) {
                 return aCallback(null, user);
             }
