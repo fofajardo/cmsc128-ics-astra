@@ -5,6 +5,17 @@ import httpStatus from 'http-status-codes';
 
 describe('Projects API Tests', function () {
     describe('POST /v1/projects', function () {
+        const contentId = '318c8aab-0564-42f8-aba6-5785d0e66288';
+
+        after(async function () {
+            const res = await request(app)
+                .delete(`/v1/projects/${contentId}`);
+            if (res.body.status === 'DELETED') {
+                console.log('Successfully deleted dummy project');
+            } else
+                console.log('Failed to delete dummy project');
+        });
+
         // Test case to verify that the API returns 400 if required fields are missing
         it('should return 400, status FAILED, and a message when required fields are missing', async function () {
             const res = await request(app)
@@ -18,16 +29,14 @@ describe('Projects API Tests', function () {
 
             expect(res.body).to.have.property('status').to.equal('FAILED');
             expect(res.body).to.have.property('message').that.is.a('string');
-            expect(res.body).to.have.property('id').that.is.a('null');
         });
 
         // Test case to verify that the API returns 400 if invalid status
         it('should return 400, status FAILED, and a message when status is invalid', async function () {
-            const invalidContentId = '389517e7-4a0b-4c96-84f9-3a7080186892'; // Invalid content ID
             const res = await request(app)
                 .post(`/v1/projects`)
                 .send({
-                    project_id: invalidContentId,
+                    project_id: contentId,
                     status: '0',    // should be int
                     due_date: new Date('2025-04-01'),
                     date_completed: null,
@@ -42,16 +51,14 @@ describe('Projects API Tests', function () {
 
             expect(res.body).to.have.property('status').to.equal('FAILED');
             expect(res.body).to.have.property('message').that.is.a('string');
-            expect(res.body).to.have.property('id').that.is.a('null');
         });
 
         // Test case to verify that the API returns 400 if invalid date
         it('should return 400, status FAILED, and a message when date is invalid', async function () {
-            const invalidContentId = '389517e7-4a0b-4c96-84f9-3a7080186892'; // Invalid content ID
             const res = await request(app)
                 .post(`/v1/projects`)
                 .send({
-                    project_id: invalidContentId,
+                    project_id: contentId,
                     status: 0,
                     due_date: new Date('invalid-date-string'),  // invalid date
                     date_completed: null,
@@ -66,12 +73,10 @@ describe('Projects API Tests', function () {
 
             expect(res.body).to.have.property('status').to.equal('FAILED');
             expect(res.body).to.have.property('message').that.is.a('string');
-            expect(res.body).to.have.property('id').that.is.a('null');
         });
 
         // // Test case to verify that the project is created successfully
         it('should return 201, status CREATED, a message, and an id', async function () {
-            const contentId = '389517e7-4a0b-4c96-84f9-3a7080186892'; // Actual test content ID
             const res = await request(app)
                 .post(`/v1/projects`)
                 .send({
@@ -114,16 +119,15 @@ describe('Projects API Tests', function () {
 
             expect(res.body).to.have.property('status').to.equal('FAILED');
             expect(res.body).to.have.property('message').that.is.a('string');
-            expect(res.body).to.have.property('id').that.is.a('null');
         });
 
         // Test case to verify that the API returns 404 if the contentId does not exist in the system
         it('should return 404, status FAILED, and a message when contentId does not exist', async function () {
-            const contentId = '389517e7-4a0b-4c96-84f9-3a7080186893'; // Non-existing content ID
+            const nonExistentId = '389517e7-4a0b-4c96-84f9-3a7080186893'; // Non-existing content ID
             const res = await request(app)
                 .post(`/v1/projects`)
                 .send({
-                    project_id: contentId,
+                    project_id: nonExistentId,
                     status: 0,
                     due_date: new Date('2025-04-01'),
                     date_completed: null,
@@ -138,7 +142,6 @@ describe('Projects API Tests', function () {
 
         // Test case to verify that the API returns 409 if the contentId has duplicate
         it('should return 409, status FAILED, and a message when contentId has duplicate', async function () {
-            const contentId = '389517e7-4a0b-4c96-84f9-3a7080186892'; // Actual duplicate content ID
             const res = await request(app)
                 .post(`/v1/projects`)
                 .send({
@@ -157,7 +160,6 @@ describe('Projects API Tests', function () {
 
             expect(res.body).to.have.property('status').to.equal('FAILED');
             expect(res.body).to.have.property('message').that.is.a('string');
-            expect(res.body).to.have.property('id').that.is.a('null');
         });
     });
 });

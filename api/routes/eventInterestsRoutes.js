@@ -1,5 +1,5 @@
 import express from "express";
-import eventInterestsController from "../controllers/eventInterestsController";
+import eventInterestsController from "../controllers/eventInterestsController.js";
 
 const eventInterestsRouter = (supabase) => {
     const router = express.Router();
