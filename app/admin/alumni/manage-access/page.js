@@ -67,28 +67,31 @@ export default function AlumniAccess() {
                 <Table cols={cols} data={createRows(selectedIds, setSelectedIds)} />
                 <PageTool pagination={pagination} setPagination={setPagination} />
             </div>
-            <div className="flex flex-row justify-end gap-3 md:pr-4 lg:pr-8">
-                <ActionButton 
-                label={selectedIds.length > 0 ? `Approve (${selectedIds.length})` : "Approve All"} 
-                color="green" 
-                notifyMessage={
-                    selectedIds.length > 0
-                    ? `${selectedIds.length} pending account${selectedIds.length > 1 ? "s" : ""} have been approved!`
-                    : "All pending accounts have been approved!"
-                }
-                notifyType="success"
-                />
+            <div className="flex flex-row justify-between md:pl-4 lg:pl-8">
+                <ActionButton label="Reset Selection" color = "blue" onClick={() => setSelectedIds([])}/>
+                <div className="flex gap-3 md:pr-4 lg:pr-8">
+                    <ActionButton 
+                    label={selectedIds.length > 0 ? `Approve (${selectedIds.length})` : "Approve All"} 
+                    color="green" 
+                    notifyMessage={
+                        selectedIds.length > 0
+                        ? `${selectedIds.length} pending account${selectedIds.length > 1 ? "s" : ""} have been approved!`
+                        : "All pending accounts have been approved!"
+                    }
+                    notifyType="success"
+                    />
 
-                <ActionButton 
-                label={selectedIds.length > 0 ? `Decline (${selectedIds.length})` : "Decline All"} 
-                color="red" 
-                notifyMessage={
-                    selectedIds.length > 0
-                    ? `${selectedIds.length} pending account${selectedIds.length > 1 ? "s" : ""} have been declined!`
-                    : "All pending accounts have been declined!"
-                }
-                notifyType="fail"
-                />
+                    <ActionButton 
+                    label={selectedIds.length > 0 ? `Decline (${selectedIds.length})` : "Decline All"} 
+                    color="red" 
+                    notifyMessage={
+                        selectedIds.length > 0
+                        ? `${selectedIds.length} pending account${selectedIds.length > 1 ? "s" : ""} have been declined!`
+                        : "All pending accounts have been declined!"
+                    }
+                    notifyType="fail"
+                    />
+                </div>
             </div>
         </div>
       </div>
@@ -177,7 +180,7 @@ function renderText(text) {
 
 function renderActions(id, name) {
     return (
-        <div className="flex justify-center gap-3">
+        <div className="flex justify-center gap-3 md:pr-4 lg:pr-2">
         <ActionButton
             label="View"
             color="gray"
