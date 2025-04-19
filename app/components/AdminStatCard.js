@@ -7,11 +7,12 @@
 'use client'
 import { useRouter } from 'next/navigation';
 
-export default function AdminStatCard({ title, value, icon, route }) {
+export default function AdminStatCard({ title, value, icon, route, onClick=null }) {
   const router = useRouter();
 
   const handleClick = () => {
-    router.push(route);
+    if (route === false){onClick()}
+    else router.push(route);
   };
 
   return (
