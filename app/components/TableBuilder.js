@@ -94,7 +94,7 @@ function getVisibilityClass(visible) {
 
 export function Table({ cols, data }) {
     return (
-        <div className='bg-astrawhite rounded-xl shadow-md'>
+        <div className='bg-astrawhite shadow-md overflow-x-auto'>
             <table className="w-full table-auto border-collapse">
                 <thead className="bg-astratintedwhite text-astraprimary font-s">
                     <tr>

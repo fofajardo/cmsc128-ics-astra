@@ -1,0 +1,46 @@
+// tabs = { 'Pending': 3, 'Approved': 0, 'Rejected': 2 }
+// currTab = ''
+// handleTabChange()
+
+export default function AdminTabs({ tabs, currTab, handleTabChange }) {
+    return (
+      <div className="flex flex-row w-screen overflow-y-scroll scrollbar-hide">
+        {Object.entries(tabs).map(([label, notif]) => (
+          <Tab
+            key={label}
+            label={label}
+            notif={notif}
+            active={label === currTab}
+            handleTabChange={handleTabChange}
+          />
+        ))}
+      </div>
+    );
+  }
+  
+  
+function Tab({ label, active, notif, handleTabChange }) {
+  return (
+    <div
+      className={`flex flex-1 border-b-2 ${
+        active
+          ? 'border-astradark bg-astratintedwhite'
+          : 'border-astragray bg-astrawhite hover:bg-astratintedwhite/25'
+      }`}
+    >
+      <button
+        onClick={() => handleTabChange(label)}
+        className={`flex-1 px-4 py-4 font-lb bg-transparent ${
+          active ? 'text-astradark' : 'bg-astrawhite text-astradarkgray'
+        }`}
+      >
+        {label}
+        {notif > 0 && (
+          <span className="ml-2 bg-astrared font-s text-white px-2 py-1 rounded-sm">
+            {notif}
+          </span>
+        )}
+      </button>
+    </div>
+  );
+}

@@ -8,16 +8,47 @@ import ToastNotification from '@/components/ToastNotification';
 import { Check, GraduationCap } from "lucide-react";
 import AdminStatCard from "@/components/AdminStatCard";
 import { ActionButton } from "@/components/Buttons";
+import AdminTabs from "@/components/AdminTabs";
 
 export default function AlumniAccess() {
     const [showFilter, setShowFilter] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
-    const info = { title: "Pending Accounts", search: "Search for an alumni" };
-  
+
+
+    const [info, setInfo] = useState({
+        title: "Pending Accounts",
+        search: "Search for an alumni",
+    });
+    
+    const tabs = {
+        'Pending': 3,
+        'Approved': 0,
+        'Inactive': 2,
+    };
+
+    const [currTab, setCurrTab] = useState('Pending');
+
+    const handleTabChange = (newTab) => {
+        setCurrTab(newTab);
+
+        setInfo((prev) => ({
+          ...prev,
+          title: `${newTab} Accounts`,
+        }));
+
+        setSelectedIds([]);
+
+        // Reset Filters and Pagination
+        // Then refetch alumList
+
+    };
+    
+
+
     const toggleFilter = () => {
         console.log("Toggling filter modal:", !showFilter);
         setShowFilter((prev) => !prev);
-      };
+    };
   
     const [pagination, setPagination] = useState({
         display: [1, 10],
@@ -26,6 +57,7 @@ export default function AlumniAccess() {
         numToShow: 10,
         total: 999
     });
+
     return (
       <div>
         {/* Filter Modal */}
@@ -62,43 +94,84 @@ export default function AlumniAccess() {
           </div>
         </div>
   
+        <AdminTabs tabs ={tabs} currTab={currTab} handleTabChange={handleTabChange}/>
+
         {/* Table section */}
         <div className="bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24 flex flex-col">
             <div className='flex flex-col py-4 px-1 md:px-4 lg:px-8'>
                 <TableHeader info={info} pagination={pagination} toggleFilter={toggleFilter} />
-                <Table cols={cols} data={createRows(selectedIds, setSelectedIds)} />
+                <Table cols={cols} data={createRows(selectedIds, setSelectedIds, currTab)} />
                 <PageTool pagination={pagination} setPagination={setPagination} />
             </div>
             <div className="flex flex-row justify-between md:pl-4 lg:pl-8">
                 <ActionButton label="Reset Selection" color = "blue" onClick={() => setSelectedIds([])}/>
-                <div className="flex gap-3 md:pr-4 lg:pr-8">
-                    <ActionButton 
-                    label={selectedIds.length > 0 ? `Approve (${selectedIds.length})` : "Approve All"} 
-                    color="green" 
-                    notifyMessage={
-                        selectedIds.length > 0
-                        ? `${selectedIds.length} pending account${selectedIds.length > 1 ? "s" : ""} have been approved!`
-                        : "All pending accounts have been approved!"
-                    }
-                    notifyType="success"
-                    />
-
-                    <ActionButton 
-                    label={selectedIds.length > 0 ? `Decline (${selectedIds.length})` : "Decline All"} 
-                    color="red" 
-                    notifyMessage={
-                        selectedIds.length > 0
-                        ? `${selectedIds.length} pending account${selectedIds.length > 1 ? "s" : ""} have been declined!`
-                        : "All pending accounts have been declined!"
-                    }
-                    notifyType="fail"
-                    />
-                </div>
+                
+                <BottomButtons selectedCount={selectedIds.length} currTab={currTab}/>
             </div>
         </div>
       </div>
     );
   }
+
+
+  function BottomButtons({ selectedCount, currTab }) {
+    return (
+      <div className="flex gap-3 md:pr-4 lg:pr-8">
+        {currTab === 'Pending' && (
+          <>
+            <ActionButton
+              label={selectedCount > 0 ? `Approve (${selectedCount})` : "Approve All"}
+              color="green"
+              notifyMessage={
+                selectedCount > 0
+                  ? `${selectedCount} pending account${selectedCount > 1 ? "s" : ""} have been approved!`
+                  : "All pending accounts have been approved!"
+              }
+              notifyType="success"
+            />
+            <ActionButton
+              label={selectedCount > 0 ? `Decline (${selectedCount})` : "Decline All"}
+              color="red"
+              notifyMessage={
+                selectedCount > 0
+                  ? `${selectedCount} pending account${selectedCount > 1 ? "s" : ""} have been declined!`
+                  : "All pending accounts have been declined!"
+              }
+              notifyType="fail"
+            />
+          </>
+        )}
+  
+        {currTab === 'Approved' && (
+          <ActionButton
+            label={selectedCount > 0 ? `Remove Access (${selectedCount})` : "Remove All"}
+            color="red"
+            notifyMessage={
+              selectedCount > 0
+                ? `${selectedCount} active account${selectedCount > 1 ? "s" : ""} have been removed!`
+                : "All active accounts have been removed!"
+            }
+            notifyType="fail"
+          />
+        )}
+  
+        {currTab === 'Inactive' && (
+          <ActionButton
+            label={selectedCount > 0 ? `Reactivate (${selectedCount})` : "Reactivate All"}
+            color="blue"
+            notifyMessage={
+              selectedCount > 0
+                ? `${selectedCount} inactive account${selectedCount > 1 ? "s" : ""} have been reactivated!`
+                : "All inactive accounts have been reactivated!"
+            }
+            notifyType="success"
+          />
+        )}
+      </div>
+    );
+  }
+  
+  
 
 const cols = [
     { label: 'Checkbox:label-hidden', justify: 'center', visible: 'all'},
@@ -110,7 +183,7 @@ const cols = [
     { label: 'Quick Actions', justify: 'center', visible: 'all' },
 ];
 
-function createRows(selectedIds, setSelectedIds) {
+function createRows(selectedIds, setSelectedIds, currTab) {
     return alumList.map((alum) => ({
         'Checkbox:label-hidden': renderCheckboxes(alum.id, selectedIds, setSelectedIds),
         'Image:label-hidden': renderAvatar(alum.image, alum.alumname),
@@ -118,7 +191,7 @@ function createRows(selectedIds, setSelectedIds) {
         'Graduation Year': renderText(alum.graduationYear),
         'Student ID': renderText(alum.student_num),
         'Course': renderText(alum.course),
-        'Quick Actions': renderActions(alum.id, alum.alumname),
+        'Quick Actions': renderActions(alum.id, alum.alumname, currTab),
     }));
 }
 
@@ -180,33 +253,64 @@ function renderText(text) {
 }
 
 
-function renderActions(id, name) {
+function renderActions(id, name, currTab) {
     return (
-        <div className="flex justify-center gap-3 md:pr-4 lg:pr-2">
+
+        //Based muna sa currTab pero I think mas maganda kung sa mismong account/user kukunin yung active status
+        
+      <div className="flex justify-center gap-3 md:pr-4 lg:pr-2">
         <ActionButton
-            label="View"
-            color="gray"
-            route={`/admin/alumni/manage-access/${id}`}
+          label="View"
+          color="gray"
+          route={`/admin/alumni/manage-access/${id}`}
         />
-        <div className="hidden lg:block">
-            <ActionButton 
+  
+        {currTab === 'Pending' && (
+          <>
+            <div className="hidden lg:block">
+              <ActionButton 
                 label="Approve"
                 color="green"
                 notifyMessage={`${name} has been approved!`}
                 notifyType="success"
-            />
-        </div>
-        <div className="hidden lg:block">
-            <ActionButton
+              />
+            </div>
+            <div className="hidden lg:block">
+              <ActionButton
                 label="Decline"
                 color="red"
                 notifyMessage={`${name} has been declined!`}
                 notifyType="fail"
-            />
+              />
             </div>
-    </div>
+          </>
+        )}
+  
+        {currTab === 'Approved' && (
+          <div className="hidden lg:block">
+            <ActionButton
+              label="Remove Access"
+              color="red"
+              notifyMessage={`${name} has been removed!`}
+              notifyType="fail"
+            />
+          </div>
+        )}
+  
+        {currTab === 'Inactive' && (
+          <div className="hidden lg:block">
+            <ActionButton
+              label="Reactivate"
+              color="blue"
+              notifyMessage={`${name} has been reactivated!`}
+              notifyType="success"
+            />
+          </div>
+        )}
+      </div>
     );
   }
+  
 
 
 const alumList = [
