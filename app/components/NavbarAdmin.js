@@ -42,7 +42,7 @@ function Navbar({ toggleSidebar, isSidebarOpen, isScrolled }) {
       className={`fixed top-0 z-50 w-full h-20 flex items-center justify-between px-4 md:px-6 transition-all duration-300 ${
         isScrolled
           ? "bg-astrawhite/80 backdrop-blur-md shadow-lg"
-          : "bg-white"
+          : "bg-white shadow-sm"
       }`}
     >
       {/* Left: Sidebar Toggle & Logo */}
@@ -96,7 +96,7 @@ function Navbar({ toggleSidebar, isSidebarOpen, isScrolled }) {
 function Sidebar({ menuItems, activeMenu, toggleSubmenu, openSubmenus, navigateTo, isSidebarOpen }) {
   return (
     <div
-      className={`fixed top-0 left-0 z-40 h-screen pt-20 w-[250px] bg-astrawhite border-t border-astradarkgray shadow-2xl overflow-y-auto transition-transform duration-300 ${
+      className={`fixed top-0 left-0 z-40 h-screen pt-20 w-[250px] bg-astratintedwhite border-t border-astradarkgray shadow-2xl overflow-y-auto transition-transform duration-300 ${
         isSidebarOpen ? "translate-x-0" : "-translate-x-full"
       }`}
     >
@@ -214,12 +214,12 @@ export default function NavbarAdmin() {
       />
 
       {/* Overlay for mobile */}
-      {isSidebarOpen && (
-        <div
-          className="fixed inset-0 z-30 bg-astrawhite md:hidden"
-          onClick={toggleSidebar}
-        />
-      )}
+      <div
+        className={`fixed inset-0 z-30 bg-astrablack/50 transition-opacity duration-200 ease-in-out md:hidden ${
+          isSidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={toggleSidebar}
+      />
     </>
   );
 }
