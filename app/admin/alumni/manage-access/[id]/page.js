@@ -3,6 +3,7 @@ import { GoBackButton } from '@/components/Buttons'
 import SkillTag from '@/components/SkillTag'
 import { users, alumniProfiles } from '@/components/DummyData'
 import { Mail, MapPin, GraduationCap, Image } from "lucide-react";
+import AdminStatCard from "@/components/AdminStatCard";
 
 export default function AlumniSearchProfile({ params }) {
   const {id} = params
@@ -16,22 +17,54 @@ export default function AlumniSearchProfile({ params }) {
   }
 
   return (
+    <>
+        {/* Header with background */}
+        <div className="relative">
+          <img
+            src="/blue-bg.png"
+            alt="Background"
+            className="h-80 w-full object-cover"
+          />
+          <div className="absolute inset-2 flex flex-col items-center justify-evenly text-astrawhite z-20">
+            <div className="text-center pt-6">
+                <h1 className="font-h1">Manage Access</h1>
+                <p className="font-s">The ever-growing UPLB-ICS Alumni Network</p>
+            </div>
+            <div className="pt-6 pb-4 overflow-y-scroll w-full scrollbar-hide">
+                    <div className="flex flex-row gap-3 min-w-max px-4 justify-center"> 
+                        <AdminStatCard title='Registered' value = {255} icon={<GraduationCap className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={'/admin/alumni/search'}/>
+                        <AdminStatCard title='Pending' value = {59} icon={<GraduationCap className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={'/admin/alumni/manage-access'}/>
+                        <AdminStatCard title='Approved' value = {179} icon={<GraduationCap className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={'/admin/alumni/manage-access'}/>
+                        <AdminStatCard title='Inactive' value = {12} icon={<GraduationCap className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={'/admin/alumni/manage-access'}/>
+                    </div>
+            </div>
+          </div>
+        </div>
+    
+    
     <div className="p-4 bg-astradirtywhite min-h-screen">
-      <GoBackButton />
+      <div className="pb-2">
+        <GoBackButton />
+      </div>
       {/* PROFILE SECTION */}
-      <div className="max-w-6xl mx-auto flex items-center justify-between bg-white border border-astralightgray rounded-xl px-6 py-4 shadow-sm">
+      <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between bg-white border border-astralightgray rounded-xl px-6 py-4 shadow-sm gap-4">
         {/* left section */}
-        <div className="flex items-center space-x-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 w-full md:w-auto">
           {/* avatar placeholder */}
-          <img src = {user.image} alt={user.first_name}className="w-18 h-18 rounded-full bg-gray-200"/>
+          <img src={user.image} alt={user.first_name} className="w-18 h-18 rounded-full bg-gray-200 mx-auto sm:mx-4" />
 
           {/* text info */}
-          <div>
-            <h3 className="font-lb text-astrablack">{user.first_name} {user.middle_name} {user.last_name}</h3>
+          <div className="mt-2 sm:mt-0 text-center sm:text-left">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2 justify-center sm:justify-start">
+              <h3 className="font-lb text-astrablack">{user.first_name} {user.middle_name} {user.last_name}</h3>
+              <span className="bg-astrayellow text-white font-s px-3.5 py-0.5 rounded-lg w-fit mx-auto sm:mx-0 mt-1 sm:mt-0">
+                Pending
+              </span>
+            </div>
             <a className="block font-s text-astradark hover:underline">
-            {user.email}
+              {user.email}
             </a>
-            <div className="flex items-center font-s text-astradarkgray mt-0.5">
+            <div className="flex justify-center sm:justify-start items-center font-s text-astradarkgray mt-0.5">
               <MapPin className="w-4 h-4 mr-1" />
               {profile.location}
             </div>
@@ -39,23 +72,27 @@ export default function AlumniSearchProfile({ params }) {
         </div>
 
         {/* right section */}
-        <div className="flex items-center space-x-3">
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-3 w-full md:w-auto">
           {/* ID num */}
-          <span className="text-xs bg-astragray text-astradarkgray px-2 py-1 rounded-full">
+          <span className="text-xs bg-astragray text-astradarkgray px-2 py-1 rounded-full hidden md:block">
             {profile.student_num}
           </span>
+
           {/* year num badge */}
-          <span className="text-xs bg-astragray text-astradarkgray px-2 py-1 rounded-full flex items-center space-x-1">
-            <GraduationCap className="w-3 h-3" />
+          <div className="hidden md:block">
+            <span className="text-xs bg-astragray text-astradarkgray px-2 py-1 rounded-full flex items-center space-x-1">
+              <GraduationCap className="w-3 h-3" />
             <span>{new Date(profile.year_graduated).getFullYear()}</span>
           </span>
+          </div>
 
         {/* contact button */}
-        <button className="text-astraprimary border-2 border-astraprimary px-10 py-0.5 font-rb rounded-md hover:bg-astraprimary hover:text-white transition">
+        <button className="w-full md:w-auto text-astraprimary border-2 border-astraprimary px-10 py-0.5 font-rb rounded-md hover:bg-astraprimary hover:text-white transition">
           Contact
         </button>
         </div>
       </div>
+
 
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
       {/* Left Column: Personal Info */}
@@ -201,5 +238,6 @@ export default function AlumniSearchProfile({ params }) {
     </div>
 
     </div>
-  )
+    </>
+  );
 }
