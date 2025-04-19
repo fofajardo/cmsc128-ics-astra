@@ -7,9 +7,11 @@ import SearchFilter from "admin/alumni/search/filter";
 import ToastNotification from '@/components/ToastNotification';
 import { Check, GraduationCap } from "lucide-react";
 import AdminStatCard from "@/components/AdminStatCard";
+import { ActionButton } from "@/components/Buttons";
 
 export default function AlumniAccess() {
     const [showFilter, setShowFilter] = useState(false);
+    const [selectedIds, setSelectedIds] = useState([]);
     const info = { title: "Pending Accounts", search: "Search for an alumni" };
   
     const toggleFilter = () => {
@@ -59,11 +61,34 @@ export default function AlumniAccess() {
         </div>
   
         {/* Table section */}
-        <div className="bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24">
+        <div className="bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24 flex flex-col">
             <div className='flex flex-col py-4 px-1 md:px-4 lg:px-8'>
                 <TableHeader info={info} pagination={pagination} toggleFilter={toggleFilter} />
-                <Table cols={cols} data={createRows()} />
+                <Table cols={cols} data={createRows(selectedIds, setSelectedIds)} />
                 <PageTool pagination={pagination} setPagination={setPagination} />
+            </div>
+            <div className="flex flex-row justify-end gap-3 md:pr-4 lg:pr-8">
+                <ActionButton 
+                label={selectedIds.length > 0 ? `Approve (${selectedIds.length})` : "Approve All"} 
+                color="green" 
+                notifyMessage={
+                    selectedIds.length > 0
+                    ? `${selectedIds.length} pending account${selectedIds.length > 1 ? "s" : ""} have been approved!`
+                    : "All pending accounts have been approved!"
+                }
+                notifyType="success"
+                />
+
+                <ActionButton 
+                label={selectedIds.length > 0 ? `Decline (${selectedIds.length})` : "Decline All"} 
+                color="red" 
+                notifyMessage={
+                    selectedIds.length > 0
+                    ? `${selectedIds.length} pending account${selectedIds.length > 1 ? "s" : ""} have been declined!`
+                    : "All pending accounts have been declined!"
+                }
+                notifyType="fail"
+                />
             </div>
         </div>
       </div>
@@ -80,9 +105,9 @@ const cols = [
     { label: 'Quick Actions', justify: 'center', visible: 'all' },
 ];
 
-function createRows() {
+function createRows(selectedIds, setSelectedIds) {
     return alumList.map((alum) => ({
-        'Checkbox:label-hidden': renderCheckboxes(alum.id),
+        'Checkbox:label-hidden': renderCheckboxes(alum.id, selectedIds, setSelectedIds),
         'Image:label-hidden': renderAvatar(alum.image, alum.alumname),
         Name: renderName(alum.alumname, alum.email),
         'Graduation Year': renderText(alum.graduationYear),
@@ -92,32 +117,31 @@ function createRows() {
     }));
 }
 
-function renderCheckboxes(id) {
-    const [selectedIds, setSelectedIds] = useState([]);
+function renderCheckboxes(id, selectedIds, setSelectedIds) {
     const isChecked = selectedIds.includes(id);
-
+  
     const handleChange = () => {
         setSelectedIds((prev) =>
-            isChecked ? prev.filter((item) => item !== id) : [...prev, id]
+        isChecked ? prev.filter((item) => item !== id) : [...prev, id]
         );
     };
-
+  
     return (
-        <label className="flex items-center justify-center cursor-pointer group pl-4">
-            <input
-                type="checkbox"
-                checked={isChecked}
-                onChange={handleChange}
-                className="peer hidden"
-            />
-            <div
-                className={`w-5 h-5 rounded border-2 
-                ${isChecked ? 'bg-astradark border-astradark shadow-md shadow-astradark/40' : 'border-gray-400'}
-                flex items-center justify-center transition-all duration-200 ease-in-out`}
-            >
-                {isChecked && <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />}
-            </div>
-        </label>
+    <label className="flex items-center justify-center cursor-pointer group pl-4">
+        <input
+            type="checkbox"
+            checked={isChecked}
+            onChange={handleChange}
+            className="peer hidden"
+        />
+        <div
+            className={`w-5 h-5 rounded border-2 
+            ${isChecked ? 'bg-astradark border-astradark shadow-md shadow-astradark/40' : 'border-gray-400'}
+            flex items-center justify-center transition-all duration-200 ease-in-out`}
+        >
+            {isChecked && <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />}
+        </div>
+    </label>
     );
 }
 
@@ -151,55 +175,29 @@ function renderText(text) {
 }
 
 
-function renderActions(id,name) {
-    const router = useRouter();
-    const [toast, setToast] = useState(null);
-
-    const handleClick = () => {
-        router.push(`/admin/alumni/manage-access/${id}`); // Navigates to /id/{id}
-    };
-
-    const handleApprove = () => {
-        setToast({type: 'success', message: `${name} has been approved!`})
-    }
-
-    const handleDecline = () => {
-        setToast({type: 'fail', message: `${name} has been declined!`})
-    }
-
+function renderActions(id, name) {
     return (
-        <>
-        {toast && (
-          <ToastNotification
-            type={toast.type}
-            message={toast.message}
-            onClose={() => setToast(null)}
-          />
-        )}
-        
         <div className="flex justify-center gap-3">
-            <button
-                className="gray-button font-sb"
-                onClick={handleClick}
-            >
-                View
-            </button>
-            <button
-                className="green-button font-sb"
-                onClick={handleApprove}
-            >
-                Approve
-            </button>
-            <button
-                className="red-button font-sb"
-                onClick={handleDecline}
-            >
-                Decline
-            </button>
-        </div>
-        </>
+        <ActionButton
+            label="View"
+            color="gray"
+            route={`/admin/alumni/manage-access/${id}`}
+        />
+        <ActionButton
+            label="Approve"
+            color="green"
+            notifyMessage={`${name} has been approved!`}
+            notifyType="success"
+        />
+        <ActionButton
+            label="Decline"
+            color="red"
+            notifyMessage={`${name} has been declined!`}
+            notifyType="fail"
+        />
+    </div>
     );
-}
+  }
 
 
 const alumList = [
