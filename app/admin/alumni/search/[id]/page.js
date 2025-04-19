@@ -17,21 +17,23 @@ export default function AlumniSearchProfile({ params }) {
 
   return (
     <div className="p-4 bg-astradirtywhite min-h-screen">
-      <GoBackButton />
+      <div className="pb-2">
+        <GoBackButton />
+      </div>
       {/* PROFILE SECTION */}
-      <div className="max-w-6xl mx-auto flex items-center justify-between bg-white border border-astralightgray rounded-xl px-6 py-4 shadow-sm">
+      <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between bg-white border border-astralightgray rounded-xl px-6 py-4 shadow-sm gap-4">
         {/* left section */}
-        <div className="flex items-center space-x-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 w-full md:w-auto">
           {/* avatar placeholder */}
-          <img src = {user.image} alt={user.first_name}className="w-18 h-18 rounded-full bg-gray-200"/>
+          <img src={user.image} alt={user.first_name} className="w-18 h-18 rounded-full bg-gray-200 mx-auto sm:mx-4" />
 
           {/* text info */}
-          <div>
+          <div className="mt-2 sm:mt-0 text-center sm:text-left">
             <h3 className="font-lb text-astrablack">{user.first_name} {user.middle_name} {user.last_name}</h3>
             <a className="block font-s text-astradark hover:underline">
-            {user.email}
+              {user.email}
             </a>
-            <div className="flex items-center font-s text-astradarkgray mt-0.5">
+            <div className="flex justify-center sm:justify-start items-center font-s text-astradarkgray mt-0.5">
               <MapPin className="w-4 h-4 mr-1" />
               {profile.location}
             </div>
@@ -39,23 +41,27 @@ export default function AlumniSearchProfile({ params }) {
         </div>
 
         {/* right section */}
-        <div className="flex items-center space-x-3">
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-3 w-full md:w-auto">
           {/* ID num */}
-          <span className="text-xs bg-astragray text-astradarkgray px-2 py-1 rounded-full">
+          <span className="text-xs bg-astragray text-astradarkgray px-2 py-1 rounded-full hidden md:block">
             {profile.student_num}
           </span>
+
           {/* year num badge */}
-          <span className="text-xs bg-astragray text-astradarkgray px-2 py-1 rounded-full flex items-center space-x-1">
-            <GraduationCap className="w-3 h-3" />
+          <div className="hidden md:block">
+            <span className="text-xs bg-astragray text-astradarkgray px-2 py-1 rounded-full flex items-center space-x-1">
+              <GraduationCap className="w-3 h-3" />
             <span>{new Date(profile.year_graduated).getFullYear()}</span>
           </span>
+          </div>
 
         {/* contact button */}
-        <button className="text-astraprimary border-2 border-astraprimary px-10 py-0.5 font-rb rounded-md hover:bg-astraprimary hover:text-white transition">
+        <button className="w-full md:w-auto text-astraprimary border-2 border-astraprimary px-10 py-0.5 font-rb rounded-md hover:bg-astraprimary hover:text-white transition">
           Contact
         </button>
         </div>
       </div>
+
 
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
       {/* Left Column: Personal Info */}
