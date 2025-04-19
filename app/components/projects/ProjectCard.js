@@ -1,5 +1,6 @@
 import Image from 'next/image';
-import sampleImage from '@/app/assets/Donation.jpg';
+import sampleImage from '../../assets/Donation.jpg';
+
 
 export default function ProjectCard({
   image = sampleImage,
@@ -11,7 +12,9 @@ export default function ProjectCard({
 }) {
   return (
     <div className="bg-white rounded-2xl shadow p-4">
-      <Image src={image} alt={title} className="rounded-xl w-full h-48 object-cover" />
+      <Image src={image} alt={title} className="rounded-xl w-full h-48 object-cover" 
+      width={400}
+      height= {200}/>
       <h3 className="mt-4 text-lg font-semibold">{title}</h3>
       <p className="text-sm text-gray-600 mt-2">{description}</p>
       <div className="flex justify-between mt-4 text-sm text-gray-700">
