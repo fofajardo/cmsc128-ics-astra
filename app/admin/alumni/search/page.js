@@ -167,7 +167,7 @@ export default function AlumniSearch() {
   }
 
 const cols = [
-    { label: '', justify: 'center', visible: 'all' },
+    { label: 'Image:label-hidden', justify: 'center', visible: 'all' },
     { label: 'Name', justify: 'start', visible: 'all' },
     { label: 'Graduation Year', justify: 'center', visible: 'md' },
     { label: 'Location', justify: 'center', visible: 'lg' },
@@ -178,7 +178,7 @@ const cols = [
 
 function createRows() {
     return alumList.map((alum) => ({
-        '': renderAvatar(alum.image, alum.alumname),
+        'Image:label-hidden': renderAvatar(alum.image, alum.alumname),
         Name: renderName(alum.alumname, alum.email),
         'Graduation Year': renderText(alum.graduationYear),
         Location: renderText(alum.location),

@@ -103,7 +103,7 @@ export function Table({ cols, data }) {
                                 key={idx}
                                 className={`py-4 px-2 text-${col.justify === 'start' ? 'left' : col.justify} font-s ${getVisibilityClass(col.visible)}`}
                             >
-                                {col.label}
+                                {col.label.includes(':label-hidden') ? '' : col.label}
                             </th>
                         ))}
                     </tr>
