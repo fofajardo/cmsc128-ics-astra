@@ -1,5 +1,5 @@
 import * as React from 'react'
-import BackButton from '@/components/BackButton'
+import { GoBackButton } from '@/components/Buttons'
 import SkillTag from '@/components/SkillTag'
 import { users, alumniProfiles } from '@/components/DummyData'
 import { Mail, MapPin, GraduationCap, Image } from "lucide-react";
@@ -17,7 +17,7 @@ export default function AlumniSearchProfile({ params }) {
 
   return (
     <div className="p-4 bg-astradirtywhite min-h-screen">
-      <BackButton />
+      <GoBackButton />
       {/* PROFILE SECTION */}
       <div className="max-w-6xl mx-auto flex items-center justify-between bg-white border border-astralightgray rounded-xl px-6 py-4 shadow-sm">
         {/* left section */}
