@@ -1,7 +1,7 @@
 "use client"
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import TableBuilder from '@/components/TableBuilder';
+import {TableHeader, Table, PageTool} from '@/components/TableBuilder';
 import { users, alumniProfiles } from '@/components/DummyData'
 import SearchFilter from "./filter";
 
@@ -117,7 +117,15 @@ export default function AlumniSearch() {
     const toggleFilter = () => {
         console.log("Toggling filter modal:", !showFilter);
         setShowFilter((prev) => !prev);
-      };
+    };
+
+    const [pagination, setPagination] = useState({
+        display: [1, 10],
+        currPage: 1,
+        lastPage: 10,
+        numToShow: 10,
+        total: 999
+    });
   
     return (
       <div>
@@ -147,8 +155,13 @@ export default function AlumniSearch() {
   
         {/* Table section */}
         <div className="bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24">
-          <TableBuilder info={info} cols={cols} data={createRows()} toggleFilter={toggleFilter} />
+           <div className='flex flex-col py-4 px-1 md:px-4 lg:px-8'>
+                <TableHeader info={info} pagination={pagination} toggleFilter={toggleFilter} />
+                <Table cols={cols} data={createRows()} />
+                <PageTool pagination={pagination} setPagination={setPagination} />
+            </div>
         </div>
+        
       </div>
     );
   }
@@ -231,7 +244,7 @@ function renderActions(id) {
     const router = useRouter();
 
     const handleClick = () => {
-        router.push(`/admin/alumni/search/${id}`); // Navigates to /id/{id}
+        router.push(`/admin/alumni/search/${id}`);
     };
 
     return (

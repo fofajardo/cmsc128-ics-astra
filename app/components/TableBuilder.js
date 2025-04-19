@@ -1,32 +1,25 @@
-// Component to build tables for admin pages
+// Component to build tables for admin pages, See Alumni Search (Table Section) for implementation
 
 // info = {title:'title of table', search: 'searchbar placeholder text'}
-// cols = [{label:'columnname', justify:'', visible:'all, md, lg'}]
-// data = [<div></div>, etc]
+
+// const [pagination, setPagination] = useState({
+//     display: [1, 10], *current range showing
+//     currPage: 1, *current active page
+//     lastPage: 10, *total number of pages
+//     numToShow: 10, *how many items to show (dropdown)
+//     total: 999 *total number of items
+// });
+
 // toggleFilter = functionToShowFilterModal()
+// cols = [{label:'columnname', justify:'', visible:'all, md, lg'}]
+// data = [{'columname':<div></div>, 'columname':etc}]
+
 
 "use client"
 import { useState } from 'react';
 import { Search, SlidersHorizontal, ArrowLeft, ArrowRight } from 'lucide-react';
 
-export default function TableBuilder({ info, cols, data, toggleFilter }) {
-    const [pagination, setPagination] = useState({
-        display: [1, 10],
-        currPage: 1,
-        lastPage: 10,
-        numToShow: 10,
-        total: 999
-    });
-
-    return (
-        <div className='flex flex-col py-4 px-1 md:px-4 lg:px-8'>
-            <TableHeader info={info} pagination={pagination} toggleFilter={toggleFilter} />
-            <Table cols={cols} data={data} pagination={pagination} setPagination={setPagination} />
-        </div>
-    );
-}
-
-function TableHeader({ info, pagination, toggleFilter }) {
+export function TableHeader({ info, pagination, toggleFilter }) {
     return (
         <div>
             <div className='flex md:hidden flex-col gap-4'>
@@ -46,7 +39,7 @@ function TableHeader({ info, pagination, toggleFilter }) {
     );
 }
 
-function SearchComponent({ placeholder }) {
+export function SearchComponent({ placeholder }) {
     return (
         <div className='flex items-center bg-astrawhite rounded-xl border border-astradarkgray focus-within:border-astraprimary h-12'>
             <Search className='m-4 text-astradarkgray w-5 h-5' />
@@ -55,7 +48,7 @@ function SearchComponent({ placeholder }) {
     );
 }
 
-function Header({ title, pagination }) {
+export function Header({ title, pagination }) {
     return (
         <div className="flex flex-row md:order-first w-full justify-center md:justify-start">
             <div className="font-rb bg-astradark text-astrawhite rounded-tl-xl px-4 py-4 shadow-md">
@@ -68,7 +61,7 @@ function Header({ title, pagination }) {
     );
 }
 
-function Toolbar({ toggleFilter }) {
+export function Toolbar({ toggleFilter }) {
     return (
         <div className="flex flex-row gap-2 justify-end h-12">
             <button onClick={toggleFilter} className="flex flex-grow flex-row items-center justify-center gap-2 blue-button">
@@ -99,7 +92,7 @@ function getVisibilityClass(visible) {
     }
 }
 
-function Table({ cols, data, pagination, setPagination }) {
+export function Table({ cols, data }) {
     return (
         <div className='bg-astrawhite rounded-xl shadow-md'>
             <table className="w-full table-auto border-collapse">
@@ -127,12 +120,11 @@ function Table({ cols, data, pagination, setPagination }) {
                     ))}
                 </tbody>
             </table>
-            <PageTool pagination={pagination} setPagination={setPagination} />
         </div>
     );
 }
 
-function PageTool({ pagination, setPagination }) {
+export function PageTool({ pagination, setPagination }) {
     const { currPage, lastPage, total, numToShow } = pagination;
 
     const handlePageChange = (newPage) => {
@@ -188,7 +180,7 @@ function PageTool({ pagination, setPagination }) {
     };
 
     return (
-        <div className="flex items-center justify-center gap-2 py-6 cursor-pointer">
+        <div className="flex items-center justify-center gap-2 py-4 cursor-pointer bg-white rounded-b-xl">
             <button
                 onClick={() => handlePageChange(currPage - 1)}
                 disabled={currPage === 1}
