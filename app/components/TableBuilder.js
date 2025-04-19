@@ -1,3 +1,10 @@
+// Component to build tables for admin pages
+
+// info = {title:'title of table', search: 'searchbar placeholder text'}
+// cols = [{label:'columnname', justify:'', visible:'all, md, lg'}]
+// data = [<div></div>, etc]
+// toggleFilter = functionToShowFilterModal()
+
 "use client"
 import { useState } from 'react';
 import { Search, SlidersHorizontal, ArrowLeft, ArrowRight } from 'lucide-react';
@@ -61,7 +68,7 @@ function Header({ title, pagination }) {
     );
 }
 
-function Toolbar({ toggleFilter }) {  // Destructure toggleFilter here
+function Toolbar({ toggleFilter }) {
     return (
         <div className="flex flex-row gap-2 justify-end h-12">
             <button onClick={toggleFilter} className="flex flex-grow flex-row items-center justify-center gap-2 blue-button">

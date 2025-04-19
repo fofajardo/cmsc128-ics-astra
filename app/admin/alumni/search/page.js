@@ -142,12 +142,6 @@ export default function AlumniSearch() {
           <div className="absolute inset-0 flex flex-col items-center justify-center text-astrawhite z-10">
             <h1 className="font-h1 text-center">Alumni Search</h1>
             <p className="font-s text-center">The ever-growing UPLB-ICS Alumni Network</p>
-            <button
-              onClick={toggleFilter}
-              className="mt-4 bg-astrablue text-white font-semibold px-4 py-2 rounded-lg hover:bg-astradarkblue transition"
-            >
-              Filter Results
-            </button>
           </div>
         </div>
   
