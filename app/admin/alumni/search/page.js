@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import {TableHeader, Table, PageTool} from '@/components/TableBuilder';
 import { users, alumniProfiles } from '@/components/DummyData'
 import SearchFilter from "./filter";
+import { ActionButton } from "@/components/Buttons";
 
 const alumList = [
     {
@@ -190,12 +191,14 @@ function createRows() {
 
 function renderAvatar(image, name) {
     return (
-        <div className="w-12 h-12 m-4">
-            <img
-                src={image}
-                alt={`${name}'s avatar`}
-                className="w-full h-full object-cover rounded-full"
-            />
+        <div className="flex justify-center">
+            <div className="w-12 h-12 m-3">
+                <img
+                    src={image}
+                    alt={`${name}'s avatar`}
+                    className="w-full h-full object-cover rounded-xl"
+                />
+            </div>
         </div>
     );
 }
@@ -241,20 +244,13 @@ function renderSkills(skills) {
 }
 
 function renderActions(id) {
-    const router = useRouter();
-
-    const handleClick = () => {
-        router.push(`/admin/alumni/search/${id}`);
-    };
-
     return (
         <div className="flex justify-center">
-            <button
-                className="gray-button font-sb"
-                onClick={handleClick}
-            >
-                View
-            </button>
+            <ActionButton
+                label="View"
+                color="gray"
+                route={`/admin/alumni/search/${id}`}
+            />
         </div>
     );
 }
