@@ -51,11 +51,13 @@ export default function AlumniAccess() {
                 <h1 className="font-h1">Manage Access</h1>
                 <p className="font-s">The ever-growing UPLB-ICS Alumni Network</p>
             </div>
-            <div className="flex flex-row gap-3 pt-6"> 
-                <AdminStatCard title='Registered' value = {255} icon={<GraduationCap className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={'/admin/alumni/search'}/>
-                <AdminStatCard title='Pending' value = {59} icon={<GraduationCap className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={'/admin/alumni/manage-access'}/>
-                <AdminStatCard title='Approved' value = {179} icon={<GraduationCap className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={'/admin/alumni/manage-access'}/>
-                <AdminStatCard title='Inactive' value = {12} icon={<GraduationCap className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={'/admin/alumni/manage-access'}/>
+            <div className="pt-6 pb-4 overflow-y-scroll w-full scrollbar-hide">
+                    <div className="flex flex-row gap-3 min-w-max px-4 justify-center"> 
+                        <AdminStatCard title='Registered' value = {255} icon={<GraduationCap className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={'/admin/alumni/search'}/>
+                        <AdminStatCard title='Pending' value = {59} icon={<GraduationCap className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={'/admin/alumni/manage-access'}/>
+                        <AdminStatCard title='Approved' value = {179} icon={<GraduationCap className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={'/admin/alumni/manage-access'}/>
+                        <AdminStatCard title='Inactive' value = {12} icon={<GraduationCap className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={'/admin/alumni/manage-access'}/>
+                    </div>
             </div>
           </div>
         </div>
@@ -102,9 +104,9 @@ const cols = [
     { label: 'Checkbox:label-hidden', justify: 'center', visible: 'all'},
     { label: 'Image:label-hidden', justify: 'center', visible: 'all' },
     { label: 'Name', justify: 'start', visible: 'all' },
-    { label: 'Graduation Year', justify: 'center', visible: 'md' },
-    { label: 'Student ID', justify: 'center', visible: 'lg' },
-    { label: 'Course', justify: 'center', visible: 'lg' },
+    { label: 'Graduation Year', justify: 'center', visible: 'lg' },
+    { label: 'Student ID', justify: 'center', visible: 'md' },
+    { label: 'Course', justify: 'center', visible: 'md' },
     { label: 'Quick Actions', justify: 'center', visible: 'all' },
 ];
 
@@ -186,18 +188,22 @@ function renderActions(id, name) {
             color="gray"
             route={`/admin/alumni/manage-access/${id}`}
         />
-        <ActionButton
-            label="Approve"
-            color="green"
-            notifyMessage={`${name} has been approved!`}
-            notifyType="success"
-        />
-        <ActionButton
-            label="Decline"
-            color="red"
-            notifyMessage={`${name} has been declined!`}
-            notifyType="fail"
-        />
+        <div className="hidden lg:block">
+            <ActionButton 
+                label="Approve"
+                color="green"
+                notifyMessage={`${name} has been approved!`}
+                notifyType="success"
+            />
+        </div>
+        <div className="hidden lg:block">
+            <ActionButton
+                label="Decline"
+                color="red"
+                notifyMessage={`${name} has been declined!`}
+                notifyType="fail"
+            />
+            </div>
     </div>
     );
   }
