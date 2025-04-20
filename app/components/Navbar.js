@@ -19,7 +19,7 @@ export default function Navbar() {
     { name: "About", href: "/about" },
     { name: "Events", href: "/events" },
     { name: "Projects", href: "/projects" },
-    { name: "What’s Up?", href: "/whatsup" },
+    { name: "What's Up?", href: "/whats-up" }, // Updated link
   ];
 
   return (
@@ -42,7 +42,7 @@ export default function Navbar() {
               key={link.href}
               href={link.href}
               onClick={() => setActiveLink(link.href)}
-              className={`relative transition-all duration-300 ease-in-out text-astrablack] hover:text-astraprimary 
+              className={`relative transition-all duration-300 ease-in-out text-astrablack hover:text-astraprimary 
               ${activeLink === link.href ? "text-astraprimary" : ""}
               group`}
             >

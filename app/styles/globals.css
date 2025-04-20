@@ -17,8 +17,8 @@
   --color-astradirtywhite: #F3F5F9;
   --color-astratintedwhite: #EFF2FA;
 
-  --color-astragreen: #E8403C;
-  --color-astrared: #02BB8F;
+  --color-astragreen: #02BB8F;
+  --color-astrared: #E8403C;
   --color-astrayellow: #FF8C01;
 }
 
@@ -104,4 +104,27 @@ body {
   .blue-button:hover{
     @apply bg-astradark
   }
+
+  .green-button {
+    @apply px-3 py-2 bg-astragreen text-astrawhite rounded-xl shadow-sm;
+  }
+  .green-button:hover{
+    @apply bg-[#038062]
+  }
+
+  .red-button {
+    @apply px-3 py-2 bg-astrared text-astrawhite rounded-xl shadow-sm;
+  }
+  .red-button:hover{
+    @apply bg-[#C73633]
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none; 
+    scrollbar-width: none; 
+  }
+
 }
