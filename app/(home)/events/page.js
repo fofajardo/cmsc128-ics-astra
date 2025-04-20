@@ -7,15 +7,17 @@ import FilterDropdown from "../../components/FilterDropdown";
 import DateFilter from "../../components/DateFilter";
 import { useState } from "react";
 import Pagination from "../../components/Pagination";
+import EventCarousel from "../../components/EventCarousel";
 import events from "../../data/events";
+
 
 import eventsVector from "../../assets/events-vector.png"
 
 export default function EventsPage() {
   const itemsPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
-
   const totalPages = Math.ceil(events.length / itemsPerPage);
+
   const currentEvents = events.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
@@ -25,7 +27,7 @@ export default function EventsPage() {
     <div className="w-full bg-white">
       <div className="h-[100px]" />
 
-      {/* Hero Section */}
+      {/* Hero */}
       <div
         className="relative w-full bg-cover bg-center"
         style={{ backgroundImage: "url('/blue-bg.png')" }}
@@ -35,14 +37,12 @@ export default function EventsPage() {
             <h1 className="text-[60px] font-extrabold leading-[1.1]">
               User Event <br /> & Management
             </h1>
-            <p className="text-lg font-medium text-astrawhite">
+            <p className="text-lg font-medium">
               Discover, manage, and dive into campus events in a whole new way!
             </p>
-            <div className="mt-4">
-              <button className="px-8 py-3 border-2 border-white text-white hover:bg-white hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer">
-                Explore Now
-              </button>
-            </div>
+            <button className="mt-4 px-8 py-3 border-2 border-white text-white hover:bg-white hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer">
+              Explore Now
+            </button>
           </div>
           <div className="w-full lg:w-[550px] flex justify-center">
             <div className="relative w-full h-auto max-w-[550px] animate-float">
@@ -74,7 +74,7 @@ export default function EventsPage() {
             </div>
           </div>
 
-          {/* Filters Row */}
+          {/* Filter Dropdowns */}
           <div className="w-full max-w-[1000px] flex flex-wrap justify-center gap-4 text-sm font-medium">
             <FilterDropdown
               icon="material-symbols:location-on"
@@ -108,9 +108,11 @@ export default function EventsPage() {
         </div>
       </div>
 
-      {/* Events Section */}
+      {/* All Events Section */}
       <div className="max-w-[1440px] mx-auto px-12 mt-20">
-        <h1 className="text-[28px] font-extrabold text-astradarkgray mb-10">All Events</h1>
+        <h1 className="text-[28px] font-extrabold text-astradarkgray mb-10">
+          All Events
+        </h1>
         <div className="space-y-10 transition-all duration-700 ease-in-out">
           {currentEvents.map((event, index) => (
             <EventCard key={index} {...event} />
@@ -123,7 +125,12 @@ export default function EventsPage() {
         />
       </div>
 
-      {/* Animation Styles */}
+      {/* Event Carousel Section */}
+      <div className="max-w-[1440px] mx-auto px-12 mt-24">
+        <EventCarousel events={events} />
+      </div>
+
+      {/* Animations */}
       <style jsx global>{`
         @keyframes floatUp {
           0% {
