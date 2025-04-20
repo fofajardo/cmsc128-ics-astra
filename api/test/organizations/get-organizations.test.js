@@ -22,7 +22,7 @@ describe('Organizations API Tests', function () {
         it('should return 200 and details of a single project', async function () {
             const id = '2ec78beb-da60-435d-bbe1-b48f25b29326'; // Actual id
             const res = await request(app).get(`/v1/organizations/${id}`);
-
+            console.log(res.body);
             expect(res.status).to.equal(httpStatus.OK);
             expect(res.body).to.be.an('object');
 

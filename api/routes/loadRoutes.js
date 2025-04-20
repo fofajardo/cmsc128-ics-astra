@@ -6,6 +6,7 @@ import eventInterestsRouter from "./eventInterestsRoutes.js";
 import authRouter from "./authRoutes.js";
 import projectsRouter from "./projectsRoutes.js";
 import donationsRouter from "./donationsRoutes.js";
+import organizationsRouter from "./organizationsRoutes.js";
 
 const registerRoutes = (app, supabase) => {
     app.use("/v1/users", usersRouter(supabase));
@@ -16,6 +17,7 @@ const registerRoutes = (app, supabase) => {
     app.use('/v1/auth', authRouter());
     app.use("/v1/projects", projectsRouter(supabase));
     app.use("/v1/donations", donationsRouter(supabase));
+    app.use("/v1/organizations", organizationsRouter(supabase));
 }
 
 export default registerRoutes;
