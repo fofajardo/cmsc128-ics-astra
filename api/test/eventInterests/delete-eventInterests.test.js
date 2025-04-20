@@ -10,7 +10,7 @@ describe('Event Interests API Tests', function () {
         // Test case for successful deletion of an event interest
         it('should return 200 with DELETED status for event interest', async function () {
             const testAlumId = "75b6e610-9d0b-4884-b405-1e682e3aa3de";    // always replace with existing ids after running the test
-            const testContentId = "885b0b2e-ced1-4c0f-8aac-1fb6857548ec";
+            const testContentId = "f9b7efab-003c-44f9-bea7-c856fb1e73cd";
 
             const res = await request(app)
                 .delete(`/v1/eventInterests/${testAlumId}/${testContentId}`);
@@ -28,7 +28,7 @@ describe('Event Interests API Tests', function () {
         // Test case for deletion with empty alumn id and content id
         it('should return 400 for empty alumn and content ID', async function () {
             const res = await request(app)
-                .delete('/v1/eventInterests/');
+                .delete(`/v1/eventInterests/`);
 
             expect(res.status).to.equal(httpStatus.BAD_REQUEST);
             expect(res.body).to.be.an('object');
@@ -38,8 +38,8 @@ describe('Event Interests API Tests', function () {
 
         // Test case for deletion with non-existent alumn id and content id but follows a valid format
         it('should return proper response for non-existent alumn and content ID', async function () {
-            const nonExistentAlumnId = '00000000-0000-4000-a000-000000000000';
-            const nonExistentContentId = '00000000-0000-4000-a000-000000000001';
+            const nonExistentAlumnId = 'b4a6b230-20b9-4137-af62-8b535841c991';
+            const nonExistentContentId = 'b4a6b230-20b9-4137-af62-8b535551c391';
             const res = await request(app)
                 .delete(`/v1/eventInterests/${nonExistentAlumnId}/${nonExistentContentId}`);
 

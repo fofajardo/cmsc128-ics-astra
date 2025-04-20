@@ -10,8 +10,8 @@ describe('Event Interest API Tests', function () {
             const res = await request(app)
                 .post('/v1/eventInterests')
                 .send({
-                    alumnId: "75b6e610-9d0b-4884-b405-1e682e3aa3de",
-                    contentId: "4b02a71e-8e52-42ce-b545-a2f0960f1d16"
+                    alum_id: "b4a6b230-20b9-4137-af62-8b535841c391",   //change the values after running the test
+                    content_id: "c454a632-ead0-494a-a33b-0268dc2208ab"
                 });
 
             expect(res.status).to.equal(httpStatus.CREATED);
@@ -25,7 +25,7 @@ describe('Event Interest API Tests', function () {
             const res = await request(app)
                 .post('/v1/eventInterests')
                 .send({
-                    alumnId: "75b6e610-9d0b-4884-b405-1e682e3aa3de",
+                    alum_id: "75b6e610-9d0b-4884-b405-1e682e3aa3de",
 
                 });
 
@@ -40,8 +40,8 @@ describe('Event Interest API Tests', function () {
             const res = await request(app)
                 .post('/v1/eventInterests')
                 .send({
-                    alumnId: "75b6e610-9d0b-4884-b405-1e682e3aa3de",
-                    contentId: 0
+                    alum_id: "75b6e610-9d0b-4884-b405-1e682e3aa3de",
+                    content_id: 0
                 });
 
             expect(res.status).to.equal(httpStatus.BAD_REQUEST);
