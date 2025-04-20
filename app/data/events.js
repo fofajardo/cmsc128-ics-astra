@@ -1,4 +1,3 @@
-// app/data/eventData.js
 import venue1 from "../assets/venue1.jpeg";
 import venue2 from "../assets/venue2.jpeg";
 import avatar1 from "../assets/avatar1.jpg";
@@ -7,6 +6,7 @@ import avatar3 from "../assets/avatar3.jpg";
 
 const events = [
   {
+    id: "alumni-meetup-2025",
     imageSrc: venue1,
     title: "Alumni Meetup 2025",
     description: "Catch up with old friends and make new connections.",
@@ -18,6 +18,7 @@ const events = [
     theme: "blue",
   },
   {
+    id: "tech-talk-tuesdays",
     imageSrc: venue2,
     title: "TechTalk Tuesdays",
     description: "Join industry leaders as they talk latest tech trends.",
@@ -29,6 +30,7 @@ const events = [
     theme: "blue",
   },
   {
+    id: "start-up-showcase",
     imageSrc: venue1,
     title: "Start-up Showcase",
     description: "Explore the startup ideas of recent graduates.",
@@ -40,6 +42,7 @@ const events = [
     theme: "blue",
   },
   {
+    id: "wellness-workshop",
     imageSrc: venue2,
     title: "Wellness Workshop",
     description: "Learn how to take care of your mental health.",
@@ -51,6 +54,7 @@ const events = [
     theme: "blue",
   },
   {
+    id: "finance-101",
     imageSrc: venue1,
     title: "Finance 101",
     description: "Get smart about your money post-graduation.",
@@ -62,6 +66,7 @@ const events = [
     theme: "blue",
   },
   {
+    id: "design-thinking-sprint",
     imageSrc: venue2,
     title: "Design Thinking Sprint",
     description: "Work in teams to solve real-world problems creatively.",
@@ -73,6 +78,7 @@ const events = [
     theme: "blue",
   },
   {
+    id: "internship-prep-seminar",
     imageSrc: venue1,
     title: "Internship Prep Seminar",
     description: "Get ready for your big break with internship tips!",
@@ -84,6 +90,7 @@ const events = [
     theme: "blue",
   },
   {
+    id: "cv-resume-building",
     imageSrc: venue2,
     title: "CV & Resume Building",
     description: "Stand out in job applications with a strong resume.",
@@ -95,6 +102,7 @@ const events = [
     theme: "blue",
   },
   {
+    id: "mock-interviews",
     imageSrc: venue1,
     title: "Mock Interviews",
     description: "Practice makes perfect! Nail that dream job.",
@@ -106,6 +114,7 @@ const events = [
     theme: "blue",
   },
   {
+    id: "coding-hackathon",
     imageSrc: venue2,
     title: "Coding Hackathon",
     description: "Code your way through challenges and win prizes!",
@@ -117,6 +126,7 @@ const events = [
     theme: "blue",
   },
   {
+    id: "research-showcase",
     imageSrc: venue1,
     title: "Research Showcase",
     description: "See the research breakthroughs by our top students.",
@@ -128,6 +138,7 @@ const events = [
     theme: "blue",
   },
   {
+    id: "women-in-tech",
     imageSrc: venue2,
     title: "Women in Tech Forum",
     description: "Empowering female voices in the tech industry.",
@@ -139,6 +150,7 @@ const events = [
     theme: "blue",
   },
   {
+    id: "ai-ethics-debate",
     imageSrc: venue1,
     title: "AI Ethics Debate",
     description: "A lively debate on ethical AI applications.",
@@ -150,6 +162,7 @@ const events = [
     theme: "blue",
   },
   {
+    id: "volunteer-drive",
     imageSrc: venue2,
     title: "Volunteer Drive",
     description: "Give back to the community through volunteering.",
@@ -161,6 +174,7 @@ const events = [
     theme: "blue",
   },
   {
+    id: "career-fair",
     imageSrc: venue1,
     title: "Career Fair",
     description: "Meet potential employers and network.",
@@ -172,6 +186,7 @@ const events = [
     theme: "blue",
   },
   {
+    id: "art-exhibit",
     imageSrc: venue2,
     title: "Art Exhibit Opening",
     description: "Feast your eyes on student artistic excellence.",
@@ -183,6 +198,7 @@ const events = [
     theme: "blue",
   },
   {
+    id: "environmental-talk",
     imageSrc: venue1,
     title: "Environmental Talk",
     description: "Learn about sustainability and climate solutions.",
@@ -194,6 +210,7 @@ const events = [
     theme: "blue",
   },
   {
+    id: "data-science-meetup",
     imageSrc: venue2,
     title: "Data Science Meetup",
     description: "Talk shop with fellow data lovers.",
@@ -205,6 +222,7 @@ const events = [
     theme: "blue",
   },
   {
+    id: "grad-orientation",
     imageSrc: venue1,
     title: "Grad School Orientation",
     description: "Incoming grad students? This one's for you!",
@@ -216,6 +234,7 @@ const events = [
     theme: "blue",
   },
   {
+    id: "thesis-defense-prep",
     imageSrc: venue2,
     title: "Thesis Defense Prep",
     description: "Get ready to ace your defense!",
@@ -225,7 +244,7 @@ const events = [
     status: "Open",
     avatars: [avatar1.src, avatar3.src],
     theme: "blue",
-  },
+  }
 ];
 
 export default events;

@@ -1,8 +1,10 @@
 "use client";
 import Image from "next/image";
+import Link from "next/link";
 import { Icon } from "@iconify/react";
 
 export default function EventCard({
+  id,
   imageSrc,
   title,
   description,
@@ -15,7 +17,6 @@ export default function EventCard({
   return (
     <div className="group bg-astrawhite shadow-md hover:shadow-lg transition-shadow duration-300 rounded-[20px] overflow-hidden w-full max-w-[1200px] mx-auto mb-8 min-h-[220px] border border-astragray">
       <div className="flex">
-        {/* Left Image */}
         <div className="relative w-[300px] min-h-full overflow-hidden">
           <Image
             src={imageSrc}
@@ -26,19 +27,17 @@ export default function EventCard({
           />
         </div>
 
-        {/* Right Content */}
         <div className="flex-1 p-6 flex flex-col justify-between">
-          {/* Top Info Section */}
           <div>
             <div className="flex items-center gap-3">
               <h2 className="text-2xl font-bold text-astrablack group-hover:text-astraprimary transition-colors duration-300">
                 {title}
               </h2>
               <span
-                className={`px-3 py-1 rounded-md text-sm font-semibold transition-all duration-300 ${
+                className={`px-3 py-1 rounded-md text-sm font-semibold ${
                   status === "Open"
                     ? "bg-green-100 text-green-600"
-                    : "bg-red-500 text-astrawhite"
+                    : "bg-red-500 text-white"
                 }`}
               >
                 {status}
@@ -64,7 +63,6 @@ export default function EventCard({
               </div>
             </div>
 
-            {/* Avatars */}
             <div className="flex items-center mt-4 space-x-[-10px]">
               {avatars.map((avatar, idx) => (
                 <div
@@ -83,11 +81,12 @@ export default function EventCard({
             </div>
           </div>
 
-          {/* Bottom Right VIEW ALL Button */}
           <div className="flex justify-end items-center mt-6">
-            <button className="bg-astraprimary text-astrawhite text-sm px-6 py-2 rounded-md font-bold hover:bg-astradark transition-all duration-300 hover:scale-105 shadow-sm hover:shadow-md cursor-pointer">
-              VIEW ALL
-            </button>
+            <Link href={`/events/${id}`}>
+              <button className="bg-astraprimary text-astrawhite text-sm px-6 py-2 rounded-md font-bold hover:bg-astradark transition-all duration-300 hover:scale-105 shadow-sm hover:shadow-md cursor-pointer">
+                VIEW ALL
+              </button>
+            </Link>
           </div>
         </div>
       </div>
