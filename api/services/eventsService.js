@@ -16,12 +16,18 @@ const fetchEventById = async (supabase, eventId) => {
         .single();
 };
 
-const checkExistingEvent = async (supabase, eventDate, venue) => {
+const checkExistingEvent = async (supabase, event_date, venue) => {
+    const parsedDate = new Date(event_date);
     return await supabase
         .from("events")
-        .select("event_id")
-        .eq("event_date", eventDate)
-        .eq("venue", venue);
+        .select()
+        .match({ event_date: parsedDate.toISOString(), venue: venue });
+};
+const checkExistingEventById = async (supabase, eventId) => {
+    return await supabase
+        .from("events")
+        .select()
+        .eq("event_id", eventId);
 };
 
 const insertEvent = async (supabase, eventData) => {
@@ -57,6 +63,7 @@ const eventsService = {
     fetchEvents,
     fetchEventById,
     checkExistingEvent,
+    checkExistingEventById,
     insertEvent,
     findEvent,
     updateEventData,

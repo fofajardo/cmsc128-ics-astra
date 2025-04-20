@@ -10,8 +10,9 @@ describe('Events API Tests', function () {
             const res = await request(app)
                 .post('/v1/events')
                 .send({
-                    event_date: new Date('2025-04-14'),
-                    venue: 'EB Copeland Gym',
+                    event_id : "885b0b2e-ced1-4c0f-8aac-1fb6857548ec", // event_id is reference from content_id
+                    event_date: new Date('2025-04-15'),
+                    venue: 'Lecture Hall 4',
                     external_link: 'bit.ly/PalICSihan-FBPage',
                     access_link: '',
                     interested_count: 0,
@@ -32,6 +33,7 @@ describe('Events API Tests', function () {
             const res = await request(app)
                 .post('/v1/events')
                 .send({
+                    event_id:"f9b7efab-003c-44f9-bea7-c856fb1e73cd",
                     event_date: new Date('2025-08-14'),
                     venue: 'NCAS Auditorium',
                     external_link: 'bit.ly/info-link',
@@ -52,6 +54,7 @@ describe('Events API Tests', function () {
             const res = await request(app)
                 .post('/v1/events')
                 .send({
+                    event_id: "f9b7efab-003c-44f9-bea7-c856fb1e73cd", // event_id is reference from content_id
                     event_date: new Date('2025-08-14'),
                     venue: 'NCAS Auditorium',
                     external_link: 'bit.ly/info-link',

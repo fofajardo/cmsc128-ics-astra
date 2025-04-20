@@ -8,6 +8,7 @@ const eventsRouter = (supabase) => {
     router.get("/:eventId", eventsController.getEventById(supabase));
     router.post("/", eventsController.createEvent(supabase));
     router.put("/:eventId", eventsController.updateEvent(supabase));
+    router.delete("/", eventsController.deleteEmptyEvent());
     router.delete("/:eventId", eventsController.deleteEvent(supabase));
 
     return router;
