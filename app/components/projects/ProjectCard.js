@@ -1,5 +1,7 @@
+'use client';
 import Image from 'next/image';
 import sampleImage from '../../assets/Donation.jpg';
+
 
 
 export default function ProjectCard({

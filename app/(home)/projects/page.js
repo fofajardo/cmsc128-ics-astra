@@ -10,7 +10,7 @@ export default function ProjectsPage() {
 
       {/* Hero Section */}
       <section className="relative bg-[url('/blue-bg.png')] bg-cover bg-center text-white text-center py-32">
-  <div className="absolute inset-0 bg-black bg-opacity-50" />
+  {/*<div className="absolute inset-0 bg-black bg-opacity-20 z-0" />*/}
   <div className="relative z-10">
     <h2 className="text-xl font-medium">Equal access to tech futures</h2>
     <h1 className="text-4xl font-bold mt-2">Debug the <br /> opportunity gap</h1>
