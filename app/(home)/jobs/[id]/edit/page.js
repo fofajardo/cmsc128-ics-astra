@@ -5,12 +5,12 @@ import { ArrowLeft } from "lucide-react";
 export default function JobsPage() {
     const job = {
         salary:70000, 
-        title:"Google Cloud Engineer", 
-        company:"Google Philippines", 
+        job_title:"Google Cloud Engineer", 
+        company_name:"Google Philippines", 
         location:"38th Floor, Seven NEO, Building 5th Ave, Manila, 1016 Metro Manila", 
-        expiryDate: "June 16, 2025, 11:59 PM", 
-        employmentType: "Full-Time", 
-        workArrangement: "Onsite",
+        expires_at: new Date(), 
+        employment_type: "Full-Time", 
+        location_type: "Onsite",
         details: 
         `As a Cloud Engineer at Google Cloud, you'll design,  build, and optimize scalable cloud solutions that help businesses  transform and innovate. You'll work with cutting-edge technologies like Kubernetes, BigQuery, and AI/ML tools to architect secure, high-performance infrastructure. Partnering with customers and internal  teams, you’ll solve complex technical challenges and drive cloud adoption worldwide.
 

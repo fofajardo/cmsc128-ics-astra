@@ -1,17 +1,17 @@
 const jobs = [
-    {key:0, salary:70000, title:"Full Stack Flutter Developer", company:"iLearn Technology Solutions, Inc.", location:"Makati City, Philippines", expiryDate: new Date(), employmentType: "Full-Time", workArrangement: "Hybrid"},
-    {key:1, salary:70000, title:"Full Stack Flutter Developer", company:"iLearn Technology Solutions, Inc.", location:"Makati City, Philippines", expiryDate: new Date(), employmentType: "Full-Time", workArrangement: "Hybrid"},
-    {key:2, salary:70000, title:"Full Stack Flutter Developer", company:"iLearn Technology Solutions, Inc.", location:"Makati City, Philippines", expiryDate: new Date(), employmentType: "Full-Time", workArrangement: "Hybrid"},
-    {key:3, salary:70000, title:"Full Stack Flutter Developer", company:"iLearn Technology Solutions, Inc.", location:"Makati City, Philippines", expiryDate: new Date(), employmentType: "Full-Time", workArrangement: "Hybrid"},
-    {key:4, salary:70000, title:"Full Stack Flutter Developer", company:"iLearn Technology Solutions, Inc.", location:"Makati City, Philippines", expiryDate: new Date(), employmentType: "Full-Time", workArrangement: "Hybrid"},
-    {key:5, salary:70000, title:"Full Stack Flutter Developer", company:"iLearn Technology Solutions, Inc.", location:"Makati City, Philippines", expiryDate: new Date(), employmentType: "Full-Time", workArrangement: "Hybrid"},
-    {key:6, salary:70000, title:"Full Stack Flutter Developer", company:"iLearn Technology Solutions, Inc.", location:"Makati City, Philippines", expiryDate: new Date(), employmentType: "Full-Time", workArrangement: "Hybrid"}
+    { job_id: 0, salary: 70000, job_title: "Full Stack Flutter Developer", company_name: "iLearn Technology Solutions, Inc.", location: "Makati City, Philippines", expires_at: new Date(), employment_type: "Full-Time", location_type: "Hybrid" },
+    { job_id: 1, salary: 70000, job_title: "Full Stack Flutter Developer", company_name: "iLearn Technology Solutions, Inc.", location: "Makati City, Philippines", expires_at: new Date(), employment_type: "Full-Time", location_type: "Hybrid" },
+    { job_id: 2, salary: 70000, job_title: "Full Stack Flutter Developer", company_name: "iLearn Technology Solutions, Inc.", location: "Makati City, Philippines", expires_at: new Date(), employment_type: "Full-Time", location_type: "Hybrid" },
+    { job_id: 3, salary: 70000, job_title: "Full Stack Flutter Developer", company_name: "iLearn Technology Solutions, Inc.", location: "Makati City, Philippines", expires_at: new Date(), employment_type: "Full-Time", location_type: "Hybrid" },
+    { job_id: 4, salary: 70000, job_title: "Full Stack Flutter Developer", company_name: "iLearn Technology Solutions, Inc.", location: "Makati City, Philippines", expires_at: new Date(), employment_type: "Full-Time", location_type: "Hybrid" },
+    { job_id: 5, salary: 70000, job_title: "Full Stack Flutter Developer", company_name: "iLearn Technology Solutions, Inc.", location: "Makati City, Philippines", expires_at: new Date(), employment_type: "Full-Time", location_type: "Hybrid" },
+    { job_id: 6, salary: 70000, job_title: "Full Stack Flutter Developer", company_name: "iLearn Technology Solutions, Inc.", location: "Makati City, Philippines", expires_at: new Date(), employment_type: "Full-Time", location_type: "Hybrid" }
 ];
 
 const myJobs = [
-    {key:0, salary:270000, title:"Google Cloud Engineer", company:"Google Philippines", location:"Taguig City, Philippines", expiryDate: new Date(), employmentType: "Full-Time", workArrangement: "Onsite"},
-    {key:1, salary:270000, title:"Google Cloud Engineer", company:"Google Philippines", location:"Taguig City, Philippines", expiryDate: new Date(), employmentType: "Full-Time", workArrangement: "Onsite"},
-    {key:2, salary:270000, title:"Google Cloud Engineer", company:"Google Philippines", location:"Taguig City, Philippines", expiryDate: new Date(), employmentType: "Full-Time", workArrangement: "Onsite"}
+    { job_id: 0, salary: 270000, job_title: "Google Cloud Engineer", company_name: "Google Philippines", location: "Taguig City, Philippines", expires_at: new Date(), employment_type: "Full-Time", location_type: "Onsite" },
+    { job_id: 1, salary: 270000, job_title: "Google Cloud Engineer", company_name: "Google Philippines", location: "Taguig City, Philippines", expires_at: new Date(), employment_type: "Full-Time", location_type: "Onsite" },
+    { job_id: 2, salary: 270000, job_title: "Google Cloud Engineer", company_name: "Google Philippines", location: "Taguig City, Philippines", expires_at: new Date(), employment_type: "Full-Time", location_type: "Onsite" }
 ];
 
 const filters = [

@@ -25,9 +25,9 @@ export default function JobsPage() {
 
       <div className="grid grid-cols-[351px] lg:grid-cols-[351px_351px_351px] md:grid-cols-[351px_351px] gap-5 justify-items-center justify-center mx-30">
       <h1 className="text-astrablack font-bold text-2xl ml-2 lg:col-span-3 md:col-span-2 justify-self-start">Recommended Jobs</h1>
-        {jobs.map(({key, ...job}) => {
+        {jobs.map((job) => {
           return (
-            <JobCard key={key} {...job}/>
+            <JobCard key={job.job_id} job={job}/>
         )})}
       </div>
       
@@ -35,9 +35,9 @@ export default function JobsPage() {
 
       <div className="grid grid-cols-[351px] lg:grid-cols-[351px_351px_351px] md:grid-cols-[351px_351px] gap-5 justify-items-center justify-center mx-30">
       <h1 className="text-astrablack font-bold text-2xl ml-2 lg:col-span-3 md:col-span-2 justify-self-start">Manage My Job Postings</h1>
-        {myJobs.map(({key, ...job}) => {
+        {myJobs.map((job) => {
           return (
-            <JobEditCard key={key} {...job}/>
+            <JobEditCard key={job.job_id} job={job}/>
         )})}
       </div>
 
