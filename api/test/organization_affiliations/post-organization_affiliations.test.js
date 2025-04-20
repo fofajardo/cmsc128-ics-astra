@@ -51,5 +51,13 @@ describe('Organization Affiliations API Tests', function () {
             expect(res.body).to.have.property('status').to.equal('FAILED');
             expect(res.body).to.have.property('message');
         });
+
+        // 🧹 Clean up using DELETE route
+        after(async function () {
+                const res = await request(app)
+                    .delete(`/v1/users/${alumId}/organizations/${testAffiliation.org_id}`);
+                expect(res.status).to.be.oneOf([httpStatus.OK, httpStatus.NO_CONTENT]);
+        });
+
     });
 });
