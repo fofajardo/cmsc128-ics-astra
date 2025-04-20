@@ -1,8 +1,19 @@
+'use client';
+
 import { Clock } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function JobEditCard({job}) {
-    const {employment_type, location_type} = job
+    const router = useRouter();
+    
+    const viewPost = () => {
+        router.push(`/jobs/${job.job_id}/view`);
+    };
+
+    const editPost = () => {
+        router.push(`/jobs/${job.job_id}/edit`);
+    };
 
     return (
     <div className="bg-astrawhite w-[351px] h-[308px] rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] p-6">
@@ -32,8 +43,8 @@ export default function JobEditCard({job}) {
         </div>
        
         <div className="flex gap-2 items-center py-2.5 justify-center">
-            <button className="text-astrawhite border-1 border-astraprimary bg-astraprimary font-semibold w-7/10 py-3 rounded-lg">View Post</button>
-            <button className="text-astraprimary border-1 border-astraprimary font-semibold w-3/10 py-3 rounded-lg">Edit</button>
+            <button onClick={viewPost} className="text-astrawhite border-1 border-astraprimary bg-astraprimary font-semibold w-7/10 py-3 rounded-lg">View Post</button>
+            <button onClick={editPost} className="text-astraprimary border-1 border-astraprimary font-semibold w-3/10 py-3 rounded-lg">Edit</button>
         </div>
     
     </div>

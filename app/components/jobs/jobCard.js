@@ -1,7 +1,17 @@
+'use client';
+
 import { Clock } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function JobCard({job}) {
+    const router = useRouter();
+
+    const viewPost = () => {
+        router.push(`/jobs/${job.job_id}/view`);
+    };
+
     return (
     <div className="bg-astrawhite w-[351px] h-[308px] rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] p-6">
         
@@ -30,8 +40,8 @@ export default function JobCard({job}) {
         </div>
        
         <div className="flex gap-2 items-center py-2.5 justify-center">
-            <button className="text-astrawhite border-1 border-astraprimary bg-astraprimary font-semibold w-7/10 py-3 rounded-lg">Apply Now</button>
-            <button className="text-astraprimary border-1 border-astraprimary font-semibold w-3/10 py-3 rounded-lg">View</button>
+            <Link href={job.apply_link} target="_blank" className="text-center text-astrawhite border-1 border-astraprimary bg-astraprimary font-semibold w-7/10 py-3 rounded-lg">Apply Now</Link>
+            <button onClick={viewPost} className="text-astraprimary border-1 border-astraprimary font-semibold w-3/10 py-3 rounded-lg">View</button>
         </div>
     
     </div>
