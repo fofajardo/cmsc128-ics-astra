@@ -1,4 +1,4 @@
-import { Icon } from "@iconify/react";
+import { Clock } from "lucide-react";
 import Image from "next/image";
 
 export default function JobCard(job) {
@@ -16,7 +16,7 @@ export default function JobCard(job) {
         </div>
        
         <div className="flex gap-2 items-center">
-            <Icon icon="lucide:clock" width="20" height="20" className="shrink-0"/>
+            <Clock size="20"/>
             <p className="text-black text-sm">May 20, 2025</p>
         </div>
        

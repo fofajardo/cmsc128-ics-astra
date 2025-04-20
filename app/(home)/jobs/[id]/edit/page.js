@@ -1,6 +1,6 @@
 import BigJobCardwEdit from "../../../../components/jobs/edit/bigJobCardwEdit";
 import SmallJobCard from "../../../../components/jobs/view/smallJobCard";
-import { Icon } from "@iconify/react";
+import { ArrowLeft } from "lucide-react";
 
 export default function JobsPage() {
     const job = {
@@ -35,7 +35,7 @@ export default function JobsPage() {
     <div className="mt-[80px] py-8 bg-astratintedwhite w-full flex flex-col items-center">
         
         <div className="flex gap-2 self-start ml-15 mb-5">
-            <Icon icon="lucide:arrow-left" width="29" height="29" className="shrink-0"/>
+            <ArrowLeft size="29" className="shrink-0"/>
             <button className="text-astrablack font-semibold text-xl">Back</button>
         </div>
 
