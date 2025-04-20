@@ -1,4 +1,12 @@
+'use client';
+
+import { useState } from "react"
+import ConfirmationPrompt from "./confirmation";
+
 export default function BigJobCardwEdit(job) {
+    const [showPrompt, setPrompt] = useState(false);
+    const [isEdit, setEdit] = useState(undefined);
+
     return (
     <div className="bg-astrawhite max-w-[1250px] min-w-[750px] w-19/20 min-h-[308px] h-auto rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] p-10 pb-7">
         
@@ -7,12 +15,12 @@ export default function BigJobCardwEdit(job) {
                 <h1 className="text-astrablack text-2xl font-bold">{job.job_title}</h1>
                 <h2 className="text-md text-astrablack leading-4"><span className="font-bold">Offered by </span>{job.company_name}</h2>
             </div>
-            <button className="text-astrawhite border-1 border-astraprimary bg-astraprimary font-semibold w-16 py-2 rounded-lg text-lg">Edit</button>
-            <button className="text-astraprimary border-1 border-astraprimary font-semibold w-20 py-2 rounded-lg text-lg">Delete</button>
+            <button onClick={()=>{setEdit(true);setPrompt(true)}} className="text-astrawhite border-1 border-astraprimary bg-astraprimary font-semibold w-16 py-2 rounded-lg text-lg">Edit</button>
+            <button onClick={()=>{setEdit(false);setPrompt(true)}} className="text-astraprimary border-1 border-astraprimary font-semibold w-20 py-2 rounded-lg text-lg">Delete</button>
         </div>
         
         <p className="mt-5 text-black text-justify">{`${job.details}`}</p>
-
+        {showPrompt ? <ConfirmationPrompt isEdit={isEdit} close={()=>setPrompt(false)}/> : <></>} 
     </div>
   )}
   
