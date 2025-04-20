@@ -1,7 +1,7 @@
 import express from 'express';
 import httpStatus from 'http-status-codes';
 
-const getUsersRouter = (supabase) => {
+const getEventInterestsRouter = (supabase) => {
     const router = express.Router();
 
     router.get("/", async (req, res) => {
@@ -11,11 +11,9 @@ const getUsersRouter = (supabase) => {
             const endIndex = startIndex + Number(limit) - 1;
 
             const { data, error } = await supabase
-                .from("alumni_profiles")
+                .from("event_interests")
                 .select()
                 .range(startIndex, endIndex);
-
-            console.log(data);
 
             if (error) {
                 return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -23,6 +21,8 @@ const getUsersRouter = (supabase) => {
                     message: error.message
                 });
             }
+
+            console.log(data);
 
             return res.status(httpStatus.OK).json({
                 status: "OK",
@@ -37,30 +37,60 @@ const getUsersRouter = (supabase) => {
         }
     });
 
-    router.get("/:userId", async (req, res) => {
+    // GET all the event interests of an alumnus
+    router.get("/alumnus/:alumnId", async (req, res) => {
         try {
-            const { userId } = req.params;
-
-            // console.log(userId);
+            const { alumnId } = req.params;
 
             const { data, error } = await supabase
-                .from("alumni_profiles")
-                .select()
-                .eq("alum_id", userId)
-                .single();
+                .from("event_interests")
+                .select("content_id")
+                .eq("alum_id", alumnId);
 
             if (error) {
                 return res.status(httpStatus.NOT_FOUND).json({
                     status: "FAILED",
-                    message: "User not found"
+                    message: "No contents in event interests found."
                 });
             }
 
-            // console.log(data);
+            console.log(data);
 
             return res.status(httpStatus.OK).json({
                 status: "OK",
-                alumni: data
+                list: data || []
+            });
+
+        } catch (error) {
+            return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+                status: "FAILED",
+                message: error.message
+            });
+        }
+    });
+
+
+    router.get("/content/:contentId", async (req, res) => {
+        try {
+            const { contentId } = req.params;
+
+            const { data, error } = await supabase
+                .from("event_interests")
+                .select("alum_id")
+                .eq("content_id", contentId);
+
+            if (error) {
+                return res.status(httpStatus.NOT_FOUND).json({
+                    status: "FAILED",
+                    message: "No alumni in event interests found."
+                });
+            }
+
+            console.log(data);
+
+            return res.status(httpStatus.OK).json({
+                status: "OK",
+                list: data || []
             });
 
         } catch (error) {
@@ -74,4 +104,4 @@ const getUsersRouter = (supabase) => {
     return router;
 };
 
-export default getUsersRouter;
+export default getEventInterestsRouter;
