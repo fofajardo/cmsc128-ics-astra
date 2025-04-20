@@ -26,7 +26,7 @@ export default function NavbarUser() {
   return (
     <nav
       className={`fixed top-0 z-50 w-full transition-all duration-300 ${
-        isScrolled ? "shadow-lg bg-white/80 backdrop-blur-md" : "bg-[var(--color-astrawhite)]"
+        isScrolled ? "shadow-lg bg-white/80 backdrop-blur-md" : "bg-astrawhite"
       }`}
       style={{ height: "80px" }}
     >
@@ -43,14 +43,14 @@ export default function NavbarUser() {
               key={link.href}
               href={link.href}
               onClick={() => setActiveLink(link.href)}
-              className={`relative transition-all duration-300 ease-in-out text-[var(--color-astrablack)] hover:text-[var(--color-astraprimary)]
-              ${activeLink === link.href ? "text-[var(--color-astraprimary)]" : ""} group`}
+              className={`relative transition-all duration-300 ease-in-out text-astrablack hover:text-astraprimary
+              ${activeLink === link.href ? "text-astraprimary" : ""} group`}
             >
               <span className="z-10 relative">{link.name}</span>
               {/* Active Underline */}
               <span
                 className={`absolute left-1/2 -translate-x-1/2 bottom-[-16px] h-[8px] w-[100px] rounded-tl-[10px] rounded-tr-[10px] transition-all duration-300
-                ${activeLink === link.href ? "bg-[var(--color-astraprimary)] opacity-100" : "opacity-0"}`}
+                ${activeLink === link.href ? "bg-astraprimary opacity-100" : "opacity-0"}`}
               />
             </Link>
           ))}
@@ -63,7 +63,7 @@ export default function NavbarUser() {
             alt="User Avatar"
             width={46}
             height={46}
-            className="rounded-full border-2 border-[var(--color-astraprimary)] shadow-md transition-all duration-300 hover:scale-105 hover:shadow-[0_0_12px_var(--color-astraprimary)] cursor-pointer"
+            className="rounded-full border-2 border-astraprimary shadow-md transition-all duration-300 hover:scale-105 cursor-pointer"
           />
         </div>
       </div>

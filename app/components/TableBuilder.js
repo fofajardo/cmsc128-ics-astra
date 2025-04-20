@@ -1,0 +1,211 @@
+// Component to build tables for admin pages, See Alumni Search (Table Section) for implementation
+
+// info = {title:'title of table', search: 'searchbar placeholder text'}
+
+// const [pagination, setPagination] = useState({
+//     display: [1, 10], *current range showing
+//     currPage: 1, *current active page
+//     lastPage: 10, *total number of pages
+//     numToShow: 10, *how many items to show (dropdown)
+//     total: 999 *total number of items
+// });
+
+// toggleFilter = functionToShowFilterModal()
+// cols = [{label:'columnname', justify:'', visible:'all, md, lg'}]
+// data = [{'columname':<div></div>, 'columname':etc}]
+
+
+"use client"
+import { useState } from 'react';
+import { Search, SlidersHorizontal, ArrowLeft, ArrowRight } from 'lucide-react';
+
+export function TableHeader({ info, pagination, toggleFilter }) {
+    return (
+        <div>
+            <div className='flex md:hidden flex-col gap-4'>
+                <SearchComponent placeholder={info.search} />
+                <Toolbar toggleFilter={toggleFilter} />
+                <Header title={info.title} pagination={pagination} />
+            </div>
+
+            <div className='hidden md:flex md:w-full flex-row gap-4 items-center'>
+                <Header title={info.title} pagination={pagination} />
+                <div className='flex flex-row w-full justify-end gap-4'>
+                    <SearchComponent placeholder={info.search} />
+                    <Toolbar toggleFilter={toggleFilter} />
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export function SearchComponent({ placeholder }) {
+    return (
+        <div className='flex items-center bg-astrawhite rounded-xl border border-astradarkgray focus-within:border-astraprimary h-12'>
+            <Search className='m-4 text-astradarkgray w-5 h-5' />
+            <input type="text" className='outline-none' placeholder={placeholder} />
+        </div>
+    );
+}
+
+export function Header({ title, pagination }) {
+    return (
+        <div className="flex flex-row md:order-first w-full justify-center md:justify-start">
+            <div className="font-rb bg-astradark text-astrawhite rounded-tl-xl px-4 py-4 shadow-md">
+                {title}
+            </div>
+            <div className="font-s md:font-r bg-astrawhite text-astradarkgray rounded-tr-xl px-4 py-4 shadow-md">
+                Displaying <b>{pagination.display[0]}–{pagination.display[1]}</b> of <b>{pagination.total}</b> total
+            </div>
+        </div>
+    );
+}
+
+export function Toolbar({ toggleFilter }) {
+    return (
+        <div className="flex flex-row gap-2 justify-end h-12">
+            <button onClick={toggleFilter} className="flex flex-grow flex-row items-center justify-center gap-2 blue-button">
+                <SlidersHorizontal className="w-5 h-5" />
+                <span className="flex md:hidden lg:flex">Tools</span>
+            </button>
+            <select className="px-4 py-2 rounded-xl bg-astrawhite text-astradarkgray border border-astradarkgray outline-none">
+                <option value="10">5</option>
+                <option value="20">10</option>
+                <option value="30">15</option>
+                <option value="40">20</option>
+                <option value="50">25</option>
+            </select>
+        </div>
+    );
+}
+
+function getVisibilityClass(visible) {
+    switch (visible) {
+        case 'all':
+            return '';
+        case 'md':
+            return 'hidden md:table-cell';
+        case 'lg':
+            return 'hidden lg:table-cell';
+        default:
+            return '';
+    }
+}
+
+export function Table({ cols, data }) {
+    return (
+        <div className='bg-astrawhite shadow-md overflow-x-auto'>
+            <table className="w-full table-auto border-collapse">
+                <thead className="bg-astratintedwhite text-astraprimary font-s">
+                    <tr>
+                        {cols.map((col, idx) => (
+                            <th
+                                key={idx}
+                                className={`py-4 px-2 text-${col.justify === 'start' ? 'left' : col.justify} font-s ${getVisibilityClass(col.visible)}`}
+                            >
+                                {col.label.includes(':label-hidden') ? '' : col.label}
+                            </th>
+                        ))}
+                    </tr>
+                </thead>
+                <tbody>
+                    {data.map((row, rowIndex) => (
+                        <tr key={rowIndex} className="even:bg-astrawhite odd:bg-white border-b border-astralightgray">
+                            {cols.map((col, colIndex) => (
+                                <td key={colIndex} className={`justify-${col.justify} ${getVisibilityClass(col.visible)}`}>
+                                    {row[col.label]}
+                                </td>
+                            ))}
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    );
+}
+
+export function PageTool({ pagination, setPagination }) {
+    const { currPage, lastPage, total, numToShow } = pagination;
+
+    const handlePageChange = (newPage) => {
+        const start = (newPage - 1) * numToShow + 1;
+        const end = Math.min(newPage * numToShow, total);
+        setPagination({ ...pagination, currPage: newPage, display: [start, end] });
+    };
+
+    const renderPageButton = (page) => (
+        <button
+            key={page}
+            onClick={() => handlePageChange(page)}
+            className={`px-4 py-2 rounded-xl font-s ${
+                currPage === page
+                    ? 'bg-astraprimary text-astrawhite'
+                    : 'bg-transparent text-astradarkgray hover:bg-astratintedwhite'
+            }`}
+        >
+            {page}
+        </button>
+    );
+
+    const renderDots = (key) => (
+        <span key={key} className="px-2 text-astradarkgray select-none">...</span>
+    );
+
+    const getPageButtons = () => {
+        const pages = [];
+        const { currPage, lastPage } = pagination;
+    
+        pages.push(renderPageButton(1));
+    
+        const start = Math.max(2, currPage - 1);
+        const end = Math.min(lastPage - 1, currPage + 1);
+    
+        if (start > 2) {
+            pages.push(renderDots('start-dots'));
+        }
+    
+        for (let i = start; i <= end; i++) {
+            pages.push(renderPageButton(i));
+        }
+    
+        if (end < lastPage - 1) {
+            pages.push(renderDots('end-dots'));
+        }
+    
+        if (lastPage > 1) {
+            pages.push(renderPageButton(lastPage));
+        }
+    
+        return pages;
+    };
+
+    return (
+        <div className="flex items-center justify-center gap-2 py-4 cursor-pointer bg-white rounded-b-xl">
+            <button
+                onClick={() => handlePageChange(currPage - 1)}
+                disabled={currPage === 1}
+                className={`p-2 rounded-lg ${
+                    currPage === 1
+                        ? 'text-astradarkgray cursor-not-allowed'
+                        : 'text-astraprimary hover:bg-astratintedwhite'
+                }`}
+            >
+                <ArrowLeft className="w-5 h-5" />
+            </button>
+    
+            {getPageButtons()}
+    
+            <button
+                onClick={() => handlePageChange(currPage + 1)}
+                disabled={currPage === lastPage}
+                className={`p-2 rounded-lg ${
+                    currPage === lastPage
+                        ? 'text-astradarkgray cursor-not-allowed'
+                        : 'text-astraprimary hover:bg-astratintedwhite'
+                }`}
+            >
+                <ArrowRight className="w-5 h-5" />
+            </button>
+        </div>
+    );
+}
