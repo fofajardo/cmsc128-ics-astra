@@ -1,240 +1,276 @@
+import React, { useState } from 'react';
+import { Camera } from 'lucide-react';
+
 export default function EditForm({ profileData, hidePersonalForm }) {
+  const [formData, setFormData] = useState(profileData || {});
+  const [isMaidenNameChecked, setIsMaidenNameChecked] = useState(
+    profileData?.Title === "Ms." || profileData?.Title === "Mrs." ? profileData?.IsMaidenName : false
+  );
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+
+    if (type === 'radio') {
+      setFormData({ ...formData, Title: value });
+      setIsMaidenNameChecked(value === "Ms." || value === "Mrs.");
+    } else if (type === 'checkbox') {
+      setFormData({ ...formData, [name]: checked });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData({ ...formData, ProfilePicture: URL.createObjectURL(file) });
+    }
+  };
+
   return (
-    <>
-      <div className="flex justify-center w-full ">
-        <img
-          src="https://via.placeholder.com/150"
-          className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border border-gray-300"
-        />
+    <form className="space-y-4 p-8">
+      {/* Profile Picture */}
+      <div className="flex justify-center w-full mb-6 relative">
+        <div className="relative">
+          <img
+            src={formData?.ProfilePicture || "/Placeholder.png"}
+            className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-2 border-gray-300"
+            alt="Profile"
+          />
+          <input
+            type="file"
+            accept="image/*"
+            className="absolute bottom-0 right-0 opacity-0 cursor-pointer w-24 h-24 sm:w-32 sm:h-32 rounded-full"
+            onChange={handleImageChange}
+            id="profile-picture-upload"
+          />
+          <label
+            htmlFor="profile-picture-upload"
+            className="absolute bottom-0 right-0 p-2 bg-black bg-opacity-50 rounded-full cursor-pointer"
+          >
+            <Camera className="text-white" size={24} />
+          </label>
+        </div>
       </div>
-      <div className="mt-6">
-      <div>
+
+      {/* Preferred Title & Maiden Name */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Title</label>
-          <div className="flex flex-wrap gap-6">
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                name="PreferredTitle"
-                value="Mr."
-                checked={profileData?.Title === "Mr."}
-                className="form-radio h-4 w-4 text-[#00743e]"
-              />
-              <span className="ml-2">Mr.</span>
-            </label>
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                name="PreferredTitle"
-                value="Ms."
-                checked={profileData?.Title === "Ms."}
-                className="form-radio h-4 w-4 text-[#00743e]"
-              />
-              <span className="ml-2">Ms.</span>
-            </label>
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                name="PreferredTitle"
-                value="Mrs."
-                checked={profileData?.Title === "Mrs."}
-                className="form-radio h-4 w-4 text-[#00743e]"
-              />
-              <span className="ml-2">Mrs.</span>
-            </label>
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                name="PreferredTitle"
-                value="Mx."
-                checked={profileData?.Title === "Mx."}
-                className="form-radio h-4 w-4 text-[#00743e]"
-              />
-              <span className="ml-2">Mx.</span>
-            </label>
+          <div className="flex gap-4">
+            {["Mr.", "Ms.", "Mrs.", "Mx."].map((title) => (
+              <label key={title} className="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="Title"
+                  value={title}
+                  checked={formData?.Title === title}
+                  onChange={handleChange}
+                  className="form-radio h-4 w-4 text-[#00743e] focus:ring-[#00743e]"
+                />
+                <span className="ml-2">{title}</span>
+              </label>
+            ))}
           </div>
-          <div className="mt-2">
-            <label className="inline-flex items-center">
+        </div>
+        {isMaidenNameChecked && (
+          <div>
+            <label className="inline-flex items-center mt-6 sm:mt-0">
               <input
                 type="checkbox"
-                name="isMaidenName"
-                checked={profileData?.IsMaidenName}
-                className="form-checkbox h-4 w-4 text-[#00743e]"
+                name="IsMaidenName"
+                checked={formData?.IsMaidenName || false}
+                onChange={handleChange}
+                className="form-checkbox h-4 w-4 text-[#00743e] focus:ring-[#00743e]"
               />
               <span className="ml-2">Is your last name your maiden name?</span>
             </label>
           </div>
+        )}
+      </div>
+
+      {/* Name Fields */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+          <input
+            type="text"
+            name="FirstName"
+            value={formData?.FirstName || ""}
+            onChange={handleChange}
+            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#00743e]"
+            placeholder="Enter your first name"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Middle Name</label>
+          <input
+            type="text"
+            name="MiddleName"
+            value={formData?.MiddleName || ""}
+            onChange={handleChange}
+            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#00743e]"
+            placeholder="Enter your middle name"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+          <input
+            type="text"
+            name="LastName"
+            value={formData?.LastName || ""}
+            onChange={handleChange}
+            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#00743e]"
+            placeholder="Enter your last name"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Suffix</label>
+          <input
+            type="text"
+            name="Suffix"
+            value={formData?.Suffix || ""}
+            onChange={handleChange}
+            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#00743e]"
+            placeholder="Suffix (e.g., Jr., III)"
+          />
         </div>
       </div>
 
-      <div className="mt-6">
-        <div className="flex space-x-4">
-          <label className="w-full">
-            <span className="block text-sm font-medium">First Name</span>
-            <input
-              type="text"
-              name="firstName"
-              defaultValue={profileData?.FirstName}
-              className="form-input"
-            />
-          </label>
-          <label className="w-full">
-            <span className="block text-sm font-medium">Middle Name</span>
-            <input
-              type="text"
-              name="middleName"
-              defaultValue={profileData?.MiddleName}
-              className="form-input"
-            />
-          </label>
-          <label className="w-full">
-            <span className="block text-sm font-medium">Last Name</span>
-            <input
-              type="text"
-              name="lastName"
-              defaultValue={profileData?.LastName}
-              className="form-input"
-            />
-          </label>
-          <label className="w-full">
-            <span className="block text-sm font-medium">Suffix</span>
-            <input
-              type="text"
-              name="suffix"
-              defaultValue={profileData?.Suffix}
-              className="form-input"
-            />
-          </label>
-        </div>
-      </div>
-      <div className="mt-6">
-        <div className="flex space-x-4">
-          <label className="w-full">
-            <span className="block text-sm font-medium">Birthdate</span>
-            <input
-              type="date"
-              name="birthdate"
-              defaultValue={profileData?.Birthdate}
-              className="form-input"
-            />
-          </label>
-          <label className="w-full">
-            <span className="block text-sm font-medium">Place of Birth</span>
-            <input
-              type="text"
-              name="placeOfBirth"
-              defaultValue={profileData?.PlaceofBirth}
-              className="form-input"
-            />
-          </label>
-          <label className="w-full">
-            <span className="block text-sm font-medium">Student ID</span>
-            <input
-              type="text"
-              name="studentId"
-              defaultValue={profileData?.StudentID}
-              className="form-input"
-            />
-          </label>
-          <label className="w-full">
-            <span className="block text-sm font-medium">Civil Status</span>
-            <select
-              name="civilStatus"
-              defaultValue={profileData?.CivilStatus}
-              className="form-input"
-            >
-              <option value="Single">Single</option>
-              <option value="Married">Married</option>
-              <option value="Widowed">Widowed</option>
-              <option value="Separated">Separated</option>
-              <option value="Divorced">Divorced</option>
-            </select>
-          </label>
-        </div>
-      </div>
-      <div className="mt-6">
-        <div className="flex space-x-4">
-          <fieldset className="w-full">
-            <legend className="block text-sm font-medium">Gender</legend>
-            <div className="flex items-center space-x-4">
-              <label className="inline-flex items-center">
-                <input
-                  type="radio"
-                  name="gender"
-                  value="Male"
-                  className="form-radio"
-                  defaultChecked={profileData?.Gender === "Male"}
-                />
-                <span className="ml-2">Male</span>
-              </label>
-              <label className="inline-flex items-center">
-                <input
-                  type="radio"
-                  name="gender"
-                  value="Female"
-                  className="form-radio"
-                  defaultChecked={profileData?.Gender === "Female"}
-                />
-                <span className="ml-2">Female</span>
-              </label>
-              <label className="inline-flex items-center">
-                <input
-                  type="radio"
-                  name="gender"
-                  value="Other"
-                  className="form-radio"
-                  defaultChecked={profileData?.Gender === "Other"}
-                />
-                <span className="ml-2">Other</span>
-              </label>
-            </div>
-          </fieldset>
-          <label className="w-full">
-            <span className="block text-sm font-medium">Country of Citizenship</span>
-            <input
-              type="text"
-              name="citizenship"
-              defaultValue={profileData?.Citizenship}
-              className="form-input"
-            />
-          </label>
-          <label className="w-full">
-            <span className="block text-sm font-medium">UPLB Degree</span>
-            <input
-              type="text"
-              name="degree"
-              defaultValue={profileData?.Degree}
-              className="form-input"
-            />
-          </label>
-          <label className="w-full">
-            <span className="block text-sm font-medium">Graduation Year</span>
-            <input
-              type="number"
-              name="graduationYear"
-              defaultValue={profileData?.GraduationYear}
-              className="form-input"
-              min="1900"
-              max={new Date().getFullYear()}
-            />
-          </label>
-        </div>
-        <div className="mt-6 flex justify-center space-x-4">
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-600 text-white rounded"
+      {/* Degree & Graduation Year */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">UPLB Degree</label>
+          <select
+            name="Degree"
+            value={formData?.Degree || ""}
+            onChange={handleChange}
+            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#00743e]"
           >
-            Save
-          </button>
-          <button
-            type="button"
-            className="px-4 py-2 bg-red-600 text-white rounded"
-            onClick={hidePersonalForm} // Use the passed-down function
-          >
-            Cancel
-          </button>
+            <option value="">Select degree</option>
+            <option value="BS Computer Science">BS Computer Science</option>
+            <option value="MS Computer Science">MS Computer Science</option>
+            <option value="Master of Information Technology">Master of Information Technology</option>
+            <option value="PhD Computer Science">PhD Computer Science</option>
+          </select>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Graduation Year</label>
+          <input
+            type="number"
+            name="GraduationYear"
+            value={formData?.GraduationYear || ""}
+            onChange={handleChange}
+            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#00743e]"
+            min="1900"
+            max={new Date().getFullYear()}
+            placeholder="Enter your graduation year"
+          />
         </div>
       </div>
-    </>
+
+      {/* Civil Status & Student ID */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Civil Status</label>
+          <select
+            name="CivilStatus"
+            value={formData?.CivilStatus || ""}
+            onChange={handleChange}
+            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#00743e]"
+          >
+            <option value="">Select civil status</option>
+            <option value="Single">Single</option>
+            <option value="Married">Married</option>
+            <option value="Widowed">Widowed</option>
+            <option value="Separated">Separated</option>
+            <option value="Divorced">Divorced</option>
+          </select>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Student ID</label>
+          <input
+            type="text"
+            name="StudentID"
+            value={formData?.StudentID || ""}
+            onChange={handleChange}
+            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#00743e]"
+            placeholder="Enter your student ID"
+          />
+        </div>
+      </div>      
+
+      {/* Birth Info */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Birthdate</label>
+          <input
+            type="date"
+            name="Birthdate"
+            value={formData?.Birthdate || ""}
+            onChange={handleChange}
+            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#00743e]"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Place of Birth</label>
+          <input
+            type="text"
+            name="PlaceOfBirth"
+            value={formData?.PlaceOfBirth || ""}
+            onChange={handleChange}
+            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#00743e]"
+            placeholder="Enter your place of birth"
+          />
+        </div>
+      </div>
+
+      {/* Citizenship & Gender */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Country of Citizenship</label>
+          <input
+            type="text"
+            name="Citizenship"
+            value={formData?.Citizenship || ""}
+            onChange={handleChange}
+            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#00743e]"
+            placeholder="Enter your country of citizenship"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Gender</label>
+          <select
+            name="Gender"
+            value={formData?.Gender || ""}
+            onChange={handleChange}
+            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#00743e]"
+          >
+            <option value="">Select gender</option>
+            <option value="Female">Female</option>
+            <option value="Male">Male</option>
+            <option value="Non-binary">Non-binary</option>
+            <option value="Prefer not to say">Prefer not to say</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Buttons */}
+      <div className="mt-6 flex justify-center space-x-4">
+        <button
+          type="submit"
+          className="px-6 py-2 bg-[#00743e] text-white rounded-lg hover:bg-[#006233] transition-colors"
+        >
+          Save
+        </button>
+        <button
+          type="button"
+          className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+          onClick={hidePersonalForm}
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
   );
 }
-  
