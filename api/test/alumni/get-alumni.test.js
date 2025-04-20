@@ -24,7 +24,7 @@ describe('Alumni Profile API Tests', function () {
             const userId = 'b4a6b230-20b9-4137-af62-8b535841c391';
             const res = await request(app).get(`/v1/alumni/${userId}`);
 
-            console.log(res.body);
+            // console.log(res.body);
 
             expect(res.status).to.equal(httpStatus.OK);
             expect(res.body).to.be.an('object');
@@ -41,7 +41,7 @@ describe('Alumni Profile API Tests', function () {
             expect(alumniProfile).to.have.property('address').that.is.a('string');
             expect(alumniProfile).to.have.property('gender').that.is.a('string');
             expect(alumniProfile).to.have.property('student_num').that.is.a('string');
-            expect(alumniProfile).to.have.property('degree_program').that.is.a('string');
+            // expect(alumniProfile).to.have.property('degree_program').that.is.a('string');
             // TODO check if degree program is an id of a degree program
             
             expect(alumniProfile).to.have.property('year_graduated');
@@ -58,6 +58,7 @@ describe('Alumni Profile API Tests', function () {
             expect(alumniProfile).to.have.property('primary_work_experience_id').that.is.a('string');
             // TODO check if primary work experience exists
 
+            expect(alumniProfile).to.have.property('civil_status').that.is.a('number');
         });
     });
 });

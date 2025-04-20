@@ -18,7 +18,8 @@ describe('Alumni API Tests', function () {
                 location: 'Los Banos',
                 address: 'Batong Malake',
                 gender: 'Female',
-                degree_program: '904b3aaa-87f3-4493-b994-e5681d4f06a9', 
+                // degree program is removed in the supabase
+                // degree_program: '904b3aaa-87f3-4493-b994-e5681d4f06a9', 
                 year_graduated: '2020-08-01', 
                 skills: 'JavaScript, Python',
                 honorifics: 'Dr.',
