@@ -41,7 +41,7 @@ export default function JobCard({job}) {
        
         <div className="flex gap-2 items-center py-2.5 justify-center">
             <Link href={job.apply_link} target="_blank" className="text-center text-astrawhite border-1 border-astraprimary bg-astraprimary font-semibold w-7/10 py-3 rounded-lg">Apply Now</Link>
-            <button onClick={viewPost} className="text-astraprimary border-1 border-astraprimary font-semibold w-3/10 py-3 rounded-lg">View</button>
+            <button onClick={viewPost} className="!cursor-pointer text-astraprimary border-1 border-astraprimary font-semibold w-3/10 py-3 rounded-lg">View</button>
         </div>
     
     </div>

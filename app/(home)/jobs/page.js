@@ -31,7 +31,7 @@ export default function JobsPage() {
         )})}
       </div>
       
-      <button className="my-10 self-center text-lg text-astraprimary border-1 border-astraprimary font-normal w-33 py-3 rounded-lg bg-astrawhite">See More</button>
+      <button className="!cursor-pointer my-10 self-center text-lg text-astraprimary border-1 border-astraprimary font-normal w-33 py-3 rounded-lg bg-astrawhite">See More</button>
 
       <div className="grid grid-cols-[351px] lg:grid-cols-[351px_351px_351px] md:grid-cols-[351px_351px] gap-5 justify-items-center justify-center mx-30">
       <h1 className="text-astrablack font-bold text-2xl ml-2 lg:col-span-3 md:col-span-2 justify-self-start">Manage My Job Postings</h1>
@@ -41,7 +41,7 @@ export default function JobsPage() {
         )})}
       </div>
 
-      <button className="my-10 self-center text-lg text-astraprimary border-1 border-astraprimary font-normal w-33 py-3 rounded-lg bg-astrawhite">See More</button>
+      <button className="!cursor-pointer my-10 self-center text-lg text-astraprimary border-1 border-astraprimary font-normal w-33 py-3 rounded-lg bg-astrawhite">See More</button>
 
     </div>
   )}

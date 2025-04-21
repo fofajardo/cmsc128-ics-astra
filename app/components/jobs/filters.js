@@ -12,7 +12,7 @@ export default function Filter() {
         <Select unstyled options={jobTypeOptions} placeholder="Job Type" instanceId="jobType"
             classNames={{
                 control: () =>
-                'm-0 p-0 text-[var(--color-astrablack)] outline-none bg-[var(--color-astrawhite)] border border-[var(--color-astraprimary)] font-normal pl-4 w-[130px] h-[45px] rounded-lg',
+                '!cursor-pointer m-0 p-0 text-[var(--color-astrablack)] outline-none bg-[var(--color-astrawhite)] border border-[var(--color-astraprimary)] font-normal pl-4 w-[130px] h-[45px] rounded-lg',
                 valueContainer: () => 'm-0 p-0',
                 placeholder: () => 'text-[var(--color-astrablack)]',
                 dropdownIndicator: () => 'px-2 py-0 text-[var(--color-astraprimary)]',
@@ -30,7 +30,7 @@ export default function Filter() {
         <Select unstyled options={statusOptions} placeholder="Status" instanceId="status"
         classNames={{
             control: () =>
-            'm-0 p-0 text-[var(--color-astrablack)] outline-none bg-[var(--color-astrawhite)] border border-[var(--color-astraprimary)] font-normal pl-4 w-[111px] h-[45px] rounded-lg',
+            '!cursor-pointer m-0 p-0 text-[var(--color-astrablack)] outline-none bg-[var(--color-astrawhite)] border border-[var(--color-astraprimary)] font-normal pl-4 w-[111px] h-[45px] rounded-lg',
             valueContainer: () => 'm-0 p-0',
             placeholder: () => 'text-[var(--color-astrablack)]',
             dropdownIndicator: ({isFocused}) => `px-2 py-0 text-[var(--color-astraprimary)]`,
@@ -54,7 +54,7 @@ export default function Filter() {
         <Select unstyled options={locationTypeOptions} placeholder="Location Type" instanceId="locationType"
         classNames={{
             control: () =>
-            'm-0 p-0 text-[var(--color-astrablack)] outline-none bg-[var(--color-astrawhite)] border border-[var(--color-astraprimary)] font-normal pl-4 w-[155px] h-[45px] rounded-lg',
+            '!cursor-pointer m-0 p-0 text-[var(--color-astrablack)] outline-none bg-[var(--color-astrawhite)] border border-[var(--color-astraprimary)] font-normal pl-4 w-[155px] h-[45px] rounded-lg',
             valueContainer: () => 'm-0 p-0',
             placeholder: () => 'text-[var(--color-astrablack)]',
             dropdownIndicator: ({isFocused}) => `px-2 py-0 text-[var(--color-astraprimary)]`,
@@ -79,7 +79,7 @@ export default function Filter() {
         </div>
 
         {/* Most Recent */}
-        <button className="flex items-center justify-between text-astrablack bg-astrawhite outline outline-transparent border-1 border-astraprimary font-normal px-4 h-[45px] w-40 rounded-lg placeholder:text-astradarkgray">
+        <button className="!cursor-pointer flex items-center justify-between text-astrablack bg-astrawhite outline outline-transparent border-1 border-astraprimary font-normal px-4 h-[45px] w-40 rounded-lg placeholder:text-astradarkgray">
             <p>Most Recent</p>
             <ListFilter className="text-[var(--color-astraprimary)]" size={29}/>
         </button>

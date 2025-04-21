@@ -43,8 +43,8 @@ export default function JobEditCard({job}) {
         </div>
        
         <div className="flex gap-2 items-center py-2.5 justify-center">
-            <button onClick={viewPost} className="text-astrawhite border-1 border-astraprimary bg-astraprimary font-semibold w-7/10 py-3 rounded-lg">View Post</button>
-            <button onClick={editPost} className="text-astraprimary border-1 border-astraprimary font-semibold w-3/10 py-3 rounded-lg">Edit</button>
+            <button onClick={viewPost} className="!cursor-pointer text-astrawhite border-1 border-astraprimary bg-astraprimary font-semibold w-7/10 py-3 rounded-lg">View Post</button>
+            <button onClick={editPost} className="!cursor-pointer text-astraprimary border-1 border-astraprimary font-semibold w-3/10 py-3 rounded-lg">Edit</button>
         </div>
     
     </div>

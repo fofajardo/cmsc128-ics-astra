@@ -26,7 +26,7 @@ export default function JobForm({isEdit, close}){
 
     const selectStyle = {
         control: () =>
-        'outline-none border-1 border-[#C4C4C4] rounded-sm w-full min-h-[30px] min-h-[unset] h-[30px] mt-1.5 px-3 text-sm',
+        '!cursor-text outline-none border-1 border-[#C4C4C4] rounded-sm w-full min-h-[30px] min-h-[unset] h-[30px] mt-1.5 px-3 text-sm',
         valueContainer: () => 'm-0 p-0 h-full flex items-center',
         placeholder: () => 'text-[var(--color-astradarkgray)] p-0 m-0',
         dropdownIndicator: ({menuIsOpen}) => `py-0 text-[var(--color-astraprimary)] transition-transform duration-300 ease-in-out ${menuIsOpen ? 'rotate-180' : ''}`,
@@ -52,7 +52,7 @@ export default function JobForm({isEdit, close}){
             
             <div className='flex items-end justify-between border-b-1 border-b-black/30 px-8 pb-4'>
                 <h1 className="text-astrablack text-2xl font-semibold">Add Job Details</h1>
-                <X onClick={close} size={25} color='black'/>
+                <X onClick={close} size={25} color='black' className='!cursor-pointer '/>
             </div>
 
             <form className="grid grid-cols-2 gap-4 mt-5 px-8">
@@ -97,7 +97,7 @@ export default function JobForm({isEdit, close}){
 
                 <div className=''>
                     <label className='block text-black font-medium text-lg'>Deadline of Applications</label>
-                    <input  type="date" placeholder="YYYY/MM/DD" onChange={handleChange} className='placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'
+                    <input  type="date" placeholder="YYYY/MM/DD" onChange={handleChange} className='!cursor-pointer placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'
                             style={{ colorScheme: 'light', accentColor: '#0E6CF3' }}></input>
                 </div>
 
@@ -114,8 +114,8 @@ export default function JobForm({isEdit, close}){
             </form>
 
             <div className="flex justify-between my-4 px-8">
-                <button className="text-astraprimary border-1 border-astraprimary font-semibold w-35 py-2 rounded-lg text-base">Clear Details</button>
-                <button className="text-astrawhite border-1 border-astraprimary bg-astraprimary font-semibold w-35 py-2 rounded-lg text-base">Publish Post</button>
+                <button className="!cursor-pointer text-astraprimary border-1 border-astraprimary font-semibold w-35 py-2 rounded-lg text-base">Clear Details</button>
+                <button className="!cursor-pointer text-astrawhite border-1 border-astraprimary bg-astraprimary font-semibold w-35 py-2 rounded-lg text-base">Publish Post</button>
             </div>
 
         </div>

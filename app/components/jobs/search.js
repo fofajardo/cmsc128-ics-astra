@@ -7,7 +7,7 @@ export default function SearchBar() {
             <Search className="text-[var(--color-astradarkgray)]" size={28}/>
             <input type="text" placeholder="Search for job title" className="font-normal text-sm text-astradarkgray outline-none"></input>
         </div>
-        <input type="submit" value={"Search"} className="text-sm text-astrawhite bg-astraprimary font-semibold w-[100px] h-[55px] rounded-md"></input>
+        <input type="submit" value={"Search"} className="!cursor-pointer text-sm text-astrawhite bg-astraprimary font-semibold w-[100px] h-[55px] rounded-md"></input>
     </form>
   )}
   
