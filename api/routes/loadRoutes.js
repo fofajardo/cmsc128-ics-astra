@@ -6,10 +6,12 @@ import eventInterestsRouter from "./eventInterestsRoutes.js";
 import authRouter from "./authRoutes.js";
 import projectsRouter from "./projectsRoutes.js";
 import donationsRouter from "./donationsRoutes.js";
+import contentsRouter from "./contentsRoutes.js";
 
 const registerRoutes = (app, supabase) => {
     app.use("/v1/users", usersRouter(supabase));
     app.use("/v1/alumni", alumniProfilesRouter(supabase));
+    app.use("/v1/contents", contentsRouter(supabase));
     app.use("/v1/work_experiences", workExperiencesRouter(supabase));
     app.use("/v1/events", eventsRouter(supabase));
     app.use("/v1/eventInterests", eventInterestsRouter(supabase));
