@@ -15,7 +15,7 @@ const getReports = (supabase) => async (req, res) => {
 
         return res.status(httpStatus.OK).json({
             status: "OK",
-            reports: data || []
+            list: data || []
         });
 
     } catch (error) {
