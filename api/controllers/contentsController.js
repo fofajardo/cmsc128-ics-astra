@@ -1,4 +1,4 @@
-import httpStatus from "http-status-codes";
+import httpStatus from "http-status-codes"; 
 import contentsService from "../services/contentsService.js";
 
 const getContents = (supabase) => async (req, res) => {
