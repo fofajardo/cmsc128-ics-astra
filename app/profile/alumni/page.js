@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import { useState } from "react";
 import EditPersonal from './EditPersonal/page';
 import EditTechnical from './EditTechnical/page';
 import EditInterest from './EditInterest/page';
@@ -89,43 +89,18 @@ export default function AlumniProfilePage() {
     },
   ];
 
-  const [isShowPersonalForm, setIsShowPersonalForm] = React.useState(false);
-  const [isShowTechnicalForm, setIsShowTechnicalForm] = React.useState(false);
-  const [isShowInterestForm, setIsShowInterestForm] = React.useState(false);
-  const [isShowExperienceForm, setIsShowExperienceForm] = React.useState(false);
-  const [isShowAffiliationForm, setIsShowAffiliationForm] = React.useState(false);
-  const [isShowAddExperienceForm, setIsShowAddExperienceForm] = React.useState(false);
-  const [isShowAddAffiliationForm, setIsShowAddAffiliationForm] = React.useState(false);
+  const [isShowPersonalForm, setIsShowPersonalForm] = useState(false);
+  const [isShowTechnicalForm, setIsShowTechnicalForm] = useState(false);
+  const [isShowInterestForm, setIsShowInterestForm] = useState(false);
+  const [isShowExperienceForm, setIsShowExperienceForm] = useState(false);
+  const [isShowAffiliationForm, setIsShowAffiliationForm] = useState(false);
+  const [isShowAddExperienceForm, setIsShowAddExperienceForm] = useState(false);
+  const [isShowAddAffiliationForm, setIsShowAddAffiliationForm] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#eff2fa]">
-      {/* Navigation */}
-      <header className="bg-white py-4 px-6 flex items-center justify-between border-b">
-        <div className="flex items-center">
-          <img
-            src="/placeholder.svg?height=40&width=40"
-            alt="Logo"
-            className="w-[40px] h-[40px] bg-[#0e6cf3] rounded-full"
-          />
-        </div>
-        <nav className="flex items-center space-x-8">
-          {["Home", "About", "Events", "Projects", "Jobs", "What's Up?"].map((item, index) => (
-            <a key={index} href="#" className="text-[#000e42] hover:text-[#0e6cf3]">
-              {item}
-            </a>
-          ))}
-        </nav>
-        <div>
-          <img
-            src="/placeholder.svg?height=40&width=40"
-            alt="Profile"
-            className="w-[40px] h-[40px] rounded-full"
-          />
-        </div>
-      </header>
-
+    <div className="min-h-screen bg-[var(--color-astratintedwhite)]">
       <main className="container mx-auto py-8 px-4 max-w-7xl">
-      <section className="bg-white rounded-lg px-10 py-12 mb-6 max-w-7xl mx-auto">
+      <section className="bg-white rounded-lg px-10 py-12 mb-6 max-w-7xl mx-auto mt-18">
         <div className="flex flex-col md:flex-row gap-10">
           {/* Profile Picture Column */}
           <div className="flex justify-center items-center md:min-w-[200px]">
@@ -138,10 +113,10 @@ export default function AlumniProfilePage() {
 
           {/* Profile Info Column */}
           <div className="flex-1">
-            <div className="flex justify-left gap-6 items-center mb-6">
-              <h2 className="text-2xl font-bold text-[#000e42]">Profile Information</h2>
+            <div className="flex justify-left gap-4 items-center mb-6">
+              <h2 className="text-2xl font-bold text-[var(--color-astrablack)]">Profile Information</h2>
               <button
-                className="px-4 py-2 bg-[#0e6cf3] text-white hover:bg-[#0f59c3] rounded-md"
+                className="px-4 py-2 bg-[var(--color-astraprimary)] text-white hover:bg-[#0f59c3] rounded-md"
                 onClick={() => setIsShowPersonalForm(true)}
               >
                 Edit Profile
@@ -166,7 +141,7 @@ export default function AlumniProfilePage() {
 
       {/* Technical Skills */}
       <section className="bg-white rounded-lg p-8 mb-6">
-        <h2 className="text-2xl font-bold text-[#000e42] mb-6">Technical Skills</h2>
+        <h2 className="text-2xl font-bold text-[var(--color-astrablack)] mb-6">Technical Skills</h2>
         <div className="flex flex-wrap gap-2">
           {technicalSkills.map((skill, index) => (
             <SkillTag 
@@ -176,7 +151,7 @@ export default function AlumniProfilePage() {
             />
           ))}
           <button 
-            className="p-2 bg-[#eef1fb] text-[#0e6cf3] rounded-full"
+            className="p-2 bg-[(var(--color-astradirtywhite)] text-[var(--color-astraprimary)] rounded-full"
             onClick={() => setIsShowTechnicalForm(true)}
           >
             <PlusCircle size={20} />
@@ -186,7 +161,7 @@ export default function AlumniProfilePage() {
 
       {/* Fields of Interest */}
       <section className="bg-white rounded-lg p-8 mb-6">
-        <h2 className="text-2xl font-bold text-[#000e42] mb-6">Fields of Interest</h2>
+        <h2 className="text-2xl font-bold text-[var(--color-astrablack)] mb-6">Fields of Interest</h2>
         <div className="flex flex-wrap gap-2">
           {fieldOfInterests.map((interest, index) => (
             <SkillTag 
@@ -196,7 +171,7 @@ export default function AlumniProfilePage() {
             />
           ))}
           <button 
-            className="p-2 bg-[#eef1fb] text-[#0e6cf3] rounded-full"
+            className="p-2 bg-[(var(--color-astradirtywhite)] text-[var(--color-astraprimary)] rounded-full"
             onClick={() => setIsShowInterestForm(true)}
           >
             <PlusCircle size={20} />
@@ -207,16 +182,16 @@ export default function AlumniProfilePage() {
       {/* Experience */}
       <section className="bg-white rounded-lg p-8 mb-6">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-[#000e42]">Experience</h2>
+          <h2 className="text-2xl font-bold text-[var(--color-astrablack)]">Experience</h2>
             <div className="flex gap-2">
               <button 
-                className="px-4 py-2 text-[#0e6cf3] border border-[#0e6cf3] hover:bg-[#eef1fb] rounded-md"
+                className="px-4 py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[(var(--color-astradirtywhite)] rounded-md"
                 onClick={() => setIsShowAddExperienceForm(true)}
               >
                 Add Experience
               </button>
               <button 
-                className="px-4 py-2 text-[#0e6cf3] border border-[#0e6cf3] hover:bg-[#eef1fb] rounded-md"
+                className="px-4 py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[(var(--color-astradirtywhite)] rounded-md"
                 onClick={() => setIsShowExperienceForm(true)}
               >
                 Edit Experience
@@ -228,7 +203,7 @@ export default function AlumniProfilePage() {
             {experiences.map((exp, index) => (
               <div key={index} className="flex">
                 <div className="mr-4">
-                  <div className={`w-2 h-full ${index === 0 ? "bg-[#0e6cf3]" : "bg-[#64a4ff]"} rounded-full`}></div>
+                  <div className={`w-2 h-full ${index === 0 ? "bg-[var(--color-astraprimary)]" : "bg-[#64a4ff]"} rounded-full`}></div>
                 </div>
                 <div className="flex-1">
                   <h3 className="text-lg font-bold">{exp.company}</h3>
@@ -245,16 +220,16 @@ export default function AlumniProfilePage() {
         {/* Organization Affiliations */}
         <section className="bg-white rounded-lg p-8 mb-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-[#000e42]">Organization Affiliations</h2>
+            <h2 className="text-2xl font-bold text-[var(--color-astrablack)]">Organization Affiliations</h2>
             <div className="flex gap-2">
               <button 
-                className="px-4 py-2 text-[#0e6cf3] border border-[#0e6cf3] hover:bg-[#eef1fb] rounded-md"
+                className="px-4 py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[(var(--color-astradirtywhite)] rounded-md"
                 onClick={() => setIsShowAddAffiliationForm(true)}
               >
                 Add Affiliation
               </button>
               <button 
-                className="px-4 py-2 text-[#0e6cf3] border border-[#0e6cf3] hover:bg-[#eef1fb] rounded-md"
+                className="px-4 py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[(var(--color-astradirtywhite)] rounded-md"
                 onClick={() => setIsShowAffiliationForm(true)}
               >
                 Edit Affiliation
@@ -266,7 +241,7 @@ export default function AlumniProfilePage() {
             {affiliations.map((aff, index) => (
               <div key={index} className="flex">
                 <div className="mr-4">
-                  <div className={`w-2 h-full ${index === 0 ? "bg-[#0e6cf3]" : "bg-[#64a4ff]"} rounded-full`}></div>
+                  <div className={`w-2 h-full ${index === 0 ? "bg-[var(--color-astraprimary)]" : "bg-[#64a4ff]"} rounded-full`}></div>
                 </div>
                 <div className="flex-1">
                   <h3 className="text-lg font-bold">{aff.organization}</h3>

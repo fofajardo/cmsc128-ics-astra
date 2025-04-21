@@ -28,6 +28,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
   };
 
   return (
+  <div className="max-h-[90vh] overflow-y-auto">
     <form className="space-y-4 p-8">
       {/* Profile Picture */}
       <div className="flex justify-center w-full mb-6 relative">
@@ -66,7 +67,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
                   value={title}
                   checked={formData?.Title === title}
                   onChange={handleChange}
-                  className="form-radio h-4 w-4 text-[#00743e] focus:ring-[#00743e]"
+                  className="form-radio h-4 w-4 text-[var(--color-astraprimary)] focus:ring-[var(--color-astraprimary)]"
                 />
                 <span className="ml-2">{title}</span>
               </label>
@@ -74,14 +75,14 @@ export default function EditForm({ profileData, hidePersonalForm }) {
           </div>
         </div>
         {isMaidenNameChecked && (
-          <div>
+          <div className="flex flex-col mt-auto">
             <label className="inline-flex items-center mt-6 sm:mt-0">
               <input
                 type="checkbox"
                 name="IsMaidenName"
                 checked={formData?.IsMaidenName || false}
                 onChange={handleChange}
-                className="form-checkbox h-4 w-4 text-[#00743e] focus:ring-[#00743e]"
+                className="form-checkbox h-4 w-4 text-[var(--color-astraprimary)] focus:ring-[var(--color-astraprimary)]"
               />
               <span className="ml-2">Is your last name your maiden name?</span>
             </label>
@@ -98,7 +99,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
             name="FirstName"
             value={formData?.FirstName || ""}
             onChange={handleChange}
-            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#00743e]"
+            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
             placeholder="Enter your first name"
           />
         </div>
@@ -109,7 +110,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
             name="MiddleName"
             value={formData?.MiddleName || ""}
             onChange={handleChange}
-            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#00743e]"
+            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
             placeholder="Enter your middle name"
           />
         </div>
@@ -120,7 +121,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
             name="LastName"
             value={formData?.LastName || ""}
             onChange={handleChange}
-            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#00743e]"
+            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
             placeholder="Enter your last name"
           />
         </div>
@@ -131,7 +132,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
             name="Suffix"
             value={formData?.Suffix || ""}
             onChange={handleChange}
-            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#00743e]"
+            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
             placeholder="Suffix (e.g., Jr., III)"
           />
         </div>
@@ -145,7 +146,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
             name="Degree"
             value={formData?.Degree || ""}
             onChange={handleChange}
-            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#00743e]"
+            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
           >
             <option value="">Select degree</option>
             <option value="BS Computer Science">BS Computer Science</option>
@@ -161,7 +162,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
             name="GraduationYear"
             value={formData?.GraduationYear || ""}
             onChange={handleChange}
-            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#00743e]"
+            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
             min="1900"
             max={new Date().getFullYear()}
             placeholder="Enter your graduation year"
@@ -177,7 +178,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
             name="CivilStatus"
             value={formData?.CivilStatus || ""}
             onChange={handleChange}
-            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#00743e]"
+            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
           >
             <option value="">Select civil status</option>
             <option value="Single">Single</option>
@@ -194,7 +195,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
             name="StudentID"
             value={formData?.StudentID || ""}
             onChange={handleChange}
-            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#00743e]"
+            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
             placeholder="Enter your student ID"
           />
         </div>
@@ -209,7 +210,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
             name="Birthdate"
             value={formData?.Birthdate || ""}
             onChange={handleChange}
-            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#00743e]"
+            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
           />
         </div>
         <div>
@@ -219,7 +220,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
             name="PlaceOfBirth"
             value={formData?.PlaceOfBirth || ""}
             onChange={handleChange}
-            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#00743e]"
+            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
             placeholder="Enter your place of birth"
           />
         </div>
@@ -234,7 +235,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
             name="Citizenship"
             value={formData?.Citizenship || ""}
             onChange={handleChange}
-            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#00743e]"
+            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
             placeholder="Enter your country of citizenship"
           />
         </div>
@@ -244,7 +245,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
             name="Gender"
             value={formData?.Gender || ""}
             onChange={handleChange}
-            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#00743e]"
+            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
           >
             <option value="">Select gender</option>
             <option value="Female">Female</option>
@@ -259,7 +260,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
       <div className="mt-6 flex justify-center space-x-4">
         <button
           type="submit"
-          className="px-6 py-2 bg-[#00743e] text-white rounded-lg hover:bg-[#006233] transition-colors"
+          className="px-6 py-2 bg-[var(--color-astraprimary)] text-white rounded-lg hover:bg-[#006233] transition-colors"
         >
           Save
         </button>
@@ -272,5 +273,6 @@ export default function EditForm({ profileData, hidePersonalForm }) {
         </button>
       </div>
     </form>
+  </div>
   );
 }
