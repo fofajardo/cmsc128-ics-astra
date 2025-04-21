@@ -260,7 +260,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
       <div className="mt-6 flex justify-center space-x-4">
         <button
           type="submit"
-          className="px-6 py-2 bg-[var(--color-astraprimary)] text-white rounded-lg hover:bg-[#006233] transition-colors"
+          className="px-6 py-2 bg-[var(--color-astraprimary)] text-white rounded-lg hover:bg-[var(--color-astradark)] transition-colors"
         >
           Save
         </button>

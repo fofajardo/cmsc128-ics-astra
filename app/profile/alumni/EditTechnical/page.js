@@ -78,7 +78,7 @@ export default function EditTechnical({ technicalSkills, hideTechnicalForm }) {
           </button>
           <button
             onClick={handleSave}
-            className="px-4 py-2 bg-[#0e6cf3] text-white rounded-lg hover:bg-blue-700"
+            className="px-4 py-2 bg-[var(--color-astraprimary)] text-white rounded-lg hover:bg-blue-700"
           >
             Save
           </button>

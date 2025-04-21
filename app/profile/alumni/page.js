@@ -116,7 +116,7 @@ export default function AlumniProfilePage() {
             <div className="flex justify-left gap-4 items-center mb-6">
               <h2 className="text-2xl font-bold text-[var(--color-astrablack)]">Profile Information</h2>
               <button
-                className="px-4 py-2 bg-[var(--color-astraprimary)] text-white hover:bg-[#0f59c3] rounded-md"
+                className="px-4 py-2 bg-[var(--color-astraprimary)] text-white hover:bg-[var(--color-astradark)] rounded-md"
                 onClick={() => setIsShowPersonalForm(true)}
               >
                 Edit Profile
@@ -203,7 +203,7 @@ export default function AlumniProfilePage() {
             {experiences.map((exp, index) => (
               <div key={index} className="flex">
                 <div className="mr-4">
-                  <div className={`w-2 h-full ${index === 0 ? "bg-[var(--color-astraprimary)]" : "bg-[#64a4ff]"} rounded-full`}></div>
+                  <div className={`w-2 h-full ${index === 0 ? "bg-[var(--color-astraprimary)]" : "bg-[var(--color-astradark)]"} rounded-full`}></div>
                 </div>
                 <div className="flex-1">
                   <h3 className="text-lg font-bold">{exp.company}</h3>
@@ -241,7 +241,7 @@ export default function AlumniProfilePage() {
             {affiliations.map((aff, index) => (
               <div key={index} className="flex">
                 <div className="mr-4">
-                  <div className={`w-2 h-full ${index === 0 ? "bg-[var(--color-astraprimary)]" : "bg-[#64a4ff]"} rounded-full`}></div>
+                  <div className={`w-2 h-full ${index === 0 ? "bg-[var(--color-astraprimary)]" : "bg-[var(--color-astradark)]"} rounded-full`}></div>
                 </div>
                 <div className="flex-1">
                   <h3 className="text-lg font-bold">{aff.organization}</h3>
