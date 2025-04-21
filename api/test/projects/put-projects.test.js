@@ -4,11 +4,28 @@ import app from '../../index.js';
 import httpStatus from 'http-status-codes';
 
 describe('Project API Tests', function () {
+    const projectId = '7f857ca0-fcca-4c5b-b619-d0612597dbb1'
+
+    after(async function () {
+        const originalData = {
+            status: 0,
+            due_date: new Date('2025-04-01'),
+            date_completed: null,
+            goal_amount: 35000,
+            donation_link: 'astra.com/pc-lab-modernization'
+        };
+
+        const res = await request(app)
+            .put(`/v1/projects/${projectId}`)
+            .send(originalData);
+        if (res.body.status === 'UPDATED') {
+            console.log('Successfully revert donation fields');
+        } else
+            console.log('Failed to revert donation fields');
+    });
 
     describe('PUT /v1/projects/:projectId', function () {
         it('should return 200 and update valid project details', async function () {
-            const projectId = '389517e7-4a0b-4c96-84f9-3a7080186892'; // Actual projectId
-
             //Precondition: Ensure the row exists before updating
             const preCheckRes = await request(app).get(`/v1/projects/${projectId}`);
             expect(preCheckRes.status).to.equal(httpStatus.OK);
@@ -53,8 +70,6 @@ describe('Project API Tests', function () {
 
         // Test case to verify that the API returns 200 for partial updates
         it('should return 200 and update valid project details', async function () {
-            const projectId = '389517e7-4a0b-4c96-84f9-3a7080186892'; // Actual projectId
-
             //Precondition: Ensure the row exists before updating
             const preCheckRes = await request(app).get(`/v1/projects/${projectId}`);
             expect(preCheckRes.status).to.equal(httpStatus.OK);
@@ -92,8 +107,6 @@ describe('Project API Tests', function () {
 
         // Test case to verify that the API returns 400 if invalid field values (status)
         it('should return 400, status FAILED, and a message', async function () {
-            const projectId = '389517e7-4a0b-4c96-84f9-3a7080186892'; // Actual projectId
-
             //Precondition: Ensure the row exists before updating
             const preCheckRes = await request(app).get(`/v1/projects/${projectId}`);
             expect(preCheckRes.status).to.equal(httpStatus.OK);
@@ -141,7 +154,7 @@ describe('Project API Tests', function () {
 
         // Test case to verify that the API returns 404 if the projectId does not exist in the system
         it('should return 404, status FAILED, and a message', async function () {
-            const notExistingProjectId = '389517e7-4a0b-4c96-84f9-3a7080186893'; // Non-existing projectId
+            const notExistingProjectId = '7f857ca0-fcca-4c5b-b619-d0612597dbb3'; // Non-existing projectId
 
             const validUpdateData = {
                 goal_amount: 50000,

@@ -20,8 +20,14 @@ const isValidStudentNumber = (studentNum) => {
     return batchYear >= 1910 && batchYear <= currentYear;
 };
 
+const isValidDate = (dateStr) => {
+    const date = new Date(dateStr);
+    return !isNaN(date.getTime());
+};
+
 export {
     isValidAlpha3Citizenship,
     isValidUUID,
-    isValidStudentNumber
+    isValidStudentNumber,
+    isValidDate
 };
