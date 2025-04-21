@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import app from '../../index.js';
 import httpStatus from 'http-status-codes';
 
-const kRoutePrefix = "/v1/work_experiences";
+const kRoutePrefix = '/v1/work_experiences';
 
 describe('Work Experiences API Tests', function() {    
     // Gets all work experiences
