@@ -27,12 +27,8 @@ export default function AddExperience({ hideAddExperienceForm }) {
   const employmentTypes = [
     "Full-time",
     "Part-time",
-    "Self-employed",
-    "Freelance",
-    "Contract",
-    "Internship",
-    "Apprenticeship",
-    "Seasonal",
+    "Contractual",
+    ""
   ]
 
   const locationTypes = ["On-site", "Hybrid", "Remote"]
@@ -78,9 +74,6 @@ export default function AddExperience({ hideAddExperienceForm }) {
     }
 
     console.log("New experience:", newExperience)
-    // Here you would typically save to your backend
-
-    // Close the form
     hideAddExperienceForm()
   }
 
@@ -95,20 +88,22 @@ export default function AddExperience({ hideAddExperienceForm }) {
 
       <form onSubmit={handleSubmit}>
         <div className="space-y-6">
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Company or Organization</label>
-              <input
-                type="text"
-                name="company"
-                value={formData.company}
-                onChange={handleChange}
-                placeholder="Ex: Department of Information and Communications Technology"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
+          {/* Company */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Company or Organization</label>
+            <input
+              type="text"
+              name="company"
+              value={formData.company}
+              onChange={handleChange}
+              placeholder="Ex: Department of Information and Communications Technology"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
 
+          {/* Title & Employment Type */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
               <input
@@ -117,22 +112,20 @@ export default function AddExperience({ hideAddExperienceForm }) {
                 value={formData.title}
                 onChange={handleChange}
                 placeholder="Ex: Software Engineer"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
-          </div>
-
-          <div className="grid grid-cols-3 gap-6"> {/* Employment details in 3 columns */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Employment Type</label>
               <select
                 name="type"
                 value={formData.type}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 required
               >
+                <option value="">Select type</option>
                 {employmentTypes.map((type) => (
                   <option key={type} value={type}>
                     {type}
@@ -140,39 +133,10 @@ export default function AddExperience({ hideAddExperienceForm }) {
                 ))}
               </select>
             </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
-              <input
-                type="text"
-                name="location"
-                value={formData.location}
-                onChange={handleChange}
-                placeholder="Ex: Makati, Philippines"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Location Type</label>
-              <select
-                name="locationType"
-                value={formData.locationType}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              >
-                {locationTypes.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </select>
-            </div>
           </div>
 
-          <div className="flex items-center"> {/* Checkbox full width */}
+          {/* Currently Working */}
+          <div className="flex items-center">
             <input
               type="checkbox"
               id="isCurrentlyWorking"
@@ -186,7 +150,8 @@ export default function AddExperience({ hideAddExperienceForm }) {
             </label>
           </div>
 
-          <div className="grid grid-cols-2 gap-6"> {/* Date fields side by side */}
+          {/* Start and End Dates */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
               <div className="grid grid-cols-2 gap-4">
@@ -194,28 +159,24 @@ export default function AddExperience({ hideAddExperienceForm }) {
                   name="startDate.month"
                   value={formData.startDate.month}
                   onChange={handleChange}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   required
                 >
                   <option value="">Month</option>
                   {months.map((month) => (
-                    <option key={month} value={month}>
-                      {month}
-                    </option>
+                    <option key={month} value={month}>{month}</option>
                   ))}
                 </select>
                 <select
                   name="startDate.year"
                   value={formData.startDate.year}
                   onChange={handleChange}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   required
                 >
                   <option value="">Year</option>
                   {years.map((year) => (
-                    <option key={year} value={year}>
-                      {year}
-                    </option>
+                    <option key={year} value={year}>{year}</option>
                   ))}
                 </select>
               </div>
@@ -229,28 +190,24 @@ export default function AddExperience({ hideAddExperienceForm }) {
                     name="endDate.month"
                     value={formData.endDate.month}
                     onChange={handleChange}
-                    className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required={!formData.isCurrentlyWorking}
+                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    required
                   >
                     <option value="">Month</option>
                     {months.map((month) => (
-                      <option key={month} value={month}>
-                        {month}
-                      </option>
+                      <option key={month} value={month}>{month}</option>
                     ))}
                   </select>
                   <select
                     name="endDate.year"
                     value={formData.endDate.year}
                     onChange={handleChange}
-                    className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required={!formData.isCurrentlyWorking}
+                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    required
                   >
                     <option value="">Year</option>
                     {years.map((year) => (
-                      <option key={year} value={year}>
-                        {year}
-                      </option>
+                      <option key={year} value={year}>{year}</option>
                     ))}
                   </select>
                 </div>
@@ -258,18 +215,51 @@ export default function AddExperience({ hideAddExperienceForm }) {
             )}
           </div>
 
-          <div> {/* Full width description */}
+          {/* Location & Location Type */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+              <input
+                type="text"
+                name="location"
+                value={formData.location}
+                onChange={handleChange}
+                placeholder="Ex: Makati, Philippines"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Location Type</label>
+              <select
+                name="locationType"
+                value={formData.locationType}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                required
+              >
+                <option value="">Select location type</option>
+                {locationTypes.map((type) => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Description */}
+          <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Description (Optional)</label>
             <textarea
               name="description"
               value={formData.description}
               onChange={handleChange}
               placeholder="Describe your role and responsibilities"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-32"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 h-32"
             ></textarea>
           </div>
         </div>
 
+        {/* Action Buttons */}
         <div className="mt-8 flex justify-end space-x-4">
           <button
             type="button"
@@ -278,9 +268,9 @@ export default function AddExperience({ hideAddExperienceForm }) {
           >
             Cancel
           </button>
-          <button 
-            type="submit" 
-            className="px-6 py-2 bg-[#0e6cf3] text-white rounded-lg hover:bg-blue-700 font-medium"
+          <button
+            type="submit"
+            className="px-6 py-2 bg-[var(--color-astraprimary)] text-white rounded-lg hover:bg-[var(--color-astradark)] font-medium"
           >
             Save
           </button>
