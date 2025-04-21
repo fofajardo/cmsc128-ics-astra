@@ -3,12 +3,12 @@ import { expect } from 'chai';
 import app from '../../index.js';
 import httpStatus from 'http-status-codes';
 
-const kRoutePrefix = '/v1/work_experiences';
+const kRoutePrefix = "/v1/work-experiences";
 
 describe('Work Experiences API Tests', function() {    
     // Gets all work experiences
     // Should return 200.
-    describe('GET /v1/work_experiences', function() {
+    describe('GET /v1/work-experiences', function() {
         it(`should return 200 for GET ${kRoutePrefix}`, async function() {
             const res = await request(app)
                 .get(kRoutePrefix)
@@ -67,7 +67,7 @@ describe('Work Experiences API Tests', function() {
             expect(res.status).to.equal(httpStatus.OK);
             expect(res.body).to.be.an('object');
             expect(res.body).to.have.property('status').that.is.oneOf(['OK', 'FAILED']);
-            expect(res.body).to.have.property('work_experiences').that.is.an('array');
+            expect(res.body).to.have.property('work-experiences').that.is.an('array');
         });
     });
 

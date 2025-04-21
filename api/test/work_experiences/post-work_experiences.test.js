@@ -4,7 +4,7 @@ import app from '../../index.js';
 import httpStatus from 'http-status-codes';
 
 describe('Work Experiences API Tests', function() {
-    describe('POST /v1/work_experiences/', function() {
+    describe('POST /v1/work-experiences/', function() {
         const testWorkExperience = {
             alum_id: '75b6e610-9d0b-4884-b405-1e682e3aa3de',
             title: 'Test Title',
@@ -19,7 +19,7 @@ describe('Work Experiences API Tests', function() {
         // ✅ Successfully creates a work experience
         it('should return 201, status CREATED, a message, and an id', async function () {
             const res = await request(app)
-                .post(`/v1/work_experiences/`)
+                .post(`/v1/work-experiences/`)
                 .send(testWorkExperience);
 
             expect(res.status).to.equal(httpStatus.CREATED);
@@ -34,7 +34,7 @@ describe('Work Experiences API Tests', function() {
         // ❌ Required fields missing
         it('should return 400, status FAILED, and a message when required fields are missing', async function () {
             const res = await request(app)
-                .post(`/v1/work_experiences/`)
+                .post(`/v1/work-experiences/`)
                 .send({});
 
             expect(res.status).to.equal(httpStatus.BAD_REQUEST);
@@ -46,7 +46,7 @@ describe('Work Experiences API Tests', function() {
         // ❌ Invalid alum_id
         it('should return 500, status FAILED, and a message when alum_id is invalid', async function () {
             const res = await request(app)
-                .post(`/v1/work_experiences/`)
+                .post(`/v1/work-experiences/`)
                 .send({
                     ...testWorkExperience,
                     alum_id: '00000000-0000-0000-0000-000000000000', // Invalid UUID
@@ -62,7 +62,7 @@ describe('Work Experiences API Tests', function() {
         after(async function() {
             if (createdWorkExperienceId) {
                 const res = await request(app)
-                    .delete(`/v1/work_experiences/${createdWorkExperienceId}`);
+                    .delete(`/v1/work-experiences/${createdWorkExperienceId}`);
                 
                 expect(res.status).to.be.oneOf([httpStatus.OK, httpStatus.NO_CONTENT]);
             }

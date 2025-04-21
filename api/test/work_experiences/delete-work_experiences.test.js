@@ -4,7 +4,7 @@ import request from 'supertest';
 
 import app from '../../index.js';
 
-const kRoutePrefix = '/v1/work_experiences/';
+const kRoutePrefix = '/v1/work-experiences/';
 
 describe('Work Experiences API - Delete and Verify Deletion', function () {
     this.timeout(4000);
