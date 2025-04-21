@@ -1,10 +1,10 @@
 import Image from "next/image";
-import NavbarUser from '../../../components/NavbarUser';
+import NavbarUser from '../../../../components/NavbarUser'; 
 
 export default function ProjectDetails() {
   return (
     <div className="min-h-screen bg-white text-gray-800">
-      <NavbarUser />
+      //<NavbarUser />
 
       {/* Main Content*/}
       <div className="max-w-6xl mx-auto py-4 px-4 pt-20">
@@ -41,6 +41,7 @@ export default function ProjectDetails() {
 
           <p className="mt-6 text-sm leading-relaxed">
           Help us provide nutritious snacks to students during their long study  sessions and exam preparations. Many students skip meals due to tight  schedules and budget constraints, affecting their academic performance  and overall well-being. Your contribution will help stock our student  pantry with healthy snacks, ensuring students have access to proper  nutrition when they need it most. We aim to provide energy-rich,  brain-boosting snacks that can help maintain focus and productivity  throughout the day. This initiative has already helped hundreds of  students maintain better study habits and achieve better results. Join  us in supporting student success by ensuring no student has to study on  an empty stomach. Your donation will directly impact students' ability  to stay energized, focused, and successful in their academic journey.
+            
           </p>
 
           {/* Organizer Info */}
