@@ -5,18 +5,18 @@ import httpStatus from 'http-status-codes';
 
 describe('PUT /v1/events/:eventId', function () {
     it('should update an event successfully', async function () {
-        const eventId = '12345'; // placeholders for eventId, replace with a valid one
+        const eventId = 'f9b7efab-003c-44f9-bea7-c856fb1e73cd'; // placeholders for eventId, replace with a valid one
 
         // replace the hardcoded values with user input
         // e.g. getters of user inputs
         const eventUpdateData = {
-        eventDate: '2025-06-01',
-        venue: 'ICS UPLB',
-        externalLink: 'https://ediwow.com/haha',
-        accessLink: 'https://ics.uplb.edu.ph/ediwow',
-        interestedCount: 100,
-        goingCount: 50,
-        notGoingCount: 10,
+        event_date: new Date('2025-04-21'),
+        venue: 'Physical Science - ICS UPLB',
+        external_link: 'https://ediwow.com/haha',
+        access_link: 'https://ics.uplb.edu.ph/ediwow',
+        interested_count: 100,
+        going_count: 50,
+        not_going_count: 10,
         online: true
         };
 
@@ -30,18 +30,19 @@ describe('PUT /v1/events/:eventId', function () {
     });
 
     it('should return FORBIDDEN if the user is not authorized', async function () {
-        const eventId = '67890'; // placeholders for eventId, replace with a valid one
-        
+        const eventId = 'f9b7efab-003c-44f9-bea7-c856fb1e73cd'; // placeholders for eventId, replace with a valid one
+
         // replace the hardcoded values with user input
         // e.g. getters of user inputs
         const eventUpdateData = {
-        eventDate: '2025-06-01',
+        event_id: "389517e7-4a0b-4c96-84f9-3a7080186892",
+        event_date: new Date('2025-04-25'),
         venue: 'ICS UPLB',
-        externalLink: 'https://ediwow.com/haha',
-        accessLink: 'https://ics.uplb.edu.ph/ediwow',
-        interestedCount: 100,
-        goingCount: 50,
-        notGoingCount: 10,
+        external_link: 'https://ediwow.com/haha',
+        access_link: 'https://ics.uplb.edu.ph/ediwow',
+        interested_count: 100,
+        going_count: 50,
+        not_going_count: 10,
         online: true
         };
 
@@ -55,12 +56,12 @@ describe('PUT /v1/events/:eventId', function () {
     });
 
     it('should return FAILED if eventId is invalid', async function () {
-        const eventId = 'invalid-id';
-        
+        const eventId = 'f9b7efab-003c-44f9-bea7-c856fb1e73c@';
+
         // replace the hardcoded values with user input
         // e.g. getters of user inputs
         const eventUpdateData = {
-        eventDate: '2025-06-01',
+        eventDate: new Date('2025-04-25'),
         venue: 'ICS UPLB',
         externalLink: 'https://ediwow.com/haha',
         accessLink: 'https://ics.uplb.edu.ph/ediwow',

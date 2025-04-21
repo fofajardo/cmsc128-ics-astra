@@ -1,6 +1,6 @@
 import httpStatus from "http-status-codes";
 import eventsService from "../services/eventsService.js";
-import { isValidUUID } from "../utils/validators.js";
+import { isValidUUID, isValidDate } from "../utils/validators.js";
 
 const getEvents = (supabase) => async (req, res) => {
     try {
@@ -52,11 +52,10 @@ const getEventById = (supabase) => async (req, res) => {
         });
     }
 };
-
 const createEvent = (supabase) => async (req, res) => {
     try {
-
         const requiredFields = [
+            "event_id",
             "event_date",
             "venue",
             "external_link",
@@ -66,9 +65,7 @@ const createEvent = (supabase) => async (req, res) => {
             "not_going_count",
             "online"
         ];
-
-        const missingFields = requiredFields.filter(field => !req.body[field]);
-
+        const missingFields = requiredFields.filter(field => !(field in req.body));
         if (missingFields.length > 0) {
             return res.status(httpStatus.BAD_REQUEST).json({
                 status: 'FAILED',
@@ -77,6 +74,7 @@ const createEvent = (supabase) => async (req, res) => {
         }
 
         const {
+            event_id,
             event_date,
             venue,
             external_link,
@@ -87,7 +85,34 @@ const createEvent = (supabase) => async (req, res) => {
             online
         } = req.body;
 
-        const { data: existingEvents, error: checkError } = await eventsService.checkExistingEvent(supabase, event_date, venue);
+        const parsedDate = new Date(event_date);
+        const datetime = parsedDate.toISOString();
+
+        const isValidTypes =
+            typeof event_id === 'string' &&
+            isValidDate(event_date) &&
+            typeof venue === 'string' &&
+            typeof external_link === 'string' &&
+            typeof access_link === 'string' &&
+            typeof interested_count === 'number' &&
+            typeof going_count === 'number' &&
+            typeof not_going_count === 'number' &&
+            typeof online === 'boolean';
+
+        if (!isValidTypes) {
+            return res.status(httpStatus.BAD_REQUEST).json({
+                status: 'FAILED',
+                message: 'Invalid data type for one or more fields.'
+            });
+        }
+
+        if (!isValidUUID(event_id)) {
+            return res.status(httpStatus.BAD_REQUEST).json({
+                status: 'FAILED',
+                message: 'Invalid eventId format'
+            });
+        }
+        const { data: existingEvents, error: checkError } = await eventsService.checkExistingEvent(supabase, datetime, venue);
 
         if (checkError) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -104,7 +129,8 @@ const createEvent = (supabase) => async (req, res) => {
         }
 
         const { data, error } = await eventsService.insertEvent(supabase, {
-            event_date,
+            event_id,
+            event_date: datetime,
             venue,
             external_link,
             access_link,
@@ -124,7 +150,7 @@ const createEvent = (supabase) => async (req, res) => {
         return res.status(httpStatus.CREATED).json({
             status: 'CREATED',
             message: 'Event successfully created',
-            id: data[0].id
+            id: data[0].event_id
         });
 
     } catch (error) {
@@ -134,6 +160,7 @@ const createEvent = (supabase) => async (req, res) => {
         });
     }
 };
+
 
 const updateEvent = (supabase) => async (req, res) => {
     try {
@@ -145,12 +172,20 @@ const updateEvent = (supabase) => async (req, res) => {
                 message: 'Invalid eventId format'
             });
         }
+
         const { data: existingEvent, error: fetchError } = await eventsService.findEvent(supabase, eventId);
 
         if (fetchError || !existingEvent) {
             return res.status(httpStatus.NOT_FOUND).json({
                 status: 'FAILED',
                 message: 'Event not found'
+            });
+        }
+
+        if ('event_id' in req.body && req.body.event_id !== existingEvent.event_id) {
+            return res.status(httpStatus.FORBIDDEN).json({
+                status: 'FORBIDDEN',
+                message: 'Editing of alum_id or project_id is not allowed'
             });
         }
 
@@ -166,22 +201,23 @@ const updateEvent = (supabase) => async (req, res) => {
         } = req.body;
 
 
-        const updateData = {};
-        if (event_date !== undefined) updateData.event_date = event_date;
-        if (venue !== undefined) updateData.venue = venue;
-        if (external_link !== undefined) updateData.external_link = external_link;
-        if (access_link !== undefined) updateData.access_link = access_link;
-        if (interested_count !== undefined) updateData.interested_count = interested_count;
-        if (going_count !== undefined) updateData.going_count = going_count;
-        if (not_going_count !== undefined) updateData.not_going_count = not_going_count;
-        if (online !== undefined) updateData.online = online;
 
-        if (Object.keys(updateData).length === 0) {
-            return res.status(httpStatus.BAD_REQUEST).json({
-                status: 'FAILED',
-                message: 'No valid fields to update'
-            });
-        }
+        const updateData = {
+            event_date,
+            venue,
+            external_link,
+            access_link,
+            interested_count,
+            going_count,
+            not_going_count,
+            online
+        };
+        Object.keys(updateData).forEach(key => {
+            if (updateData[key] === undefined) {
+                delete updateData[key];
+            }
+        });
+
 
         const { error: updateError } = await eventsService.updateEventData(supabase, eventId, updateData);
 
@@ -194,7 +230,8 @@ const updateEvent = (supabase) => async (req, res) => {
 
         return res.status(httpStatus.OK).json({
             status: 'UPDATED',
-            message: 'Event updated successfully'
+            message: 'Event updated successfully',
+            id: eventId
         });
 
     } catch (error) {
@@ -205,6 +242,13 @@ const updateEvent = (supabase) => async (req, res) => {
     }
 };
 
+const deleteEmptyEvent = () => async (req, res) => {
+    return res.status(httpStatus.BAD_REQUEST).json({
+        status: 'FAILED',
+        message: 'Invalid deletion. Event id parameter is missing'
+    });
+};
+
 const deleteEvent = (supabase) => async (req, res) => {
     try {
         const { eventId } = req.params;
@@ -213,6 +257,16 @@ const deleteEvent = (supabase) => async (req, res) => {
             return res.status(httpStatus.BAD_REQUEST).json({
                 status: 'FAILED',
                 message: 'Invalid eventId format'
+            });
+        }
+
+        const { data: existingEvent, error: checkError } = await eventsService.checkExistingEventById(supabase, eventId);
+
+        if (checkError || existingEvent.length === 0) {
+
+            return res.status(httpStatus.NOT_FOUND).json({
+                status: 'FAILED',
+                message: 'Event interest not found'
             });
         }
         const { error } = await eventsService.deleteEvent(supabase, eventId);
@@ -241,6 +295,7 @@ const eventsController = {
     getEventById,
     createEvent,
     updateEvent,
+    deleteEmptyEvent,
     deleteEvent
 };
 
