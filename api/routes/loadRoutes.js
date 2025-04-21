@@ -9,6 +9,7 @@ import projectsRouter from "./projectsRoutes.js";
 import donationsRouter from "./donationsRoutes.js";
 import organizationsRouter from "./organizationsRoutes.js";
 import organizationAffiliationsRouter from "./organizationAffiliationsRoutes.js";
+import reportsRouter from "./reportsRoutes.js";
 
 const registerRoutes = (app, supabase) => {
     app.use("/v1/users", usersRouter(supabase));
@@ -22,6 +23,7 @@ const registerRoutes = (app, supabase) => {
     app.use("/v1/donations", donationsRouter(supabase));
     app.use("/v1/organizations", organizationsRouter(supabase));
     app.use("/v1/users", organizationAffiliationsRouter(supabase));
+    app.use("/v1/reports", reportsRouter(supabase));
 }
 
 export default registerRoutes;
