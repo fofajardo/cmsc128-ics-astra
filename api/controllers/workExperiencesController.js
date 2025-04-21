@@ -3,8 +3,8 @@ import workExperiencesService from '../services/workExperiencesService.js';
 
 const getWorkExperiences = (supabase) => async (req, res) => {
     try {
-        const { page = 1, limit = 10 } = req.query;
-        const { data, error } = await workExperiencesService.fetchWorkExperiences(supabase, page, limit);
+        const filters = req.query;
+        const { data, error } = await workExperiencesService.fetchWorkExperiences(supabase, filters);
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({

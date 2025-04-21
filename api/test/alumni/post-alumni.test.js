@@ -9,7 +9,7 @@ describe('Alumni API Tests', function () {
     describe('POST /v1/alumni/:userId', function () {
         // Test case to verify that the alumni profile is created successfully
         it('should return 201, status CREATED, a message, and an id', async function () {
-            const userId = '75b6e610-9d0b-4884-b405-1e682e3aa3de'; // Actual test user ID
+            const userId = 'fa8d0d20-5e72-4288-9c62-5a959d7adf02'; // changed to user idea, previously an alumniId
             const res = await request(app)
                 .post(`/v1/alumni/${userId}`)
                 .send({
@@ -19,16 +19,18 @@ describe('Alumni API Tests', function () {
                     address: 'Los Banos',
                     gender: 'Male',
                     student_num: '199901234',
-                    degree_program: '904b3aaa-87f3-4493-b994-e5681d4f06a9',
+                    // degree program is removed in the supabase
+                    // degree_program: '904b3aaa-87f3-4493-b994-e5681d4f06a9',
                     year_graduated: new Date('2003-11-19').toISOString(),
                     skills: 'Management',
                     honorifics: 'Dr.',
                     citizenship: nationalities.getAlpha3Code("Filipino", "en"),
                     sex: 0,
-                    primary_work_experience_id: 'c779d9f8-535b-4b51-938d-a656057e9512'
+                    primary_work_experience_id: 'c779d9f8-535b-4b51-938d-a656057e9512',
+                    civil_status: 1,
                 });
             
-            console.log(res.body);
+            // console.log(res.body);
             
             expect(res.status).to.equal(httpStatus.CREATED);
             expect(res.body).to.be.an('object');
@@ -39,12 +41,13 @@ describe('Alumni API Tests', function () {
 
         // Test case to verify that the API returns 400 if fields are missing
         it('should return 400, status FAILED, and a message when required fields are missing', async function () {
-            const userId = 'fa8d0d20-5e72-4288-9c62-5a959d7adf02'; // Actual test user ID
+            // const userId = 'fa8d0d20-5e72-4288-9c62-5a959d7adf02'; // Actual test user ID
+            const userId = '05a4762d-29ef-4543-824b-9d16f77c6946'; // replace with an actual test user ID
             const res = await request(app)
                 .post(`/v1/alumni/${userId}`)
                 .send({});
 
-            // console.log(res.body.message);
+            console.log(res.body.message);
 
             expect(res.status).to.equal(httpStatus.BAD_REQUEST);
             expect(res.body).to.be.an('object');
@@ -92,14 +95,16 @@ describe('Alumni API Tests', function () {
                     address: 'Los Banos',
                     gender: 'Male',
                     student_num: '199901234',
-                    degree_program: '904b3aaa-87f3-4493-b994-e5681d4f06a9',
+                    // degree program is removed in the supabase
+                    // degree_program: '904b3aaa-87f3-4493-b994-e5681d4f06a9',
                     year_graduated: new Date('2003-11-19').toISOString(),
                     skills: 'Management',
                     field: 'Human Resources',
                     job_title: 'Head of HR',
                     company: 'XYZ Company',
                     citizenship: nationalities.getAlpha3Code("Filipino", "en"),
-                    sex: 0
+                    sex: 0,
+                    primary_work_experience_id: 'c779d9f8-535b-4b51-938d-a656057e9512'
                 });
 
             // console.log(res.body.message);

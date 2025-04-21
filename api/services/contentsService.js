@@ -27,7 +27,8 @@ const insertContent = async (supabase, contentData) => {
     return await supabase
         .from("contents")
         .insert(contentData)
-        .select("id")
+        // .select("id") // insert content is not working
+        .select("*") //testing purposes, 
         .single();
 };
 

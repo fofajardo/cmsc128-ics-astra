@@ -2,24 +2,28 @@ import request from 'supertest';
 import { expect } from 'chai';
 import app from '../../index.js';
 import httpStatus from 'http-status-codes';
+import { v4 as uuidv4 } from "uuid";
 
 describe('Contents API - DELETE /v1/contents/:contentId', function () {
 
-    let createdContentId;
+    let createdContentId = uuidv4();
 
     // Create a new dummy data for deletion test
     before(async function () {
         const createRes = await request(app)
             .post('/v1/contents')
             .send({
+                id: createdContentId,
                 user_id: '75b6e610-9d0b-4884-b405-1e682e3aa3de', 
                 title: 'To Be Deleted',
                 details: 'This content is for deletion test',
                 created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
+                updated_at: new Date().toISOString(),
+                views: 0
             });
-        console.log(createRes.body);
-        createdContentId = createRes.body.content.id;
+
+        // console.log(createRes.status);
+        // console.log(createRes.body);
     });
     
     it('should delete an existing content and return 200', async function () {
