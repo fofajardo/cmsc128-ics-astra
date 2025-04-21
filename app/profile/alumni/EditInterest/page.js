@@ -1,33 +1,30 @@
 "use client"
 import { useState } from "react"
+import SkillTag from "@/components/SkillTag"
+import { XCircle } from "lucide-react"
 
 export default function EditInterest({ fieldOfInterests, hideInterestForm }) {
   const [interests, setInterests] = useState([...fieldOfInterests])
   const [newInterest, setNewInterest] = useState("")
-  const [hoveredIndex, setHoveredIndex] = useState(null)
-
-  const colors = [
-    "bg-pink-100 border-pink-500 text-pink-800",
-    "bg-blue-100 border-blue-500 text-blue-800",
-    "bg-green-200 border-green-500 text-green-800",
-    "bg-violet-100 border-violet-500 text-violet-800",
-  ]
 
   const handleAddInterest = (e) => {
     if (e.key === "Enter" && newInterest.trim() !== "") {
-      setInterests([...interests, newInterest])
+      const newTag = {
+        text: newInterest.trim(),
+        color: "bg-indigo-100 text-indigo-800 border-indigo-300"
+      }
+      setInterests([...interests, newTag])
       setNewInterest("")
     }
   }
 
   const handleRemoveInterest = (index) => {
-    const updatedInterests = [...interests]
-    updatedInterests.splice(index, 1)
-    setInterests(updatedInterests)
+    const updated = [...interests]
+    updated.splice(index, 1)
+    setInterests(updated)
   }
 
   const handleSave = () => {
-    // Here you would typically save the changes to your backend
     console.log("Saving interests:", interests)
     hideInterestForm()
   }
@@ -42,53 +39,47 @@ export default function EditInterest({ fieldOfInterests, hideInterestForm }) {
       </div>
 
       <div className="mb-6">
-        <div className="flex flex-wrap gap-3 mb-4">
+        <div className="border border-gray-300 bg-white rounded-lg p-3 min-h-[64px] w-full flex flex-wrap gap-3">
           {interests.map((interest, index) => (
-            <div
-              key={index}
-              className={`p-2 rounded-lg border-2 relative ${colors[index % colors.length]}`}
-              onMouseEnter={() => setHoveredIndex(index)}
-              onMouseLeave={() => setHoveredIndex(null)}
-            >
-              {interest}
-              {hoveredIndex === index && (
-                <button
-                  onClick={() => handleRemoveInterest(index)}
-                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center"
-                >
-                  <i className="fa-solid fa-times text-xs"></i>
-                </button>
-              )}
+            <div key={index} className="relative group">
+              <SkillTag text={interest.text} color={interest.color} />
+              <button
+                onClick={() => handleRemoveInterest(index)}
+                className="absolute -left-3 -top-2 bg-white rounded-full p-1 shadow group-hover:block hidden"
+              >
+                <XCircle className="text-red-500 w-4 h-4" />
+              </button>
             </div>
           ))}
-          <div className="p-2 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50">
-            <input
-              type="text"
-              value={newInterest}
-              onChange={(e) => setNewInterest(e.target.value)}
-              onKeyPress={handleAddInterest}
-              placeholder="Type and press Enter"
-              className="bg-transparent border-none outline-none w-40"
-            />
-          </div>
+          <input
+            type="text"
+            value={newInterest}
+            onChange={(e) => setNewInterest(e.target.value)}
+            onKeyDown={handleAddInterest}
+            placeholder="Add field and press Enter"
+            className="flex-grow min-w-[200px] outline-none text-sm bg-transparent"
+          />
         </div>
       </div>
 
-      <div className="flex justify-between items-center">
+      <div className="flex flex-wrap justify-between gap-4">
         <button
           onClick={() => setInterests([])}
           className="px-4 py-2 border border-red-500 text-red-600 rounded-lg bg-white hover:bg-red-50"
         >
-          Clear All Fields
+          Clear All
         </button>
-        <div className="flex space-x-4">
+        <div className="flex flex-wrap gap-4">
           <button
             onClick={hideInterestForm}
             className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100"
           >
             Cancel
           </button>
-          <button onClick={handleSave} className="px-4 py-2 bg-[#0e6cf3] text-white rounded-lg hover:bg-blue-700">
+          <button
+            onClick={handleSave}
+            className="px-4 py-2 bg-[var(--color-astraprimary)] text-white rounded-lg hover:bg-blue-700"
+          >
             Save
           </button>
         </div>
