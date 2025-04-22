@@ -5,11 +5,12 @@ import { Icon } from "@iconify/react";
 import { useState } from "react";
 
 // Import the needed components for the events page.
-import EventCard from "@/components/events/GroupedEvents/EventCard";
+import EventCard from "@/components/events/GroupedEvents/EventCard/EventCard";
 import FilterDropdown from "@/components/events/GroupedEvents/FilterDropdown";
 import DateFilter from "@/components/events/GroupedEvents/DateFilter";
 import Pagination from "@/components/events/GroupedEvents/Pagination";
 import EventCarousel from "@/components/events/GroupedEvents/EventCarousel";
+
 
 import events from "../../data/events";
 import eventsVector from "../../assets/events-vector.png";
