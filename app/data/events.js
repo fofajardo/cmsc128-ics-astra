@@ -13,9 +13,47 @@ const events = [
     date: "2025-05-01 18:00",
     location: "ICS Auditorium",
     attendees: "42/50",
-    status: "Open",
     avatars: [avatar1.src, avatar2.src],
+    status: "Open",
     theme: "blue",
+    attendeesList: [
+      {
+        name: "Charlotte Lewis",
+        title: "UX Designer",
+        company: "LinkedIn",
+        classYear: 2022,
+        avatar: avatar3.src
+      },
+      {
+        name: "Benjamin Walker",
+        title: "Marketing Specialist",
+        company: "Meta",
+        classYear: 2016,
+        avatar: avatar1.src
+      },
+      {
+        name: "John Doe",
+        title: "Product Manager",
+        company: "Meta",
+        classYear: 2013,
+        avatar: avatar3.src
+      },
+      {
+        name: "David Lee",
+        title: "Data Scientist",
+        company: "Google",
+        classYear: 2012,
+        avatar: avatar1.src
+      },
+      {
+        name: "Sarah Johnson",
+        title: "Marketing Specialist",
+        company: "Twitter",
+        classYear: 2013,
+        avatar: avatar3.src
+      }
+    ],
+    eventDetail: "The Alumni Homecoming event is a special occasion to bring past graduates together in celebration of shared experiences and milestones. It serves as a unique opportunity to reconnect with old friends, network with fellow alumni, and reflect on the journey since graduation."
   },
   {
     id: "tech-talk-tuesdays",
@@ -25,9 +63,47 @@ const events = [
     date: "2025-05-05 15:00",
     location: "CS Lecture Hall",
     attendees: "50/50",
+    avatars: [avatar1.src, avatar2.src],
     status: "Closed",
-    avatars: [avatar2.src, avatar3.src],
     theme: "blue",
+    attendeesList: [
+      {
+        name: "Carlos Fernandez",
+        title: "Software Engineer",
+        company: "Amazon",
+        classYear: 2018,
+        avatar: avatar2.src
+      },
+      {
+        name: "Emily Nguyen",
+        title: "Frontend Developer",
+        company: "Netflix",
+        classYear: 2019,
+        avatar: avatar3.src
+      },
+      {
+        name: "Kevin Patel",
+        title: "Data Engineer",
+        company: "Stripe",
+        classYear: 2020,
+        avatar: avatar2.src
+      },
+      {
+        name: "Noah Lee",
+        title: "AI Researcher",
+        company: "OpenAI",
+        classYear: 2021,
+        avatar: avatar3.src
+      },
+      {
+        name: "Grace Thompson",
+        title: "Cloud Architect",
+        company: "Microsoft",
+        classYear: 2017,
+        avatar: avatar2.src
+      }
+    ],
+    eventDetail: "Engage with tech innovators discussing the latest trends in AI, web development, and cybersecurity. Expect real-life use cases and career insights."
   },
   {
     id: "start-up-showcase",
@@ -37,9 +113,47 @@ const events = [
     date: "2025-06-01 10:00",
     location: "Innovation Hub",
     attendees: "38/50",
+    avatars: [avatar1.src, avatar2.src],
     status: "Open",
-    avatars: [avatar1.src, avatar3.src],
     theme: "blue",
+    attendeesList: [
+      {
+        name: "Zara Ali",
+        title: "Founder & CEO",
+        company: "Greenbyte",
+        classYear: 2023,
+        avatar: avatar1.src
+      },
+      {
+        name: "Benjamin Wright",
+        title: "CTO",
+        company: "SafeNet",
+        classYear: 2022,
+        avatar: avatar3.src
+      },
+      {
+        name: "Sophie Kim",
+        title: "COO",
+        company: "WellNest",
+        classYear: 2024,
+        avatar: avatar1.src
+      },
+      {
+        name: "James Miller",
+        title: "Full Stack Developer",
+        company: "OpenBuild",
+        classYear: 2023,
+        avatar: avatar3.src
+      },
+      {
+        name: "Ella Davis",
+        title: "Marketing Lead",
+        company: "EcoBox",
+        classYear: 2021,
+        avatar: avatar1.src
+      }
+    ],
+    eventDetail: "Celebrate student innovation as graduates pitch their businesses to potential investors and collaborators. A chance to witness the next big thing!"
   },
   {
     id: "wellness-workshop",
@@ -49,9 +163,47 @@ const events = [
     date: "2025-06-10 14:00",
     location: "Room 204, Wellness Center",
     attendees: "45/50",
-    status: "Open",
     avatars: [avatar1.src, avatar2.src],
+    status: "Open",
     theme: "blue",
+    attendeesList: [
+      {
+        name: "Daniel Robinson",
+        title: "Yoga Instructor",
+        company: "ZenFlow",
+        classYear: 2015,
+        avatar: avatar1.src
+      },
+      {
+        name: "Hannah Moore",
+        title: "Nutritionist",
+        company: "HealthyU",
+        classYear: 2016,
+        avatar: avatar2.src
+      },
+      {
+        name: "Leo Martinez",
+        title: "Therapist",
+        company: "Calm Minds",
+        classYear: 2013,
+        avatar: avatar1.src
+      },
+      {
+        name: "Chloe Anderson",
+        title: "Mindfulness Coach",
+        company: "BalanceLife",
+        classYear: 2014,
+        avatar: avatar2.src
+      },
+      {
+        name: "William Taylor",
+        title: "Wellness Coordinator",
+        company: "FitWell",
+        classYear: 2018,
+        avatar: avatar1.src
+      }
+    ],
+    eventDetail: "Participate in hands-on sessions on mindfulness, nutrition, and emotional resilience led by trained wellness coaches."
   },
   {
     id: "finance-101",
@@ -61,189 +213,97 @@ const events = [
     date: "2025-06-15 11:00",
     location: "Finance Lab, Bldg B",
     attendees: "25/50",
-    status: "Open",
-    avatars: [avatar2.src, avatar3.src],
-    theme: "blue",
-  },
-  {
-    id: "design-thinking-sprint",
-    imageSrc: venue2,
-    title: "Design Thinking Sprint",
-    description: "Work in teams to solve real-world problems creatively.",
-    date: "2025-06-20 09:00",
-    location: "UX Studio",
-    attendees: "47/50",
-    status: "Open",
-    avatars: [avatar3.src, avatar1.src],
-    theme: "blue",
-  },
-  {
-    id: "internship-prep-seminar",
-    imageSrc: venue1,
-    title: "Internship Prep Seminar",
-    description: "Get ready for your big break with internship tips!",
-    date: "2025-06-25 13:00",
-    location: "ICS Main Lobby",
-    attendees: "49/50",
-    status: "Open",
-    avatars: [avatar1.src, avatar2.src, avatar3.src],
-    theme: "blue",
-  },
-  {
-    id: "cv-resume-building",
-    imageSrc: venue2,
-    title: "CV & Resume Building",
-    description: "Stand out in job applications with a strong resume.",
-    date: "2025-07-01 16:00",
-    location: "Career Services Office",
-    attendees: "50/50",
-    status: "Closed",
-    avatars: [avatar3.src],
-    theme: "blue",
-  },
-  {
-    id: "mock-interviews",
-    imageSrc: venue1,
-    title: "Mock Interviews",
-    description: "Practice makes perfect! Nail that dream job.",
-    date: "2025-07-05 10:00",
-    location: "Interview Lab, Room 101",
-    attendees: "40/50",
-    status: "Open",
-    avatars: [avatar2.src],
-    theme: "blue",
-  },
-  {
-    id: "coding-hackathon",
-    imageSrc: venue2,
-    title: "Coding Hackathon",
-    description: "Code your way through challenges and win prizes!",
-    date: "2025-07-10 08:00",
-    location: "CS Hub, Building C",
-    attendees: "50/50",
-    status: "Closed",
-    avatars: [avatar1.src],
-    theme: "blue",
-  },
-  {
-    id: "research-showcase",
-    imageSrc: venue1,
-    title: "Research Showcase",
-    description: "See the research breakthroughs by our top students.",
-    date: "2025-07-15 13:00",
-    location: "Library 3rd Floor",
-    attendees: "34/50",
-    status: "Open",
-    avatars: [avatar1.src, avatar3.src],
-    theme: "blue",
-  },
-  {
-    id: "women-in-tech",
-    imageSrc: venue2,
-    title: "Women in Tech Forum",
-    description: "Empowering female voices in the tech industry.",
-    date: "2025-07-20 12:00",
-    location: "Auditorium B",
-    attendees: "39/50",
-    status: "Open",
-    avatars: [avatar2.src],
-    theme: "blue",
-  },
-  {
-    id: "ai-ethics-debate",
-    imageSrc: venue1,
-    title: "AI Ethics Debate",
-    description: "A lively debate on ethical AI applications.",
-    date: "2025-07-25 15:00",
-    location: "Debate Hall A",
-    attendees: "48/50",
-    status: "Open",
-    avatars: [avatar1.src],
-    theme: "blue",
-  },
-  {
-    id: "volunteer-drive",
-    imageSrc: venue2,
-    title: "Volunteer Drive",
-    description: "Give back to the community through volunteering.",
-    date: "2025-07-30 14:00",
-    location: "Field Grounds",
-    attendees: "50/50",
-    status: "Closed",
     avatars: [avatar1.src, avatar2.src],
+    status: "Open",
     theme: "blue",
+    attendeesList: [
+      {
+        name: "Mason Hill",
+        title: "Financial Analyst",
+        company: "Goldman Sachs",
+        classYear: 2017,
+        avatar: avatar2.src
+      },
+      {
+        name: "Ava Martin",
+        title: "Accountant",
+        company: "Deloitte",
+        classYear: 2016,
+        avatar: avatar3.src
+      },
+      {
+        name: "Ethan Gonzalez",
+        title: "Investment Banker",
+        company: "JP Morgan",
+        classYear: 2015,
+        avatar: avatar2.src
+      },
+      {
+        name: "Natalie Baker",
+        title: "Wealth Manager",
+        company: "Fidelity",
+        classYear: 2019,
+        avatar: avatar3.src
+      },
+      {
+        name: "Logan Rivera",
+        title: "Credit Analyst",
+        company: "Capital One",
+        classYear: 2020,
+        avatar: avatar2.src
+      }
+    ],
+    eventDetail: "Learn budgeting, savings, and debt management in this interactive session geared toward young professionals."
   },
   {
-    id: "career-fair",
-    imageSrc: venue1,
-    title: "Career Fair",
-    description: "Meet potential employers and network.",
-    date: "2025-08-05 09:00",
-    location: "University Gym",
-    attendees: "50/50",
-    status: "Closed",
-    avatars: [avatar3.src],
-    theme: "blue",
-  },
-  {
-    id: "art-exhibit",
+    id: "career-fair-2025",
     imageSrc: venue2,
-    title: "Art Exhibit Opening",
-    description: "Feast your eyes on student artistic excellence.",
-    date: "2025-08-10 10:00",
-    location: "Arts Building",
-    attendees: "33/50",
+    title: "Career Fair 2025",
+    description: "Meet top recruiters and explore new job opportunities.",
+    date: "2025-07-01 09:00",
+    location: "Main Hall",
+    attendees: "48/50",
+    avatars: [avatar1.src, avatar2.src],
     status: "Open",
-    avatars: [avatar2.src],
     theme: "blue",
-  },
-  {
-    id: "environmental-talk",
-    imageSrc: venue1,
-    title: "Environmental Talk",
-    description: "Learn about sustainability and climate solutions.",
-    date: "2025-08-15 11:00",
-    location: "Eco Room",
-    attendees: "46/50",
-    status: "Open",
-    avatars: [avatar2.src, avatar3.src],
-    theme: "blue",
-  },
-  {
-    id: "data-science-meetup",
-    imageSrc: venue2,
-    title: "Data Science Meetup",
-    description: "Talk shop with fellow data lovers.",
-    date: "2025-08-20 17:00",
-    location: "Data Lab 1",
-    attendees: "29/50",
-    status: "Open",
-    avatars: [avatar1.src],
-    theme: "blue",
-  },
-  {
-    id: "grad-orientation",
-    imageSrc: venue1,
-    title: "Grad School Orientation",
-    description: "Incoming grad students? This one's for you!",
-    date: "2025-08-25 14:00",
-    location: "Main Theater",
-    attendees: "50/50",
-    status: "Closed",
-    avatars: [avatar2.src],
-    theme: "blue",
-  },
-  {
-    id: "thesis-defense-prep",
-    imageSrc: venue2,
-    title: "Thesis Defense Prep",
-    description: "Get ready to ace your defense!",
-    date: "2025-08-30 13:00",
-    location: "Research Room 302",
-    attendees: "22/50",
-    status: "Open",
-    avatars: [avatar1.src, avatar3.src],
-    theme: "blue",
+    attendeesList: [
+      {
+        name: "Liam Scott",
+        title: "Recruiter",
+        company: "Google",
+        classYear: 2014,
+        avatar: avatar1.src
+      },
+      {
+        name: "Mia Perez",
+        title: "HR Manager",
+        company: "Facebook",
+        classYear: 2013,
+        avatar: avatar3.src
+      },
+      {
+        name: "Elijah Adams",
+        title: "Talent Acquisition",
+        company: "Amazon",
+        classYear: 2012,
+        avatar: avatar2.src
+      },
+      {
+        name: "Isabella Foster",
+        title: "Recruiting Lead",
+        company: "Apple",
+        classYear: 2015,
+        avatar: avatar3.src
+      },
+      {
+        name: "Jackson Reed",
+        title: "Campus Recruiter",
+        company: "Microsoft",
+        classYear: 2016,
+        avatar: avatar1.src
+      }
+    ],
+    eventDetail: "Connect with industry-leading companies and explore new career paths. Bring your resume and get ready to network!"
   }
 ];
 
