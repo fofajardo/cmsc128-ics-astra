@@ -29,11 +29,19 @@ const updateAlumniProfileData = async (supabase, userId, updateData) => {
         .eq("alum_id", userId);
 };
 
+const deleteAlumniProfileData = async (supabase, userId) => {
+    return await supabase
+        .from("alumni_profiles")
+        .delete()
+        .eq("alum_id", userId);
+};
+
 const alumniService = {
     fetchAlumniProfiles,
     fetchAlumniProfileById,
     insertAlumniProfile,
-    updateAlumniProfileData
+    updateAlumniProfileData,
+    deleteAlumniProfileData
 };
 
 export default alumniService;

@@ -4,9 +4,9 @@ import session from "express-session";
 import httpStatus from "http-status-codes";
 import passport from "passport";
 import { createClient } from "@supabase/supabase-js";
-import authRouter from "./routes/auth/auth-router.js";
-import { registerStrategies } from "./routes/auth/passport-strategies.js";
+import { registerStrategies } from "./middleware/passportStrategies.js";
 import registerRoutes from "./routes/loadRoutes.js";
+import {InferAbility} from "./middleware/inferAbility.js";
 
 env.config();
 
@@ -34,9 +34,8 @@ gServer.use(session({
 gServer.use(passport.authenticate("session"));
 
 registerStrategies(testingSupabase);
+gServer.use(InferAbility);
 registerRoutes(gServer, testingSupabase);
-
-gServer.use('/v1/auth', authRouter());
 
 export default gServer;
 
