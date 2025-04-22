@@ -9,7 +9,9 @@ describe('Projects API Tests', function () {
         it('should return 200 and a list of projects', async function () {
             const res = await request(app)
                 .get('/v1/projects')
-                .query({ page: 1, limit: 10 });
+                .query({sort_by: 'goal_amount', order: 'desc'});
+
+            // console.log(res.body);
 
             expect(res.status).to.equal(httpStatus.OK);
             expect(res.body).to.be.an('object');
