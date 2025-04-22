@@ -17,31 +17,7 @@ export default function AlumniSearchProfile({ params }) {
   }
 
   return (
-    <>
-        {/* Header with background */}
-        <div className="relative">
-          <img
-            src="/blue-bg.png"
-            alt="Background"
-            className="h-80 w-full object-cover"
-          />
-          <div className="absolute inset-2 flex flex-col items-center justify-evenly text-astrawhite z-20">
-            <div className="text-center pt-6">
-                <h1 className="font-h1">Manage Access</h1>
-                <p className="font-s">The ever-growing UPLB-ICS Alumni Network</p>
-            </div>
-            <div className="pt-6 pb-4 overflow-y-scroll w-full scrollbar-hide">
-                    <div className="flex flex-row gap-3 min-w-max px-4 justify-center"> 
-                        <AdminStatCard title='Registered' value = {255} icon={<GraduationCap className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={'/admin/alumni/search'}/>
-                        <AdminStatCard title='Pending' value = {59} icon={<GraduationCap className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={'/admin/alumni/manage-access'}/>
-                        <AdminStatCard title='Approved' value = {179} icon={<GraduationCap className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={'/admin/alumni/manage-access'}/>
-                        <AdminStatCard title='Inactive' value = {12} icon={<GraduationCap className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={'/admin/alumni/manage-access'}/>
-                    </div>
-            </div>
-          </div>
-        </div>
-    
-    
+    <>    
     <div className="p-4 bg-astradirtywhite min-h-screen">
       <div className="pb-2">
         <GoBackButton />

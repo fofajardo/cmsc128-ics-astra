@@ -1,48 +1,20 @@
 "use client"
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import {TableHeader, Table, PageTool} from '@/components/TableBuilder';
-import { users, alumniProfiles } from '@/components/DummyData'
 import SearchFilter from "admin/alumni/search/filter";
-import ToastNotification from '@/components/ToastNotification';
-import { Check, GraduationCap, UserRoundPlus, UserRoundCheck, UserRoundX } from "lucide-react";
-import AdminStatCard from "@/components/AdminStatCard";
+import { Check } from "lucide-react";
 import { ActionButton } from "@/components/Buttons";
-import AdminTabs from "@/components/AdminTabs";
+import { useTab } from './TabContext';
 
 export default function AlumniAccess() {
     const [showFilter, setShowFilter] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
+    const { currTab, info } = useTab();
+    // console.log("Current tab from layout:", info);
 
-
-    const [info, setInfo] = useState({
-        title: "Pending Accounts",
-        search: "Search for an alumni",
-    });
-    
-    const tabs = {
-        'Pending': 3,
-        'Approved': 0,
-        'Inactive': 2,
-    };
-
-    const [currTab, setCurrTab] = useState('Pending');
-
-    const handleTabChange = (newTab) => {
-        setCurrTab(newTab);
-
-        setInfo((prev) => ({
-          ...prev,
-          title: `${newTab} Accounts`,
-        }));
-
-        setSelectedIds([]);
-
-        // Reset Filters and Pagination
-        // Then refetch alumList
-
-    };
-    
+    useEffect(() => {
+      setSelectedIds([]);
+    }, [currTab]);
 
 
     const toggleFilter = () => {
@@ -71,30 +43,6 @@ export default function AlumniAccess() {
                 </div>
             </div>
             )}
-        {/* Header with background */}
-        <div className="relative">
-          <img
-            src="/blue-bg.png"
-            alt="Background"
-            className="h-80 w-full object-cover"
-          />
-          <div className="absolute inset-2 flex flex-col items-center justify-evenly text-astrawhite z-20">
-            <div className="text-center pt-6">
-                <h1 className="font-h1">Manage Access</h1>
-                <p className="font-s">The ever-growing UPLB-ICS Alumni Network</p>
-            </div>
-            <div className="pt-6 pb-4 overflow-y-scroll w-full scrollbar-hide">
-                    <div className="flex flex-row gap-3 min-w-max px-4 justify-center"> 
-                        <AdminStatCard title='Registered' value = {255} icon={<GraduationCap className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={'/admin/alumni/search'}/>
-                        <AdminStatCard title='Pending' value = {59} icon={<UserRoundPlus className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={false} onClick={() => handleTabChange('Pending')}/>
-                        <AdminStatCard title='Approved' value = {179} icon={<UserRoundCheck className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={false} onClick={() => handleTabChange('Approved')}/>
-                        <AdminStatCard title='Inactive' value = {12} icon={<UserRoundX className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={false} onClick={() => handleTabChange('Inactive')}/>
-                    </div>
-            </div>
-          </div>
-        </div>
-  
-        <AdminTabs tabs ={tabs} currTab={currTab} handleTabChange={handleTabChange}/>
 
         {/* Table section */}
         <div className="bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24 flex flex-col">
