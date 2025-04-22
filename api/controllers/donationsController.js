@@ -4,8 +4,8 @@ import { isValidUUID, isValidDate } from '../utils/validators.js';
 
 const getDonations = (supabase) => async (req, res) => {
     try {
-        const { page = 1, limit = 10 } = req.query;
-        const { data, error } = await donationsService.fetchDonations(supabase, page, limit);
+        const filters = req.query;
+        const { data, error } = await donationsService.fetchDonations(supabase, filters);
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
