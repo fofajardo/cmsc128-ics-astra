@@ -11,7 +11,7 @@ describe('Alumni API Tests', function () {
         it('should return 201, status CREATED, a message, and an id', async function () {
             const userId = 'fa8d0d20-5e72-4288-9c62-5a959d7adf02'; // changed to user idea, previously an alumniId
             const res = await request(app)
-                .post(`/v1/alumni/${userId}`)
+                .post(`/v1/alumni-profiles/${userId}`)
                 .send({
                     alum_id: userId,
                     birthdate: new Date('1981-01-01').toISOString(),
@@ -44,7 +44,7 @@ describe('Alumni API Tests', function () {
             // const userId = 'fa8d0d20-5e72-4288-9c62-5a959d7adf02'; // Actual test user ID
             const userId = '05a4762d-29ef-4543-824b-9d16f77c6946'; // replace with an actual test user ID
             const res = await request(app)
-                .post(`/v1/alumni/${userId}`)
+                .post(`/v1/alumni-profiles/${userId}`)
                 .send({});
 
             console.log(res.body.message);
@@ -59,7 +59,7 @@ describe('Alumni API Tests', function () {
         it('should return 400, status FAILED, and a message when userId format is invalid', async function () {
             const invalidUserId = '00000000-0000-0000-0000-000000000000'; // Example userId, replace with an invalid test user ID
             const res = await request(app)
-                .post(`/v1/alumni/${invalidUserId}`);
+                .post(`/v1/alumni-profiles/${invalidUserId}`);
 
             // console.log(res.body.message);
 
@@ -73,7 +73,7 @@ describe('Alumni API Tests', function () {
         it('should return 404, status FAILED, and a message when user does not exist', async function () {
             const notExistingUserId = 'f3d7e6b2-8c9f-4a1b-9c7b-6b0a1c0e937d'; // Non-existing user ID
             const res = await request(app)
-                .post(`/v1/alumni/${notExistingUserId}`);
+                .post(`/v1/alumni-profiles/${notExistingUserId}`);
 
             // console.log(res.body.message);
 
@@ -87,7 +87,7 @@ describe('Alumni API Tests', function () {
         it('should return 409, status FAILED, and a message when the user already has an alumni profile', async function () {
             const userId = '75b6e610-9d0b-4884-b405-1e682e3aa3de'; // Recently created actual user ID
             const res = await request(app)
-                .post(`/v1/alumni/${userId}`)
+                .post(`/v1/alumni-profiles/${userId}`)
                 .send({
                     alum_id: userId,
                     birthdate: new Date('1981-01-01').toISOString(),

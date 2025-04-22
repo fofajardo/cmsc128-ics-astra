@@ -9,7 +9,7 @@ describe('Alumni Profile API Tests', function () {
     describe('GET /v1/alumniProfiles', function () {
         it('should return 200 and a list of alumni', async function () {
             const res = await request(app)
-                .get('/v1/alumni')
+                .get('/v1/alumni-profiles')
                 .query({ page: 1, limit: 10 });
 
             expect(res.status).to.equal(httpStatus.OK);
@@ -22,7 +22,7 @@ describe('Alumni Profile API Tests', function () {
     describe('GET /v1/alumniProfiles/:userId', function () {
         it('should return 200 and details of a single alumni profile', async function () {
             const userId = 'b4a6b230-20b9-4137-af62-8b535841c391';
-            const res = await request(app).get(`/v1/alumni/${userId}`);
+            const res = await request(app).get(`/v1/alumni-profiles/${userId}`);
 
             // console.log(res.body);
 

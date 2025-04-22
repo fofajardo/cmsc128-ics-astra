@@ -10,7 +10,7 @@ describe('Alumni API Tests', function () {
         it('should return 200 and update valid alumni details', async function () {
             const userId = '75b6e610-9d0b-4884-b405-1e682e3aa3de';
             // Precondition: Ensure the row exists before updating
-            const preCheckRes = await request(app).get(`/v1/alumni/${userId}`);
+            const preCheckRes = await request(app).get(`/v1/alumni-profiles/${userId}`);
             expect(preCheckRes.status).to.equal(httpStatus.OK);
             expect(preCheckRes.body).to.be.an('object');
 
@@ -27,7 +27,7 @@ describe('Alumni API Tests', function () {
             };
 
             const res = await request(app)
-                .put(`/v1/alumni/${userId}`)
+                .put(`/v1/alumni-profiles/${userId}`)
                 .send(validUpdateData);
 
             expect(res.status).to.equal(httpStatus.OK); // Ensures valid update
@@ -37,7 +37,7 @@ describe('Alumni API Tests', function () {
 
             
             // GET request to verify update
-            const verifyRes = await request(app).get(`/v1/alumni/${userId}`);
+            const verifyRes = await request(app).get(`/v1/alumni-profiles/${userId}`);
             
             expect(verifyRes.status).to.equal(httpStatus.OK);
             expect(verifyRes.body.alumniProfile).to.include(validUpdateData); // Ensures data is correctly updated
@@ -51,7 +51,7 @@ describe('Alumni API Tests', function () {
             };
 
             const res = await request(app)
-                .put(`/v1/alumni/${userId}`)
+                .put(`/v1/alumni-profiles/${userId}`)
                 .send(invalidUpdateData);
 
             expect(res.status).to.equal(httpStatus.FORBIDDEN); // Ensures update is not allowed

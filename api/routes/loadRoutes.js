@@ -13,7 +13,7 @@ import reportsRouter from "./reportsRoutes.js";
 
 const registerRoutes = (app, supabase) => {
     app.use("/v1/users", usersRouter(supabase));
-    app.use("/v1/alumni", alumniProfilesRouter(supabase));
+    app.use("/v1/alumni-profiles", alumniProfilesRouter(supabase));
     app.use("/v1/contents", contentsRouter(supabase));
     app.use("/v1/work-experiences", workExperiencesRouter(supabase));
     app.use("/v1/events", eventsRouter(supabase));
