@@ -1,7 +1,7 @@
 import { useState } from "react";
 
-export default function SearchFilter() {
-  const [filters, setFilters] = useState({
+export default function SearchFilter({onClose , onApply={}}) {
+  const initialFilters = {
     yearFrom: "",
     yearTo: "",
     location: "",
@@ -9,8 +9,9 @@ export default function SearchFilter() {
     skills: [],
     sortCategory: "",
     sortOrder: "asc",
-  });
+  };
 
+  const [filters, setFilters] = useState(initialFilters);
   const [skillInput, setSkillInput] = useState("");
 
   const handleSkillAdd = (e) => {
@@ -27,68 +28,90 @@ export default function SearchFilter() {
     });
   };
 
+  const handleResetAll = () => {
+    setFilters(initialFilters);
+    setSkillInput("");
+  };
+
+  const handleApply = () => {
+    if (onApply) {
+      onApply(filters);
+    }
+    onClose(); // optionally close after apply
+  };
+
+
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-xl shadow-lg">
-      <h2 className="text-2xl font-bold mb-6">Filter by:</h2>
+    <div className="bg-astrawhite p-6 rounded-2xl shadow-lg space-y-4">
+      <div className="flex justify-between items-center">
+        <div className="font-h2">Filter by:</div>
+        <button className="text-xl text-astradarkgray hover:text-astrablack font-bold" onClick={onClose}>&times;</button>
+      </div>
 
       {/* Graduation Year */}
-      <div className="mb-6">
+      <div>
         <div className="flex justify-between items-center mb-1">
-          <label className="font-medium">Graduation Year</label>
+          <div className="font-rb">Graduation Year</div>
           <button
-            onClick={() => setFilters({ ...filters, yearFrom: '', yearTo: '' })}
-            className="text-blue-500 text-sm"
+            onClick={() => setFilters({ ...filters, yearFrom: "", yearTo: "" })}
+            className="text-astraprimary font-sb text-sm"
           >
             Reset
           </button>
         </div>
-        <div className="flex gap-4">
+        <div className="flex gap-2">
           <input
             type="text"
             placeholder="Oldest"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md"
             value={filters.yearFrom}
             onChange={(e) => setFilters({ ...filters, yearFrom: e.target.value })}
+            className="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white font-r"
           />
           <input
             type="text"
             placeholder="Latest"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md"
             value={filters.yearTo}
             onChange={(e) => setFilters({ ...filters, yearTo: e.target.value })}
+            className="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white font-r"
           />
         </div>
       </div>
 
       {/* Location */}
-      <div className="mb-6">
+      <div>
         <div className="flex justify-between items-center mb-1">
-          <label className="font-medium">Location</label>
-          <button onClick={() => setFilters({ ...filters, location: '' })} className="text-blue-500 text-sm">
+          <div className="font-rb">Location</div>
+          <button
+            onClick={() => setFilters({ ...filters, location: "" })}
+            className="text-astraprimary font-sb text-sm"
+          >
             Reset
           </button>
         </div>
         <input
           type="text"
           placeholder="Type here"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md"
           value={filters.location}
           onChange={(e) => setFilters({ ...filters, location: e.target.value })}
+          className="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white font-r"
         />
       </div>
 
       {/* Field of Work */}
-      <div className="mb-6">
+      <div>
         <div className="flex justify-between items-center mb-1">
-          <label className="font-medium">Field of Work</label>
-          <button onClick={() => setFilters({ ...filters, field: '' })} className="text-blue-500 text-sm">
+          <div className="font-rb">Field of Work</div>
+          <button
+            onClick={() => setFilters({ ...filters, field: "" })}
+            className="text-astraprimary font-sb text-sm"
+          >
             Reset
           </button>
         </div>
         <select
-          className="w-full px-3 py-2 border border-gray-300 rounded-md"
           value={filters.field}
           onChange={(e) => setFilters({ ...filters, field: e.target.value })}
+          className="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white font-r"
         >
           <option value="">Select alumni's field of work</option>
           <option>Frontend Developer</option>
@@ -103,10 +126,13 @@ export default function SearchFilter() {
       </div>
 
       {/* Skills */}
-      <div className="mb-6">
+      <div>
         <div className="flex justify-between items-center mb-1">
-          <label className="font-medium">Skills</label>
-          <button onClick={() => setFilters({ ...filters, skills: [] })} className="text-blue-500 text-sm">
+          <div className="font-rb">Skills</div>
+          <button
+            onClick={() => setFilters({ ...filters, skills: [] })}
+            className="text-astraprimary font-sb text-sm"
+          >
             Reset
           </button>
         </div>
@@ -116,78 +142,77 @@ export default function SearchFilter() {
           value={skillInput}
           onChange={(e) => setSkillInput(e.target.value)}
           onKeyDown={handleSkillAdd}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md mb-2"
+          className="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white font-r"
         />
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 mt-2">
           {filters.skills.map((skill, idx) => (
             <span
               key={idx}
-              className="px-3 py-1 bg-gray-200 text-sm rounded-full cursor-pointer hover:bg-red-100"
               onClick={() => removeSkill(skill)}
+              className={`px-3 py-1 rounded-full border text-sm cursor-pointer transition`}
             >
-              {skill} &times;
+              {skill}
             </span>
           ))}
         </div>
       </div>
 
-      {/* Sort By */}
-      <div className="mb-6">
+      {/* Sort */}
+      <div>
         <div className="flex justify-between items-center mb-1">
-          <label className="font-medium">Sort by</label>
+          <div className="font-h2">Sort by:</div>
           <button
-            onClick={() => setFilters({ ...filters, sortCategory: '', sortOrder: 'asc' })}
-            className="text-blue-500 text-sm"
+            onClick={() => setFilters({ ...filters, sortCategory: "", sortOrder: "asc" })}
+            className="text-astraprimary font-sb text-sm"
           >
             Reset
           </button>
         </div>
-        <div className="flex items-center gap-4">
+
+        <div className="flex">
           <select
-            value={filters.sortCategory || ''}
+            value={filters.sortCategory}
             onChange={(e) => setFilters({ ...filters, sortCategory: e.target.value })}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 bg-white"
+            className="flex-grow px-4 py-2.5 rounded-xl border border-gray-300 bg-white font-r"
           >
-            <option value="">Select a category</option>
+            <option value="">Select Category</option>
             <option value="year">Graduation Year</option>
             <option value="name">Alumni Name</option>
             <option value="location">Location</option>
             <option value="field">Field of Work</option>
           </select>
 
-          <div className="flex items-center gap-2">
-            <label className="flex items-center gap-1 text-sm">
-              <input
-                type="radio"
-                name="sortOrder"
-                value="asc"
-                checked={filters.sortOrder === 'asc'}
-                onChange={(e) => setFilters({ ...filters, sortOrder: e.target.value })}
-                className="accent-blue-600"
-              />
-              Asc
-            </label>
-            <label className="flex items-center gap-1 text-sm">
-              <input
-                type="radio"
-                name="sortOrder"
-                value="desc"
-                checked={filters.sortOrder === 'desc'}
-                onChange={(e) => setFilters({ ...filters, sortOrder: e.target.value })}
-                className="accent-blue-600"
-              />
-              Desc
-            </label>
+          <div className="flex ml-2">
+            {["asc", "desc"].map((order) => (
+              <button
+                key={order}
+                onClick={() => setFilters({ ...filters, sortOrder: order })}
+                className={`w-full px-4 py-2 font-sb transition text-sm ${
+                  filters.sortOrder === order
+                    ? "bg-astraprimary text-white"
+                    : "bg-white text-astraprimary border border-astraprimary"
+                }`}
+              >
+                {order === "asc" ? "Ascending" : "Descending"}
+              </button>
+            ))}
           </div>
         </div>
-      </div>
+        </div>
+        
 
-      {/* Buttons */}
-      <div className="flex justify-end gap-4 mt-6">
-        <button className="px-4 py-2 border border-blue-500 text-blue-500 rounded-md hover:bg-blue-50">
-          Cancel
+       {/* Action Buttons */}
+       <div className="flex gap-2 pt-2">
+        <button
+          className="w-full py-4 rounded-md border border-astraprimary text-astraprimary hover:bg-astralight/20 transition font-sb"
+          onClick={handleResetAll}
+        >
+          Reset All
         </button>
-        <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+        <button
+          className="w-full py-4 rounded-md bg-astraprimary text-white hover:bg-astradark transition font-sb"
+          onClick={handleApply}
+        >
           Apply Filters ({filters.skills.length})
         </button>
       </div>
