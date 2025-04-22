@@ -92,7 +92,9 @@ const createDonation = (supabase) => async (req, res) => {
             donation_date,
             reference_num,
             mode_of_payment,
-            amount
+            amount,
+            comment = null,
+            is_anonymous = null
         } = req.body;
 
         const alumId = alum_id;
@@ -100,6 +102,7 @@ const createDonation = (supabase) => async (req, res) => {
         const donationDate = donation_date;
         const referenceNum = reference_num;
         const modeOfPayment = mode_of_payment;
+        const isAnonymous = is_anonymous;
 
         // Validate data types
         if (!isValidUUID(alumId)) {
@@ -121,7 +124,9 @@ const createDonation = (supabase) => async (req, res) => {
         if ((typeof modeOfPayment !== 'number' || ![0, 1].includes(modeOfPayment)) ||
             !isValidDate(donationDate) ||
             typeof amount !== 'number' ||
-            typeof referenceNum !== 'string'
+            typeof referenceNum !== 'string' ||
+            (comment !== null && typeof comment !== 'string') ||
+            (isAnonymous !== null && typeof isAnonymous !== 'boolean')
         ) {
             return res.status(httpStatus.BAD_REQUEST).json({
                 status: 'FAILED',
@@ -292,7 +297,9 @@ const updateDonation = (supabase) => async (req, res) => {
             donation_date,
             reference_num,
             mode_of_payment,
-            amount
+            amount,
+            comment,
+            is_anonymous
         } = req.body;
 
         const updateData = {
@@ -301,7 +308,9 @@ const updateDonation = (supabase) => async (req, res) => {
             donation_date,
             reference_num,
             mode_of_payment,
-            amount
+            amount,
+            comment,
+            is_anonymous
         };
 
         // Remove undefined fields to avoid overwriting with nulls
@@ -312,7 +321,7 @@ const updateDonation = (supabase) => async (req, res) => {
         });
 
         // Validate request body
-        const allowedFields = ['alum_id', 'project_id', 'donation_date', 'reference_num', 'mode_of_payment', 'amount'];
+        const allowedFields = ['alum_id', 'project_id', 'donation_date', 'reference_num', 'mode_of_payment', 'amount', 'comment', 'is_anonymous'];
 
         allowedFields.forEach(field => {
             if (!(field in req.body)) {
@@ -324,7 +333,9 @@ const updateDonation = (supabase) => async (req, res) => {
             if ((field === 'mode_of_payment' && (typeof value !== 'number' || ![0, 1].includes(value))) ||
                 (field === 'donation_date' && (value !== null && !isValidDate(value))) ||
                 (field === 'amount' && typeof value !== 'number') ||
-                (field === 'reference_num' && typeof value !== 'string')
+                (field === 'reference_num' && typeof value !== 'string') ||
+                (field === 'comment' && typeof value !== 'string') ||
+                (field === 'is_anonymous' && typeof value !== 'boolean')
             ) {
                 return res.status(httpStatus.BAD_REQUEST).json({
                     status: 'FAILED',
