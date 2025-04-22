@@ -128,3 +128,35 @@ body {
   }
 
 }
+/* Optional: Hides the default calendar icon (if needed) */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  display: none;
+}
+
+.react-datepicker {
+  font-family: inherit;
+  border-radius: 10px;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.react-datepicker__header {
+  background-color: astraprimary; /* Astra Primary */
+  color: astrawhite;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected {
+  background-color: astraprimary !important;
+  color: astrawhite !important;
+  border-radius: 50% !important;
+}
+
+.react-datepicker__day:hover {
+  background-color: astragray;
+  border-radius: 50%;
+}
+
