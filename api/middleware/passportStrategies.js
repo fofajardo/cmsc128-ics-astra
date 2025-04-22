@@ -8,7 +8,7 @@ const kInvalidUsernameOrEmail = {
 };
 
 function registerStrategies(supabase) {
-    passport.use(new LocalStrategy(async function (aEmail, aPassword, aCallback) {
+    passport.use(new LocalStrategy({}, async function (aEmail, aPassword, aCallback) {
         let user = null;
         try {
             user = await UsersService.fetchUserByEmail(supabase, aEmail);
