@@ -2,8 +2,6 @@
 "use client"
 import AdminStatCard from "@/components/AdminStatCard";
 import {GraduationCap, Calendar, Briefcase, HandHeart } from "lucide-react";
-import AlumActivity from "./componenets/alumActivity";
-import UpcomingEvents from "./componenets/UpcomingEvents";
 
 export default function Dashboard() {
     return (
