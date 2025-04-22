@@ -137,7 +137,7 @@ export function PageTool({ pagination, setPagination }) {
         <button
             key={page}
             onClick={() => handlePageChange(page)}
-            className={`px-4 py-2 rounded-xl font-s ${
+            className={`px-2 md:px-4 py-2 rounded-sm md:rounded-xl font-s ${
                 currPage === page
                     ? 'bg-astraprimary text-astrawhite'
                     : 'bg-transparent text-astradarkgray hover:bg-astratintedwhite'
@@ -180,7 +180,7 @@ export function PageTool({ pagination, setPagination }) {
     };
 
     return (
-        <div className="flex items-center justify-center gap-2 py-4 cursor-pointer bg-white rounded-b-xl">
+        <div className="flex items-center justify-center gap-2 sm:gap-1 py-4 cursor-pointer bg-white rounded-b-xl">
             <button
                 onClick={() => handlePageChange(currPage - 1)}
                 disabled={currPage === 1}
@@ -190,7 +190,7 @@ export function PageTool({ pagination, setPagination }) {
                         : 'text-astraprimary hover:bg-astratintedwhite'
                 }`}
             >
-                <ArrowLeft className="w-5 h-5" />
+                <ArrowLeft className="w-5 h-5 stroke-3" />
             </button>
     
             {getPageButtons()}
@@ -204,7 +204,7 @@ export function PageTool({ pagination, setPagination }) {
                         : 'text-astraprimary hover:bg-astratintedwhite'
                 }`}
             >
-                <ArrowRight className="w-5 h-5" />
+                <ArrowRight className="w-5 h-5 stroke-3" />
             </button>
         </div>
     );
