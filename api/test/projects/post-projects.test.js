@@ -5,7 +5,7 @@ import httpStatus from 'http-status-codes';
 
 describe('Projects API Tests', function () {
     describe('POST /v1/projects', function () {
-        const contentId = '318c8aab-0564-42f8-aba6-5785d0e66288';
+        const contentId = '389517e7-4a0b-4c96-84f9-3a7080186892';
 
         after(async function () {
             const res = await request(app)
