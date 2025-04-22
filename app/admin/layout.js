@@ -7,7 +7,7 @@ export default function AdminLayout({ children }) {
         <html lang="en">
             <body>
                 <NavbarAdmin />
-                <main className="p-4">{children}</main>
+                <main className="pt-20">{children}</main>
             </body>
         </html>
     );

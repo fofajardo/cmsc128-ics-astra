@@ -4,7 +4,7 @@
 
 export default function AdminTabs({ tabs, currTab, handleTabChange }) {
     return (
-      <div className="flex flex-row w-screen overflow-y-scroll scrollbar-hide">
+      <div className="flex flex-row w-full overflow-y-scroll scrollbar-hide">
         {Object.entries(tabs).map(([label, notif]) => (
           <Tab
             key={label}
@@ -30,7 +30,7 @@ function Tab({ label, active, notif, handleTabChange }) {
     >
       <button
         onClick={() => handleTabChange(label)}
-        className={`items-center flex py-4 font-lb bg-transparent ${
+        className={`items-center flex py-4 font-lb bg-transparent w-full justify-center ${
           active ? 'text-astradark' : 'bg-astrawhite text-astradarkgray'
         }`}
       >
