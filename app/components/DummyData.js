@@ -175,7 +175,8 @@ export const users = [
       year_graduated: "2015-06-01",
       skills: "Java, Spring Boot, PostgreSQL",
       primary_work_experience_id: "wx-1",
-      honorifics: "Ms"
+      honorifics: "Ms",
+      status: 0
     },
     {
       alum_id: "2",
@@ -189,7 +190,8 @@ export const users = [
       year_graduated: "2018-06-01",
       skills: "Python, Scikit-learn, Pandas",
       primary_work_experience_id: "wx-2",
-      honorifics: "Mr"
+      honorifics: "Mr",
+      status: 1
     },
     {
       alum_id: "3",
@@ -203,7 +205,8 @@ export const users = [
       year_graduated: "2012-06-01",
       skills: "HTML, CSS, JavaScript, Vue.js",
       primary_work_experience_id: "wx-3",
-      honorifics: "Ms"
+      honorifics: "Ms",
+      status: 2
     },
     {
       alum_id: "4",
@@ -217,7 +220,8 @@ export const users = [
       year_graduated: "2020-06-01",
       skills: "Docker, Kubernetes, AWS",
       primary_work_experience_id: "wx-4",
-      honorifics: "Mr"
+      honorifics: "Mr",
+      status: 0
     },
     {
       alum_id: "5",
@@ -231,7 +235,8 @@ export const users = [
       year_graduated: "2017-06-01",
       skills: "Swift, iOS, Firebase",
       primary_work_experience_id: "wx-5",
-      honorifics: "Ms"
+      honorifics: "Ms",
+      status: 1
     },
     {
       alum_id: "6",
@@ -245,7 +250,8 @@ export const users = [
       year_graduated: "2014-06-01",
       skills: "Node.js, React, MongoDB",
       primary_work_experience_id: "wx-6",
-      honorifics: "Mr"
+      honorifics: "Mr",
+      status: 2
     },
     {
       alum_id: "7",
@@ -259,7 +265,8 @@ export const users = [
       year_graduated: "2016-06-01",
       skills: "Azure, Linux, Networking",
       primary_work_experience_id: "wx-7",
-      honorifics: "Ms"
+      honorifics: "Ms",
+      status: 1
     },
     {
       alum_id: "8",
@@ -273,7 +280,8 @@ export const users = [
       year_graduated: "2013-06-01",
       skills: "OWASP, Pen Testing, Metasploit",
       primary_work_experience_id: "wx-8",
-      honorifics: "Mr"
+      honorifics: "Mr",
+      status: 0
     },
     {
       alum_id: "9",
@@ -287,7 +295,8 @@ export const users = [
       year_graduated: "2019-06-01",
       skills: "PyTorch, Deep Learning, NLP",
       primary_work_experience_id: "wx-9",
-      honorifics: "Ms"
+      honorifics: "Ms",
+      status: 1
     },
     {
       alum_id: "10",
@@ -301,7 +310,8 @@ export const users = [
       year_graduated: "2011-06-01",
       skills: "SQL, Oracle, PL/SQL",
       primary_work_experience_id: "wx-10",
-      honorifics: "Mr"
+      honorifics: "Mr",
+      status: 0
     }
   ];
   
