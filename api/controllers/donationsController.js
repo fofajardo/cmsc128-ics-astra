@@ -171,7 +171,9 @@ const createDonation = (supabase) => async (req, res) => {
             donation_date: donationDate,
             reference_num: referenceNum,
             mode_of_payment: modeOfPayment,
-            amount: amount
+            amount: amount,
+            comment,
+            is_anonymous: isAnonymous
         });
 
         if (error) {
