@@ -3,6 +3,7 @@ import Link from "next/link";
 import EventImage from "./EventImage";
 import EventInfo from "./EventInfo";
 
+
 export default function EventCard({
   id,
   imageSrc,

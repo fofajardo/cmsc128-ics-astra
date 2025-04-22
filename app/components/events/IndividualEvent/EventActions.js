@@ -6,7 +6,7 @@ export default function EventActions({ status, isInterested, handleInterestClick
       <>
         <button
           disabled
-          className="bg-red-200 text-red-700 font-semibold py-2 rounded-lg cursor-not-allowed"
+          className="bg-red-200 text-astrared font-semibold py-2 rounded-lg cursor-not-allowed"
         >
           Closed
         </button>

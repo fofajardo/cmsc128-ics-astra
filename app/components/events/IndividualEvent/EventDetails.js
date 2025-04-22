@@ -1,6 +1,6 @@
 'use client';
 import EventDateLocation from "./EventDateLocation";
-import EventActions from "../GroupedEvents/EventActions";
+import EventActions from "./EventActions";
 
 export default function EventDetails({ event, isInterested, handleInterestClick }) {
   return (

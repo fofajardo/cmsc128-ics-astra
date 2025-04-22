@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Icon } from "@iconify/react";
-import CardCarousel from "../IndividualEvent/CardCarousel"; // ✅ Imported reusable card
+import CardCarousel from "./CardCarousel"; // ✅ Imported reusable card
 
 export default function EventCarousel({ events }) {
   const [startIndex, setStartIndex] = useState(0);
