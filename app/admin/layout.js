@@ -1,6 +1,6 @@
 import NavbarAdmin from '@/components/NavbarAdmin';
-import '../styles/globals.css';
-import '../styles/styles.css';
+import Footer from '@/components/Footer';
+import "@/styles/globals.css";
 
 export default function AdminLayout({ children }) {
     return (
