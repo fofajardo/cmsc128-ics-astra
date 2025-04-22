@@ -3,12 +3,15 @@ import httpStatus from "http-status-codes";
 import request from "supertest";
 
 import app from "../../index.js";
+import {TestSignIn, TestSignOut, TestUsers} from "../auth/auth.common.js";
 
 // TODO: would be nice to reference the route prefix in a constants
 // file instead.
 const kRoutePrefix = "/v1/users/";
 
 describe('Users API - Delete and Verify Deletion', function () {
+    before(() => TestSignIn(TestUsers.admin));
+
     let userId = null;
 
     // ✅ Precondition: Create a user before running delete tests
@@ -78,4 +81,6 @@ describe('Users API - Delete and Verify Deletion', function () {
             expect(res.body).to.have.property('status', 'FAILED');
         });
     });
+
+    after(TestSignOut);
 });

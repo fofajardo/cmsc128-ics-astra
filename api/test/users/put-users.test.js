@@ -2,8 +2,11 @@ import request from 'supertest';
 import { expect } from 'chai';
 import app from '../../index.js';
 import httpStatus from 'http-status-codes';
+import {TestSignIn, TestSignOut, TestUsers} from "../auth/auth.common.js";
 
 describe('Users API Tests', function () {
+    before(() => TestSignIn(TestUsers.admin));
+
     describe('PUT /v1/users/:userId', function () {
         let userId = null;
       
@@ -82,5 +85,7 @@ describe('Users API Tests', function () {
                 expect(res.status).to.be.oneOf([httpStatus.OK, httpStatus.NO_CONTENT]);
             }
         });
+
+        after(TestSignOut);
     });
 });

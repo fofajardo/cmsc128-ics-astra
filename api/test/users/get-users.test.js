@@ -2,8 +2,10 @@ import request from 'supertest';
 import { expect } from 'chai';
 import app from '../../index.js';
 import httpStatus from 'http-status-codes';
+import {TestSignIn, TestSignOut, TestUsers} from "../auth/auth.common.js";
 
 describe('Users API Tests', function () {
+    before(() => TestSignIn(TestUsers.admin));
 
     describe('GET /v1/users', function () {
         it('should return 200 for GET /v1/users', async function () {
@@ -54,4 +56,6 @@ describe('Users API Tests', function () {
             //     val => val === null || new Date(userData.updated_at).toString() !== 'Invalid Date');
         });
     });
+
+    after(TestSignOut);
 });
