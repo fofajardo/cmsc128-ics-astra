@@ -1,6 +1,6 @@
 import NavbarAdmin from '@/components/NavbarAdmin';
-import Footer from '../components/Footer';
-import "../styles/globals.css";
+import Footer from '@/components/Footer';
+import "@/styles/globals.css";
 
 export default function RootLayout({ children }) {
   return (
