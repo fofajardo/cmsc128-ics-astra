@@ -33,6 +33,7 @@ export default function EventInfo({
             attendees={attendees}
             textSize="text-sm"
             iconSize={18}
+            textColor="text-astrablack"
             spacing="mt-4 space-y-2"
           />
   

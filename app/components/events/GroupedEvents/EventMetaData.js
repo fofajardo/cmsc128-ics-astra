@@ -44,7 +44,7 @@ import {
                   py-1 
                   rounded-md 
                   font-medium 
-                  hover:bg-blue-700 
+                  hover:bg-astradark
                   transition-colors 
                   duration-200
                 "
