@@ -37,7 +37,7 @@ export default function EventCard({
                 className={`px-3 py-1 rounded-md text-sm font-semibold ${
                   status === "Open"
                     ? "bg-green-100 text-green-600"
-                    : "bg-red-500 text-white"
+                    : "bg-red-500 text-astrawhite"
                 }`}
               >
                 {status}
@@ -48,7 +48,7 @@ export default function EventCard({
               {description}
             </p>
 
-            <div className="mt-4 space-y-2 text-sm text-[#1E293B]">
+            <div className="mt-4 space-y-2 text-sm text-astrablack">
               <div className="flex items-center gap-2">
                 <Icon icon="mdi:calendar-month" className="text-astraprimary text-lg" />
                 <span>{date}</span>

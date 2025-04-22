@@ -32,7 +32,7 @@ export default function EventCarousel({ events }) {
         {/* Left Arrow */}
         <button
           onClick={handlePrev}
-          className="absolute left-[-20px] z-10 bg-white shadow-md hover:bg-gray-100 transition-all p-2 rounded-full cursor-pointer"
+          className="absolute left-[-20px] z-10 bg-white shadow-md hover:bg-astragray transition-all p-2 rounded-full cursor-pointer"
         >
           <Icon icon="ic:baseline-keyboard-arrow-left" className="text-3xl" />
         </button>
@@ -47,7 +47,7 @@ export default function EventCarousel({ events }) {
         {/* Right Arrow */}
         <button
           onClick={handleNext}
-          className="absolute right-[-20px] z-10 bg-white shadow-md hover:bg-gray-100 transition-all p-2 rounded-full cursor-pointer"
+          className="absolute right-[-20px] z-10 bg-white shadow-md hover:bg-astragray transition-all p-2 rounded-full cursor-pointer"
         >
           <Icon icon="ic:baseline-keyboard-arrow-right" className="text-3xl" />
         </button>

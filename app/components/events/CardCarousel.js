@@ -9,7 +9,7 @@ export default function CardCarousel({ event }) {
   return (
     <div
       className="
-        bg-white 
+        bg-astrawhite 
         rounded-2xl 
         overflow-hidden 
         border 
@@ -78,7 +78,7 @@ export default function CardCarousel({ event }) {
                     inline-block 
                     text-xs 
                     bg-astraprimary 
-                    text-white 
+                    text-astrawhite 
                     px-2 
                     py-1 
                     rounded-md 

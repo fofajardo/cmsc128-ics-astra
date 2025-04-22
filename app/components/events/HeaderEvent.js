@@ -1,8 +1,9 @@
 'use client';
 import { useState } from 'react';
-import Image from 'next/image';
-import { Icon } from '@iconify/react';
 import EditEventModal from './EditEventModal';
+import HeaderImage from './HeaderImage';
+import HeaderTitleBar from './HeaderTitleBar';
+import HeaderDescription from './HeaderDescription';
 
 export default function HeaderEvent({ event, onSave }) {
   const [isEditMode, setIsEditMode] = useState(false);
@@ -14,13 +15,8 @@ export default function HeaderEvent({ event, onSave }) {
     setShowEditModal(false);
   };
 
-  const openEditModal = () => {
-    setShowEditModal(true);
-  };
-
-  const closeEditModal = () => {
-    setShowEditModal(false);
-  };
+  const openEditModal = () => setShowEditModal(true);
+  const closeEditModal = () => setShowEditModal(false);
 
   const handleSaveChanges = (updatedData) => {
     setEventData(updatedData);
@@ -28,58 +24,21 @@ export default function HeaderEvent({ event, onSave }) {
     if (onSave) onSave(updatedData);
   };
 
+  const handleDelete = () => alert('Delete logic here');
+
   return (
     <div className="flex-1 bg-astrawhite rounded-xl shadow-md p-6 relative">
-      <Image
-        src={eventData.imageSrc}
-        alt={eventData.title}
-        width={800}
-        height={400}
-        className="rounded-xl w-full h-[300px] object-cover"
+      <HeaderImage imageSrc={eventData.imageSrc} title={eventData.title} />
+      <HeaderTitleBar
+        title={eventData.title}
+        isEditMode={isEditMode}
+        onEditToggle={toggleEditMode}
+        onOpenEditModal={openEditModal}
+        onDelete={handleDelete}
+        onCancel={toggleEditMode}
       />
-      {/* Title + Buttons in same row */}
-      <div className="mt-4 flex items-center justify-between flex-wrap">
-        <h1 className="text-2xl font-bold text-gray-900">{eventData.title}</h1>
-        <div className="flex gap-2 items-center">
-          {!isEditMode ? (
-            <button
-              onClick={toggleEditMode}
-              className="focus:outline-none transition duration-200"
-            >
-              <Icon
-                icon="mdi:file-document-outline"
-                className="text-astraprimary text-2xl"
-              />
-            </button>
-          ) : (
-            <>
-              <button
-                onClick={openEditModal}
-                className="bg-astraprimary text-white text-sm font-semibold px-3 py-1 rounded-md"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => alert('Delete logic here')}
-                className="bg-white text-astraprimary border border-astraprimary text-sm font-semibold px-3 py-1 rounded-md"
-              >
-                Delete
-              </button>
-              <button
-                onClick={toggleEditMode}
-                className="bg-gray-200 text-gray-800 text-sm font-semibold px-3 py-1 rounded-md"
-              >
-                Cancel
-              </button>
-            </>
-          )}
-        </div>
-      </div>
 
-      {/* Description */}
-      <p className="text-astrablack mt-2 text-sm leading-relaxed">
-        {eventData.eventDetail}
-      </p>
+      <HeaderDescription description={eventData.eventDetail} />
 
       {showEditModal && (
         <EditEventModal
