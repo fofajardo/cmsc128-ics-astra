@@ -19,9 +19,9 @@ describe('Project API Tests', function () {
             .put(`/v1/projects/${projectId}`)
             .send(originalData);
         if (res.body.status === 'UPDATED') {
-            console.log('Successfully revert donation fields');
+            console.log('Successfully revert project fields');
         } else
-            console.log('Failed to revert donation fields');
+            console.log('Failed to revert project fields');
     });
 
     describe('PUT /v1/projects/:projectId', function () {
