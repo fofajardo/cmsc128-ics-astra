@@ -2,11 +2,10 @@
 import { useParams } from "next/navigation";
 import events from "../../../data/events";
 import { useState } from "react";
-import AttendeesSection from "@/components/events/AttendeesSection";
-import EventDetails from "@/components/events/EventDetails";
-import BackButton from "@/components/events/BackButton";
-import HeaderEvent from "@/components/events/HeaderEvent";
-
+import AttendeesSection from "@/components/events/IndividualEvent/AttendeesSection";
+import EventDetails from "@/components/events/IndividualEvent/EventDetails";
+import BackButton from "@/components/events/IndividualEvent/BackButton";
+import HeaderEvent from "@/components/events/IndividualEvent/HeaderEvent";
 
 export default function EventDetailPage() {
   const { id } = useParams();
