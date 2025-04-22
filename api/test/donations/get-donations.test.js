@@ -9,7 +9,7 @@ describe('Donations API Tests', function () {
         it('should return 200 and a list of donations', async function () {
             const res = await request(app)
                 .get('/v1/donations')
-                .query({ page: 1, limit: 10 });
+                .query({ page: 1, limit: 5, sort_by: 'amount', order: 'asc'});
 
             // console.log(res.body);
 
