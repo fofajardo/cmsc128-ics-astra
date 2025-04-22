@@ -67,7 +67,7 @@ describe('Work Experiences API Tests', function() {
             expect(res.status).to.equal(httpStatus.OK);
             expect(res.body).to.be.an('object');
             expect(res.body).to.have.property('status').that.is.oneOf(['OK', 'FAILED']);
-            expect(res.body).to.have.property('work-experiences').that.is.an('array');
+            expect(res.body).to.have.property('work_experiences').that.is.an('array');
         });
     });
 
