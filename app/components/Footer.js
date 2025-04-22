@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Icon } from "@iconify/react";
+import { MapPin, Mail } from "lucide-react";
 
 export default function Footer() {
   const websiteLinks = [{text:"Home", link:"/home"},{text:"About", link:"/about"},{text:"Get in touch", link:"#"},{text:"FAQs", link:"#"}]
@@ -74,13 +74,14 @@ export default function Footer() {
       {/* Contacts */}
       <div className="mx-auto w-full max-w-screen-xl px-15 pb-10">
         <h1 className="font-bold text-astrablack text-lg">Contact Us</h1>
-        {contacts.map((contact) => {
-          return (
-          <div key={contact.key} className="text-astradarkgray text-base flex flex-row gap-3 items-center py-3">
-            <Icon icon={contact.icon} width="24" height="24" className="shrink-0"/>
-            <p className="max-w-75 leading-5">{contact.text}</p>
+          <div className="text-astradarkgray text-base flex flex-row gap-3 items-center py-3">
+            <MapPin size={24}/>
+            <p className="max-w-75 leading-5">{contacts[0].text}</p>
           </div>
-        )})}
+          <div className="text-astradarkgray text-base flex flex-row gap-3 items-center py-3">
+            <Mail size={24}/>
+            <p className="max-w-75 leading-5">{contacts[1].text}</p>
+          </div>
       </div>
       {/* Copyright and Socmeds */}
       <div className="flex flex-col justify-end bg-astraprimary w-full h-30 lg:h-20 md:h-20">
