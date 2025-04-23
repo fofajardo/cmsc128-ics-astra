@@ -6,7 +6,7 @@ import AttendeesSection from "@/components/events/IndividualEvent/AttendeesSecti
 import EventDetails from "@/components/events/IndividualEvent/EventDetails";
 import BackButton from "@/components/events/IndividualEvent/BackButton";
 import HeaderEvent from "@/components/events/IndividualEvent/HeaderEvent";
-import EventActions from "@/components/events/IndividualEvent/EventActions";
+
 
 
 export default function EventDetailPage() {

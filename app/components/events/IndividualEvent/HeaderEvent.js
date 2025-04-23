@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import EditEventModal from './EditEventModal';
+import EditEventModal from './EditEventModal/EditEventModal';
 import HeaderImage from './HeaderImage';
 import HeaderTitleBar from './HeaderTitleBar';
 import HeaderDescription from './HeaderDescription';
@@ -27,8 +27,8 @@ export default function HeaderEvent({ event, onSave }) {
   const handleDelete = () => alert('Delete logic here');
 
   return (
-    <div className="flex-1 bg-astrawhite rounded-xl shadow-md p-6 relative">
-      <HeaderImage imageSrc={eventData.imageSrc} title={eventData.title} />
+    <div className="flex-1 bg-white rounded-xl shadow-md p-6 relative">
+      <HeaderImage imageSrc={eventData.image || eventData.imageSrc} title={eventData.title} />
       <HeaderTitleBar
         title={eventData.title}
         isEditMode={isEditMode}
@@ -37,7 +37,6 @@ export default function HeaderEvent({ event, onSave }) {
         onDelete={handleDelete}
         onCancel={toggleEditMode}
       />
-
       <HeaderDescription description={eventData.eventDetail} />
 
       {showEditModal && (
