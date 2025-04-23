@@ -3,39 +3,38 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import NavbarUser from "../../components/NavbarUser";
-import Footer from "../../components/Footer";
 import ProjectCard from "../../components/projects/ProjectCard";
-import Image from "next/image";
-import Logo from "../../assets/logo.png";
 import Link from "next/link";
+import { Icon } from "@iconify/react";
 
-export default function ProjectsPage() {
-  const [showRequestPanel, setShowRequestPanel] = useState(false);
-  const [step, setStep] = useState(1);
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [amount, setAmount] = useState("");
-  const [zip, setZip] = useState("");
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [image, setImage] = useState(null);
+export default function ProjectsPage({projects}) {
+  const [startIndex, setStartIndex] = useState(0);
+  const visibleCount = 3;
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImage(URL.createObjectURL(file));
-    }
+  const allProjects = projects || Array(6).fill({
+    image: "/projects/assets/Donation.jpg",
+    title: "Snacks to Support Student Success",
+    description: "This project aims to provide snacks to students to encourage attendance and enhance focus.",
+    amountRaised: "PHP20K",
+    goalAmount: "PHP50K",
+    donors: "30K",
+    buttonText: "Read story"
+  });
+
+   // Navigate Left
+   const handlePrev = () => {
+    setStartIndex((prev) => Math.max(prev - 1, 0));
   };
 
-  const handleReset = () => {
-    setShowRequestPanel(false);
-    setStep(1);
-    setSelectedOption(null);
-    setAmount("");
-    setZip("");
-    setTitle("");
-    setDescription("");
-    setImage(null);
+  // Navigate Right
+  const handleNext = () => {
+    setStartIndex((prev) => 
+      Math.min(prev + 1, allProjects.length - visibleCount)
+    );
   };
+
+  const visibleProjects = allProjects.slice(startIndex, startIndex + visibleCount);
+
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -51,26 +50,27 @@ export default function ProjectsPage() {
         >
           {/* header text */}
           <h2 className="font-l text-astrawhite text-center mt-10">
-            Equal access to tech futures
+            Equal access to tech futures for everyone
           </h2>
-          <h1 className="font-h1 text-astrawhite text-center mt-7">
+          <h1 className="text-[60px] font-extrabold leading-[1.1] text-astrawhite text-center mt-7">
             <span className="block">Your home</span>
             <span className="block mt-4">for help</span>
           </h1>
 
           {/* Request a fundraiser button */}
           <Link href="/projects/request" passHref>
-            <button className="mt-12 bg-astrawhite text-astraprimary font-semibold py-2 px-6 rounded-xl shadow hover:bg-astralightgray transition cursor-pointer w-[220px] h-[55px]">
+            <button className="mt-12 border-2 border-astrawhite text-astrawhite hover:bg-astrawhite hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-[200px] h-[60px]">
               Request a Fundraiser
             </button>
           </Link>
         </motion.div>
       </section>
-
+      {/* -----------------need edits----------------*/}
       {/* Project Grid */}
       <section className="bg-astrawhite py-16 px-4">
         <div className="max-w-6xl mx-auto">
-          <h2 className="font-lb mb-8">Fund the future of technology</h2>
+          <h2 className="font-h2 mb-8">Fund the future of technology</h2>
+          {/*pa-favor ako palagay ng progress bar tulad nung sa figma natin*/}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[...Array(6)].map((_, i) => (
               <ProjectCard key={i} />
@@ -78,48 +78,65 @@ export default function ProjectsPage() {
           </div>
           {/* See More Button (add functionality to show more (maybe new page?))*/}
           <div className="flex justify-center mt-6">
-            <button className="px-6 py-2 font-r bg-astrawhite border border-astraprimary text-astraprimary rounded hover:bg-blue-100 transition cursor-pointer">
+            <button className="px-6 py-2 font-r bg-astrawhite border border-astraprimary text-astraprimary rounded hover:bg-blue-100 transition-all duration-300 shadow-lg cursor-pointer">
               See More
             </button>
           </div>
         </div>
       </section>
 
-      {/* Why Your Support Matters */}
-      <section className="bg-astralightgray mt-16 py-16 px-4 text-center">
+      {/* Why Your Support Matters (no need edits)*/}
+      <section className="bg-astralightgray pt-20 pb-40 px-4 text-center">
         <h2 className="font-h2 mb-2 text-astrablack">
           Why Your Support Matters
         </h2>
-        <p className="text-astrablack font-l max-w-2xl mx-auto mt-7 mb-12">
-          Your generosity, at any amount, powers real change—tracked, reported,
-          and celebrated.
+        <p className="text-astrablack font-r max-w-2xl mx-auto mt-7 mb-12">
+          Your generosity, at any amount, powers real change— <br /> tracked,
+          reported, and celebrated.
         </p>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-6xl mx-auto text-left">
           {[
             {
-              title: "Immediate Impact",
+              title: (
+                <>
+                  Immediate <br /> Impact
+                </>
+              ),
               desc: "Your donation powers urgent aid—where it matters most.",
             },
             {
-              title: "Sustainable Solutions",
+              title: (
+                <>
+                  Sustainable <br /> Solutions
+                </>
+              ),
               desc: "Building self-sufficient futures, not quick fixes.",
             },
             {
-              title: "Transparent Operations",
-              desc: "Accountability you can compile and run.",
+              title: (
+                <>
+                  Transparent <br /> Operations
+                </>
+              ),
+              desc: "Accountability you can compile aFnd run.",
             },
           ].map((item, i) => (
-            <div key={i} className="bg-white p-6 rounded-xl shadow-md">
-              <h3 className="font-bold text-lg mb-2">{item.title}</h3>
-              <p className="text-gray-600">{item.desc}</p>
+            <div
+              key={i}
+              className="bg-astratintedwhite text-astrablack p-10 rounded-xl shadow-md"
+            >
+              <h3 className="px-10 py-5 font-lb mb-2 leading-snug">
+                {item.title}
+              </h3>
+              <p className="px-10 mb-10 font-r">{item.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* Donation Process */}
-      <section className="bg-gray-100 py-16 px-4">
-        <h2 className="text-2xl font-semibold text-center mb-12">
+      <section className="bg-astrawhite pt-20 pb-40 px-4">
+        <h2 className="font-h2 mb-2 text-astrablack text-center mb-12">
           Donation Process
         </h2>
         <div className="max-w-3xl mx-auto space-y-8 relative">
@@ -161,25 +178,56 @@ export default function ProjectsPage() {
       </section>
 
       {/* Completed Fundraisers */}
-      <section className="bg-blue-100 py-12">
-        <h2 className="text-2xl font-bold text-center text-gray-900 mb-8">
+      <section className="bg-astralightgray pt-20 pb-30">
+      <div className="max-w-7xl mx-auto px-4 relative">
+        <h2 className="font-h2 text-astrablack mb-3">
           Completed Fundraisers
         </h2>
-        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3].map((_, index) => (
-            <ProjectCard
-              key={index}
-              image="/projects/assets/Donation.jpg"
-              title="Snacks to Support Student Success"
-              description="This project aims to provide snacks to students to encourage attendance and enhance focus."
-              amountRaised="PHP20K"
-              goalAmount="PHP50K"
-              donors="30K"
-              buttonText="Read story"
-            />
-          ))}
+        <p className="text-astrablack font-r mb-10">
+        See the fundraisers and scholarships we've brought to life together.
+        </p>
+        
+        <div className="relative">
+          {/* Left Arrow */}
+          <button
+            onClick={handlePrev}
+            disabled={startIndex === 0}
+            className={`absolute left-[-20px] top-1/2 transform -translate-y-1/2 z-10 bg-white shadow-md hover:bg-astragray transition-all p-2 rounded-full ${
+              startIndex === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+            }`}
+          >
+            <Icon icon="ic:baseline-keyboard-arrow-left" className="text-3xl" />
+          </button>
+
+          {/* Card Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-500 ease-in-out">
+            {visibleProjects.map((project, index) => (
+              <ProjectCard
+                key={index}
+                image={project.image}
+                title={project.title}
+                description={project.description}
+                amountRaised={project.amountRaised}
+                goalAmount={project.goalAmount}
+                donors={project.donors}
+                buttonText={project.buttonText}
+              />
+            ))}
+          </div>
+
+          {/* Right Arrow */}
+          <button
+            onClick={handleNext}
+            disabled={startIndex >= allProjects.length - visibleCount}
+            className={`absolute right-[-20px] top-1/2 transform -translate-y-1/2 z-10 bg-white shadow-md hover:bg-astragray transition-all p-2 rounded-full ${
+              startIndex >= allProjects.length - visibleCount ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+            }`}
+          >
+            <Icon icon="ic:baseline-keyboard-arrow-right" className="text-3xl" />
+          </button>
         </div>
-      </section>
+      </div>
+    </section>
     </div>
   );
 }

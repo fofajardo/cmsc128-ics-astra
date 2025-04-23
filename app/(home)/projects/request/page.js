@@ -17,6 +17,11 @@ const RequestFundraiser = () => {
       setSelectedOption(selectionFromUrl);
     }
   }, [searchParams]);
+  
+  // Handle back button
+  const handleBack = () => {
+    router.back();
+  };
 
   const handleOptionSelect = (option) => {
     setSelectedOption(option);
@@ -132,10 +137,16 @@ const RequestFundraiser = () => {
         </div>
 
         {/* Bottom navigation */}
-        <div className="flex justify-end px-6 md:px-12 py-5 border-astralightgray border-t-1">
+        <div className="flex justify-between px-6 md:px-12 py-5 border-astralightgray border-t-1">
+        <button 
+            onClick={handleBack}
+            className="flex items-center text-astradarkgray hover:text-astraprimary transition-colors font-r transition cursor-pointer"
+          > 
+            <i className="fas fa-arrow-left mr-2"></i> 
+          </button> 
           {selectedOption ? (
             <Link href="/projects/request/goal" passHref>
-              <button className="bg-astraprimary text-astrawhite font-semibold py-2 px-6 rounded-xl shadow hover:bg-astralightgray transition cursor-pointer w-[150px] h-[55px]">
+              <button className="blue-button font-semibold transition cursor-pointer w-[150px] h-[55px]">
                 Continue
               </button>
             </Link>
