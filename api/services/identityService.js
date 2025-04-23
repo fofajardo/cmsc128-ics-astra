@@ -56,30 +56,31 @@ async function defineScopes(aUser) {
     const {can, cannot, rules} =
         new AbilityBuilder(createMongoAbility);
 
-    let role = aUser?.role ?? RoleName.UNLINKED;
+    let user = aUser?.data;
+    let role = user?.role ?? RoleName.UNLINKED;
 
     if (role !== RoleName.UNLINKED) {
         // General permissions for all roles.
-        can(Actions.MANAGE, Subjects.USER, {id: aUser.id});
-        can(Actions.MANAGE, Subjects.ALUMNI_PROFILE, {alum_id: aUser.id});
-        can(Actions.MANAGE, Subjects.CONTACT, {alum_id: aUser.id});
+        can(Actions.MANAGE, Subjects.USER, {id: user.id});
+        can(Actions.MANAGE, Subjects.ALUMNI_PROFILE, {alum_id: user.id});
+        can(Actions.MANAGE, Subjects.CONTACT, {alum_id: user.id});
         can(Actions.CREATE, Subjects.DONATION);
-        can(Actions.MANAGE, Subjects.DONATION, {alum_id: aUser.id});
+        can(Actions.MANAGE, Subjects.DONATION, {alum_id: user.id});
         can(Actions.READ, Subjects.EVENT);
         can(Actions.CREATE, Subjects.REPORT);
-        can(Actions.MANAGE, Subjects.REPORT, {reporter_id: aUser.id});
+        can(Actions.MANAGE, Subjects.REPORT, {reporter_id: user.id});
         can(Actions.READ, Subjects.CONTENT);
 
-        if (role.name === RoleName.ALUMNUS) {
+        if (role === RoleName.ALUMNUS) {
             can(Actions.READ, Subjects.EVENT);
             can(Actions.CREATE, Subjects.DONATION);
-            can(Actions.MANAGE, Subjects.DONATION, {alum_id: aUser.id});
+            can(Actions.MANAGE, Subjects.DONATION, {alum_id: user.id});
             cannot(Actions.MANAGE, Subjects.EVENT);
-            can(Actions.MANAGE, Subjects.EVENT_INTEREST, {alum_id: aUser.id});
-            can(Actions.READ, Subjects.ALUMNI_PROFILE, {alum_id: aUser.id});
+            can(Actions.MANAGE, Subjects.EVENT_INTEREST, {alum_id: user.id});
+            can(Actions.READ, Subjects.ALUMNI_PROFILE, {alum_id: user.id});
             can(Actions.CREATE, Subjects.JOB);
-            can(Actions.MANAGE, Subjects.JOB, {alum_id: aUser.id});
-        } else if (role.name === RoleName.MODERATOR) {
+            can(Actions.MANAGE, Subjects.JOB, {alum_id: user.id});
+        } else if (role === RoleName.MODERATOR) {
             can(Actions.READ, Subjects.ALL);
             can(Actions.MANAGE, Subjects.CONTENT);
             can(Actions.MANAGE, Subjects.REPORT);
@@ -87,7 +88,7 @@ async function defineScopes(aUser) {
             can(Actions.MANAGE, Subjects.EVENT);
             can(Actions.MANAGE, Subjects.PROJECT);
             can(Actions.MANAGE, Subjects.JOB);
-        } else if (role.name === RoleName.ADMIN) {
+        } else if (role === RoleName.ADMIN) {
             can(Actions.CREATE, Subjects.ALL);
             can(Actions.READ, Subjects.ALL);
             can(Actions.MANAGE, Subjects.ALL);
