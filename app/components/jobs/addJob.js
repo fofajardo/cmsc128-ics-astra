@@ -17,7 +17,7 @@ export default function JobForm({isEdit, close}){
     const handleChange = (e) => {
         e.preventDefault();
         const {name, value} = e.target;
-        console.log({name, value});
+        // console.log({name, value});
         setFormData((prevData) => ({
           ...prevData,
           [name]: value,
