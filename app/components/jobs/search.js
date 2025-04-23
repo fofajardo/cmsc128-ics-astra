@@ -13,7 +13,7 @@ export default function SearchBar() {
     }
 
     return (
-    <form onSubmit={handleSearch} className="bg-astrawhite w-4xl h-[55px] rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] py-6 flex items-center justify-between gap-2 mb-4">
+    <form onSubmit={handleSearch} className="bg-astrawhite max-w-4xl min-w-md w-7/10 h-[55px] rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] py-6 flex items-center justify-between gap-2 mb-4">
         <div className="h-full flex items-center gap-3 ml-3 w-full">
             <Search className="text-[var(--color-astradarkgray)]"  size={28}/>
             <input type="text" placeholder="Search for job title" value={searchString} onChange={(e)=>setSearchString(e.target.value)} className="font-normal text-sm text-astradarkgray outline-none focus:border-b-1 border-0 border-astraprimary/50 focus:pb-1 w-full transition-all duration-150 ease-in"></input>
