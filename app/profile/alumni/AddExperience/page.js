@@ -78,7 +78,7 @@ export default function AddExperience({ hideAddExperienceForm }) {
   }
 
   return (
-    <div className="w-full max-w-5xl mx-auto">
+    <div className="w-full max-w-5xl mx-auto h-[80vh] overflow-y-auto p-4 bg-white rounded-lg shadow">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Add Experience</h2>
         <button onClick={hideAddExperienceForm} className="text-gray-500 hover:text-gray-700">
@@ -264,13 +264,13 @@ export default function AddExperience({ hideAddExperienceForm }) {
           <button
             type="button"
             onClick={hideAddExperienceForm}
-            className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 font-medium"
+            className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="px-6 py-2 bg-[var(--color-astraprimary)] text-white rounded-lg hover:bg-[var(--color-astradark)] font-medium"
+            className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 bg-[var(--color-astraprimary)] text-white rounded-lg hover:bg-[var(--color-astradark)]"
           >
             Save
           </button>
