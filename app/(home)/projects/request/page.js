@@ -63,8 +63,6 @@ const RequestFundraiser = () => {
               Who are you fundraising for?
             </h3>
 
-            {/* Buttons (di ko ginamit astralight, mas gusto ko much lighter e) */}
-
             {/* Button 1 */}
             <button
               onClick={() => handleOptionSelect('yourself')}

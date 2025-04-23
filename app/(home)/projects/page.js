@@ -187,12 +187,12 @@ export default function ProjectsPage({projects}) {
             },
           ].map((item, index) => (
             <div key={index} className="relative pl-10">
-              <div className="absolute left-0 top-1 text-white bg-blue-600 rounded-full w-6 h-6 flex items-center justify-center text-sm font-semibold">
+              <div className="absolute left-0 top-1 text-astrawhite bg-astraprimary rounded-full w-6 h-6 flex items-center justify-center text-sm font-semibold">
                 {index + 1}
               </div>
-              <h4 className="font-bold text-lg">{item.step}</h4>
-              <p className="text-gray-700">{item.desc}</p>
-              <p className="text-sm text-blue-600 mt-1">{item.sub}</p>
+              <h4 className="font-lb">{item.step}</h4>
+              <p className="text-astradarkgray font-r">{item.desc}</p>
+              <p className="font-s text-astraprimary mt-1">{item.sub}</p>
               {index < 3 && (
                 <div className="absolute left-2.5 top-6 w-1 h-16 bg-blue-300"></div>
               )}
