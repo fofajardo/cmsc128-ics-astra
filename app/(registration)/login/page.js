@@ -5,7 +5,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex flex-col bg-[var(--color-astratintedwhite)]">
       <div className="flex-1 flex">
-        <div className="w-full md:w-1/2 flex items-center justify-center p-4">
+        <div className="w-full md:w-1/2 p-4 md:p-8 pt-12 md:pt-20 px-4 md:px-0 flex items-center justify-center">
           <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
             <div className="mb-6 flex justify-between items-center">
               <h2 className="text-2xl font-semibold text-[var(--color-astrablack)]">Sign In</h2>
@@ -38,7 +38,7 @@ export default function LoginPage() {
             </form>
 
             <div className="mt-4 text-center">
-              <Link href="/forgot-password" className="text-[var(--color-astraprimary)] text-sm hover:underline">
+              <Link href="/recover" className="text-[var(--color-astraprimary)] text-sm hover:underline">
                 Forgot password?
               </Link>
             </div>
