@@ -8,10 +8,12 @@ import Link from "next/link";
 import { Icon } from "@iconify/react";
 
 export default function ProjectsPage({projects}) {
+  const [visibleCount, setVisibleCount] = useState(6);
   const [startIndex, setStartIndex] = useState(0);
-  const visibleCount = 3;
-
-  const allProjects = projects || Array(6).fill({
+  const completedVisibleCount = 3;
+  
+// change to actual data, 6 can also be changed to actual number of completed projects
+  const completedProjects = projects || Array(6).fill({
     image: "/projects/assets/Donation.jpg",
     title: "Snacks to Support Student Success",
     description: "This project aims to provide snacks to students to encourage attendance and enhance focus.",
@@ -29,13 +31,21 @@ export default function ProjectsPage({projects}) {
   // Navigate Right
   const handleNext = () => {
     setStartIndex((prev) => 
-      Math.min(prev + 1, allProjects.length - visibleCount)
+      Math.min(prev + 1, completedProjects.length - completedVisibleCount)
     );
   };
 
-  const visibleProjects = allProjects.slice(startIndex, startIndex + visibleCount);
+  const allProjects = [...Array(12).keys()].map((i) => ({
+    id: i,
+    title: `Snacks to Support Student Success ${i + 1}`,
+    description: `This project aims to provide middle school students the resources they need to excel academically, emotionally, and physically... ${i + 1}`,
+    image: '/projects/assets/Donation.jpg',
+    goal: 'PHP50K',
+    raised: 'PHP20K',
+    donors: '30K',
+  }));
 
-
+  const visibleCompletedProjects = completedProjects.slice(startIndex, startIndex + completedVisibleCount);
   return (
     <div className="min-h-screen flex flex-col">
       <NavbarUser />
@@ -67,23 +77,37 @@ export default function ProjectsPage({projects}) {
       </section>
       {/* -----------------need edits----------------*/}
       {/* Project Grid */}
-      <section className="bg-astrawhite py-16 px-4">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="font-h2 mb-8">Fund the future of technology</h2>
-          {/*pa-favor ako palagay ng progress bar tulad nung sa figma natin*/}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[...Array(6)].map((_, i) => (
-              <ProjectCard key={i} />
-            ))}
-          </div>
-          {/* See More Button (add functionality to show more (maybe new page?))*/}
-          <div className="flex justify-center mt-6">
-            <button className="px-6 py-2 font-r bg-astrawhite border border-astraprimary text-astraprimary rounded hover:bg-blue-100 transition-all duration-300 shadow-lg cursor-pointer">
-              See More
-            </button>
-          </div>
+       <section className="bg-astrawhite py-16 px-4">
+       <div className="max-w-6xl mx-auto">
+      <h2 className="font-h2 mb-8">Fund the future of technology</h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {allProjects.slice(0, visibleCount).map((project) => (
+              <ProjectCard
+              key={project.id}
+              image={project.image}
+              title={project.title}
+              description={project.description}
+              goal={project.goal}
+              raised={project.raised}
+              donors={project.donors}
+                 />
+              ))}
         </div>
-      </section>
+
+      {/* See More Button */}
+         {visibleCount < allProjects.length && (
+          <div className="flex justify-center mt-6">
+            <button
+            onClick={() => setVisibleCount(visibleCount + 3)}
+            className="px-6 py-2 font-r bg-astrawhite border border-astraprimary text-astraprimary rounded hover:bg-blue-100 transition cursor-pointer">
+            See More
+           </button>
+          </div>
+            )}
+          </div>
+        </section>
+
 
       {/* Why Your Support Matters (no need edits)*/}
       <section className="bg-astralightgray pt-20 pb-40 px-4 text-center">
@@ -201,7 +225,7 @@ export default function ProjectsPage({projects}) {
 
           {/* Card Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-500 ease-in-out">
-            {visibleProjects.map((project, index) => (
+            {visibleCompletedProjects.map((project, index) => (
               <ProjectCard
                 key={index}
                 image={project.image}
@@ -218,9 +242,9 @@ export default function ProjectsPage({projects}) {
           {/* Right Arrow */}
           <button
             onClick={handleNext}
-            disabled={startIndex >= allProjects.length - visibleCount}
+            disabled={startIndex >= completedProjects.length - completedVisibleCount}
             className={`absolute right-[-20px] top-1/2 transform -translate-y-1/2 z-10 bg-white shadow-md hover:bg-astragray transition-all p-2 rounded-full ${
-              startIndex >= allProjects.length - visibleCount ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+              startIndex >= completedProjects.length - completedVisibleCount ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
             }`}
           >
             <Icon icon="ic:baseline-keyboard-arrow-right" className="text-3xl" />

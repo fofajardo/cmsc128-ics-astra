@@ -1,6 +1,8 @@
-"use client";
-import Image from "next/image";
-import sampleImage from "../../assets/Donation.jpg";
+'use client';
+import Image from 'next/image';
+import sampleImage from '../../assets/Donation.jpg';
+import Link from 'next/link';
+
 
 export default function ProjectCard({
   image = sampleImage,
@@ -28,7 +30,12 @@ export default function ProjectCard({
         <span>{raised}</span>
         <span>{donors}</span>
       </div>
-      <button className="mt-4 blue-button w-full">Donate</button>
+      <Link href="projects/donate">
+      <button className="mt-4 blue-button w-full">
+        Donate
+      </button>
+      </Link>
+      
     </div>
   );
 }
