@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import EditPersonal from './EditPersonal/page';
 import EditTechnical from './EditTechnical/page';
 import EditInterest from './EditInterest/page';
@@ -87,6 +87,56 @@ export default function AlumniProfilePage() {
       description:
         "Organized and managed volunteer programs for community outreach initiatives focused on digital literacy education.",
     },
+    {
+      organization: "Tech Innovators Guild",
+      title: "Volunteer Coordinator",
+      location: "Pasig City, Philippines",
+      isCurrentlyAffiliated: false,
+      startDate: "March 2020",
+      endDate: "December 2021",
+      description:
+        "Organized and managed volunteer programs for community outreach initiatives focused on digital literacy education.",
+    },
+    {
+      organization: "Tech Innovators Guild",
+      title: "Volunteer Coordinator",
+      location: "Pasig City, Philippines",
+      isCurrentlyAffiliated: false,
+      startDate: "March 2020",
+      endDate: "December 2021",
+      description:
+        "Organized and managed volunteer programs for community outreach initiatives focused on digital literacy education.",
+    },
+    {
+      organization: "Tech Innovators Guild",
+      title: "Volunteer Coordinator",
+      location: "Pasig City, Philippines",
+      isCurrentlyAffiliated: false,
+      startDate: "March 2020",
+      endDate: "December 2021",
+      description:
+        "Organized and managed volunteer programs for community outreach initiatives focused on digital literacy education.",
+    },
+    {
+      organization: "Tech Innovators Guild",
+      title: "Volunteer Coordinator",
+      location: "Pasig City, Philippines",
+      isCurrentlyAffiliated: false,
+      startDate: "March 2020",
+      endDate: "December 2021",
+      description:
+        "Organized and managed volunteer programs for community outreach initiatives focused on digital literacy education.",
+    },
+    {
+      organization: "Tech Innovators Guild",
+      title: "Volunteer Coordinator",
+      location: "Pasig City, Philippines",
+      isCurrentlyAffiliated: false,
+      startDate: "March 2020",
+      endDate: "December 2021",
+      description:
+        "Organized and managed volunteer programs for community outreach initiatives focused on digital literacy education.",
+    },
   ];
 
   const [isShowPersonalForm, setIsShowPersonalForm] = useState(false);
@@ -96,6 +146,36 @@ export default function AlumniProfilePage() {
   const [isShowAffiliationForm, setIsShowAffiliationForm] = useState(false);
   const [isShowAddExperienceForm, setIsShowAddExperienceForm] = useState(false);
   const [isShowAddAffiliationForm, setIsShowAddAffiliationForm] = useState(false);
+
+  {/* Disables background scrolling */}
+  useEffect(() => {
+    const isAnyModalOpen = 
+      isShowPersonalForm || 
+      isShowTechnicalForm || 
+      isShowInterestForm || 
+      isShowExperienceForm || 
+      isShowAffiliationForm || 
+      isShowAddExperienceForm || 
+      isShowAddAffiliationForm;
+  
+    if (isAnyModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+  
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [
+    isShowPersonalForm,
+    isShowTechnicalForm,
+    isShowInterestForm,
+    isShowExperienceForm,
+    isShowAffiliationForm,
+    isShowAddExperienceForm,
+    isShowAddAffiliationForm
+  ]);  
 
   return (
     <div className="min-h-screen bg-[var(--color-astratintedwhite)]">
@@ -116,7 +196,7 @@ export default function AlumniProfilePage() {
             <div className="flex justify-left gap-4 items-center mb-6">
               <h2 className="text-2xl font-bold text-[var(--color-astrablack)]">Profile Information</h2>
               <button
-                className="px-4 py-2 bg-[var(--color-astraprimary)] text-white hover:bg-[var(--color-astradark)] rounded-md"
+                className="text-sm md:text-base px-3 py-2 md:px-4 md:py-2 bg-[var(--color-astraprimary)] text-white hover:bg-[var(--color-astradark)] rounded-md"
                 onClick={() => setIsShowPersonalForm(true)}
               >
                 Edit Profile
@@ -185,16 +265,16 @@ export default function AlumniProfilePage() {
           <h2 className="text-2xl font-bold text-[var(--color-astrablack)]">Experience</h2>
             <div className="flex gap-2">
               <button 
-                className="px-4 py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[(var(--color-astradirtywhite)] rounded-md"
+                className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[var(--color-astradirtywhite)] rounded-md"
                 onClick={() => setIsShowAddExperienceForm(true)}
               >
-                Add Experience
+                Add
               </button>
               <button 
-                className="px-4 py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[(var(--color-astradirtywhite)] rounded-md"
+                className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[var(--color-astradirtywhite)] rounded-md"
                 onClick={() => setIsShowExperienceForm(true)}
               >
-                Edit Experience
+                Edit
               </button>
             </div>
           </div>
@@ -220,19 +300,19 @@ export default function AlumniProfilePage() {
         {/* Organization Affiliations */}
         <section className="bg-white rounded-lg p-8 mb-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-[var(--color-astrablack)]">Organization Affiliations</h2>
+            <h2 className="text-2xl font-bold text-[var(--color-astrablack)]">Affiliations</h2>
             <div className="flex gap-2">
               <button 
-                className="px-4 py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[(var(--color-astradirtywhite)] rounded-md"
+                className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[var(--color-astradirtywhite)] rounded-md"
                 onClick={() => setIsShowAddAffiliationForm(true)}
               >
-                Add Affiliation
+                Add
               </button>
               <button 
-                className="px-4 py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[(var(--color-astradirtywhite)] rounded-md"
+                className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[var(--color-astradirtywhite)] rounded-md"
                 onClick={() => setIsShowAffiliationForm(true)}
               >
-                Edit Affiliation
+                Edit
               </button>
             </div>
           </div>
