@@ -30,7 +30,7 @@ function Tab({ label, active, notif, handleTabChange }) {
     >
       <button
         onClick={() => handleTabChange(label)}
-        className={`items-center flex py-4 font-lb bg-transparent w-full justify-center ${
+        className={`items-center flex py-3 font-lb bg-transparent w-full justify-center ${
           active ? 'text-astradark' : 'bg-astrawhite text-astradarkgray'
         }`}
       >
