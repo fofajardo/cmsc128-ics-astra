@@ -1,8 +1,9 @@
 import { expect } from "chai";
 import httpStatus from "http-status-codes";
 import request from "supertest";
-
 import app from "../../index.js";
+
+const gAgent = request.agent(app);
 
 // TODO: would be nice to reference the route prefix in a constants
 // file instead.
@@ -15,7 +16,7 @@ const kSampleCredentials = {
 describe('Auth API', function () {
     describe(`POST ${kAuthPrefix}/sign-in`, function () {
         it('should sign in with valid credentials and return user data', async function () {
-            const res = await request(app)
+            const res = await gAgent
                 .post(`${kAuthPrefix}/sign-in`)
                 .send(kSampleCredentials);
 
@@ -30,23 +31,19 @@ describe('Auth API', function () {
 
     describe(`GET ${kAuthPrefix}/signed-in-user`, function () {
         it('should return 200 and user data if signed in or 204 if not', async function () {
-            const agent = request.agent(app);
-
             // Simulate login
-            await agent.post(`${kAuthPrefix}/sign-in`).send(kSampleCredentials);
+            await gAgent.post(`${kAuthPrefix}/sign-in`).send(kSampleCredentials);
 
-            const res = await agent.get(`${kAuthPrefix}/signed-in-user`);
+            const res = await gAgent.get(`${kAuthPrefix}/signed-in-user`);
             expect([httpStatus.OK, httpStatus.NO_CONTENT]).to.include(res.status);
         });
     });
 
     describe(`POST ${kAuthPrefix}/sign-out`, function () {
         it('should sign out the user and return 200 OK', async function () {
-            const agent = request.agent(app);
+            await gAgent.post(`${kAuthPrefix}/sign-in`).send(kSampleCredentials);
 
-            await agent.post(`${kAuthPrefix}/sign-in`).send(kSampleCredentials);
-
-            const res = await agent.post(`${kAuthPrefix}/sign-out`);
+            const res = await gAgent.post(`${kAuthPrefix}/sign-out`);
 
             expect(res.status).to.equal(httpStatus.OK);
             expect(res.body).to.have.property('status', 'OK');

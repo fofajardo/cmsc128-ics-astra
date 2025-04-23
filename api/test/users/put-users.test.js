@@ -3,9 +3,10 @@ import { expect } from 'chai';
 import app from '../../index.js';
 import httpStatus from 'http-status-codes';
 import {TestSignIn, TestSignOut, TestUsers} from "../auth/auth.common.js";
+const gAgent = request.agent(app);
 
 describe('Users API Tests', function () {
-    before(() => TestSignIn(TestUsers.admin));
+    before(() => TestSignIn(gAgent, TestUsers.admin));
 
     describe('PUT /v1/users/:userId', function () {
         let userId = null;
@@ -26,7 +27,7 @@ describe('Users API Tests', function () {
                 role: 'alumnus'
             };
           
-            const res = await request(app)
+            const res = await gAgent
                 .post('/v1/users/')
                 .send(testUser);
 
@@ -41,7 +42,7 @@ describe('Users API Tests', function () {
                 password: "password",
             };
 
-            const res = await request(app)
+            const res = await gAgent
                 .put(`/v1/users/${userId}`)
                 .send(validUpdateData);
             
@@ -53,7 +54,7 @@ describe('Users API Tests', function () {
             expect(res.body).to.have.property('message').that.is.a('string');
 
             // GET request to verify update
-            const verifyRes = await request(app).get(`/v1/users/${userId}`);
+            const verifyRes = await gAgent.get(`/v1/users/${userId}`);
             expect(verifyRes.status).to.equal(httpStatus.OK);
             expect(verifyRes.body.user).to.include(validUpdateData); // Ensures data is correctly updated
         });
@@ -66,7 +67,7 @@ describe('Users API Tests', function () {
                 role: "User", // Attempt to change role
             };
 
-            const res = await request(app)
+            const res = await gAgent
                 .put(`/v1/users/${userId}`)
                 .send(invalidUpdateData);
 
@@ -79,13 +80,13 @@ describe('Users API Tests', function () {
         // 🧹 Clean up using DELETE route
         after(async function () {
             if (userId) {
-                const res = await request(app)
+                const res = await gAgent
                     .delete(`/v1/users/${userId}?hard=true`);
 
                 expect(res.status).to.be.oneOf([httpStatus.OK, httpStatus.NO_CONTENT]);
             }
         });
 
-        after(TestSignOut);
+        after(() => TestSignOut(gAgent));
     });
 });

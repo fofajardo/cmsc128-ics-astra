@@ -3,13 +3,14 @@ import { expect } from 'chai';
 import app from '../../index.js';
 import httpStatus from 'http-status-codes';
 import {TestSignIn, TestSignOut, TestUsers} from "../auth/auth.common.js";
+const gAgent = request.agent(app);
 
 describe('Users API Tests', function () {
-    before(() => TestSignIn(TestUsers.admin));
+    before(() => TestSignIn(gAgent, TestUsers.admin));
 
     describe('GET /v1/users', function () {
         it('should return 200 for GET /v1/users', async function () {
-            const res = await request(app)
+            const res = await gAgent
                 .get('/v1/users')
                 .query({ page: 1, limit: 10 });
 
@@ -23,7 +24,7 @@ describe('Users API Tests', function () {
     describe('GET /v1/users/:userId', function () {
         it('should return 200 for GET /v1/users/userId', async function () {
             const userId = '75b6e610-9d0b-4884-b405-1e682e3aa3de';
-            const res = await request(app).get(`/v1/users/${userId}`);
+            const res = await gAgent.get(`/v1/users/${userId}`);
 
             // console.log(res);
 
@@ -57,5 +58,5 @@ describe('Users API Tests', function () {
         });
     });
 
-    after(TestSignOut);
+    after(() => TestSignOut(gAgent));
 });

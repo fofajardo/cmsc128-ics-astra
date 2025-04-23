@@ -1,5 +1,3 @@
-import request from "supertest";
-import app from "../../index.js";
 import {expect} from "chai";
 import httpStatus from "http-status-codes";
 import {RoleName} from "../../../common/scopes.js";
@@ -47,17 +45,16 @@ TestUsers.alumnus = TestUsers[1];
 TestUsers.moderator = TestUsers[2];
 TestUsers.admin = TestUsers[3];
 
-async function TestSignIn(aCredentials) {
-    const res = await request(app)
+async function TestSignIn(aAgent, aCredentials) {
+    const res = await aAgent
         .post(`${kAuthPrefix}/sign-in`)
         .send(aCredentials);
 
     expect(res.status).to.equal(httpStatus.OK);
 }
 
-async function TestSignOut() {
-    const agent = request.agent(app);
-    const res = await agent.post(`${kAuthPrefix}/sign-out`);
+async function TestSignOut(aAgent) {
+    const res = await aAgent.post(`${kAuthPrefix}/sign-out`);
 
     expect(res.status).to.equal(httpStatus.OK)
     expect(res.body).to.have.property('status', 'OK');
