@@ -3,7 +3,7 @@ import { useState } from "react";
 import AdminStatCard from "@/components/AdminStatCard";
 import AdminTabs from "@/components/AdminTabs";
 import {GraduationCap, UserRoundPlus, UserRoundCheck, UserRoundX } from "lucide-react";
-import { TabContext } from './TabContext';
+import { TabContext } from '../../../components/TabContext';
 import { useRouter, usePathname } from 'next/navigation'
 
 export default function AdminAlumniLayout({ children }) {

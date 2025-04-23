@@ -4,7 +4,7 @@ import {TableHeader, Table, PageTool} from '@/components/TableBuilder';
 import SearchFilter from "admin/alumni/search/filter";
 import { Check } from "lucide-react";
 import { ActionButton } from "@/components/Buttons";
-import { useTab } from './TabContext';
+import { useTab } from '../../../components/TabContext';
 import ConfirmModal from "@/components/ConfirmModal";
 import ToastNotification from "@/components/ToastNotification";
 
