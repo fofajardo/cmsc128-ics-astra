@@ -10,6 +10,7 @@ import Logo from "../../assets/logo.png";
 import Link from "next/link";
 
 export default function ProjectsPage() {
+  const [visibleCount, setVisibleCount] = useState(6);
   const [showRequestPanel, setShowRequestPanel] = useState(false);
   const [step, setStep] = useState(1);
   const [selectedOption, setSelectedOption] = useState(null);
@@ -36,7 +37,15 @@ export default function ProjectsPage() {
     setDescription("");
     setImage(null);
   };
-
+  const allProjects = [...Array(12).keys()].map((i) => ({
+    id: i,
+    title: `Snacks to Support Student Success ${i + 1}`,
+    description: `This project aims to provide middle school students the resources they need to excel academically, emotionally, and physically... ${i + 1}`,
+    image: '/projects/assets/Donation.jpg',
+    goal: 'PHP50K',
+    raised: 'PHP20K',
+    donors: '30K',
+  }));
   return (
     <div className="min-h-screen flex flex-col">
       <NavbarUser />
@@ -68,22 +77,37 @@ export default function ProjectsPage() {
       </section>
 
       {/* Project Grid */}
-      <section className="bg-astrawhite py-16 px-4">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="font-lb mb-8">Fund the future of technology</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[...Array(6)].map((_, i) => (
-              <ProjectCard key={i} />
-            ))}
-          </div>
-          {/* See More Button (add functionality to show more (maybe new page?))*/}
-          <div className="flex justify-center mt-6">
-            <button className="px-6 py-2 font-r bg-astrawhite border border-astraprimary text-astraprimary rounded hover:bg-blue-100 transition cursor-pointer">
-              See More
-            </button>
-          </div>
+       <section className="bg-astrawhite py-16 px-4">
+       <div className="max-w-6xl mx-auto">
+      <h2 className="font-lb mb-8">Fund the future of technology</h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {allProjects.slice(0, visibleCount).map((project) => (
+              <ProjectCard
+              key={project.id}
+              image={project.image}
+              title={project.title}
+              description={project.description}
+              goal={project.goal}
+              raised={project.raised}
+              donors={project.donors}
+                 />
+              ))}
         </div>
-      </section>
+
+      {/* See More Button */}
+         {visibleCount < allProjects.length && (
+          <div className="flex justify-center mt-6">
+            <button
+            onClick={() => setVisibleCount(visibleCount + 3)}
+            className="px-6 py-2 font-r bg-astrawhite border border-astraprimary text-astraprimary rounded hover:bg-blue-100 transition cursor-pointer">
+            See More
+           </button>
+          </div>
+            )}
+          </div>
+        </section>
+
 
       {/* Why Your Support Matters */}
       <section className="bg-astralightgray mt-16 py-16 px-4 text-center">

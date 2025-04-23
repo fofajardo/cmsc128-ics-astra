@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import NavbarUser from '../../../../components/NavbarUser';
-import Throbber from '../../../../components/projects/Throbber';
-import DonationSuccess from '../../../../components/projects/DonationSuccess';;
+import NavbarUser from '../../../components/NavbarUser';
+import Throbber from '../../../components/projects/Throbber';
+import DonationSuccess from '../../../components/projects/DonationSuccess';;
 
 export default function DonatePage() {
   const [amount, setAmount] = useState(1000);

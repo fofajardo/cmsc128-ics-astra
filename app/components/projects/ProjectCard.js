@@ -1,7 +1,7 @@
 'use client';
 import Image from 'next/image';
 import sampleImage from '../../assets/Donation.jpg';
-
+import Link from 'next/link';
 
 
 export default function ProjectCard({
@@ -13,7 +13,7 @@ export default function ProjectCard({
   donors = '30K',
 }) {
   return (
-    <div className="bg-white rounded-2xl shadow p-4">
+    <div className="bg-astrawhite rounded-2xl shadow p-4">
       <Image src={image} alt={title} className="rounded-xl w-full h-48 object-cover" 
       width={400}
       height= {200}/>
@@ -24,9 +24,12 @@ export default function ProjectCard({
         <span>{raised}</span>
         <span>{donors}</span>
       </div>
-      <button className="mt-4 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded w-full">
+      <Link href="projects/donate">
+      <button className="mt-4 bg-blue-600 hover:bg-astrablue-700 text-astrawhite py-2 px-4 rounded w-full">
         Donate
       </button>
+      </Link>
+      
     </div>
   );
 }
