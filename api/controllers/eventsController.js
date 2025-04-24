@@ -2,9 +2,20 @@ import httpStatus from "http-status-codes";
 import eventsService from "../services/eventsService.js";
 import { isValidUUID, isValidDate } from "../utils/validators.js";
 import { Actions, Subjects } from "../../common/scopes.js";
+
 const getEvents = (supabase) => async (req, res) => {
     try {
+        console.log('User role:', req.user?.role);
+        console.log('Permissions check:', req.you.can(Actions.READ, Subjects.EVENT)); //Fix: alumnus permission results to false here
         const filters = req.query;
+
+        if (req.you.cannot(Actions.READ, Subjects.EVENT)) {
+            return res.status(httpStatus.FORBIDDEN).json({
+                status: 'FORBIDDEN',
+                message: 'You do not have permission to view events'
+
+            });
+        }
         const { data, error } = await eventsService.fetchEvents(supabase, filters);
 
         if (error) {
@@ -29,6 +40,15 @@ const getEvents = (supabase) => async (req, res) => {
 
 const getEventById = (supabase) => async (req, res) => {
     try {
+        console.log('User role:', req.user?.role);
+        console.log('Permissions check:', req.you.can(Actions.READ, Subjects.EVENT));
+        if (req.you.cannot(Actions.READ, Subjects.EVENT)) {
+            return res.status(httpStatus.FORBIDDEN).json({
+                status: 'FORBIDDEN',
+                message: 'You do not have permission to view events'
+
+            });
+        }
         const { eventId } = req.params;
 
         const { data, error } = await eventsService.fetchEventById(supabase, eventId);
@@ -54,6 +74,12 @@ const getEventById = (supabase) => async (req, res) => {
 };
 const createEvent = (supabase) => async (req, res) => {
     try {
+        if (req.you.cannot(Actions.MANAGE, Subjects.EVENT)) {
+            return res.status(httpStatus.FORBIDDEN).json({
+                status: 'FORBIDDEN',
+                message: 'You do not have permission to delete events'
+            });
+        }
         const requiredFields = [
             "event_id",
             "event_date",
@@ -165,6 +191,12 @@ const createEvent = (supabase) => async (req, res) => {
 const updateEvent = (supabase) => async (req, res) => {
     try {
         const eventId = req.params.eventId;
+        if (req.you.cannot(Actions.MANAGE, Subjects.EVENT)) {
+            return res.status(httpStatus.FORBIDDEN).json({
+                status: 'FORBIDDEN',
+                message: 'You do not have permission to delete events'
+            });
+        }
 
         if (!isValidUUID(eventId)) {
             return res.status(httpStatus.BAD_REQUEST).json({
@@ -243,6 +275,12 @@ const updateEvent = (supabase) => async (req, res) => {
 };
 
 const deleteEmptyEvent = () => async (req, res) => {
+    if (req.you.cannot(Actions.MANAGE, Subjects.EVENT)) {
+        return res.status(httpStatus.FORBIDDEN).json({
+            status: 'FORBIDDEN',
+            message: 'You do not have permission to delete events'
+        });
+    }
     return res.status(httpStatus.BAD_REQUEST).json({
         status: 'FAILED',
         message: 'Invalid deletion. Event id parameter is missing'
@@ -252,6 +290,9 @@ const deleteEmptyEvent = () => async (req, res) => {
 const deleteEvent = (supabase) => async (req, res) => {
     try {
         const { eventId } = req.params;
+
+        console.log('User role:', req.user?.role);
+        console.log('Permissions check:', req.you.can(Actions.READ, Subjects.EVENT));
 
         if (req.you.cannot(Actions.MANAGE, Subjects.EVENT)) {
             return res.status(httpStatus.FORBIDDEN).json({

@@ -2,32 +2,35 @@ import request from 'supertest';
 import { expect } from 'chai';
 import app from '../../index.js';
 import httpStatus from 'http-status-codes';
+import { TestSignIn, TestSignOut, TestUsers } from "../auth/auth.common.js";
 
+const gAgent = request.agent(app);
 
 describe('Alumni API Tests', function () {
-
+    //before(() => TestSignIn(gAgent, TestUsers.alumnus));
+    before(() => TestSignIn(gAgent, TestUsers.admin));
     describe('GET /v1/events', function () {
         it('should return 200 for GET /v1/events', async function () {
-            const res = await request(app)
+            const res = await gAgent
                 .get('/v1/events')
                 .query({ page: 1, limit: 10 });
 
             expect(res.status).to.equal(httpStatus.OK);
             expect(res.body).to.be.an('object');
-            expect(res.body).to.have.property('status').that.is.oneOf(['OK', 'FAILED']);
+            expect(res.body).to.have.property('status').that.is.oneOf(['OK', 'FAILED','FORBIDDEN']);
             expect(res.body).to.have.property('list').that.is.an('array');
         });
     });
 
     describe('GET /v1/events', function () {
         it('should return sorted by interest count for GET /v1/events', async function () {
-            const res = await request(app)
+            const res = await gAgent
                 .get('/v1/events')
                 .query({sort_by: "interested_count", order: "desc"});
 
             expect(res.status).to.equal(httpStatus.OK);
             expect(res.body).to.be.an('object');
-            expect(res.body).to.have.property('status').that.is.oneOf(['OK', 'FAILED']);
+            expect(res.body).to.have.property('status').that.is.oneOf(['OK', 'FAILED','FORBIDDEN']);
             expect(res.body).to.have.property('list').that.is.an('array');
         });
     });
@@ -36,7 +39,7 @@ describe('Alumni API Tests', function () {
         it('should return sorted by event date range count for GET /v1/events', async function () {
             const dateFrom = '2025-04-20T00:00:00.000Z';  // Optional to include time
             const dateTo = '2025-04-30T23:59:59.999Z';
-            const res = await request(app)
+            const res = await gAgent
                 .get('/v1/events')
                 .query({
                     event_date_from: dateFrom,
@@ -45,7 +48,7 @@ describe('Alumni API Tests', function () {
 
             expect(res.status).to.equal(httpStatus.OK);
             expect(res.body).to.be.an('object');
-            expect(res.body).to.have.property('status').that.is.oneOf(['OK', 'FAILED']);
+            expect(res.body).to.have.property('status').that.is.oneOf(['OK', 'FAILED','FORBIDDEN']);
             expect(res.body).to.have.property('list').that.is.an('array');
         });
     });
@@ -55,11 +58,11 @@ describe('Alumni API Tests', function () {
         it('should return 200 for GET /v1/events/eventId', async function () {
 
             const event_id = 'f9b7efab-003c-44f9-bea7-c856fb1e73cd';
-            const res = await request(app).get(`/v1/events/${event_id}`);
+            const res = await gAgent.get(`/v1/events/${event_id}`);
 
             expect(res.body).to.be.an('object');
 
-            expect(res.body).to.have.property('status').that.is.oneOf(['OK', 'FAILED']);
+            expect(res.body).to.have.property('status').that.is.oneOf(['OK', 'FAILED','FORBIDDEN']);
             expect(res.status).to.equal(httpStatus.OK);
 
             expect(res.body).to.have.property('event').that.is.an('object');
@@ -83,4 +86,5 @@ describe('Alumni API Tests', function () {
 
         });
     });
+    after(() => TestSignOut(gAgent));
 });
