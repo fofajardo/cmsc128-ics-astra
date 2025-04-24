@@ -2,14 +2,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { Clock } from "lucide-react";
 
-export default function SmallJobCard(job) {
+export default function SmallJobCard({job, showApply}) {
 
     const isOpen = true;
 
     return (
-    <div className="flex gap-5 bg-astrawhite max-w-[1250px] min-w-[750px] w-19/20 min-h-[308px] h-auto rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] p-10 pb-7">
+    <div className="flex flex-col items-center md:flex-row gap-5 bg-astrawhite max-w-[1250px] w-19/20 min-h-[308px] h-auto rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] p-10 pb-7">
         {/* Details */}
-        <div className="w-1/3">
+        <div className="md:w-1/3">
             <h1 className="text-astrablack text-2xl font-bold">Job Details</h1>
             
             <h1 className="text-astrablack text-xl font-bold mt-5">₱{job.salary}<span className="text-xl font-normal">/month</span></h1>
@@ -34,8 +34,8 @@ export default function SmallJobCard(job) {
                 <div className={`border-1 bg-astratintedwhite ${isOpen ? "text-astrablack border-astradarkgray" : "text-astralightgray border-astralightgray"} rounded-lg py-2 px-4.5`}><p className="text-sm">{job.location_type}</p></div>
             </div>
 
-            <div className="flex flex-col items-center w-7/10">
-                <Link href={job.apply_link} target="_blank" className={`hover:bg-astradark text-center transition-all duration-150 ease-in-out text-astrawhite font-semibold w-full py-2 rounded-lg mt-2 ${isOpen ? "text-astrawhite bg-astraprimary"  : "text-[#E8403C] bg-[#FFF0EC]"}`}>Apply Now</Link>
+            <div className="flex flex-col items-center w-full md:w-7/10">
+                <Link href={job.apply_link} target="_blank" className={`hover:bg-astradark text-center transition-all duration-150 ease-in-out text-astrawhite font-semibold w-full py-2 rounded-lg mt-2 ${isOpen ? "text-astrawhite bg-astraprimary"  : "text-[#E8403C] bg-[#FFF0EC]"} ${showApply ? '' : 'hidden'}`}>Apply Now</Link>
                 <p className={`text-center text-sm font-medium mt-1 ${isOpen ? "text-astrablack" : "text-[#E8403C]"}`}>{isOpen ? "Applications are still ongoing!" : "Applications have already closed."}</p>
             </div>
 
