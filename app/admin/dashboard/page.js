@@ -2,6 +2,8 @@
 "use client"
 import AdminStatCard from "@/components/AdminStatCard";
 import {GraduationCap, Calendar, Briefcase, HandHeart } from "lucide-react";
+import { LineGraph } from "./components/linegraph";
+import { Donut } from "./components/piechart";
 
 export default function Dashboard() {
     return (
@@ -30,7 +32,8 @@ export default function Dashboard() {
             </div>
 
             <div className="bg-astratintedwhite">
-    
+                <LineGraph/>
+                <Donut/>
             </div>
         </>
       );
