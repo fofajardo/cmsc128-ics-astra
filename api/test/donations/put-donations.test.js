@@ -2,37 +2,21 @@ import request from 'supertest';
 import { expect } from 'chai';
 import app from '../../index.js';
 import httpStatus from 'http-status-codes';
+import {TestSignIn, TestSignOut, TestUsers} from "../auth/auth.common.js";
+const gAgent = request.agent(app);
 
 describe('Donations API Tests', function () {
+    before(() => TestSignIn(gAgent, TestUsers.admin));
+
+    const alumId = 'b4a6b230-20b9-4137-af62-8b535841c391';
+    const projectId = '7f857ca0-fcca-4c5b-b619-d0612597dbb1';
+
     describe('PUT /v1/donations/:donationId', function () {
-        const alumId = 'b4a6b230-20b9-4137-af62-8b535841c391';
-        const projectId = '7f857ca0-fcca-4c5b-b619-d0612597dbb1';
-
-        after(async function () {
-            const donationId = '39f817bf-7301-4a60-bb59-7f29c05d7f91';
-            const originalData = {
-                alum_id: alumId,
-                project_id: projectId,
-                donation_date: new Date('2025-04-06').toISOString(),
-                reference_num: '1234-abvc-1234',
-                mode_of_payment: 0,
-                amount: 10000
-            };
-
-            const res = await request(app)
-                .put(`/v1/donations/${donationId}`)
-                .send(originalData);
-            if (res.body.status === 'UPDATED') {
-                console.log('Successfully revert donation fields');
-            } else
-                console.log('Failed to revert donation fields');
-        });
-
         it('should return 200 and update valid donation details', async function () {
             const donationId = '39f817bf-7301-4a60-bb59-7f29c05d7f91'; // Actual donationId
 
             //Precondition: Ensure the row exists before updating
-            const preCheckRes = await request(app).get(`/v1/donations/${donationId}`);
+            const preCheckRes = await gAgent.get(`/v1/donations/${donationId}`);
             expect(preCheckRes.status).to.equal(httpStatus.OK);
             expect(preCheckRes.body).to.be.an('object');
 
@@ -49,7 +33,7 @@ describe('Donations API Tests', function () {
                 amount: 5000
             };
 
-            const res = await request(app)
+            const res = await gAgent
                 .put(`/v1/donations/${donationId}`)
                 .send(validUpdateData);
 
@@ -62,7 +46,7 @@ describe('Donations API Tests', function () {
             expect(res.body).to.have.property('message').that.is.a('string');
 
             // GET request to verify update
-            const verifyRes = await request(app).get(`/v1/donations/${donationId}`);
+            const verifyRes = await gAgent.get(`/v1/donations/${donationId}`);
             expect(verifyRes.status).to.equal(httpStatus.OK);
             expect(verifyRes.body).to.be.an('object');
 
@@ -81,7 +65,7 @@ describe('Donations API Tests', function () {
             const donationId = '39f817bf-7301-4a60-bb59-7f29c05d7f91'; // Actual donationId
 
             //Precondition: Ensure the row exists before updating
-            const preCheckRes = await request(app).get(`/v1/donations/${donationId}`);
+            const preCheckRes = await gAgent.get(`/v1/donations/${donationId}`);
             expect(preCheckRes.status).to.equal(httpStatus.OK);
             expect(preCheckRes.body).to.be.an('object');
 
@@ -91,7 +75,7 @@ describe('Donations API Tests', function () {
                 mode_of_payment: 0,
             };
 
-            const res = await request(app)
+            const res = await gAgent
                 .put(`/v1/donations/${donationId}`)
                 .send(validUpdateData);
 
@@ -104,7 +88,7 @@ describe('Donations API Tests', function () {
             expect(res.body).to.have.property('message').that.is.a('string');
 
             // GET request to verify update
-            const verifyRes = await request(app).get(`/v1/donations/${donationId}`);
+            const verifyRes = await gAgent.get(`/v1/donations/${donationId}`);
             expect(verifyRes.status).to.equal(httpStatus.OK);
             expect(verifyRes.body).to.be.an('object');
 
@@ -128,7 +112,7 @@ describe('Donations API Tests', function () {
                 amount: 5000
             };
 
-            const res = await request(app)
+            const res = await gAgent
                 .put(`/v1/donations/${donationId}`)
                 .send(validUpdateData);
 
@@ -157,7 +141,7 @@ describe('Donations API Tests', function () {
                 amount: 5000
             };
 
-            const res = await request(app)
+            const res = await gAgent
                 .put(`/v1/donations/${donationId}`)
                 .send(validUpdateData);
 
@@ -186,7 +170,7 @@ describe('Donations API Tests', function () {
                 amount: 5000
             };
 
-            const res = await request(app)
+            const res = await gAgent
                 .put(`/v1/donations/${donationId}`)
                 .send(validUpdateData);
 
@@ -216,7 +200,7 @@ describe('Donations API Tests', function () {
                 amount: 5000
             };
 
-            const res = await request(app)
+            const res = await gAgent
                 .put(`/v1/donations/${donationId}`)
                 .send(validUpdateData);
 
@@ -229,4 +213,26 @@ describe('Donations API Tests', function () {
             expect(res.body).to.have.property('message').that.is.a('string');
         });
     });
+
+    after(async function () {
+        const donationId = '39f817bf-7301-4a60-bb59-7f29c05d7f91';
+        const originalData = {
+            alum_id: alumId,
+            project_id: projectId,
+            donation_date: new Date('2025-04-06').toISOString(),
+            reference_num: '1234-abvc-1234',
+            mode_of_payment: 0,
+            amount: 10000
+        };
+
+        const res = await gAgent
+            .put(`/v1/donations/${donationId}`)
+            .send(originalData);
+        if (res.body.status === 'UPDATED') {
+            console.log('Successfully revert donation fields');
+        } else
+            console.log('Failed to revert donation fields');
+    });
+
+    after(() => TestSignOut(gAgent));
 });
