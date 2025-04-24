@@ -26,8 +26,8 @@ export default function PendingProjectDetail({ params }) {
     longDescription: "This scholarship aims to address the gender gap in technology fields by providing financial support to female students who demonstrate academic excellence and passion for computer science and IT. Recipients will receive funding for tuition, books, and have opportunities to connect with female mentors in the industry. The scholarship committee will select candidates based on academic merit, financial need, and demonstrated interest in pursuing a career in technology. By supporting this initiative, we hope to contribute to a more diverse and inclusive tech workforce in the future.",
     goal: "₱300,000",
     requester: {
-      name: "ICS Women's Society",
-      email: "icswomen@example.edu.ph",
+      name: "Ma'am Mira Fanclub",
+      email: "mirafanclub@email.com",
       phone: "+63 912 345 6789",
       position: "Student Organization"
     },
@@ -62,8 +62,9 @@ export default function PendingProjectDetail({ params }) {
     }, 2000);
   };
 
+  //function to handle message, to be integrated by backend
+  //just shows a toast notification for now
   const handleSendMessage = () => {
-    // In a real app, you would send this message to the backend
     setToast({ 
       type: 'success', 
       message: 'Message sent successfully!' 
@@ -174,26 +175,23 @@ export default function PendingProjectDetail({ params }) {
             
             <div className="space-y-4">
               <div className="flex gap-2 items-start">
-                <User className="w-12 h-12 text-astraprimary mt-1" />
+                <User className="w-10 h-10 text-astraprimary" />
                 <div>
-                  <p className="font-sb">Name</p>
                   <p className="text-astradarkgray">{project.requester.name}</p>
-                  <p className="text-astragray text-sm">{project.requester.position}</p>
+                  <p className="text-astralightgray text-sm">{project.requester.position}</p>
                 </div>
               </div>
               
               <div className="flex gap-2 items-start">
-                <Mail className="w-6 h-6 text-astraprimary mt-2 mr-2" />
+                <Mail className="w-6 h-6 text-astraprimary mr-2" />
                 <div>
-                  <p className="font-sb">Email</p>
                   <p className="text-astradarkgray">{project.requester.email}</p>
                 </div>
               </div>
               
               <div className="flex gap-2 items-start">
-                <Phone className="w-6 h-6 text-astraprimary mt-2 mr-2" />
+                <Phone className="w-6 h-6 text-astraprimary mr-2" />
                 <div>
-                  <p className="font-sb">Phone</p>
                   <p className="text-astradarkgray">{project.requester.phone}</p>
                 </div>
               </div>
