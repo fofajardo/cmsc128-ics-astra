@@ -1,7 +1,33 @@
-import Link from "next/link"
-import { User } from "lucide-react"
+"use client"
+import { useState } from "react";
+import Link from "next/link";
+import { User } from "lucide-react";
 
 export default function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  // Email validation regex
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setError(""); // Reset error message
+
+    if (!email || !password) {
+      setError("All fields are required.");
+      return;
+    }
+
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
+    console.log("Form submitted");
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-[var(--color-astratintedwhite)]">
       <div className="flex-1 flex">
@@ -14,21 +40,33 @@ export default function LoginPage() {
               </Link>
             </div>
 
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={handleSubmit}>
               <div>
                 <input
                   type="email"
                   placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="w-full px-3 py-2 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[--color-astraprimary] bg-white text-gray-900"
                 />
               </div>
+
               <div>
                 <input
                   type="password"
                   placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="w-full px-3 py-2 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[--color-astraprimary] bg-white text-gray-900"
                 />
               </div>
+
+              {error && (
+                <div className="text-[var(--color-astrared)] text-sm mt-2">
+                  {error}
+                </div>
+              )}
+
               <button
                 type="submit"
                 className="w-full bg-[var(--color-astraprimary)] text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
@@ -56,5 +94,5 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
