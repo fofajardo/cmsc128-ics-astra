@@ -226,10 +226,11 @@ export default function Jobs() {
 
 const cols = [
     { label: 'Title', justify: 'start', visible: 'all' },
-    { label: 'Company', justify: 'center', visible: 'lg' },
-    { label: 'Location', justify: 'center', visible: 'md' },
-    { label: 'Type', justify: 'center', visible: 'md' },
-    { label: 'Date Posted', justify: 'center', visible: 'all' },
+    { label: 'Company', justify: 'center', visible: 'md' },
+    { label: 'Location', justify: 'center', visible: 'lg' },
+    { label: 'Type', justify: 'center', visible: 'lg' },
+    { label: 'Posted', justify: 'center', visible: 'lg' },
+    { label: 'Status', justify: 'center', visible: 'md' },
     { label: 'Quick Actions', justify: 'center', visible: 'all' },
 ];
 
@@ -239,37 +240,10 @@ function createRows(selectedIds, setSelectedIds, currTab) {
         'Company': renderText(job.company_name),
         'Location': renderText(job.location),
         'Type': renderText(job.job_type),
-        'Date Posted': renderText(job.created_at),
+        'Posted': renderText(job.created_at),
+        'Status': renderStatus(job.status),
         'Quick Actions': renderActions(job.id, job.job_title, currTab),
     }));
-}
-
-function renderCheckboxes(id, selectedIds, setSelectedIds) {
-    const isChecked = selectedIds.includes(id);
-  
-    const handleChange = () => {
-        setSelectedIds((prev) =>
-        isChecked ? prev.filter((item) => item !== id) : [...prev, id]
-        );
-    };
-  
-    return (
-    <label className="flex items-center justify-center cursor-pointer group pl-4">
-        <input
-            type="checkbox"
-            checked={isChecked}
-            onChange={handleChange}
-            className="peer hidden"
-        />
-        <div
-            className={`w-5 h-5 rounded border-2 
-            ${isChecked ? 'bg-astradark border-astradark shadow-md shadow-astradark/40' : 'border-gray-400'}
-            flex items-center justify-center transition-all duration-200 ease-in-out`}
-        >
-            {isChecked && <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />}
-        </div>
-    </label>
-    );
 }
 
 function renderTitle(name) {
@@ -285,6 +259,10 @@ function renderText(text) {
 }
 
 
+function renderStatus(text) {
+    return <div className={`text-center ${text === 'Expired' ? 'text-astrared' : 'text-astragreen'} font-s`}>{text}</div>;
+}
+
 function renderActions(id, name) {
     return (
 
@@ -294,7 +272,7 @@ function renderActions(id, name) {
         <ActionButton
           label="View"
           color="gray"
-          route={`/admin/alumni/manage-access/${id}`}
+          route={`/admin/jobs/${id}/view`}
         />
         <div className="hidden lg:block">
             <ActionButton

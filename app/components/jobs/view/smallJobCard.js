@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Clock } from "lucide-react";
 
-export default function SmallJobCard(job) {
+export default function SmallJobCard({job, showApply}) {
 
     const isOpen = true;
 
@@ -35,7 +35,7 @@ export default function SmallJobCard(job) {
             </div>
 
             <div className="flex flex-col items-center w-7/10">
-                <Link href={job.apply_link} target="_blank" className={`hover:bg-astradark text-center transition-all duration-150 ease-in-out text-astrawhite font-semibold w-full py-2 rounded-lg mt-2 ${isOpen ? "text-astrawhite bg-astraprimary"  : "text-[#E8403C] bg-[#FFF0EC]"}`}>Apply Now</Link>
+                <Link href={job.apply_link} target="_blank" className={`hover:bg-astradark text-center transition-all duration-150 ease-in-out text-astrawhite font-semibold w-full py-2 rounded-lg mt-2 ${isOpen ? "text-astrawhite bg-astraprimary"  : "text-[#E8403C] bg-[#FFF0EC]"} ${showApply ? '' : 'hidden'}`}>Apply Now</Link>
                 <p className={`text-center text-sm font-medium mt-1 ${isOpen ? "text-astrablack" : "text-[#E8403C]"}`}>{isOpen ? "Applications are still ongoing!" : "Applications have already closed."}</p>
             </div>
 
