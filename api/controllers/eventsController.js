@@ -77,7 +77,7 @@ const createEvent = (supabase) => async (req, res) => {
         if (req.you.cannot(Actions.MANAGE, Subjects.EVENT)) {
             return res.status(httpStatus.FORBIDDEN).json({
                 status: 'FORBIDDEN',
-                message: 'You do not have permission to delete events'
+                message: 'You do not have permission to create events'
             });
         }
         const requiredFields = [
@@ -194,7 +194,7 @@ const updateEvent = (supabase) => async (req, res) => {
         if (req.you.cannot(Actions.MANAGE, Subjects.EVENT)) {
             return res.status(httpStatus.FORBIDDEN).json({
                 status: 'FORBIDDEN',
-                message: 'You do not have permission to delete events'
+                message: 'You do not have permission to update events'
             });
         }
 
