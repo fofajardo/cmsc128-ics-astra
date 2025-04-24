@@ -1,7 +1,7 @@
 import httpStatus from "http-status-codes";
 import eventsService from "../services/eventsService.js";
 import { isValidUUID, isValidDate } from "../utils/validators.js";
-
+import { Actions, Subjects } from "../../common/scopes.js";
 const getEvents = (supabase) => async (req, res) => {
     try {
         const filters = req.query;
@@ -252,6 +252,13 @@ const deleteEmptyEvent = () => async (req, res) => {
 const deleteEvent = (supabase) => async (req, res) => {
     try {
         const { eventId } = req.params;
+
+        if (req.you.cannot(Actions.MANAGE, Subjects.EVENT)) {
+            return res.status(httpStatus.FORBIDDEN).json({
+                status: 'FORBIDDEN',
+                message: 'You do not have permission to delete events'
+            });
+        }
 
         if (!isValidUUID(eventId)) {
             return res.status(httpStatus.BAD_REQUEST).json({
