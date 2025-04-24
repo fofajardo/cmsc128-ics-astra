@@ -1,4 +1,4 @@
-import { applyFilter } from "../utils/applyFilter";
+import { applyFilter } from "../utils/applyFilter.js";
 
 const fetchEvents = async (supabase, filters) => {
     let query = supabase
@@ -11,10 +11,10 @@ const fetchEvents = async (supabase, filters) => {
             event_date: [filters.event_date_from,filters.event_date_to]
         },
         sortBy: "event_date",
-        defaultOrder: "",
+        defaultOrder: "desc",
         specialKeys: [
             "event_date_from",
-            "event_date_from"
+            "event_date_to"
         ]
     });
 

@@ -19,6 +19,38 @@ describe('Alumni API Tests', function () {
         });
     });
 
+    describe('GET /v1/events', function () {
+        it('should return sorted by interest count for GET /v1/events', async function () {
+            const res = await request(app)
+                .get('/v1/events')
+                .query({sort_by: "interested_count", order: "desc"});
+
+            expect(res.status).to.equal(httpStatus.OK);
+            expect(res.body).to.be.an('object');
+            expect(res.body).to.have.property('status').that.is.oneOf(['OK', 'FAILED']);
+            expect(res.body).to.have.property('list').that.is.an('array');
+        });
+    });
+
+    describe('GET /v1/events', function () {
+        it('should return sorted by event date range count for GET /v1/events', async function () {
+            const dateFrom = '2025-04-20T00:00:00.000Z';  // Optional to include time
+            const dateTo = '2025-04-30T23:59:59.999Z';
+            const res = await request(app)
+                .get('/v1/events')
+                .query({
+                    event_date_from: dateFrom,
+                    event_date_to: dateTo
+                });
+
+            expect(res.status).to.equal(httpStatus.OK);
+            expect(res.body).to.be.an('object');
+            expect(res.body).to.have.property('status').that.is.oneOf(['OK', 'FAILED']);
+            expect(res.body).to.have.property('list').that.is.an('array');
+        });
+    });
+
+
     describe('GET /v1/events/:eventId', function () {
         it('should return 200 for GET /v1/events/eventId', async function () {
 
