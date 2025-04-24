@@ -13,19 +13,20 @@ export default function ProjectCardActive({
   endDate,
   isActive = true
 }) {
-  // Calculate progress percentage
+
+  //calculating progress percentage
   const goalAmount = parseInt(goal.replace(/[^0-9]/g, ''));
   const raisedAmount = parseInt(raised.replace(/[^0-9]/g, ''));
   const progressPercent = Math.min(Math.round((raisedAmount / goalAmount) * 100), 100);
   
-  // Format end date
+  //end date
   const formattedDate = new Date(endDate).toLocaleDateString('en-PH', {
     year: 'numeric',
     month: 'short',
     day: 'numeric'
   });
 
-  // Determine progress bar color based on percentage
+  //determine progress bar color based on percentage
   const getProgressColor = () => {
     if (progressPercent < 25) return 'bg-red-500';
     if (progressPercent < 50) return 'bg-orange-500';
@@ -35,7 +36,7 @@ export default function ProjectCardActive({
 
   return (
     <Link href={`/admin/projects/${isActive ? 'active' : 'inactive'}/${id}`}>
-      <div className={`group bg-astrawhite rounded-2xl shadow hover:shadow-lg transition-all duration-300 cursor-pointer border-2 border-transparent hover:border-astraprimary overflow-hidden ${!isActive ? 'opacity-75' : ''}`}>
+      <div className={`group bg-astrawhite rounded-2xl shadow hover:shadow-lg transition-all duration-300 cursor-pointer border-2 border-transparent hover:border-astraprimary overflow-hidden ${!isActive ? 'opacity-60' : ''}`}>
         {/* Project Image */}
         <div className="relative h-40 w-full overflow-hidden">
           <img
@@ -59,7 +60,7 @@ export default function ProjectCardActive({
           
           {/* Progress bar */}
           <div className="mt-3">
-            <div className="flex justify-between text-xs font-s mb-1">
+            <div className="flex justify-between text-xs font-s mb-1 line-clamp-1">
               <span>{raised} raised</span>
               <span>Goal: {goal}</span>
             </div>

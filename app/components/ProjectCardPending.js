@@ -12,6 +12,8 @@ export default function ProjectCardPending({
   description,
   setToast
 }) {
+
+  //Function to handle approve, placeholder pa lang
   const handleApprove = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -21,6 +23,7 @@ export default function ProjectCardPending({
     });
   };
 
+  //Function to handle decline, placeholder pa lang
   const handleDecline = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -53,7 +56,7 @@ export default function ProjectCardPending({
         {/* Content */}
         <div className="p-4">
           <h3 className="font-lb text-lg line-clamp-1">{title}</h3>
-          <p className="text-astradarkgray font-s mt-1">
+          <p className="text-astradarkgray font-s mt-1 line-clamp-1">
             <span className="font-sb">Requested by:</span> {requester}
           </p>
           <p className="text-astradarkgray font-s mt-1">
@@ -62,13 +65,7 @@ export default function ProjectCardPending({
           <p className="text-astradarkgray font-s mt-2 line-clamp-2">{description}</p>
           
           {/* Action Buttons */}
-          <div className="flex gap-2 mt-4">
-            <button 
-              className="flex-1 blue-button font-s py-1"
-              onClick={(e) => e.stopPropagation()}
-            >
-              View Details
-            </button>
+          <div className="flex flex-col gap-3 mt-4">
             <button 
               className="green-button px-2 py-1" 
               onClick={handleApprove}
