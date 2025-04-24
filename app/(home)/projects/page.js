@@ -83,8 +83,8 @@ export default function ProjectsPage({projects}) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {allProjects.slice(0, visibleCount).map((project) => (
+            <Link href="/projects/about" key={project.id} className="block">
               <ProjectCard
-              key={project.id}
               image={project.image}
               title={project.title}
               description={project.description}
@@ -92,6 +92,7 @@ export default function ProjectsPage({projects}) {
               raised={project.raised}
               donors={project.donors}
                  />
+            </Link>
               ))}
         </div>
 
@@ -226,8 +227,8 @@ export default function ProjectsPage({projects}) {
           {/* Card Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-500 ease-in-out">
             {visibleCompletedProjects.map((project, index) => (
+            <Link href= "/projects/about" key={index} className="block">  
               <ProjectCard
-                key={index}
                 image={project.image}
                 title={project.title}
                 description={project.description}
@@ -236,6 +237,7 @@ export default function ProjectsPage({projects}) {
                 donors={project.donors}
                 buttonText={project.buttonText}
               />
+            </Link>
             ))}
           </div>
 
