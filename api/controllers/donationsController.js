@@ -1,8 +1,16 @@
 import httpStatus from 'http-status-codes';
 import donationsService from '../services/donationsService.js';
 import { isValidUUID, isValidDate } from '../utils/validators.js';
+import {Actions, Subjects} from "../../common/scopes.js";
 
 const getDonations = (supabase) => async (req, res) => {
+    if (req.you.cannot(Actions.READ, Subjects.DONATION)) {
+        return res.status(httpStatus.FORBIDDEN).json({
+            status: "FORBIDDEN",
+            message: "You are not allowed to access this resource."
+        });
+    }
+
     try {
         const { page = 1, limit = 10 } = req.query;
         const { data, error } = await donationsService.fetchDonations(supabase, page, limit);
@@ -47,6 +55,13 @@ const getDonationById = (supabase) => async (req, res) => {
             });
         }
 
+        if (req.you.cannotAs(Actions.READ, Subjects.DONATION, data)) {
+            return res.status(httpStatus.FORBIDDEN).json({
+                status: "FORBIDDEN",
+                message: "You are not allowed to access this resource."
+            });
+        }
+
         return res.status(httpStatus.OK).json({
             status: 'OK',
             donation: data
@@ -61,6 +76,13 @@ const getDonationById = (supabase) => async (req, res) => {
 };
 
 const createDonation = (supabase) => async (req, res) => {
+    if (req.you.cannot(Actions.CREATE, Subjects.DONATION)) {
+        return res.status(httpStatus.FORBIDDEN).json({
+            status: "FORBIDDEN",
+            message: "You are not allowed to access this resource."
+        });
+    }
+
     try {
         // Validate request body format and required fields
         const requiredFields = [
@@ -240,6 +262,13 @@ const updateDonation = (supabase) => async (req, res) => {
             });
         }
 
+        if (req.you.cannotAs(Actions.MANAGE, Subjects.DONATION, donationData)) {
+            return res.status(httpStatus.FORBIDDEN).json({
+                status: "FORBIDDEN",
+                message: "You are not allowed to access this resource."
+            });
+        }
+
         // Check if the alumnus exists in the database
         if (alumId) {
             const { data: existingAlum, error: alumFetchError } = await supabase
@@ -374,6 +403,13 @@ const deleteDonation = (supabase) => async (req, res) => {
             return res.status(httpStatus.NOT_FOUND).json({
                 status: 'FAILED',
                 message: 'Donation not found'
+            });
+        }
+
+        if (req.you.cannotAs(Actions.MANAGE, Subjects.DONATION, donationData)) {
+            return res.status(httpStatus.FORBIDDEN).json({
+                status: "FORBIDDEN",
+                message: "You are not allowed to access this resource."
             });
         }
 
