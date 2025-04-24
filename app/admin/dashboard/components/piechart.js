@@ -19,16 +19,17 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 const chartData = [
-  { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-  { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-  { browser: "firefox", visitors: 287, fill: "var(--color-firefox)" },
-  { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
-  { browser: "other", visitors: 190, fill: "var(--color-other)" },
+  { donationTitle: "BSCS Scholarship", funds: 50000, fill: "var(--color-pieastra-primary-100)" },
+  { donationTitle: "Abot-kaya Scholarship", funds: 39200, fill: "var(--color-pieastra-primary-80)" },
+  { donationTitle: "PhySci Renovation", funds: 25200, fill: "var(--color-pieastra-primary-60)" },
+  { donationTitle: "E-Jeepney Modernization", funds: 16800, fill: "var(--color-pieastra-primary-40)" },
+  { donationTitle: "Additions of PC", funds: 12600, fill: "var(--color-pieastra-primary-20)" },
+  { donationTitle: "Additions of Server", funds: 10000, fill: "var(--color-pieastra-primary-10)" },
 ]
 
 const chartConfig = {
-  visitors: {
-    label: "Visitors",
+  funds: {
+    label: "Funds",
   },
   chrome: {
     label: "Chrome",
@@ -50,23 +51,46 @@ const chartConfig = {
     label: "Other",
     color: "hsl(var(--chart-5))",
   },
+  ASD: {
+    label: "ASD",
+    color: "hsl(var(--chart-2))",
+  },
 }
 
+function FundDisplay({ color, title, funds }) {
+  return (
+    <div className="flex items-center justify-between max-w-full gap-6">
+      <div className="flex items-center gap-2">
+        <span
+          className="w-4 h-4 rounded-full"
+          style={{ backgroundColor: color }}
+        ></span>
+        <span className="text-astrablack font-r">{title}</span>
+      </div>
+      <span className="text-astraprimary font-rb text-right">
+        ₱{Number(funds).toLocaleString()}
+      </span>
+    </div>
+  );
+}
+
+
 export function Donut() {
-  const totalVisitors = React.useMemo(() => {
-    return chartData.reduce((acc, curr) => acc + curr.visitors, 0)
+  const totalFunds = React.useMemo(() => {
+    return chartData.reduce((acc, curr) => acc + curr.funds, 0)
   }, [])
 
   return (
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
-        <CardTitle>Pie Chart - Donut with Text</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardTitle>Highest Funded Categories</CardTitle>
+        <CardDescription>January - April 2025</CardDescription>
+        <hr className="h-2 border-astrablack"></hr>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[250px]"
+          className="mx-auto aspect-square max-h-[330px]"
         >
           <PieChart>
             <ChartTooltip
@@ -75,9 +99,9 @@ export function Donut() {
             />
             <Pie
               data={chartData}
-              dataKey="visitors"
-              nameKey="browser"
-              innerRadius={60}
+              dataKey="funds"
+              nameKey="donationTitle"
+              innerRadius={80}
               strokeWidth={5}
             >
               <Label
@@ -93,16 +117,16 @@ export function Donut() {
                         <tspan
                           x={viewBox.cx}
                           y={viewBox.cy}
-                          className="fill-foreground text-3xl font-bold"
+                          className="fill-astradark font-lb bg-blue-red"
                         >
-                          {totalVisitors.toLocaleString()}
+                          ₱{totalFunds.toLocaleString()}
                         </tspan>
                         <tspan
                           x={viewBox.cx}
                           y={(viewBox.cy || 0) + 24}
                           className="fill-muted-foreground"
                         >
-                          Visitors
+                          Total Funds Raised
                         </tspan>
                       </text>
                     )
@@ -113,12 +137,26 @@ export function Donut() {
           </PieChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col gap-2 text-sm">
+      <CardFooter className="flex-col gap-2 font-s">
         <div className="flex items-center gap-2 font-medium leading-none">
           Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
         </div>
         <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
+          Showing 6 out of 25 Donation Drives
+        </div>
+        <div className="space-y-1.5 min-w-full">
+          {chartData.map((item, index) => (
+            <div
+              key={index}
+              className="transition-all cursor-pointer duration-200 hover:scale-102 hover:shadow-md hover:bg-gray-50 rounded-lg px-2.5 py-1"
+            >
+              <FundDisplay
+                title={item.donationTitle}
+                funds={item.funds}
+                color={item.fill}
+              />
+            </div>
+          ))}
         </div>
       </CardFooter>
     </Card>

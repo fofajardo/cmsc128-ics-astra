@@ -33,7 +33,17 @@ export default function Dashboard() {
 
             <div className="bg-astratintedwhite">
                 <LineGraph/>
-                <Donut/>
+                <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 md:grid-rows-8 gap-4 mt-4">
+                    <div className="bg-white rounded-xl border-astralightgray shadow-md col-span-1 md:col-span-2 md:row-span-4 md:h-auto">
+                         
+                    </div>
+                    <div className="col-span-1 row-start-3 md:row-start-1 md:row-span-8 md:col-start-3 md:h-auto">
+                        <Donut/>
+                    </div>
+                    <div className="bg-white rounded-xl border-astralightgray shadow-md col-span-1 md:col-span-2 md:row-span-4 md:row-start-5 md:h-auto">
+
+                    </div>
+                </div>
             </div>
         </>
       );

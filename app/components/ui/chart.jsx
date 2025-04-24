@@ -146,7 +146,7 @@ function ChartTooltipContent({
   return (
     <div
       className={cn(
-        "border-border/50 bg-background grid min-w-[8rem] items-start gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs shadow-xl",
+        "border-border/50 bg-background min-w-fit items-start gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs shadow-xl",
         className
       )}>
       {!nestLabel ? tooltipLabel : null}
@@ -190,7 +190,8 @@ function ChartTooltipContent({
                   <div
                     className={cn(
                       "flex flex-1 justify-between leading-none",
-                      nestLabel ? "items-end" : "items-center"
+                      nestLabel ? "items-end" : "items-center",
+                      "gap-3"
                     )}>
                     <div className="grid gap-1.5">
                       {nestLabel ? tooltipLabel : null}
@@ -200,7 +201,7 @@ function ChartTooltipContent({
                     </div>
                     {item.value && (
                       <span className="text-foreground font-mono font-medium tabular-nums">
-                        {item.value.toLocaleString()}
+                        ₱{item.value.toLocaleString()}
                       </span>
                     )}
                   </div>
