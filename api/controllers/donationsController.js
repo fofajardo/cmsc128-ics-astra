@@ -91,7 +91,8 @@ const createDonation = (supabase) => async (req, res) => {
             'donation_date',
             'reference_num',
             'mode_of_payment',
-            'amount'
+            'amount',
+            'is_anonymous'
         ];
 
         const missingFields = requiredFields.filter(field =>
@@ -114,7 +115,8 @@ const createDonation = (supabase) => async (req, res) => {
             donation_date,
             reference_num,
             mode_of_payment,
-            amount
+            amount,
+            is_anonymous
         } = req.body;
 
         const alumId = alum_id;
@@ -122,6 +124,7 @@ const createDonation = (supabase) => async (req, res) => {
         const donationDate = donation_date;
         const referenceNum = reference_num;
         const modeOfPayment = mode_of_payment;
+        const isAnonymous = is_anonymous;
 
         // Validate data types
         if (!isValidUUID(alumId)) {
@@ -143,7 +146,8 @@ const createDonation = (supabase) => async (req, res) => {
         if ((typeof modeOfPayment !== 'number' || ![0, 1].includes(modeOfPayment)) ||
             !isValidDate(donationDate) ||
             typeof amount !== 'number' ||
-            typeof referenceNum !== 'string'
+            typeof referenceNum !== 'string' ||
+            typeof isAnonymous !== 'boolean'
         ) {
             return res.status(httpStatus.BAD_REQUEST).json({
                 status: 'FAILED',
@@ -188,7 +192,8 @@ const createDonation = (supabase) => async (req, res) => {
             donation_date: donationDate,
             reference_num: referenceNum,
             mode_of_payment: modeOfPayment,
-            amount: amount
+            amount: amount,
+            is_anonymous: isAnonymous
         });
 
         if (error) {
