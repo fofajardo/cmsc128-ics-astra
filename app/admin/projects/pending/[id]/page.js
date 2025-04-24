@@ -169,7 +169,7 @@ export default function PendingProjectDetail({ params }) {
         </div>
         
         {/* Right column - Requester information and actions */}
-        <div className="space-y-6">
+        <div className="space-y-6 lg:sticky lg:top-24 self-start">
           <div className="bg-astrawhite p-6 rounded-xl shadow">
             <h2 className="font-lb text-xl mb-4">Requester Information</h2>
             
