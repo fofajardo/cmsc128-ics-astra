@@ -1,13 +1,13 @@
 "use client"
 import { useState, useEffect } from "react";
 import {TableHeader, Table, PageTool} from '@/components/TableBuilder';
-import SearchFilter from "admin/alumni/search/filter";
-import { Check } from "lucide-react";
+import SearchFilter from "./filter";
 import { ActionButton } from "@/components/Buttons";
 import { useTab } from '../../components/TabContext';
 import ConfirmModal from "@/components/ConfirmModal";
 import ToastNotification from "@/components/ToastNotification";
 import { jobList }from './dummy';
+import { Trash2, Eye } from "lucide-react";
 
 
 export default function Jobs() {
@@ -60,8 +60,8 @@ export default function Jobs() {
                 <PageTool pagination={pagination} setPagination={setPagination} />
             </div>
             <div className="flex flex-row justify-between md:pl-4 lg:pl-8">
-                <ActionButton label="Reset Selection" color = "blue" onClick={() => setSelectedIds([])}/>
-                <BottomButtons selectedCount={selectedIds.length} currTab={currTab} setToast={setToast}/>
+                {/* <ActionButton label="Reset Selection" color = "blue" onClick={() => setSelectedIds([])}/> */}
+                {/* <BottomButtons selectedCount={selectedIds.length} currTab={currTab} setToast={setToast}/> */}
             </div>
         </div>
       </div>
@@ -226,7 +226,7 @@ export default function Jobs() {
 
 const cols = [
     { label: 'Title', justify: 'start', visible: 'all' },
-    { label: 'Company', justify: 'center', visible: 'md' },
+    { label: 'Company', justify: 'center', visible: 'sm' },
     { label: 'Location', justify: 'center', visible: 'lg' },
     { label: 'Type', justify: 'center', visible: 'lg' },
     { label: 'Posted', justify: 'center', visible: 'lg' },
@@ -269,14 +269,31 @@ function renderActions(id, name) {
         //Based muna sa currTab pero I think mas maganda kung sa mismong account/user kukunin yung active status
         
       <div className="flex justify-center gap-3 md:pr-4 lg:pr-2">
-        <ActionButton
-          label="View"
-          color="gray"
-          route={`/admin/jobs/${id}/view`}
-        />
-        <div className="hidden lg:block">
+        <div className="hidden md:block">
+            <ActionButton
+            label="View"
+            color="gray"
+            route={`/admin/jobs/${id}/view`}
+            />
+        </div>
+        <div className="block md:hidden">
+            <ActionButton
+            label={<Eye size={20}/>}
+            color="gray"
+            route={`/admin/jobs/${id}/view`}
+            />
+        </div>
+        <div className="hidden md:block">
             <ActionButton
             label="Delete"
+            color="red"
+            notifyMessage={`${name} has been declined!`}
+            notifyType="fail"
+            />
+        </div>
+        <div className="block md:hidden">
+            <ActionButton
+            label={<Trash2 size={20}/>}
             color="red"
             notifyMessage={`${name} has been declined!`}
             notifyType="fail"
