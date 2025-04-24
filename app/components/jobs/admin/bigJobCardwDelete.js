@@ -7,7 +7,7 @@ export default function BigJobCardwDelete(job) {
     const [showPrompt, setPrompt] = useState(false);
 
     return (
-    <div className="bg-astrawhite max-w-[1250px] min-w-[750px] w-19/20 min-h-[308px] h-auto rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] p-10 pb-7">
+    <div className="bg-astrawhite max-w-[1250px] w-19/20 min-h-[308px] h-auto rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] p-10 pb-7">
         
         <div className="flex items-start gap-2">
             <div className="mr-2">

@@ -13,21 +13,7 @@ export default function SearchFilter({onClose , onApply=()=>{}}) {
   };
 
   const [filters, setFilters] = useState(initialFilters);
-  const [skillInput, setSkillInput] = useState("");
 
-  const handleSkillAdd = (e) => {
-    if (e.key === "Enter" && skillInput.trim() !== "") {
-      setFilters({ ...filters, skills: [...filters.skills, skillInput.trim()] });
-      setSkillInput("");
-    }
-  };
-
-  const removeSkill = (skillToRemove) => {
-    setFilters({
-      ...filters,
-      skills: filters.skills.filter((skill) => skill !== skillToRemove),
-    });
-  };
 
   const handleResetAll = () => {
     setFilters(initialFilters);
@@ -40,7 +26,6 @@ export default function SearchFilter({onClose , onApply=()=>{}}) {
     }
     onClose(); // optionally close after apply
   };
-
 
   return (
     <div className="bg-astrawhite p-6 rounded-2xl shadow-lg space-y-4">
