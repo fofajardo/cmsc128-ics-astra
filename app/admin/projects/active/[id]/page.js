@@ -1,28 +1,30 @@
 "use client"
-import { useState } from "react";
+import { useState, use } from "react";
 import { useRouter } from "next/navigation";
 import { GoBackButton, ActionButton } from "@/components/Buttons";
-import { GraduationCap, HeartHandshake, Calendar, User, Goal, FileText, Phone, Mail, Share2, Edit, Trash2, Users } from "lucide-react";
+import { GraduationCap, HeartHandshake, Calendar, User, Goal, FileText, Phone, Mail, Share2, Edit, Trash2, Users, MessageSquare } from "lucide-react";
 import ToastNotification from '@/components/ToastNotification';
 import Link from "next/link";
 
-// This would be in your app/admin/projects/active/[id]/page.js file
+//for admin/projects/active/[id]
 export default function ActiveProjectDetail({ params }) {
+  const id = use(params).id;
   const router = useRouter();
   const [toast, setToast] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [message, setMessage] = useState("");
   
-  // In a real app, you'd fetch this data based on the params.id
-  // For demo purposes, we're using a hardcoded project
+//dummy data
   const project = {
-    id: params.id,
+    id: id,
     title: "Computer Science Scholarship Fund",
     type: "Scholarship",
-    image: "/api/placeholder/800/400",
+    image: "/projects/assets/Donation.jpg",
     description: "Supporting underprivileged students pursuing Computer Science degrees with full tuition coverage and stipend for books and materials.",
     longDescription: "This scholarship aims to provide comprehensive financial support to academically gifted but financially challenged students who wish to pursue a degree in Computer Science. Selected recipients will receive full tuition coverage, a monthly stipend for living expenses, and additional allowances for books, materials, and technology requirements. The scholarship committee will select candidates based on academic excellence, demonstrated financial need, and a passion for computing. By removing financial barriers, we hope to enable talented students to focus on their studies and achieve their full potential in the field of computer science.",
     goal: "₱500,000",
-    raised: "₱350,000",
+    raised: "₱480,000",
     donors: 45,
     requester: {
       name: "Prof. Maria Santos",
@@ -42,59 +44,75 @@ export default function ActiveProjectDetail({ params }) {
       { id: 4, donor: "Tech Company Inc.", amount: "₱150,000", date: "2025-02-28" },
       { id: 5, donor: "Anonymous", amount: "₱10,000", date: "2025-03-10" },
       { id: 6, donor: "Maria Reyes", amount: "₱50,000", date: "2025-03-22" },
+      { id: 7, donor: "Maria Reyes", amount: "₱50,000", date: "2025-03-22" },
+      { id: 8, donor: "Maria Reyes", amount: "₱50,000", date: "2025-03-22" },
+      { id: 9, donor: "Maria Reyes", amount: "₱50,000", date: "2025-03-22" },
     ]
   };
 
-  // Calculate progress percentage
+  //for progress bar
   const goalValue = parseInt(project.goal.replace(/[^0-9]/g, ''));
   const raisedValue = parseInt(project.raised.replace(/[^0-9]/g, ''));
   const progressPercentage = Math.min(Math.round((raisedValue / goalValue) * 100), 100);
   
-  // Determine progress bar color based on percentage
+  //determine progress bar color based on percentage
   let progressColor = "bg-astraprimary";
   if (progressPercentage >= 100) {
     progressColor = "bg-green-500";
   } else if (progressPercentage >= 75) {
-    progressColor = "bg-blue-400";
+    progressColor = "bg-yellow-500";
   } else if (progressPercentage >= 50) {
-    progressColor = "bg-blue-300";
+    progressColor = "bg-orange-500";
+  } else if (progressPercentage >= 25) {
+    progressColor = "bg-red-500";
   }
 
+  //demo purposes only, does nothing
+  //connect to backend to get project url
   const handleShare = () => {
-    // In a real app, you'd implement sharing functionality
-    // For demo purposes, we'll just show a toast
     setToast({ 
       type: 'success', 
       message: 'Share link copied to clipboard!' 
     });
   };
 
+  //demo purposes only, does nothing
+  //connect to backend
   const handleEdit = () => {
-    // In a real app, you'd redirect to an edit page
-    // For demo purposes, we'll just show a toast
     setToast({ 
       type: 'success', 
       message: 'Edit functionality would open here!' 
     });
   };
 
+  //show the delete modal
   const handleDelete = () => {
     setShowDeleteModal(true);
   };
 
+  //demo purposes only, does nothing
+  //connect to backend to delete
   const confirmDelete = () => {
-    // In a real app, you'd submit to backend here
     setShowDeleteModal(false);
     
     setToast({ 
       type: 'success', 
       message: `${project.title} has been deleted!` 
     });
-    
-    // After deletion, redirect back to projects page after a short delay
     setTimeout(() => {
       router.push('/admin/projects');
     }, 2000);
+  };
+
+  //demo purposes only, does nothing
+  //only shows the modal, need to connect to backend
+  const handleSendMessage = () => {
+    setToast({ 
+      type: 'success', 
+      message: 'Message sent successfully!' 
+    });
+    setShowContactModal(false);
+    setMessage("");
   };
 
   return (
@@ -117,7 +135,7 @@ export default function ActiveProjectDetail({ params }) {
             </p>
             <div className="flex justify-end gap-3">
               <button 
-                className="px-4 py-2 text-astradarkgray bg-astralightgray rounded-lg hover:bg-astragray transition-colors"
+                className="px-4 py-2 text-astrawhite bg-astrablack rounded-lg hover:bg-astradarkgray transition-colors"
                 onClick={() => setShowDeleteModal(false)}
               >
                 Cancel
@@ -133,6 +151,44 @@ export default function ActiveProjectDetail({ params }) {
         </div>
       )}
       
+      {/* Contact Modal */}
+      {showContactModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-astrawhite rounded-xl p-6 max-w-lg w-full">
+            <h3 className="font-lb text-xl mb-4">Contact {project.requester.name}</h3>
+            
+            <div className="mb-4">
+              <label className="block text-astradarkgray font-sb mb-2">
+                Message
+              </label>
+              <textarea 
+                className="w-full border border-astragray/30 rounded-lg p-4 min-h-32"
+                placeholder="Type your message here..."
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+              ></textarea>
+            </div>
+            
+            <div className="flex gap-4 justify-end">
+              <button 
+                className="px-6 py-2 bg-astralightgray border border-astragray/30 rounded-lg font-sb"
+                onClick={() => setShowContactModal(false)}
+              >
+                Cancel
+              </button>
+              <button 
+                className="px-6 py-2 bg-astraprimary text-astrawhite rounded-lg font-sb disabled:bg-astragray/50"
+                onClick={handleSendMessage}
+                disabled={!message.trim()}
+              >
+                Send Message
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Project image and title section */}
       <div className="relative h-64">
         <img
           src={project.image}
@@ -141,8 +197,10 @@ export default function ActiveProjectDetail({ params }) {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
           <div className="p-6 text-astrawhite w-full">
-            <GoBackButton />
-            <h1 className="font-h1 mt-4">{project.title}</h1>
+            <div className="flex items-center mt-4">
+              <h1 className="font-h1 text-astrawhite text-shadow shadow-black">{project.title}</h1>
+              <span className="ml-4 bg-green-500 text-astrawhite px-3 py-1 rounded-lg font-sb">Active</span>
+            </div>
             <div className="flex items-center mt-2">
               <div className="bg-astrawhite text-astradark px-3 py-1 rounded-lg text-sm font-s flex items-center gap-1">
                 {project.type === "Scholarship" ? (
@@ -153,13 +211,17 @@ export default function ActiveProjectDetail({ params }) {
                 {project.type}
               </div>
               
-              <div className="ml-4 flex items-center gap-1 text-sm">
+              <div className="ml-4 bg-astrawhite text-astradark px-3 py-1 rounded-lg text-sm font-s flex items-center gap-1">
                 <Calendar className="w-4 h-4" />
                 <span>Ends: {new Date(project.endDate).toLocaleDateString('en-PH')}</span>
               </div>
             </div>
           </div>
         </div>
+      </div>
+      
+      <div className="max-w-6xl mx-auto px-4 mt-4">
+        <GoBackButton />
       </div>
       
       <div className="max-w-6xl mx-auto px-4 mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -197,13 +259,12 @@ export default function ActiveProjectDetail({ params }) {
             
             <div className="space-y-6">
               <div>
-                <h3 className="font-sb text-lg">Description</h3>
-                <p className="mt-2 text-astradarkgray">{project.longDescription}</p>
+                <p className="mt-2 text-astradarkgray text-justify">{project.longDescription}</p>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex gap-2 items-start">
-                  <Goal className="w-5 h-5 text-astraprimary mt-1" />
+                  <Goal className="w-8 h-8 text-astraprimary mt-1" />
                   <div>
                     <p className="font-sb">Funding Goal</p>
                     <p className="text-astradarkgray">{project.goal}</p>
@@ -211,7 +272,7 @@ export default function ActiveProjectDetail({ params }) {
                 </div>
                 
                 <div className="flex gap-2 items-start">
-                  <Calendar className="w-5 h-5 text-astraprimary mt-1" />
+                  <Calendar className="w-8 h-8 text-astraprimary mt-1" />
                   <div>
                     <p className="font-sb">Project Duration</p>
                     <p className="text-astradarkgray">
@@ -244,32 +305,32 @@ export default function ActiveProjectDetail({ params }) {
             </div>
           </div>
           
-          {/* Transactions section */}
+          {/* Transactions section*/}
           <div className="bg-astrawhite p-6 rounded-xl shadow">
             <h2 className="font-lb text-xl mb-4">Transactions</h2>
             
-            <div className="overflow-x-auto">
+            <div className="max-h-80 overflow-y-auto custom-scrollbar rounded-lg border border-astralightgray/50">
               <table className="w-full border-collapse">
-                <thead>
-                  <tr className="bg-astralightgray">
+                <thead className="sticky top-0 bg-astralightgray">
+                  <tr>
                     <th className="py-3 px-4 text-left font-sb">Donor</th>
                     <th className="py-3 px-4 text-right font-sb">Amount</th>
                     <th className="py-3 px-4 text-right font-sb">Date</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-astralightgray/50">
                   {project.transactions.map((transaction) => (
-                    <tr key={transaction.id} className="border-b border-astralightgray">
+                    <tr key={transaction.id} className="hover:bg-astralightgray/10 transition-colors">
                       <td className="py-3 px-4">{transaction.donor}</td>
-                      <td className="py-3 px-4 text-right">{transaction.amount}</td>
-                      <td className="py-3 px-4 text-right">{new Date(transaction.date).toLocaleDateString('en-PH')}</td>
+                      <td className="py-3 px-4 text-right font-sb text-astraprimary">{transaction.amount}</td>
+                      <td className="py-3 px-4 text-right text-astradarkgray">{new Date(transaction.date).toLocaleDateString('en-PH')}</td>
                     </tr>
                   ))}
                 </tbody>
                 <tfoot>
-                  <tr className="bg-astralightgray">
+                  <tr className="bg-astralightgray/30 border-t-2 border-astralightgray">
                     <td className="py-3 px-4 font-sb">Total</td>
-                    <td className="py-3 px-4 text-right font-sb">{project.raised}</td>
+                    <td className="py-3 px-4 text-right font-sb text-astraprimary">{project.raised}</td>
                     <td className="py-3 px-4"></td>
                   </tr>
                 </tfoot>
@@ -278,48 +339,53 @@ export default function ActiveProjectDetail({ params }) {
           </div>
         </div>
         
-        {/* Right column - Requester information and actions */}
-        <div className="space-y-6">
+        {/* Right column - Requester information and actions*/}
+        <div className="space-y-6 lg:sticky lg:top-24 self-start">
           {/* Requester information */}
           <div className="bg-astrawhite p-6 rounded-xl shadow">
-            <h2 className="font-lb text-xl mb-4">Requester Information</h2>
+            <h2 className="font-lb text-xl mb-4">Project Organizer</h2>
             
             <div className="space-y-4">
               <div className="flex gap-2 items-start">
-                <User className="w-5 h-5 text-astraprimary mt-1" />
+                <User className="w-10 h-10 text-astraprimary" />
                 <div>
-                  <p className="font-sb">Name</p>
                   <p className="text-astradarkgray">{project.requester.name}</p>
-                  <p className="text-astragray text-sm">{project.requester.position}</p>
+                  <p className="text-astralightgray text-sm">{project.requester.position}</p>
                 </div>
               </div>
               
               <div className="flex gap-2 items-start">
-                <Mail className="w-5 h-5 text-astraprimary mt-1" />
+                <Mail className="w-6 h-6 text-astraprimary mr-2" />
                 <div>
-                  <p className="font-sb">Email</p>
                   <p className="text-astradarkgray">{project.requester.email}</p>
                 </div>
               </div>
               
               <div className="flex gap-2 items-start">
-                <Phone className="w-5 h-5 text-astraprimary mt-1" />
+                <Phone className="w-6 h-6 text-astraprimary mr-2" />
                 <div>
-                  <p className="font-sb">Phone</p>
                   <p className="text-astradarkgray">{project.requester.phone}</p>
                 </div>
               </div>
+              
+              <button 
+                className="flex items-center gap-2 mt-4 bg-astraprimary text-astrawhite py-2 px-4 rounded-lg w-full justify-center font-sb transition-colors hover:bg-astraprimary/90"
+                onClick={() => setShowContactModal(true)}
+              >
+                <MessageSquare className="w-5 h-5" />
+                Contact
+              </button>
             </div>
           </div>
           
-          {/* Actions */}
+          {/* Actions*/}
           <div className="bg-astrawhite p-6 rounded-xl shadow">
             <h2 className="font-lb text-xl mb-4">Actions</h2>
             
             <div className="space-y-4">
               <button
                 onClick={handleShare}
-                className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-astralightgray text-astradark rounded-lg hover:bg-astragray transition-colors font-s"
+                className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-astragray text-astradark rounded-lg hover:bg-astragray transition-colors font-s"
               >
                 <Share2 className="w-5 h-5" />
                 Share Project
@@ -344,6 +410,25 @@ export default function ActiveProjectDetail({ params }) {
           </div>
         </div>
       </div>
+      
+      {/* Add a style for custom scrollbar */}
+      <style jsx global>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #f1f1f1;
+          border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #ddd;
+          border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #ccc;
+        }
+      `}</style>
     </div>
   );
 }

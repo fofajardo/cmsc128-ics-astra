@@ -256,7 +256,7 @@ export default function InactiveProjectDetail({ params }) {
         <div className="space-y-6 lg:sticky lg:top-24 self-start">
           {/* Requester information */}
           <div className="bg-astrawhite p-6 rounded-xl shadow">
-            <h2 className="font-lb text-xl mb-4">Requester Information</h2>
+            <h2 className="font-lb text-xl mb-4">Project Organizer</h2>
             
             <div className="space-y-4">
               <div className="flex gap-2 items-start">
