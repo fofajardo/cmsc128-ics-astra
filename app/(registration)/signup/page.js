@@ -1,24 +1,51 @@
+"use client"
+
+import { useState } from "react"
 import Link from "next/link"
 import { User } from "lucide-react"
 
 export default function SignupPage() {
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
+  const [errors, setErrors] = useState([])
+
+  const validateForm = () => {
+    const newErrors = []
+
+    if (!email.includes("@")) newErrors.push("Invalid email format.")
+    if (password.length < 8) newErrors.push("Password must be at least 8 characters.")
+    if (password !== confirmPassword) newErrors.push("Passwords do not match.")
+
+    setErrors(newErrors)
+    return newErrors.length === 0
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    if (validateForm()) {
+      // Proceed to next page or perform any action
+      window.location.href = "/signup/2"
+    }
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-[var(--color-astratintedwhite)]">
       <div className="flex-1 flex">
         <div className="w-full md:w-1/2 p-4 md:p-8 pt-12 md:pt-20 px-4 md:px-0 flex items-center justify-center">
           <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
             <div className="mb-6 flex justify-between items-center">
-              <h2 className="text-2xl font-semibold text-black">Sign Up</h2>
-              <Link href="/login" className="text-[var(--color-astraprimary)] text-sm hover:underline">
-                I have an account
-              </Link>
+              <h2 className="text-2xl font-semibold text-[var(--color-astrablack)]">Sign Up</h2>
+              <Link href="/login" className="text-[var(--color-astraprimary)] text-sm hover:underline">I have an account</Link>
             </div>
 
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={handleSubmit}>
               <div>
                 <input
                   type="email"
                   placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-gray-900"
                 />
               </div>
@@ -26,6 +53,8 @@ export default function SignupPage() {
                 <input
                   type="password"
                   placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-gray-900"
                 />
               </div>
@@ -33,23 +62,30 @@ export default function SignupPage() {
                 <input
                   type="password"
                   placeholder="Confirm Password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                   className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-gray-900"
                 />
               </div>
-              <Link href="/signup/2">
-                <button
-                  type="button"
-                  className="w-full bg-[var(--color-astraprimary)] text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
-                >
-                  Next
-                </button>
-              </Link>
+
+              {errors.length > 0 && (
+                <div className="bg-red-100 text-[var(--color-astrared)] text-sm p-2 rounded">
+                  {errors.map((err, idx) => (
+                    <p key={idx}>• {err}</p>
+                  ))}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                className="w-full bg-[var(--color-astraprimary)] text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
+              >
+                Next
+              </button>
             </form>
 
             <div className="mt-4 text-center">
-              <Link href="/recover" className="text-[var(--color-astraprimary)] text-sm hover:underline">
-                Forgot password?
-              </Link>
+              <Link href="/recover" className="text-[var(--color-astraprimary)] text-sm hover:underline">Forgot password?</Link>
             </div>
 
             <div className="mt-6">
@@ -66,6 +102,7 @@ export default function SignupPage() {
             </div>
           </div>
         </div>
+
         <div className="hidden md:block md:w-1/2 bg-[var(--color-astraprimary)]">
           <img src="/blue-bg.png" alt="Background" className="h-full w-full object-cover" />
         </div>

@@ -6,7 +6,10 @@ import React from "react"
 export default function EducationalInfoPage() {
   const [studentId, setStudentId] = useState("");
   const [graduationYear, setGraduationYear] = useState("");
-
+  const [degreeProgram, setDegreeProgram] = useState("");
+  const [file, setFile] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
+  
   const fileInputRef = useRef(null);
 
   const handleButtonClick = () => {
@@ -16,8 +19,7 @@ export default function EducationalInfoPage() {
   const handleFileChange = (event) => {
     const files = event.target.files;
     if (files.length > 0) {
-      console.log("Selected files:", files);
-      return;
+      setFile(files[0]);
     }
   };
 
@@ -44,14 +46,39 @@ export default function EducationalInfoPage() {
     setGraduationYear(value);
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    // Validate all fields
+    if (!degreeProgram || !studentId || !graduationYear || !file) {
+      setErrorMessage("All fields are required.");
+      return;
+    }
+
+    if (!/^\d{4}-\d{5}$/.test(studentId)) {
+      setErrorMessage("Student ID must be in the format XXXX-XXXXX.");
+      return;
+    }
+
+    if (!/^\d{4}$/.test(graduationYear)) {
+      setErrorMessage("Graduation year must be a 4-digit number.");
+      return;
+    }
+
+    // Form is valid, proceed with form submission
+    setErrorMessage("");
+    // Here you would proceed with form submission logic, e.g., API call
+    console.log("Form submitted");
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-[var(--color-astratintedwhite)]">
       <div className="flex flex-1">
         <div className="w-full md:w-1/2 p-4 md:p-8 pt-12 md:pt-20 px-4 md:px-0 flex items-center justify-center">
           <div className="max-w-md w-full mx-auto">
             {/* Mobile View for Notice */}
-            <div className="mb-6 text-xs text-[var(--color-astrablack)] bg-white border border-gray-200 rounded-md p-4 md:hidden pt-4">
-              <h2 className="font-semibold mb-2">Notice and Consent to Privacy</h2>
+            <div className="mt-12 mb-6 text-xs text-[var(--color-astrablack)] bg-white border border-gray-200 rounded-md p-4 md:hidden">
+              <h2 className="font-semibold text-lg mb-3">Notice and Consent to Privacy</h2>
               <p className="mt-2">
                 When uploading your proof of graduation for the University of the Philippines Los Baños (UPLB), please ensure the document is clear, legible, and in the required format (PDF, JPEG, or PNG).
               </p>
@@ -59,12 +86,14 @@ export default function EducationalInfoPage() {
                 By submitting, you agree that your data will be collected and processed in accordance with the Data Privacy Act of 2012 (RA 10173).
               </p>
               <p>
-                Your data will be used only for alumni tracking and advancement, handled with confidentiality by ICS-ASTRA.
+                Your data will be used solely for alumni tracking and advancement, handled with confidentiality by ICS-ASTRA.
               </p>
             </div>
 
-            <form className="space-y-4 px-4 sm:px-6 md:px-8">
+            <form className="space-y-4 px-4 sm:px-6 md:px-8" onSubmit={handleSubmit}>
               <h2 className="text-2xl font-semibold text-black mb-4">Educational Information</h2>
+              
+              {/* Degree Program */}
               <div>
                 <label htmlFor="degree-program" className="block text-sm font-medium text-[var(--color-astrablack)] mb-1">
                   Degree Program
@@ -72,8 +101,11 @@ export default function EducationalInfoPage() {
                 <select
                   id="degree-program"
                   name="degree-program"
+                  value={degreeProgram}
+                  onChange={(e) => setDegreeProgram(e.target.value)}
                   className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-[var(--color-astrablack)]"
                 >
+                  <option value="">Select a degree program</option>
                   <option value="BS Computer Science">BS Computer Science</option>
                   <option value="MS Computer Science">MS Computer Science</option>
                   <option value="Master of Information Technology">Master of Information Technology</option>
@@ -81,6 +113,7 @@ export default function EducationalInfoPage() {
                 </select>
               </div>
 
+              {/* Student ID */}
               <div>
                 <label htmlFor="student-id" className="block text-sm font-medium text-[var(--color-astrablack)] mb-1">
                   Student ID
@@ -96,6 +129,7 @@ export default function EducationalInfoPage() {
                 />
               </div>
 
+              {/* Graduation Year */}
               <div>
                 <label htmlFor="graduation-year" className="block text-sm font-medium text-[var(--color-astrablack)] mb-1">
                   Graduation Year
@@ -111,6 +145,7 @@ export default function EducationalInfoPage() {
                 />
               </div>
 
+              {/* Proof of Graduation */}
               <div>
                 <label className="block text-sm font-medium text-[var(--color-astrablack)] mb-1">Proof of Graduation</label>
                 <div className="flex">
@@ -118,7 +153,6 @@ export default function EducationalInfoPage() {
                     type="file"
                     ref={fileInputRef}
                     onChange={handleFileChange}
-                    placeholder="No file selected"
                     className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-l-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-[var(--color-astrablack)] flex-1"
                   />
                   <button
@@ -131,6 +165,8 @@ export default function EducationalInfoPage() {
                 </div>
                 <p className="text-xs text-slate-500 mt-2">PDF, JPEG, or PNG</p>
               </div>
+
+              {errorMessage && <p className="text-[var(--color-astrared)] text-sm">{errorMessage}</p>}
 
               <p className="text-xs text-[var(--color-astrablack)] mt-4 text-center">
                 By clicking "Submit," you confirm that you have read and understood this notice and consent to the
@@ -147,14 +183,12 @@ export default function EducationalInfoPage() {
                     Back
                   </button>
                 </Link>
-                <Link href="/dashboard" className="flex-1">
-                  <button
-                    type="button"
-                    className="w-full bg-[var(--color-astraprimary)] text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
-                  >
-                    Next
-                  </button>
-                </Link>
+                <button
+                  type="submit"
+                  className="w-full bg-[var(--color-astraprimary)] text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
+                >
+                  Submit
+                </button>
               </div>
 
               <div className="flex justify-center mt-6 space-x-2">
