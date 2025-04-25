@@ -71,13 +71,13 @@ const FundraiserConfirmPage = () => {
       <div className="mt-8 flex justify-end gap-4">
         <button
           onClick={() => router.back()}
-          className="bg-astralightgray text-astrablack px-6 py-2 rounded-lg hover:bg-gray-200 transition"
+          className="gray-button font-semibold transition cursor-pointer"
         >
           Go Back
         </button>
         <button
           onClick={handleSubmit}
-          className="bg-astraprimary text-white px-6 py-2 rounded-lg hover:bg-astradarkgray transition"
+          className="blue-button font-semibold transition cursor-pointer w-[200px] h-[55px]"
         >
           Submit Fundraiser
         </button>
