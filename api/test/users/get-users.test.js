@@ -32,7 +32,8 @@ describe('Users API Tests', function () {
             expect(res.body).to.be.an('object');
 
             expect(res.body).to.have.property('status').that.is.oneOf(['OK', 'FAILED']);
-            // expect(res.body).to.have.property('user').to.be.an('object');
+            expect(res.body).to.have.property('user').to.be.an('object');
+            
             const userData = res.body.user;
 
             expect(userData).to.have.property('username').that.is.a('string');

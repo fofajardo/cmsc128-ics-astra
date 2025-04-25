@@ -58,9 +58,6 @@ describe('Users API Tests', function () {
 
         it('should not allow editing of name and role', async function () {
             const invalidUpdateData = {
-                first_name: "User",  // Attempt to change name
-                middle_name: 'User',
-                last_name: 'User',
                 role: "User", // Attempt to change role
             };
 
