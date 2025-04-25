@@ -7,14 +7,13 @@ const gAgent = request.agent(app);
 
 const kRoutePrefix = '/v1/work-experiences';
 
-describe('Work Experiences API Tests', function() {
-    this.timeout(4000); // Set timeout to 10 seconds
+describe('Work Experiences API Tests (POST)', function() {
 
-    before(() => TestSignIn(gAgent, TestUsers.moderator));
+    before(() => TestSignIn(gAgent, TestUsers.admin));
 
-    describe('POST /v1/work-experiences', function() {
+    describe(`POST ${kRoutePrefix}`, function() {
         const testWorkExperience = {
-            user_id: '75b6e610-9d0b-4884-b405-1e682e3aa3de',
+            user_id: 'b7085d72-f174-4b81-b106-ef68b27a48ee',
             title: 'Test Title',
             field: 'Test Field',
             company: 'Test Company',
@@ -41,7 +40,7 @@ describe('Work Experiences API Tests', function() {
         });
 
         // ❌ Required fields missing
-        it('should return 400, status FAILED, and a message when required fields are missing', async function () {
+        it(`should return ${httpStatus.BAD_REQUEST}, status FAILED, and a message when required fields are missing`, async function () {
             const res = await gAgent
                 .post(kRoutePrefix)
                 .send({});
@@ -53,15 +52,15 @@ describe('Work Experiences API Tests', function() {
         });
 
         // ❌ Invalid user_id
-        it('should return 500, status FAILED, and a message when user_id is invalid', async function () {
+        it(`should return ${httpStatus.BAD_REQUEST}, status FAILED, and a message when user_id is invalid`, async function () {
             const res = await gAgent
                 .post(kRoutePrefix)
                 .send({
                     ...testWorkExperience,
-                    user_id: '00000000-0000-0000-0000-000000000000', // Invalid UUID
+                    user_id: '00000000-0000-0000-0000-00000000000', // Invalid UUID
                 });
-            
-            expect(res.status).to.equal(httpStatus.INTERNAL_SERVER_ERROR);
+
+            expect(res.status).to.equal(httpStatus.BAD_REQUEST);
             expect(res.body).to.be.an('object');
             expect(res.body).to.have.property('status').to.equal('FAILED');
             expect(res.body).to.have.property('message');
