@@ -86,9 +86,6 @@ const createEvent = (supabase) => async (req, res) => {
             "venue",
             "external_link",
             "access_link",
-            "interested_count",
-            "going_count",
-            "not_going_count",
             "online"
         ];
         const missingFields = requiredFields.filter(field => !(field in req.body));
@@ -105,9 +102,6 @@ const createEvent = (supabase) => async (req, res) => {
             venue,
             external_link,
             access_link,
-            interested_count,
-            going_count,
-            not_going_count,
             online
         } = req.body;
 
@@ -120,9 +114,6 @@ const createEvent = (supabase) => async (req, res) => {
             typeof venue === 'string' &&
             typeof external_link === 'string' &&
             typeof access_link === 'string' &&
-            typeof interested_count === 'number' &&
-            typeof going_count === 'number' &&
-            typeof not_going_count === 'number' &&
             typeof online === 'boolean';
 
         if (!isValidTypes) {
@@ -160,9 +151,6 @@ const createEvent = (supabase) => async (req, res) => {
             venue,
             external_link,
             access_link,
-            interested_count,
-            going_count,
-            not_going_count,
             online
         });
 
@@ -226,9 +214,6 @@ const updateEvent = (supabase) => async (req, res) => {
             venue,
             external_link,
             access_link,
-            interested_count,
-            going_count,
-            not_going_count,
             online
         } = req.body;
 
@@ -239,9 +224,6 @@ const updateEvent = (supabase) => async (req, res) => {
             venue,
             external_link,
             access_link,
-            interested_count,
-            going_count,
-            not_going_count,
             online
         };
         Object.keys(updateData).forEach(key => {

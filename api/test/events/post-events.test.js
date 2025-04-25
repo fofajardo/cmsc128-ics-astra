@@ -21,9 +21,6 @@ describe('Events API Tests', function () {
                     venue: 'Lecture Hall 4',
                     external_link: 'bit.ly/PalICSihan-FBPage',
                     access_link: '',
-                    interested_count: 0,
-                    going_count: 0,
-                    not_going_count: 0,
                     online: false
                 });
 
@@ -44,9 +41,6 @@ describe('Events API Tests', function () {
                     venue: 'NCAS Auditorium',
                     external_link: 'bit.ly/info-link',
                     access_link: '',
-                    interested_count: 0,
-                    going_count: 0,
-                    not_going_count: 0 // missing online field
                 });
 
             expect(res.status).to.equal(httpStatus.BAD_REQUEST);
@@ -65,9 +59,6 @@ describe('Events API Tests', function () {
                     venue: 'NCAS Auditorium',
                     external_link: 'bit.ly/info-link',
                     access_link: '',
-                    interested_count: 0,
-                    going_count: 0,
-                    not_going_count: 0,
                     online: 'yes' // invalid data type
                 });
 
@@ -77,6 +68,31 @@ describe('Events API Tests', function () {
             expect(res.body).to.have.property('message').that.is.a('string');
         });
 
+    });
+    after(() => TestSignOut(gAgent));
+});
+
+
+
+describe('POST /v1/events', function () {
+    before(() => TestSignIn(gAgent, TestUsers.alumnus));
+    // Test case #1: Succesful Event Creation
+    it('should return 403 and a status', async function () {
+        const res = await gAgent
+            .post('/v1/events')
+            .send({
+                event_id : "885b0b2e-ced1-4c0f-8aac-1fb6857548ec", // event_id is reference from content_id
+                event_date: new Date('2025-04-15'),
+                venue: 'Lecture Hall 4',
+                external_link: 'bit.ly/PalICSihan-FBPage',
+                access_link: '',
+                online: false
+            });
+
+        expect(res.status).to.equal(httpStatus.FORBIDDEN);
+        expect(res.body).to.be.an('object');
+        expect(res.body).to.have.property('status').that.is.oneOf(['CREATED', 'FAILED', 'FORBIDDEN']);
+        expect(res.body).to.have.property('message').that.is.a('string');
     });
     after(() => TestSignOut(gAgent));
 });

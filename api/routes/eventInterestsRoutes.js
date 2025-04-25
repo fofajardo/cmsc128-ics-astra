@@ -5,12 +5,13 @@ import {RequireAuthenticated} from "../middleware/requireAuthenticated.js";
 const eventInterestsRouter = (supabase) => {
     const router = express.Router();
 
-    router.get("/",RequireAuthenticated,eventInterestsController.getEventInterests(supabase));
-    router.get("/alumnus/:alumnId",RequireAuthenticated, eventInterestsController.getEventInterestByAlumnId(supabase));
-    router.get("/content/:contentId",RequireAuthenticated, eventInterestsController.getEventInterestByContentId(supabase));
-    router.post("/",  RequireAuthenticated, eventInterestsController.createEventInterest(supabase));
-    router.delete("/",  RequireAuthenticated,eventInterestsController.deleteEmptyEventInterest());
-    router.delete("/:alumId/:contentId", RequireAuthenticated,  eventInterestsController.deleteEventInterest(supabase));
+    router.use(RequireAuthenticated);
+    router.get("/", eventInterestsController.getEventInterests(supabase));
+    router.get("/alumnus/:alumnId", eventInterestsController.getEventInterestByAlumnId(supabase));
+    router.get("/content/:contentId", eventInterestsController.getEventInterestByContentId(supabase));
+    router.post("/", eventInterestsController.createEventInterest(supabase));
+    router.delete("/", eventInterestsController.deleteEmptyEventInterest());
+    router.delete("/:alumId/:contentId", eventInterestsController.deleteEventInterest(supabase));
 
     return router;
 };
