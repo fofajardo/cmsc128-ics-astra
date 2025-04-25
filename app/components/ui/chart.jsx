@@ -91,6 +91,7 @@ function ChartTooltipContent({
   indicator = "dot",
   hideLabel = false,
   hideIndicator = false,
+  showPeso = false,
   label,
   labelFormatter,
   labelClassName,
@@ -200,9 +201,9 @@ function ChartTooltipContent({
                       </span>
                     </div>
                     {item.value && (
-                      <span className="text-foreground font-mono font-medium tabular-nums">
-                        ₱{item.value.toLocaleString()}
-                      </span>
+                    <span className="text-foreground font-mono font-medium tabular-nums">
+                      {showPeso ? `₱${item.value.toLocaleString()}` : item.value.toLocaleString()}
+                    </span>
                     )}
                   </div>
                 </>

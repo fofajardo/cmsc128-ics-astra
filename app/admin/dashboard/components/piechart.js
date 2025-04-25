@@ -95,7 +95,8 @@ export function Donut() {
           <PieChart>
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent hideLabel />}
+              
+              content={<ChartTooltipContent hideLabel showPeso={true}/>}
             />
             <Pie
               data={chartData}

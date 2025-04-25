@@ -2,7 +2,7 @@
 "use client"
 import AdminStatCard from "@/components/AdminStatCard";
 import {GraduationCap, Calendar, Briefcase, HandHeart } from "lucide-react";
-import { LineGraph } from "./components/linegraph";
+import BarGraph from "./components/bargraph";
 import { Donut } from "./components/piechart";
 
 export default function Dashboard() {
@@ -36,7 +36,7 @@ export default function Dashboard() {
                     <AlumAct_Events/>
                     <FundsDonut/>
                 </div>
-                <div className="flex flex-col md:flex-row gap-8">
+                <div className="flex flex-col lg:flex-row gap-8">
                     <ActivityBreakdown/>
                     <RecentActivity/>
                 </div>
@@ -47,7 +47,7 @@ export default function Dashboard() {
 
 function ActivityBreakdown(){
     return <div className="flex-3">
-        <LineGraph/>        
+        <BarGraph/>        
     </div>
 }
 
