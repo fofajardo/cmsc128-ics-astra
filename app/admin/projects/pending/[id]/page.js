@@ -90,8 +90,11 @@ export default function PendingProjectDetail({ params }) {
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/30 flex items-end">
-          <div className="p-6 text-astrawhite">
-            <h1 className="font-h1 mt-4 text-astrawhite text-shadow shadow-black">{project.title}</h1>
+          <div className="p-6 text-astrawhite w-full">
+          <div className="flex items-center mt-4">
+              <h1 className="font-h1 text-astrawhite text-shadow shadow-black">{project.title}</h1>
+              <span className="ml-4 bg-yellow-500 text-astrawhite px-3 py-1 rounded-lg font-sb">Pending</span>
+            </div>
             <div className="flex items-center mt-2">
               <div className="bg-astrawhite text-astradark px-3 py-1 rounded-lg text-sm font-s flex items-center gap-1">
                 {project.type === "Scholarship" ? (
@@ -248,7 +251,7 @@ export default function PendingProjectDetail({ params }) {
             
             <div className="flex gap-4 justify-end">
               <button 
-                className="px-6 py-2 border border-astragray/30 rounded-lg font-sb"
+                className="px-6 py-2 bg-astralightgray border border-astragray/30 rounded-lg font-sb"
                 onClick={() => setShowContactModal(false)}
               >
                 Cancel

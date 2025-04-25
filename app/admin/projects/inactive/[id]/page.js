@@ -329,7 +329,7 @@ export default function InactiveProjectDetail({ params }) {
             
             <div className="flex gap-4 justify-end">
               <button 
-                className="px-6 py-2 border border-astragray/30 rounded-lg font-sb"
+                className="px-6 py-2 bg-astralightgray border border-astragray/30 rounded-lg font-sb"
                 onClick={() => setShowContactModal(false)}
               >
                 Cancel
