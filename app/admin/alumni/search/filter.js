@@ -1,16 +1,6 @@
 import { useState } from "react";
 
-export default function SearchFilter({onClose , onApply={}}) {
-  const initialFilters = {
-    yearFrom: "",
-    yearTo: "",
-    location: "",
-    field: "",
-    skills: [],
-    sortCategory: "",
-    sortOrder: "asc",
-  };
-
+export default function SearchFilter({ onClose, initialFilters, updateFilters }) {
   const [filters, setFilters] = useState(initialFilters);
   const [skillInput, setSkillInput] = useState("");
 
@@ -29,23 +19,38 @@ export default function SearchFilter({onClose , onApply={}}) {
   };
 
   const handleResetAll = () => {
-    setFilters(initialFilters);
+    setFilters({
+      yearFrom: "",
+      yearTo: "",
+      location: "",
+      field: "",
+      skills: [],
+      sortCategory: "",
+      sortOrder: "asc",
+  });
     setSkillInput("");
+    updateFilters({
+      yearFrom: "",
+      yearTo: "",
+      location: "",
+      field: "",
+      skills: [],
+      sortCategory: "",
+      sortOrder: "asc",
+    }); // Update parent state
+    onClose(); // Close modal
   };
 
   const handleApply = () => {
-    if (onApply) {
-      onApply(filters);
-    }
-    onClose(); // optionally close after apply
+    updateFilters(filters); // Update parent state with current filters
+    onClose(); // Close modal
   };
-
 
   return (
     <div className="bg-astrawhite p-6 rounded-2xl shadow-lg space-y-4">
       <div className="flex justify-between items-center">
         <div className="font-h2">Filter by:</div>
-        <button className="text-xl text-astradarkgray hover:text-astrablack font-bold" onClick={onClose}>&times;</button>
+        <button className="text-xl text-astradarkgray hover:text-astrablack font-bold" onClick={onClose}>×</button>
       </div>
 
       {/* Graduation Year */}
@@ -198,22 +203,21 @@ export default function SearchFilter({onClose , onApply={}}) {
             ))}
           </div>
         </div>
-        </div>
-        
+      </div>
 
-       {/* Action Buttons */}
-       <div className="flex gap-2 pt-2">
+      {/* Action Buttons */}
+      <div className="flex gap-2 pt-2">
         <button
-          className="w-full py-4 rounded-md border border-astraprimary text-astraprimary hover:bg-astralight/20 transition font-sb"
+          className="w-full py-4 rounded-md border border-astraprimary text-astraprimary hover:bg-astralight/20 transition font-rb"
           onClick={handleResetAll}
         >
           Reset All
         </button>
         <button
-          className="w-full py-4 rounded-md bg-astraprimary text-white hover:bg-astradark transition font-sb"
+          className="w-full py-4 rounded-md bg-astraprimary text-white hover:bg-astradark transition font-rb"
           onClick={handleApply}
         >
-          Apply Filters ({filters.skills.length})
+          Apply Filters
         </button>
       </div>
     </div>
