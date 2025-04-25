@@ -5,11 +5,13 @@ import httpStatus from 'http-status-codes';
 import { TestSignIn, TestSignOut, TestUsers } from '../auth/auth.common.js';
 const gAgent = request.agent(app);
 
-const kRoutePrefix = '/v1/work_experiences';
+const kRoutePrefix = '/v1/work-experiences';
 
-describe ('Work Experiences API Tests', function () {
+describe ('Work Experiences API Tests (PUT)', function () {
 
-    before(() => TestSignIn(gAgent, TestUsers.moderator));
+    this.timeout(4000);
+
+    before(() => TestSignIn(gAgent, TestUsers.admin));
 
     describe(`PUT ${kRoutePrefix}/:workExperienceId`, function () {
         
@@ -38,8 +40,10 @@ describe ('Work Experiences API Tests', function () {
 
         // try to update the work experience with valid data and for valid fields
         it('should return 200 and update valid work experience details', async function () {
+            
             // Check if row exists before updating
             const preCheckRes = await gAgent.get(`${kRoutePrefix}/${workExperienceId}`);
+            
             expect(preCheckRes.status).to.equal(httpStatus.OK);
             expect(preCheckRes.body).to.be.an('object');
             
@@ -53,14 +57,15 @@ describe ('Work Experiences API Tests', function () {
             };
 
             const res = await gAgent
-                .put(`${kRoutePrefix}${workExperienceId}`)
+                .put(`${kRoutePrefix}/${workExperienceId}`)
                 .send(validUpdateData);
 
             expect(res.status).to.equal(httpStatus.OK); // Ensures valid update
             expect(res.body).to.be.an('object');
 
             // GET request to verify update
-            const verifyRes = await gAgent.get(`${kRoutePrefix}${workExperienceId}`);
+            const verifyRes = await gAgent.get(`${kRoutePrefix}/${workExperienceId}`);
+
             expect(verifyRes.status).to.equal(httpStatus.OK);
             expect(verifyRes.body).to.be.an('object');
             
@@ -77,6 +82,7 @@ describe ('Work Experiences API Tests', function () {
         it('should return 200 and update some work experience details', async function () {
             // Check if row exists before updating
             const preCheckRes = await gAgent.get(`${kRoutePrefix}/${workExperienceId}`);
+
             expect(preCheckRes.status).to.equal(httpStatus.OK);
             expect(preCheckRes.body).to.be.an('object');
 
@@ -96,6 +102,7 @@ describe ('Work Experiences API Tests', function () {
 
             // GET request to verify update
             const verifyRes = await gAgent.get(`${kRoutePrefix}/${workExperienceId}`);
+            
             expect(verifyRes.status).to.equal(httpStatus.OK);
             expect(verifyRes.body).to.be.an('object');
 
@@ -108,6 +115,7 @@ describe ('Work Experiences API Tests', function () {
         it('should return 400, status FAILED, and a message when invalid field values are provided', async function () {
             // Check if row exists before updating
             const preCheckRes = await gAgent.get(`${kRoutePrefix}/${workExperienceId}`);
+
             expect(preCheckRes.status).to.equal(httpStatus.OK);
             expect(preCheckRes.body).to.be.an('object');
 
@@ -118,7 +126,7 @@ describe ('Work Experiences API Tests', function () {
             };
 
             const res = await gAgent
-                .put(`${kRoutePrefix}${workExperienceId}`)
+                .put(`${kRoutePrefix}/${workExperienceId}`)
                 .send(invalidUpdateData);
 
             expect(res.status).to.equal(httpStatus.BAD_REQUEST); // Ensures invalid update
