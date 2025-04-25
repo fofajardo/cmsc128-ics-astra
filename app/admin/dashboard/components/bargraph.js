@@ -106,7 +106,7 @@ const formatDate = (date, includeYear = false) =>
 function TimeRangeSelector({ timeRange, setTimeRange }) {
   return (
     <Select value={timeRange} onValueChange={setTimeRange}>
-      <SelectTrigger aria-label="Select time range" className="w-[150px]">
+      <SelectTrigger aria-label="Select time range" className="w-[150px] bg-astradirtywhite/50">
         <SelectValue placeholder="Select range" />
       </SelectTrigger>
       <SelectContent>
@@ -146,7 +146,7 @@ function SummaryStats({ summary, chartConfig, activeChart, setActiveChart }) {
 
 
             {/* Main content */}
-            <div className="flex flex-col justify-baseline align-baseline ">
+            <div className="flex flex-row md:flex-col justify-baseline items-center md:items-baseline ">
               <div className={`font-rb text-left ${isActive ? 'text-astraprimary' : 'text-astrablack transition-colors'}`}>
                 {total}
               </div>
@@ -154,12 +154,12 @@ function SummaryStats({ summary, chartConfig, activeChart, setActiveChart }) {
 
               <div className="flex flex-row items-baseline">
 
-                <div className="hidden md:block font-s text-astradarkgray mr-2">{delta}</div>
+                <div className="hidden md:block font-s text-astradarkgray">{delta}</div>
 
                 {delta >= 0 ? (
-                  <MoveUpRight className="h-3 w-3 text-astraprimary/75 inline mr-1" />
+                  <MoveUpRight className="ml-2 h-3 w-3 text-astraprimary/75 inline mr-1"  strokeWidth={3} />
                 ) : (
-                  <MoveDownRight className="h-3 w-3 text-astrared/75 inline mr-1" />
+                  <MoveDownRight className="ml-2 h-3 w-3 text-astrared/75 inline mr-1"  strokeWidth={3} />
                 )}
 
                 <div className={`font-s hidden lg:block ${delta >= 0 ? 'text-astraprimary' : 'text-astrared'}`}>{Math.floor(Math.abs(percentage))}%</div>
