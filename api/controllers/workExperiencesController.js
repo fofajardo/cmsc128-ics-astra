@@ -123,24 +123,16 @@ const createWorkExperience = (supabase) => async (req, res) => {
     }
 
     try {
-        const workExperienceId = req.body['id'];
-
-        if (!isValidUUID(workExperienceId)) {
-            return res.status(httpStatus.BAD_REQUEST).json({
-                status: 'FAILED',
-                message: 'Invalid work experience ID format',
-            });
-        }
-
-        if (!isValidUUID(alum_id)) {
+        const userId = req.body['user_id'];
+        if (!isValidUUID(userId)) {
             return res.status(httpStatus.BAD_REQUEST).json({
                 status: 'FAILED',
                 message: 'Invalid alum ID format',
             });
         }
 
-        // check if alum_id exists in alumni_profiles table
-        const { data: alumData, error: alumError } = await alumniService.fetchAlumniProfileById(supabase, alum_id);
+        // check if userId exists in alumni_profiles table
+        const { data: alumData, error: alumError } = await alumniService.fetchAlumniProfileById(supabase, userId);
         
         if (alumError || !alumData) {
             return res.status(httpStatus.NOT_FOUND).json({
@@ -149,14 +141,19 @@ const createWorkExperience = (supabase) => async (req, res) => {
             });
         }
 
-        // check if the work experience already exists in the database
-        const { data: workExperienceData, error: workExperienceError } = await workExperiencesService.fetchWorkExperienceById(supabase, workExperienceId);
+        const { workExperienceId } = req.params;
 
-        if (workExperienceData) {
-            return res.status(httpStatus.BAD_REQUEST).json({
-                status: 'FAILED',
-                message: 'Work experience already exists',
-            }); 
+        if (workExperienceId != undefined) {
+            // check if the work experience already exists in the database
+            if (!isValidUUID(workExperienceId)) {
+                const { data: workExperienceData, error: workExperienceError } = await workExperiencesService.fetchWorkExperienceById(supabase, workExperienceId);
+                if (workExperienceData) {
+                    return res.status(httpStatus.BAD_REQUEST).json({
+                        status: 'FAILED',
+                        message: 'Work experience already exists',
+                    }); 
+                }
+            }
         }
 
         const requiredFields = [
@@ -188,7 +185,7 @@ const createWorkExperience = (supabase) => async (req, res) => {
         };
 
         const {
-            alum_id,
+            user_id,
             title,
             field,
             company,
@@ -231,7 +228,7 @@ const createWorkExperience = (supabase) => async (req, res) => {
                 message: error.message,
             });
         }
-
+        
         return res.status(httpStatus.CREATED).json({
             status: 'CREATED',
             message: 'Work experience created successfully',
@@ -326,6 +323,17 @@ const updateWorkExperience = (supabase) => async (req, res) => {
                 return res.status(httpStatus.BAD_REQUEST).json({
                     status: 'FAILED',
                     message: 'Year ended cannot be less than year started',
+                });
+            };
+        });
+
+        const restrictedFields = ['user_id', 'created_at', 'updated_at'];
+
+        restrictedFields.forEach(field => {
+            if (field in req.body) {
+                return res.status(httpStatus.FORBIDDEN).json({
+                    status: 'FORBIDDEN',
+                    message: `You are not allowed to edit the ${field} field`,
                 });
             };
         });
