@@ -55,7 +55,7 @@ export default function EditAffiliation({ affiliations, hideAffiliationForm }) {
                   {affiliation.location}
                 </p>
                 <p className="text-sm text-gray-500">
-                  {affiliation.startDate} - {affiliation.endDate}
+                  {affiliation.startDate} {affiliation.isCurrentlyAffiliated ? "- Present" : `- ${affiliation.endDate}`}
                 </p>
               </div>
               <div className="flex space-x-2">
