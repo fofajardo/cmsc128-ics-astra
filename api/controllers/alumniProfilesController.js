@@ -74,8 +74,8 @@ const createAlumniProfile = (supabase) => async (req, res) => {
             });
         }
 
-        // Check if alumni profile already exists (GET /v1/alumni/:userId)
-        const { data: alumniData, error: alumniError } = await alumniProfilesService.fetchAlumniProfileById(supabase, userId);
+        // Check if alumni profile already exists
+        const { data: alumniData } = await alumniProfilesService.fetchAlumniProfileById(supabase, userId);
 
         if (alumniData) {
             return res.status(httpStatus.CONFLICT).json({
@@ -84,7 +84,7 @@ const createAlumniProfile = (supabase) => async (req, res) => {
             });
         }
 
-        // Check required fields
+        // Validate required fields (excluding created_at)
         const requiredFields = [
             "alum_id",
             "birthdate",
@@ -92,14 +92,16 @@ const createAlumniProfile = (supabase) => async (req, res) => {
             "address",
             "gender",
             "student_num",
-            // "degree_program",
-            "year_graduated",
             "skills",
             "honorifics",
             "citizenship",
             "sex",
             "primary_work_experience_id",
-            "civil_status"
+            "civil_status",
+            "first_name",
+            "middle_name",
+            "last_name",
+            "is_profile_public"
         ];
 
         const missingFields = requiredFields.filter(field => req.body[field] === undefined || req.body[field] === null);
@@ -111,7 +113,7 @@ const createAlumniProfile = (supabase) => async (req, res) => {
             });
         }
 
-        // Insert data to supabase
+        // Destructure and append created_at
         const {
             alum_id,
             birthdate,
@@ -119,15 +121,19 @@ const createAlumniProfile = (supabase) => async (req, res) => {
             address,
             gender,
             student_num,
-            // degree_program,
-            year_graduated,
             skills,
             honorifics,
             citizenship,
             sex,
             primary_work_experience_id,
-            civil_status
+            civil_status,
+            first_name,
+            middle_name,
+            last_name,
+            is_profile_public
         } = req.body;
+
+        const created_at = new Date().toISOString();
 
         const { data, error } = await alumniProfilesService.insertAlumniProfile(supabase, {
             alum_id,
@@ -136,14 +142,17 @@ const createAlumniProfile = (supabase) => async (req, res) => {
             address,
             gender,
             student_num,
-            // degree_program,
-            year_graduated,
             skills,
             honorifics,
             citizenship,
             sex,
             primary_work_experience_id,
-            civil_status
+            civil_status,
+            first_name,
+            middle_name,
+            last_name,
+            is_profile_public,
+            created_at // Set internally
         });
 
         if (error) {
@@ -214,30 +223,22 @@ const updateAlumniProfile = (supabase) => async (req, res) => {
             location,
             address,
             gender,
-            // degree_program,
-            year_graduated,
             skills,
-            field,
-            job_title,
-            company,
-            citizenship,
             honorifics,
-            civil_status
+            citizenship,
+            civil_status,
+            is_profile_public
         } = req.body;
 
         const updateData = {
             location,
             address,
             gender,
-            // degree_program,
-            year_graduated,
             skills,
-            field,
-            job_title,
-            company,
-            citizenship,
             honorifics,
-            civil_status
+            citizenship,
+            civil_status,
+            is_profile_public
         };
 
         // Remove undefined fields to avoid overwriting with nulls

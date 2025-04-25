@@ -5,11 +5,12 @@ import httpStatus from 'http-status-codes';
 import nationalities from 'i18n-nationality';
 
 describe('Alumni API Tests', function () {
+    describe('PUT /v1/alumni-profiles/:userId', function () {
 
-    describe('PUT /v1/alumni/:userId', function () {
-        it('should return 200 and update valid alumni details', async function () {
+        it('should return 200, status UPDATED, a message, and persist updated details', async function () {
             const userId = '75b6e610-9d0b-4884-b405-1e682e3aa3de';
-            // Precondition: Ensure the row exists before updating
+
+            // Confirm alumni profile exists before update
             const preCheckRes = await request(app).get(`/v1/alumni-profiles/${userId}`);
             expect(preCheckRes.status).to.equal(httpStatus.OK);
             expect(preCheckRes.body).to.be.an('object');
@@ -18,9 +19,6 @@ describe('Alumni API Tests', function () {
                 location: 'Los Banos',
                 address: 'Batong Malake',
                 gender: 'Female',
-                // degree program is removed in the supabase
-                // degree_program: '904b3aaa-87f3-4493-b994-e5681d4f06a9', 
-                year_graduated: '2020-08-01', 
                 skills: 'JavaScript, Python',
                 honorifics: 'Dr.',
                 citizenship: nationalities.getAlpha3Code("Filipino", "en")
@@ -30,34 +28,34 @@ describe('Alumni API Tests', function () {
                 .put(`/v1/alumni-profiles/${userId}`)
                 .send(validUpdateData);
 
-            expect(res.status).to.equal(httpStatus.OK); // Ensures valid update
+            expect(res.status).to.equal(httpStatus.OK);
             expect(res.body).to.be.an('object');
-            expect(res.body).to.have.property('status').that.is.oneOf(['UPDATED', 'FAILED']);
+            expect(res.body).to.have.property('status').that.equals('UPDATED');
             expect(res.body).to.have.property('message').that.is.a('string');
 
-            
-            // GET request to verify update
+            // Re-fetch profile to verify persisted changes
             const verifyRes = await request(app).get(`/v1/alumni-profiles/${userId}`);
-            
             expect(verifyRes.status).to.equal(httpStatus.OK);
-            expect(verifyRes.body.alumniProfile).to.include(validUpdateData); // Ensures data is correctly updated
+            expect(verifyRes.body.alumniProfile).to.include(validUpdateData);
         });
 
-        it('should not allow editing of birthdate or student_num', async function () {
+        it('should return 403, status FORBIDDEN, and a message when trying to update birthdate or student_num', async function () {
             const userId = '75b6e610-9d0b-4884-b405-1e682e3aa3de';
+
             const invalidUpdateData = {
-                birthdate: '2000-01-01', // Attempt to change birthdate
-                student_num: '12345' // Attempt to change student number
+                birthdate: '2000-01-01',
+                student_num: '12345',
             };
 
             const res = await request(app)
                 .put(`/v1/alumni-profiles/${userId}`)
                 .send(invalidUpdateData);
 
-            expect(res.status).to.equal(httpStatus.FORBIDDEN); // Ensures update is not allowed
+            expect(res.status).to.equal(httpStatus.FORBIDDEN);
             expect(res.body).to.be.an('object');
             expect(res.body).to.have.property('status').that.equals('FORBIDDEN');
             expect(res.body).to.have.property('message').that.equals('Editing birthdate or student_num is not allowed');
         });
+
     });
 });
