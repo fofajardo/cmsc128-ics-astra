@@ -193,7 +193,7 @@ function SummaryStats({ summary, chartConfig, activeChart, setActiveChart }) {
 
 function ActivityChart({ data, activeChart, chartConfig }) {
   return (
-    <ChartContainer config={chartConfig} className="h-[250px]">
+    <ChartContainer config={chartConfig} className="h-[250px] w-full">
       <BarChart data={data} margin={{ left: 12, right: 12 }} barCategoryGap="20%">
         <CartesianGrid strokeDasharray="3 3" vertical={false} />
         <XAxis
@@ -242,7 +242,7 @@ export default function BarGraph() {
   );
 
   return (
-    <Card className="size-full">
+    <Card className='size-full'>
       <CardHeader className="flex items-center justify-between">
         <CardTitle>Activity Breakdown</CardTitle>
         <TimeRangeSelector timeRange={timeRange} setTimeRange={setTimeRange} />

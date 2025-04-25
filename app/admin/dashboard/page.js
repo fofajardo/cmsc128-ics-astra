@@ -6,6 +6,7 @@ import BarGraph from "./components/bargraph";
 import { Donut } from "./components/piechart";
 import UpcomingEvents from "./components/UpcomingEvents";
 import RecentActivity from "./components/RecentActivity";
+import AlumniActivity from "./components/AlumniActivity";
 
 
 export default function Dashboard() {
@@ -62,8 +63,8 @@ function Activity(){
 
 function AlumAct_Events(){
     return <div className="flex-2 flex-grow flex flex-col gap-8">
-        <div className="flex-3 bg-astrawhite flex-grow">
-
+        <div className="flex-3 flex-grow">
+            <AlumniActivity/>
         </div>
         <div className="flex-2 flex-grow">
             <UpcomingEvents/>
