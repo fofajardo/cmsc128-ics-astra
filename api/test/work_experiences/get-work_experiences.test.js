@@ -54,7 +54,7 @@ describe('Work Experiences API Tests', function() {
     // Gets the work experience with the given ID, but the ID is invalid.
     // Should return 404.
     describe(`GET ${kRoutePrefix}/:workExperienceId with invalid ID`, function() {
-        it(`should return 404 for GET ${kRoutePrefix}/:workExperienceId with invalid ID`, async function() {
+        it(`should return 400 for GET ${kRoutePrefix}/:workExperienceId with invalid ID`, async function() {
             const invalidWorkExperienceID = '0000'; // Invalid UUID
             const res = await gAgent.get(`${kRoutePrefix}/${invalidWorkExperienceID}`);
 
@@ -81,7 +81,7 @@ describe('Work Experiences API Tests', function() {
     // Gets the work experience/s of the given alum ID, but the alum ID is invalid.
     // Should return 404.
     describe(`GET ${kRoutePrefix}/alum/:userId with invalid ID`, function() {
-        it(`should return 404 for GET ${kRoutePrefix}/alum/:userId with invalid ID`, async function() {
+        it(`should return 400 for GET ${kRoutePrefix}/alum/:userId with invalid ID`, async function() {
             const invalidUserID = '00000000-0000-0000-0000-000000000000'; // Invalid UUID
             const res = await gAgent.get(`${kRoutePrefix}/alum/${invalidUserID}`);
 
