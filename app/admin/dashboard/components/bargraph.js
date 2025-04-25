@@ -132,13 +132,13 @@ function SummaryStats({ summary, chartConfig, activeChart, setActiveChart }) {
           <button
             key={key}
             onClick={() => setActiveChart(key)}
-            className={`flex flex-1 flex-grow items-center py-4 px-6 rounded-lg hover:bg-astradirtywhite transition-colors border ${
-              isActive ? "bg-astralight/15" : "bg-astrawhite"
+            className={`flex flex-1 flex-grow items-center py-4 px-6 rounded-lg hover:bg-astradirtywhite transition-colors ${
+              isActive ? "bg-astralight/15" : "bg-astrawhite border"
             }`}
           >
             {/* Icon on the left */}
             <div className="relative mr-4">
-              <Icon className="h-6 w-6 text-astraprimary" />
+              <Icon className="h-6 w-6 text-astradark" strokeWidth={2}/>
               <span className="font-sb">
                 {chartConfig[key].label}
               </span>
@@ -193,7 +193,7 @@ function ActivityChart({ data, activeChart, chartConfig }) {
             />
           }
         />
-        <Bar dataKey={activeChart} fill={chartConfig[activeChart].color} />
+        <Bar dataKey={activeChart} fill={chartConfig[activeChart].color} radius={[15, 15, 0, 0]}/>
       </BarChart>
     </ChartContainer>
   );
