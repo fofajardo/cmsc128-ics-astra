@@ -2,6 +2,7 @@ import httpStatus from "http-status-codes";
 import usersService from "../services/usersService.js";
 import alumniProfilesService from "../services/alumniProfilesService.js";
 import { isValidUUID } from "../utils/validators.js";
+import { Actions, Subjects } from "../../common/scopes.js";
 
 const getAlumniProfiles = (supabase) => async (req, res) => {
     try {
@@ -41,6 +42,13 @@ const getAlumniProfileById = (supabase) => async (req, res) => {
             });
         }
 
+        if (req.you.cannotAs(Actions.READ, Subjects.ALUMNI_PROFILE, data)) {
+            return res.status(httpStatus.FORBIDDEN).json({
+                status: "FORBIDDEN",
+                message: "You are not allowed to access this profile."
+            });
+        }
+
         return res.status(httpStatus.OK).json({
             status: "OK",
             alumniProfile: data
@@ -55,6 +63,13 @@ const getAlumniProfileById = (supabase) => async (req, res) => {
 };
 
 const createAlumniProfile = (supabase) => async (req, res) => {
+    if (req.you.cannot(Actions.CREATE, Subjects.ALUMNI_PROFILE)) {
+        return res.status(httpStatus.FORBIDDEN).json({
+            status: "FORBIDDEN",
+            message: "You are not allowed to access this resource."
+        });
+    }
+
     try {
         const userId = req.params.userId;
 
@@ -194,6 +209,13 @@ const updateAlumniProfile = (supabase) => async (req, res) => {
             return res.status(httpStatus.NOT_FOUND).json({
                 status: 'FAILED',
                 message: 'User not found'
+            });
+        }
+
+        if (req.you.cannotAs(Actions.MANAGE, Subjects.ALUMNI_PROFILE, userData)) {
+            return res.status(httpStatus.FORBIDDEN).json({
+                status: "FORBIDDEN",
+                message: "You are not allowed to access this resource."
             });
         }
 

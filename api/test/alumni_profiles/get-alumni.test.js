@@ -3,12 +3,15 @@ import { expect } from 'chai';
 import app from '../../index.js';
 import httpStatus from 'http-status-codes';
 import { isValidAlpha3Citizenship } from '../../utils/validators.js';
+import { TestSignIn, TestSignOut, TestUsers } from "../auth/auth.common.js";
+const gAgent = request.agent(app);
 
 describe('Alumni Profile API Tests', function () {
-
+    before(() => TestSignIn(gAgent, TestUsers.admin));
+    
     describe('GET /v1/alumni-profiles', function () {
         it('should return 200 and a list of alumni profiles', async function () {
-            const res = await request(app)
+            const res = await gAgent
                 .get('/v1/alumni-profiles')
                 .query({ page: 1, limit: 10 });
 
@@ -22,7 +25,9 @@ describe('Alumni Profile API Tests', function () {
     describe('GET /v1/alumni-profiles/:userId', function () {
         it('should return 200 and details of a single alumni profile', async function () {
             const userId = '75b6e610-9d0b-4884-b405-1e682e3aa3de'; // You might want to dynamically create/find a real ID
-            const res = await request(app).get(`/v1/alumni-profiles/${userId}`);
+            const res = await gAgent.get(`/v1/alumni-profiles/${userId}`);
+
+            console.log(res.body);
 
             expect(res.status).to.equal(httpStatus.OK);
             expect(res.body).to.be.an('object');
@@ -63,4 +68,6 @@ describe('Alumni Profile API Tests', function () {
             expect(alumniProfile).to.have.property('is_profile_public').that.is.a('boolean');
         });
     });
+
+    after(() => TestSignOut(gAgent));
 });

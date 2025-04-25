@@ -3,15 +3,19 @@ import { expect } from 'chai';
 import app from '../../index.js';
 import httpStatus from 'http-status-codes';
 import nationalities from 'i18n-nationality';
+import { TestSignIn, TestSignOut, TestUsers } from "../auth/auth.common.js";
+const gAgent = request.agent(app);
 
 describe('Alumni API Tests', function () {
+    before(() => TestSignIn(gAgent, TestUsers.admin));
+
     describe('PUT /v1/alumni-profiles/:userId', function () {
 
         it('should return 200, status UPDATED, a message, and persist updated details', async function () {
             const userId = '75b6e610-9d0b-4884-b405-1e682e3aa3de';
 
             // Confirm alumni profile exists before update
-            const preCheckRes = await request(app).get(`/v1/alumni-profiles/${userId}`);
+            const preCheckRes = await gAgent.get(`/v1/alumni-profiles/${userId}`);
             expect(preCheckRes.status).to.equal(httpStatus.OK);
             expect(preCheckRes.body).to.be.an('object');
 
@@ -24,7 +28,7 @@ describe('Alumni API Tests', function () {
                 citizenship: nationalities.getAlpha3Code("Filipino", "en")
             };
 
-            const res = await request(app)
+            const res = await gAgent
                 .put(`/v1/alumni-profiles/${userId}`)
                 .send(validUpdateData);
 
@@ -34,7 +38,7 @@ describe('Alumni API Tests', function () {
             expect(res.body).to.have.property('message').that.is.a('string');
 
             // Re-fetch profile to verify persisted changes
-            const verifyRes = await request(app).get(`/v1/alumni-profiles/${userId}`);
+            const verifyRes = await gAgent.get(`/v1/alumni-profiles/${userId}`);
             expect(verifyRes.status).to.equal(httpStatus.OK);
             expect(verifyRes.body.alumniProfile).to.include(validUpdateData);
         });
@@ -47,7 +51,7 @@ describe('Alumni API Tests', function () {
                 student_num: '12345',
             };
 
-            const res = await request(app)
+            const res = await gAgent
                 .put(`/v1/alumni-profiles/${userId}`)
                 .send(invalidUpdateData);
 
@@ -58,4 +62,6 @@ describe('Alumni API Tests', function () {
         });
 
     });
+
+    after(() => TestSignOut(gAgent));
 });
