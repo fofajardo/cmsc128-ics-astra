@@ -15,9 +15,6 @@ describe('Users API Tests', function () {
             password: 'password',
             salt: 'abcd1234',
             is_enabled: true,
-            first_name: 'Jan Neal Isaac',
-            middle_name: 'De Guzman',
-            last_name: 'Villamin',
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
             role: 'alumnus'

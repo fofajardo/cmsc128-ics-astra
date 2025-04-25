@@ -2,7 +2,7 @@ import request from 'supertest';
 import { expect } from 'chai';
 import app from '../../index.js';
 import httpStatus from 'http-status-codes';
-import {TestSignIn, TestSignOut, TestUsers} from "../auth/auth.common.js";
+import { TestSignIn, TestSignOut, TestUsers } from "../auth/auth.common.js";
 const gAgent = request.agent(app);
 
 describe('Users API Tests', function () {
@@ -35,26 +35,22 @@ describe('Users API Tests', function () {
             // expect(res.body).to.have.property('user').to.be.an('object');
             const userData = res.body.user;
 
-            expect(userData).to.have.property('role').that.is.a('string');
             expect(userData).to.have.property('username').that.is.a('string');
             expect(userData).to.have.property('email').that.is.a('string');
             expect(userData).to.have.property('password').that.is.a('string');
             expect(userData).to.have.property('salt').that.is.a('string');
             expect(userData).to.have.property('is_enabled').that.is.a('boolean');
-            expect(userData).to.have.property('first_name').that.is.a('string');
 
-            expect(userData).to.have.property('middle_name').to.satisfy(
-                val => val === null || typeof val === 'string');
-
-            expect(userData).to.have.property('last_name').that.is.a('string');
-            expect(userData).to.have.property('created_at');
-            expect(new Date(userData.created_at).toString()).to.not.equal('Invalid Date');
+            expect(userData).to.have.property('created_at').to.satisfy(
+                val => val === null || new Date(userData.created_at).toString() !== 'Invalid Date');
 
             expect(userData).to.have.property('deleted_at').to.satisfy(
                 val => val === null || new Date(userData.deleted_at).toString() !== 'Invalid Date');
 
-            // expect(userData).to.have.property('updated_at').to.satisfy(
-            //     val => val === null || new Date(userData.updated_at).toString() !== 'Invalid Date');
+            expect(userData).to.have.property('updated_at').to.satisfy(
+                val => val === null || new Date(userData.updated_at).toString() !== 'Invalid Date');
+
+            expect(userData).to.have.property('role').that.is.a('string');
         });
     });
 

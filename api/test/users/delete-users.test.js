@@ -23,9 +23,6 @@ describe('Users API - Delete and Verify Deletion', function () {
             password: 'testpassword',
             salt: 'randomsalt1234',
             is_enabled: true,
-            first_name: 'Delete',
-            middle_name: 'Test',
-            last_name: 'User',
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
             role: 'alumnus'
