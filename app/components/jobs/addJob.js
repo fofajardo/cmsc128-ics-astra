@@ -3,8 +3,10 @@
 import {X} from 'lucide-react';
 import Select from 'react-select';
 import { useState } from 'react';
+import ConfirmationPrompt from './edit/confirmation';
 
 export default function JobForm({isEdit, close}){
+    const [showPrompt, setPrompt] = useState(false);
     const employmentOptions =[{value: "1", label: "Part-Time"},{value: "2", label: "Full-time"}, {value: "3", label: "Temporary"}, {value: "4", label: "Freelance"}]
     const locationOptions =[{value: "1", label: "Onsite"},{value: "2", label: "Remote"}, {value: "3", label: "Hybrid"}]
     const statusOptions =[{value: "1", label: "Open"},{value: "2", label: "Closed"}]
@@ -23,6 +25,14 @@ export default function JobForm({isEdit, close}){
           [name]: value,
         }));
       }
+
+    const handleAdd = () => {
+        // handle add job logic here
+        console.log(formData)
+        
+        setPrompt(false);
+        close();
+    } 
 
     const selectStyle = {
         control: () =>
@@ -115,10 +125,11 @@ export default function JobForm({isEdit, close}){
 
             <div className="flex justify-between my-4 px-8">
                 <button className="!cursor-pointer text-astraprimary border-1 border-astraprimary font-semibold w-35 py-2 rounded-lg text-base">Clear Details</button>
-                <button className="!cursor-pointer text-astrawhite border-1 border-astraprimary bg-astraprimary font-semibold w-35 py-2 rounded-lg text-base">Publish Post</button>
+                <button onClick={()=>{setPrompt(true)}} className="!cursor-pointer text-astrawhite border-1 border-astraprimary bg-astraprimary font-semibold w-35 py-2 rounded-lg text-base">Publish Post</button>
             </div>
 
         </div>
+        {showPrompt ? <ConfirmationPrompt isAdd={true} close={()=>setPrompt(false)} handleConfirm={handleAdd}/> : <></>}
     </div>
   )}
   

@@ -26,6 +26,14 @@ export default function JobForm({isEdit, close, job}){
         }));
       }
 
+    const handleEdit = () => {
+        // handle edit job logic here
+        console.log(formData)
+        
+        setPrompt(false);
+        close();
+    } 
+
     const selectStyle = {
         control: () =>
         '!cursor-text outline-none border-1 border-[#C4C4C4] rounded-sm w-full min-h-[30px] min-h-[unset] h-[30px] mt-1.5 px-3 text-sm',
@@ -122,7 +130,7 @@ export default function JobForm({isEdit, close, job}){
 
         </div>
 
-        {showPrompt ? <ConfirmationPrompt isEdit={true} close={()=>setPrompt(false)}/> : <></>} 
+        {showPrompt ? <ConfirmationPrompt isEdit={true} close={()=>setPrompt(false)} handleConfirm={handleEdit}/> : <></>} 
     </div>
   )}
   

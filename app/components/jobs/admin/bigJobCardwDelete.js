@@ -2,15 +2,15 @@
 
 import { useState } from "react";
 import ConfirmationPrompt from "../edit/confirmation";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 
 export default function BigJobCardwDelete(job) {
     const [showPrompt, setPrompt] = useState(false);
     const { id } = useParams();
 
-    const handleDelete = (id) => {
+    const handleDelete = () => {
         // handle delete job id logic here
-
+        
         setPrompt(false);
     };
 
