@@ -12,17 +12,18 @@ import SkillTag from "@/components/SkillTag";
 
 export default function AlumniProfilePage() {
   const profileData = {
+    Title: "Mr.",
     FirstName: "Juan Miguel",
     MiddleName: "Ramirez",
     LastName: "Dela Cruz",
-    StudentNumber: "2017-00001",
-    Title: "Mr.",
+    Suffix: "Jr.",
     Gender: "Female",
-    IsMaidenName: false,
-    BirthDate: "2000/05/08",
+    IsMaidenName: true,
+    BirthDate: "2000-05-08",
     BirthPlace: "Manila",
-    CivilStatus: "Single",
     Citizenship: "Philippines",
+    CivilStatus: "Single",
+    StudentNumber: "2017-00001",
     Degree: "BS Computer Science",
     GraduationYear: "2021",
   };
@@ -47,9 +48,10 @@ export default function AlumniProfilePage() {
       title: "Full-Stack Web Developer",
       type: "Full-time",
       startDate: "August 2021",
-      endDate: "Present",
+      endDate: null,
       location: "Makati, Philippines",
       locationType: "On-site",
+      isCurrentlyWorking: true,
       description:
         "Assisted in the design and development of responsive and intuitive user interfaces (UI) and user experiences (UX) for web applications. Collaborated with backend developers to integrate frontend components with server-side logic and APIs.",
     },
@@ -61,6 +63,7 @@ export default function AlumniProfilePage() {
       endDate: "July 2021",
       location: "Quezon City, Philippines",
       locationType: "Remote",
+      isCurrentlyWorking: false,
       description:
         "Developed interactive and responsive web pages using React and Redux. Worked closely with designers to create cohesive and visually appealing user experiences. Implemented unit tests to ensure application reliability.",
     },
@@ -73,7 +76,7 @@ export default function AlumniProfilePage() {
       location: "Makati, Philippines",
       isCurrentlyAffiliated: true,
       startDate: "January 2022",
-      endDate: "Present",
+      endDate: null,
       description:
         "Participated in collaborative projects and conferences to advocate for technological advancements and computing research across the country.",
     },
@@ -86,57 +89,7 @@ export default function AlumniProfilePage() {
       endDate: "December 2021",
       description:
         "Organized and managed volunteer programs for community outreach initiatives focused on digital literacy education.",
-    },
-    {
-      organization: "Tech Innovators Guild",
-      title: "Volunteer Coordinator",
-      location: "Pasig City, Philippines",
-      isCurrentlyAffiliated: false,
-      startDate: "March 2020",
-      endDate: "December 2021",
-      description:
-        "Organized and managed volunteer programs for community outreach initiatives focused on digital literacy education.",
-    },
-    {
-      organization: "Tech Innovators Guild",
-      title: "Volunteer Coordinator",
-      location: "Pasig City, Philippines",
-      isCurrentlyAffiliated: false,
-      startDate: "March 2020",
-      endDate: "December 2021",
-      description:
-        "Organized and managed volunteer programs for community outreach initiatives focused on digital literacy education.",
-    },
-    {
-      organization: "Tech Innovators Guild",
-      title: "Volunteer Coordinator",
-      location: "Pasig City, Philippines",
-      isCurrentlyAffiliated: false,
-      startDate: "March 2020",
-      endDate: "December 2021",
-      description:
-        "Organized and managed volunteer programs for community outreach initiatives focused on digital literacy education.",
-    },
-    {
-      organization: "Tech Innovators Guild",
-      title: "Volunteer Coordinator",
-      location: "Pasig City, Philippines",
-      isCurrentlyAffiliated: false,
-      startDate: "March 2020",
-      endDate: "December 2021",
-      description:
-        "Organized and managed volunteer programs for community outreach initiatives focused on digital literacy education.",
-    },
-    {
-      organization: "Tech Innovators Guild",
-      title: "Volunteer Coordinator",
-      location: "Pasig City, Philippines",
-      isCurrentlyAffiliated: false,
-      startDate: "March 2020",
-      endDate: "December 2021",
-      description:
-        "Organized and managed volunteer programs for community outreach initiatives focused on digital literacy education.",
-    },
+    }
   ];
 
   const [isShowPersonalForm, setIsShowPersonalForm] = useState(false);
@@ -203,17 +156,28 @@ export default function AlumniProfilePage() {
               </button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-7">
               {Object.entries(profileData)
-                .filter(([key]) => key !== "IsMaidenName")
-                .map(([key, value]) => (
-                  <div key={key} className="min-w-[150px]">
-                    <p className="text-sm text-gray-500 mb-1">
-                      {key.replace(/([A-Z])/g, " $1")}:
-                    </p>
-                    <p className="font-medium">{value}</p>
-                  </div>
-                ))}
+                .filter(([key, value]) => {
+                  const isMaidenName = key === "IsMaidenName";
+                  const isNullSuffix = key === "Suffix" && value === null;
+                  return !isMaidenName && !isNullSuffix;
+                })
+                .map(([key, value]) => {
+                  const label =
+                    key === "LastName"
+                      ? profileData.IsMaidenName
+                        ? "Maiden Name"
+                        : "Last Name"
+                      : key.replace(/([A-Z])/g, " $1");
+
+                  return (
+                    <div key={key} className="min-w-[150px]">
+                      <p className="text-sm text-gray-500 mb-1">{label}:</p>
+                      <p className="font-medium">{value}</p>
+                    </div>
+                  );
+                })}
             </div>
           </div>
         </div>
@@ -288,7 +252,9 @@ export default function AlumniProfilePage() {
                 <div className="flex-1">
                   <h3 className="text-lg font-bold">{exp.company}</h3>
                   <p className="text-gray-600">{exp.title} • {exp.type}</p>
-                  <p className="text-gray-500">{exp.startDate} - {exp.endDate}</p>
+                  <p className="text-gray-500">
+                    {exp.startDate} {exp.isCurrentlyWorking ? "- Present" : `- ${exp.endDate}`}
+                  </p>
                   <p className="text-gray-500">{exp.location}</p>
                   <p className="text-gray-600 mt-2">{exp.description}</p>
                 </div>
