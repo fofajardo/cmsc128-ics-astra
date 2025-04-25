@@ -5,12 +5,12 @@ import {InferAbility} from "../middleware/inferAbility.js";
 const eventsRouter = (supabase) => {
     const router = express.Router();
 
-    router.get("/",  RequireAuthenticated, InferAbility, eventsController.getEvents(supabase));
-    router.get("/:eventId",  RequireAuthenticated, InferAbility,eventsController.getEventById(supabase));
-    router.post("/", RequireAuthenticated, InferAbility, eventsController.createEvent(supabase));
-    router.put("/:eventId",RequireAuthenticated, InferAbility, eventsController.updateEvent(supabase));
-    router.delete("/", RequireAuthenticated, InferAbility,eventsController.deleteEmptyEvent());
-    router.delete("/:eventId", RequireAuthenticated, InferAbility, eventsController.deleteEvent(supabase));
+    router.get("/",  RequireAuthenticated, eventsController.getEvents(supabase));
+    router.get("/:eventId",  RequireAuthenticated,eventsController.getEventById(supabase));
+    router.post("/", RequireAuthenticated, eventsController.createEvent(supabase));
+    router.put("/:eventId",RequireAuthenticated, eventsController.updateEvent(supabase));
+    router.delete("/", RequireAuthenticated,eventsController.deleteEmptyEvent());
+    router.delete("/:eventId", RequireAuthenticated, eventsController.deleteEvent(supabase));
 
     return router;
 };

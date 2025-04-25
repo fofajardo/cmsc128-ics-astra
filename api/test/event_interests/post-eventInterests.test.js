@@ -10,7 +10,7 @@ describe('Event Interest API Tests', function () {
             const res = await request(app)
                 .post('/v1/event-interests')
                 .send({
-                    alum_id: "b4a6b230-20b9-4137-af62-8b535841c391",   //change the values after running the test
+                    user_id: "b4a6b230-20b9-4137-af62-8b535841c391",   //change the values after running the test
                     content_id: "c454a632-ead0-494a-a33b-0268dc2208ab"
                 });
 

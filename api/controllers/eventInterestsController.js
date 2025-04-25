@@ -1,10 +1,16 @@
 import httpStatus from "http-status-codes";
 import eventInterestsService from "../services/eventInterestsService.js";
 import { isValidUUID } from "../utils/validators.js";
-
+import { Actions, Subjects } from "../../common/scopes.js";
 const getEventInterests = (supabase) => async (req, res) => {
     try {
         const { page = 1, limit = 10 } = req.query;
+        // if (req.you.cannot(Actions.MANAGE, Subjects.EVENT_INTEREST)) {
+        //     return res.status(httpStatus.FORBIDDEN).json({
+        //         status: 'FORBIDDEN',
+        //         message: 'You do not have permission to view event interests'
+        //     });
+        // }
         const { data, error } = await eventInterestsService.fetchEventInterests(supabase, page, limit);
 
         if (error) {
@@ -31,6 +37,12 @@ const getEventInterestByAlumnId = (supabase) => async (req, res) => {
     try {
         const { alumnId } = req.params;
 
+        // if (req.you.cannot(Actions.MANAGE, Subjects.EVENT_INTEREST)) {
+        //     return res.status(httpStatus.FORBIDDEN).json({
+        //         status: 'FORBIDDEN',
+        //         message: 'You do not have permission to view event interests'
+        //     });
+        // }
         const { data, error } = await eventInterestsService.fetchEventInterestByAlumnId(supabase, alumnId);
 
         if (error) {
@@ -57,6 +69,12 @@ const getEventInterestByContentId = (supabase) => async (req, res) => {
     try {
         const { contentId } = req.params;
 
+        // if (req.you.cannot(Actions.MANAGE, Subjects.EVENT_INTEREST)) {
+        //     return res.status(httpStatus.FORBIDDEN).json({
+        //         status: 'FORBIDDEN',
+        //         message: 'You do not have permission to view event interests'
+        //     });
+        // }
         const { data, error } = await eventInterestsService.fetchEventInterestByContentId(supabase, contentId);
 
         if (error) {
@@ -81,9 +99,14 @@ const getEventInterestByContentId = (supabase) => async (req, res) => {
 
 const createEventInterest = (supabase) => async (req, res) => {
     try {
-
+        // if (req.you.cannot(Actions.MANAGE, Subjects.EVENT_INTEREST)) {
+        //     return res.status(httpStatus.FORBIDDEN).json({
+        //         status: 'FORBIDDEN',
+        //         message: 'You do not have permission to create event interests'
+        //     });
+        // }
         const requiredFields = [
-            "alum_id",
+            "user_id",
             "content_id",
         ];
 
@@ -97,11 +120,11 @@ const createEventInterest = (supabase) => async (req, res) => {
         }
 
         const {
-            alum_id,
+            user_id,
             content_id
         } = req.body;
 
-        if (!isValidUUID(alum_id)) {
+        if (!isValidUUID(user_id)) {
             return res.status(httpStatus.BAD_REQUEST).json({
                 status: 'FAILED',
                 message: 'Invalid alumnId format.'
@@ -115,7 +138,7 @@ const createEventInterest = (supabase) => async (req, res) => {
             });
         }
 
-        const { data: existingEvents, error: checkError } = await eventInterestsService.checkExistingEventInterest(supabase, alum_id, content_id);
+        const { data: existingEvents, error: checkError } = await eventInterestsService.checkExistingEventInterest(supabase, user_id, content_id);
 
         if (checkError) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -132,7 +155,7 @@ const createEventInterest = (supabase) => async (req, res) => {
         }
 
         const { data, error } = await eventInterestsService.insertEventInterest(supabase, {
-            alum_id,
+            user_id,
             content_id
         });
 
@@ -158,6 +181,12 @@ const createEventInterest = (supabase) => async (req, res) => {
 };
 
 const deleteEmptyEventInterest = () => async (req, res) => {
+    if (req.you.cannot(Actions.MANAGE, Subjects.EVENT_INTEREST)) {
+        return res.status(httpStatus.FORBIDDEN).json({
+            status: 'FORBIDDEN',
+            message: 'You do not have permission to delete event interests'
+        });
+    }
     return res.status(httpStatus.BAD_REQUEST).json({
         status: 'FAILED',
         message: 'Invalid deletion. AlumId and contentId parameters are missing'
@@ -167,6 +196,13 @@ const deleteEmptyEventInterest = () => async (req, res) => {
 const deleteEventInterest = (supabase) => async (req, res) => {
     try {
         const {alumId, contentId} = req.params;
+
+        if (req.you.cannot(Actions.MANAGE, Subjects.EVENT_INTEREST)) {
+            return res.status(httpStatus.FORBIDDEN).json({
+                status: 'FORBIDDEN',
+                message: 'You do not have permission to delete event interests'
+            });
+        }
 
         if (!isValidUUID(alumId)) {
             return res.status(httpStatus.BAD_REQUEST).json({
@@ -193,6 +229,7 @@ const deleteEventInterest = (supabase) => async (req, res) => {
         const { error } = await eventInterestsService.deleteEventInterest(supabase, alumId, contentId);
 
         if (error) {
+            console.log("unable to delete");
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
                 status: "FAILED",
                 message: error.message

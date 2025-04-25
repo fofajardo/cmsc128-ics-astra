@@ -3,16 +3,34 @@ import request from 'supertest';
 import { expect } from 'chai';
 import app from '../../index.js';
 import httpStatus from 'http-status-codes';
+import { TestSignIn, TestSignOut, TestUsers } from "../auth/auth.common.js";
+
+const gAgent = request.agent(app);
 
 describe('Event Interests API Tests', function () {
-    describe('DELETE /v1/event-interests/:alumId/:contentId', function () {
+    //before(() => TestSignIn(gAgent, TestUsers.admin));
+    before(() => TestSignIn(gAgent, TestUsers.alumnus));
 
+    before(async function () {
+        const res = await gAgent
+            .post('/v1/event-interests')
+            .send({
+                user_id: "b4a6b230-20b9-4137-af62-8b535841c391",   //change the values after running the test
+                content_id: "c454a632-ead0-494a-a33b-0268dc2208ab"
+            });
+        if (res.body.status === 'CREATED') {
+            console.log('Successfully created dummy event interest');
+        } else
+            console.log('Failed to create dummy event interest');
+    });
+
+    describe('DELETE /v1/event-interests/:alumId/:contentId', function () {
         // Test case for successful deletion of an event interest
         it('should return 200 with DELETED status for event interest', async function () {
-            const testAlumId = "75b6e610-9d0b-4884-b405-1e682e3aa3de";    // always replace with existing ids after running the test
-            const testContentId = "f9b7efab-003c-44f9-bea7-c856fb1e73cd";
+            const testAlumId = "b4a6b230-20b9-4137-af62-8b535841c391";    // always replace with existing ids after running the test
+            const testContentId = "c454a632-ead0-494a-a33b-0268dc2208ab";
 
-            const res = await request(app)
+            const res = await gAgent
                 .delete(`/v1/event-interests/${testAlumId}/${testContentId}`);
 
             expect(res.status).to.equal(httpStatus.OK);
@@ -27,7 +45,7 @@ describe('Event Interests API Tests', function () {
 
         // Test case for deletion with empty alumn id and content id
         it('should return 400 for empty alumn and content ID', async function () {
-            const res = await request(app)
+            const res = await gAgent
                 .delete('/v1/event-interests/');
 
             expect(res.status).to.equal(httpStatus.BAD_REQUEST);
@@ -40,7 +58,7 @@ describe('Event Interests API Tests', function () {
         it('should return proper response for non-existent alumn and content ID', async function () {
             const nonExistentAlumnId = 'b4a6b230-20b9-4137-af62-8b535841c991';
             const nonExistentContentId = 'b4a6b230-20b9-4137-af62-8b535551c391';
-            const res = await request(app)
+            const res = await gAgent
                 .delete(`/v1/event-interests/${nonExistentAlumnId}/${nonExistentContentId}`);
 
             expect(res.status).to.be.oneOf([httpStatus.OK, httpStatus.NOT_FOUND]);
@@ -49,7 +67,6 @@ describe('Event Interests API Tests', function () {
                 expect(res.body.message).to.match(/not found|exist/i);
             }
         });
-
-
     });
+    after(() => TestSignOut(gAgent));
 });

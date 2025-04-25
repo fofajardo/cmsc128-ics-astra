@@ -38,7 +38,7 @@ describe('Event Interest API Tests', function () {
     describe('GET /v1/event-interests/content/:contentId', function () {
         it('should return 200 for GET /v1/event-interests/content/:contentId', async function () {
 
-            const content_id = '3271147f-6c70-42e3-818e-e4e274a94891';
+            const content_id = 'c454a632-ead0-494a-a33b-0268dc2208ab';
             const res = await request(app)
                .get(`/v1/event-interests/content/${content_id}`)
                .query({ page: 1, limit: 10 });
