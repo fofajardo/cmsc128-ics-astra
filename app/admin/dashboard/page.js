@@ -2,6 +2,12 @@
 "use client"
 import AdminStatCard from "@/components/AdminStatCard";
 import {GraduationCap, Calendar, Briefcase, HandHeart } from "lucide-react";
+import BarGraph from "./components/bargraph";
+import { Donut } from "./components/piechart";
+import UpcomingEvents from "./components/UpcomingEvents";
+import RecentActivity from "./components/RecentActivity";
+import AlumniActivity from "./components/AlumniActivity";
+
 
 export default function Dashboard() {
     return (
@@ -29,9 +35,45 @@ export default function Dashboard() {
                 </div>
             </div>
 
-            <div className="bg-astratintedwhite">
-    
+            <div className="flex gap-8 flex-col bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24">
+                <div className="flex flex-col md:flex-row gap-8">
+                    <AlumAct_Events/>
+                    <FundsDonut/>
+                </div>
+                <div className="flex flex-col lg:flex-row gap-8">
+                    <ActivityBreakdown/>
+                    <Activity/>
+                </div>
             </div>
         </>
       );
+}
+
+function ActivityBreakdown(){
+    return <div className="flex-2 md:flex-3 size-auto">
+        <BarGraph/>        
+    </div>
+}
+
+function Activity(){
+    return <div className="flex-2 size-auto">
+        <RecentActivity/>
+    </div>
+}
+
+function AlumAct_Events(){
+    return <div className="flex-2 flex-grow flex flex-col gap-8">
+        <div className="flex-3 flex-grow">
+            <AlumniActivity/>
+        </div>
+        <div className="flex-2 flex-grow">
+            <UpcomingEvents/>
+        </div>
+    </div>
+}
+
+function FundsDonut(){
+    return <div className="flex-1 h-auto md:row-start-1 md:row-span-8 md:col-start-3 md:h-auto">
+                <Donut/>
+            </div>
 }

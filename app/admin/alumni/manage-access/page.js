@@ -9,44 +9,67 @@ import ConfirmModal from "@/components/ConfirmModal";
 import ToastNotification from "@/components/ToastNotification";
 
 
-export default function AlumniAccess() {
+export default function AlumniAccess() {   
     const [showFilter, setShowFilter] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
     const { currTab, info } = useTab();
     const [toast, setToast] = useState(null);
+    const toggleFilter = () => {setShowFilter((prev) => !prev);};
     // console.log("Current tab from layout:", info);
+
+    const [alumList, updateAlumList] = useState(mockdata);
+    const [appliedFilters, updateFilters] = useState({
+      yearFrom: "",
+      yearTo: "",
+      location: "",
+      field: "",
+      skills: [],
+      sortCategory: "",
+      sortOrder: "asc",
+    });
+    const [pagination, setPagination] = useState({
+      display: [1, 10],       // Displaying Alum #1 to #10
+      currPage: 1,            // Current active page
+      lastPage: 10,           // Last Page => total/numToShow
+      numToShow: 10,          // How many alum to show
+      total: 999              // How many alum in db
+    });
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
       setSelectedIds([]);
     }, [currTab]);
 
 
-    const toggleFilter = () => {
-        console.log("Toggling filter modal:", !showFilter);
-        setShowFilter((prev) => !prev);
-    };
+    // FOR BACKEND PEEPS
+    useEffect(() => {
+      console.log('State updated:', {
+          appliedFilters,
+          pagination,
+          searchQuery,
+      });
+
+    }, [appliedFilters, pagination, searchQuery]);
   
-    const [pagination, setPagination] = useState({
-        display: [1, 10],
-        currPage: 1,
-        lastPage: 10,
-        numToShow: 10,
-        total: 999
-    });
+
 
     return (
       <div>
         {/* Filter Modal */}
-        {showFilter && (
-            <div
-                onClick={toggleFilter}     
-                className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-            >
-                <div onClick={e => e.stopPropagation()}>
-                <SearchFilter onClose={toggleFilter} />
-                </div>
+          <div
+              onClick={toggleFilter}
+              className={`fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs transition-all duration-100 ease-out ${
+                  showFilter ? 'opacity-100' : 'opacity-0 pointer-events-none'
+              }`}
+          >
+            <div onClick={(e) => e.stopPropagation()}>
+                <SearchFilter
+                onClose={toggleFilter}
+                initialFilters={appliedFilters}
+                updateFilters={updateFilters}
+                />
             </div>
-            )}
+          </div>
 
         {toast && (
           <ToastNotification
@@ -59,8 +82,14 @@ export default function AlumniAccess() {
         {/* Table section */}
         <div className="bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24 flex flex-col">
             <div className='flex flex-col py-4 px-1 md:px-4 lg:px-8'>
-                <TableHeader info={info} pagination={pagination} toggleFilter={toggleFilter} />
-                <Table cols={cols} data={createRows(selectedIds, setSelectedIds, currTab)} />
+                <TableHeader 
+                    info={info} 
+                    pagination={pagination} 
+                    setPagination={setPagination} 
+                    toggleFilter={toggleFilter}   
+                    searchQuery={searchQuery}
+                    setSearchQuery={setSearchQuery}/>
+                <Table cols={cols} data={createRows(alumList, selectedIds, setSelectedIds, currTab)} />
                 <PageTool pagination={pagination} setPagination={setPagination} />
             </div>
             <div className="flex flex-row justify-between md:pl-4 lg:pl-8">
@@ -239,7 +268,7 @@ const cols = [
     { label: 'Quick Actions', justify: 'center', visible: 'all' },
 ];
 
-function createRows(selectedIds, setSelectedIds, currTab) {
+function createRows(alumList, selectedIds, setSelectedIds, currTab) {
     return alumList.map((alum) => ({
         'Checkbox:label-hidden': renderCheckboxes(alum.id, selectedIds, setSelectedIds),
         'Image:label-hidden': renderAvatar(alum.image, alum.alumname),
@@ -369,7 +398,7 @@ function renderActions(id, name, currTab) {
   
 
 
-const alumList = [
+const mockdata = [
     {
         id: 1,
         image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
