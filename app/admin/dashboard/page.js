@@ -31,20 +31,45 @@ export default function Dashboard() {
                 </div>
             </div>
 
-            <div className="bg-astratintedwhite">
-                <LineGraph/>
-                <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 md:grid-rows-8 gap-4 mt-4">
-                    <div className="bg-white rounded-xl border-astralightgray shadow-md col-span-1 md:col-span-2 md:row-span-4 md:h-auto">
-                         
-                    </div>
-                    <div className="col-span-1 row-start-3 md:row-start-1 md:row-span-8 md:col-start-3 md:h-auto">
-                        <Donut/>
-                    </div>
-                    <div className="bg-white rounded-xl border-astralightgray shadow-md col-span-1 md:col-span-2 md:row-span-4 md:row-start-5 md:h-auto">
-
-                    </div>
+            <div className="flex gap-8 flex-col bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24">
+                <div className="flex flex-col md:flex-row gap-8">
+                    <AlumAct_Events/>
+                    <FundsDonut/>
+                </div>
+                <div className="flex flex-col md:flex-row gap-8">
+                    <ActivityBreakdown/>
+                    <RecentActivity/>
                 </div>
             </div>
         </>
       );
+}
+
+function ActivityBreakdown(){
+    return <div className="flex-3">
+        <LineGraph/>        
+    </div>
+}
+
+function RecentActivity(){
+    return <div className="flex-2 bg-astrawhite">
+
+    </div>
+}
+
+function AlumAct_Events(){
+    return <div className="flex-2 flex-grow flex flex-col gap-8">
+        <div className="flex-3 bg-astrawhite">
+
+        </div>
+        <div className="flex-2 bg-astrawhite">
+
+        </div>
+    </div>
+}
+
+function FundsDonut(){
+    return <div className="flex-1 md:row-start-1 md:row-span-8 md:col-start-3 md:h-auto">
+                <Donut/>
+            </div>
 }
