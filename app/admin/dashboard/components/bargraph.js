@@ -24,9 +24,9 @@ import {
 
 // Constants
 const RANGE_OPTIONS = [
-  { value: "7d", label: "Weekly" },
-  { value: "30d", label: "Last 30d" },
-  { value: "90d", label: "Last 3 mo." },
+  { value: "7d", label: "Last 7 days" },
+  { value: "30d", label: "Last 30 days" },
+  { value: "90d", label: "Last 3 months" },
 ];
 
 const CHART_CONFIG = {
@@ -36,23 +36,38 @@ const CHART_CONFIG = {
 };
 
 const CHART_DATA = [
-  { date: "2025-04-01", events: 122, jobs: 90, alumni: 50 },
-  { date: "2025-04-02", events: 87, jobs: 120, alumni: 70 },
-  { date: "2025-04-03", events: 167, jobs: 100, alumni: 60 },
-  { date: "2025-04-04", events: 142, jobs: 160, alumni: 80 },
-  { date: "2025-04-05", events: 130, jobs: 110, alumni: 55 },
-  { date: "2025-04-06", events: 95, jobs: 140, alumni: 65 },
-  { date: "2025-04-07", events: 145, jobs: 130, alumni: 75 },
-  { date: "2025-04-08", events: 158, jobs: 100, alumni: 90 },
-  { date: "2025-04-09", events: 132, jobs: 115, alumni: 50 },
-  { date: "2025-04-10", events: 105, jobs: 105, alumni: 60 },
-  { date: "2025-04-11", events: 120, jobs: 125, alumni: 70 },
-  { date: "2025-04-12", events: 110, jobs: 135, alumni: 80 },
-  { date: "2025-04-13", events: 150, jobs: 145, alumni: 85 },
-  { date: "2025-04-14", events: 165, jobs: 100, alumni: 55 },
-  { date: "2025-04-15", events: 140, jobs: 115, alumni: 60 },
-  { date: "2025-04-16", events: 125, jobs: 140, alumni: 65 },
+  { date: "2025-04-25", events: 120, jobs: 95, alumni: 60 },
+  { date: "2025-04-24", events: 130, jobs: 105, alumni: 70 },
+  { date: "2025-04-23", events: 0, jobs: 0, alumni: 0 },
+  { date: "2025-04-22", events: 150, jobs: 110, alumni: 80 },
+  { date: "2025-04-21", events: 100, jobs: 85, alumni: 55 },
+  { date: "2025-04-20", events: 90, jobs: 0, alumni: 40 },
+  { date: "2025-04-19", events: 0, jobs: 100, alumni: 60 },
+  { date: "2025-04-18", events: 140, jobs: 120, alumni: 70 },
+  { date: "2025-04-17", events: 125, jobs: 95, alumni: 65 },
+  { date: "2025-04-16", events: 135, jobs: 105, alumni: 75 },
+  { date: "2025-04-15", events: 0, jobs: 0, alumni: 0 },
+  { date: "2025-04-14", events: 110, jobs: 90, alumni: 50 },
+  { date: "2025-04-13", events: 145, jobs: 130, alumni: 85 },
+  { date: "2025-04-12", events: 100, jobs: 80, alumni: 55 },
+  { date: "2025-04-11", events: 120, jobs: 100, alumni: 70 },
+  { date: "2025-04-10", events: 90, jobs: 85, alumni: 45 },
+  { date: "2025-04-09", events: 0, jobs: 95, alumni: 60 },
+  { date: "2025-04-08", events: 130, jobs: 110, alumni: 75 },
+  { date: "2025-04-07", events: 140, jobs: 0, alumni: 0 },
+  { date: "2025-04-06", events: 95, jobs: 90, alumni: 50 },
+  { date: "2025-04-05", events: 100, jobs: 105, alumni: 65 },
+  { date: "2025-04-04", events: 110, jobs: 100, alumni: 60 },
+  { date: "2025-04-03", events: 120, jobs: 115, alumni: 70 },
+  { date: "2025-04-02", events: 0, jobs: 0, alumni: 0 },
+  { date: "2025-04-01", events: 130, jobs: 125, alumni: 80 },
+  { date: "2025-03-31", events: 105, jobs: 100, alumni: 65 },
+  { date: "2025-03-30", events: 95, jobs: 85, alumni: 55 },
+  { date: "2025-03-29", events: 115, jobs: 90, alumni: 60 },
+  { date: "2025-03-28", events: 125, jobs: 110, alumni: 70 },
+  { date: "2025-03-27", events: 135, jobs: 120, alumni: 75 },
 ];
+
 
 // Utility Functions
 const calculateDateRanges = (timeRange) => {
