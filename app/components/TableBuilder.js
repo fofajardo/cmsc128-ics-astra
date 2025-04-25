@@ -19,31 +19,46 @@
 import { useState } from 'react';
 import { Search, SlidersHorizontal, ArrowLeft, ArrowRight } from 'lucide-react';
 
-export function TableHeader({ info, pagination, toggleFilter }) {
+export function TableHeader({ info, pagination, toggleFilter, setPagination, searchQuery, setSearchQuery }) {
     return (
         <div>
             <div className='flex md:hidden flex-col gap-4'>
-                <SearchComponent placeholder={info.search} />
-                <Toolbar toggleFilter={toggleFilter} />
+                <SearchComponent placeholder={info.search} setSearchQuery={setSearchQuery} searchQuery={searchQuery}/>
+                <Toolbar toggleFilter={toggleFilter} pagination={pagination} setPagination={setPagination}/>
                 <Header title={info.title} pagination={pagination} />
             </div>
 
             <div className='hidden md:flex md:w-full flex-row gap-4 items-center'>
                 <Header title={info.title} pagination={pagination} />
                 <div className='flex flex-row w-full justify-end gap-4'>
-                    <SearchComponent placeholder={info.search} />
-                    <Toolbar toggleFilter={toggleFilter} />
+                    <SearchComponent placeholder={info.search} setSearchQuery={setSearchQuery} searchQuery={searchQuery}/>
+                    <Toolbar toggleFilter={toggleFilter} pagination={pagination} setPagination={setPagination}/>
                 </div>
             </div>
         </div>
     );
 }
 
-export function SearchComponent({ placeholder }) {
+export function SearchComponent({ placeholder, setSearchQuery, searchQuery }) {
+    const [inputValue, setInputValue] = useState(searchQuery);
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            setSearchQuery(inputValue);
+        }
+    };
+
     return (
         <div className='flex items-center bg-astrawhite rounded-xl border border-astradarkgray focus-within:border-astraprimary h-12'>
             <Search className='m-4 text-astradarkgray w-5 h-5' />
-            <input type="text" className='outline-none' placeholder={placeholder} />
+            <input 
+                type="text" 
+                className='outline-none' 
+                placeholder={placeholder} 
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={handleKeyDown}
+            />
         </div>
     );
 }
@@ -61,19 +76,35 @@ export function Header({ title, pagination }) {
     );
 }
 
-export function Toolbar({ toggleFilter }) {
+export function Toolbar({ toggleFilter, pagination, setPagination }) {
+    const handleNumToShowChange = (e) => {
+        const newNumToShow = parseInt(e.target.value);
+
+        setPagination({
+            ...pagination,
+            numToShow: newNumToShow,
+        });
+    };
+
     return (
         <div className="flex flex-row gap-2 justify-end h-12">
-            <button onClick={toggleFilter} className="flex flex-grow flex-row items-center justify-center gap-2 blue-button">
+            <button
+                onClick={toggleFilter}
+                className="flex flex-grow flex-row items-center justify-center gap-2 blue-button"
+            >
                 <SlidersHorizontal className="w-5 h-5" />
                 <span className="flex md:hidden lg:flex">Tools</span>
             </button>
-            <select className="px-4 py-2 rounded-xl bg-astrawhite text-astradarkgray border border-astradarkgray outline-none">
-                <option value="10">5</option>
-                <option value="20">10</option>
-                <option value="30">15</option>
-                <option value="40">20</option>
-                <option value="50">25</option>
+            <select
+                value={pagination.numToShow}
+                onChange={handleNumToShowChange}
+                className="px-4 py-2 rounded-xl bg-astrawhite text-astradarkgray border border-astradarkgray outline-none"
+            >
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+                <option value="25">25</option>
             </select>
         </div>
     );
@@ -186,11 +217,13 @@ export function PageTool({ pagination, setPagination }) {
                 disabled={currPage === 1}
                 className={`p-2 rounded-lg ${
                     currPage === 1
-                        ? 'text-astradarkgray cursor-not-allowed'
+                        ? 'text-astralightgray cursor-not-allowed'
                         : 'text-astraprimary hover:bg-astratintedwhite'
                 }`}
             >
-                <ArrowLeft className="w-5 h-5 stroke-3" />
+                <svg className="w-5 h-5 stroke-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+                </svg>
             </button>
     
             {getPageButtons()}
@@ -200,11 +233,13 @@ export function PageTool({ pagination, setPagination }) {
                 disabled={currPage === lastPage}
                 className={`p-2 rounded-lg ${
                     currPage === lastPage
-                        ? 'text-astradarkgray cursor-not-allowed'
+                        ? 'text-astralightgray cursor-not-allowed'
                         : 'text-astraprimary hover:bg-astratintedwhite'
                 }`}
             >
-                <ArrowRight className="w-5 h-5 stroke-3" />
+                <svg className="w-5 h-5 stroke-3" fill="none" stroke="currentColor" viewBox="0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                </svg>
             </button>
         </div>
     );

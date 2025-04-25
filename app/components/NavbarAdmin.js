@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import logo from "../assets/logo.png";
 import avatar from "../assets/avatar.png";
 import {
@@ -16,24 +16,25 @@ import {
   Gift,
   MessageCircle,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
 } from "lucide-react";
 
 // Menu items data
 const menuItems = [
-  { icon: <Home size={18} />, label: "Dashboard" },
+  { icon: <Home size={18} />, label: "Dashboard", path: "/admin/dashboard" },
   {
     icon: <Users size={18} />,
     label: "Alumni",
+    path: "/admin/alumni",
     children: [
-      { icon: <Search size={16} />, label: "Search" },
-      { icon: <Key size={16} />, label: "Manage Access" },
-    ]
+      { icon: <Search size={16} />, label: "Search", path: "/admin/alumni/search" },
+      { icon: <Key size={16} />, label: "Manage Access", path: "/admin/alumni/manage-access" },
+    ],
   },
-  { icon: <Calendar size={18} />, label: "Events" },
-  { icon: <Briefcase size={18} />, label: "Jobs" },
-  { icon: <Gift size={18} />, label: "Projects" },
-  { icon: <MessageCircle size={18} />, label: "Communications" }
+  { icon: <Calendar size={18} />, label: "Events", path: "/admin/events" },
+  { icon: <Briefcase size={18} />, label: "Jobs", path: "/admin/jobs" },
+  { icon: <Gift size={18} />, label: "Projects", path: "/admin/projects" },
+  { icon: <MessageCircle size={18} />, label: "Communications", path: "/admin/communications" },
 ];
 
 function Navbar({ toggleSidebar, isSidebarOpen, isScrolled }) {
@@ -45,7 +46,6 @@ function Navbar({ toggleSidebar, isSidebarOpen, isScrolled }) {
           : "bg-white shadow-sm"
       }`}
     >
-      {/* Left: Sidebar Toggle & Logo */}
       <div className="flex items-center space-x-4">
         <button
           onClick={toggleSidebar}
@@ -71,7 +71,6 @@ function Navbar({ toggleSidebar, isSidebarOpen, isScrolled }) {
             )}
           </div>
         </button>
-
         <Image
           src={logo}
           alt="Admin Logo"
@@ -80,8 +79,6 @@ function Navbar({ toggleSidebar, isSidebarOpen, isScrolled }) {
           className="rounded-full cursor-pointer"
         />
       </div>
-
-      {/* Right: Avatar */}
       <Image
         src={avatar}
         alt="Admin Avatar"
@@ -93,7 +90,14 @@ function Navbar({ toggleSidebar, isSidebarOpen, isScrolled }) {
   );
 }
 
-function Sidebar({ menuItems, activeMenu, toggleSubmenu, openSubmenus, navigateTo, isSidebarOpen }) {
+function Sidebar({
+  menuItems,
+  activeMenu,
+  toggleSubmenu,
+  openSubmenus,
+  navigateTo,
+  isSidebarOpen,
+}) {
   return (
     <div
       className={`fixed top-0 left-0 z-40 h-screen pt-20 w-[250px] bg-astratintedwhite border-t border-astradarkgray shadow-2xl overflow-y-auto transition-transform duration-300 ${
@@ -131,8 +135,6 @@ function Sidebar({ menuItems, activeMenu, toggleSubmenu, openSubmenus, navigateT
                 </span>
               )}
             </div>
-
-            {/* Submenu */}
             {item.children && openSubmenus[item.label] && (
               <ul className="ml-6 mt-2 space-y-3 border-l border-gray-300 pl-4">
                 {item.children.map((child, idx) => (
@@ -164,6 +166,7 @@ export default function NavbarAdmin() {
   const [activeMenu, setActiveMenu] = useState("Dashboard");
   const [openSubmenus, setOpenSubmenus] = useState({});
   const router = useRouter();
+  const pathname = usePathname();
 
   // Scroll effect
   useEffect(() => {
@@ -172,6 +175,42 @@ export default function NavbarAdmin() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Set active menu based on current pathname
+  useEffect(() => {
+    const findActiveMenu = () => {
+      // Flatten menu items including children for easier lookup
+      const allItems = menuItems.reduce((acc, item) => {
+        if (item.children) {
+          acc.push(...item.children); // Only include submenu items
+        } else {
+          acc.push(item); // Include top-level items
+        }
+        return acc;
+      }, []);
+
+      // Find the menu item whose path is the closest match to the current pathname
+      const matchingItem = allItems.find((item) =>
+        pathname.startsWith(item.path)
+      );
+
+      if (matchingItem) {
+        setActiveMenu(matchingItem.label);
+        // Open parent submenu if the active item is a child
+        if (matchingItem.path.includes("/alumni/")) {
+          setOpenSubmenus((prev) => ({ ...prev, Alumni: true }));
+        } else {
+          // Close Alumni submenu if a non-submenu item is active
+          setOpenSubmenus((prev) => ({ ...prev, Alumni: false }));
+        }
+      } else {
+        setActiveMenu("Dashboard"); // Fallback to Dashboard
+        setOpenSubmenus((prev) => ({ ...prev, Alumni: false }));
+      }
+    };
+
+    findActiveMenu();
+  }, [pathname]);
+
   // Toggle Sidebar
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
@@ -179,31 +218,33 @@ export default function NavbarAdmin() {
   const toggleSubmenu = (label) => {
     setOpenSubmenus((prev) => ({
       ...prev,
-      [label]: !prev[label]
+      [label]: !prev[label],
     }));
   };
 
   // Navigate to a route
   const navigateTo = (label) => {
     setActiveMenu(label);
-    const route =
-      label === "Search" || label === "Manage Access"
-        ? `/admin/alumni/${label.toLowerCase().replace(/ /g, "-")}`
-        : `/admin/${label.toLowerCase().replace(/ /g, "-")}`;
-    router.push(route);
+    const item = menuItems
+      .reduce((acc, curr) => {
+        acc.push(curr);
+        if (curr.children) acc.push(...curr.children);
+        return acc;
+      }, [])
+      .find((i) => i.label === label);
+    if (item && item.path) {
+      router.push(item.path);
+    }
     setIsSidebarOpen(false);
   };
 
   return (
     <>
-      {/* Navbar Component */}
       <Navbar
         toggleSidebar={toggleSidebar}
         isSidebarOpen={isSidebarOpen}
         isScrolled={isScrolled}
       />
-
-      {/* Sidebar Component */}
       <Sidebar
         menuItems={menuItems}
         activeMenu={activeMenu}
@@ -212,11 +253,9 @@ export default function NavbarAdmin() {
         navigateTo={navigateTo}
         isSidebarOpen={isSidebarOpen}
       />
-
-      {/* Overlay for mobile */}
       <div
         className={`fixed inset-0 z-30 bg-astrablack/50 transition-opacity duration-200 ease-in-out md:hidden ${
-          isSidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+          isSidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
         onClick={toggleSidebar}
       />
