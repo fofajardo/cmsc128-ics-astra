@@ -13,7 +13,7 @@ export default function JobCard({job}) {
     };
 
     return (
-    <div className="bg-astrawhite w-[351px] h-[308px] rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] p-6">
+    <div className="bg-astrawhite w-[351px] h-[308px] rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] hover:-translate-y-0.5 p-6 transition-all duration-100ms ease-in">
         
         <h1 className="text-astrablack text-2xl font-bold">₱{job.salary}<span className="text-xl font-normal">/month</span></h1>
         
@@ -40,8 +40,8 @@ export default function JobCard({job}) {
         </div>
        
         <div className="flex gap-2 items-center py-2.5 justify-center">
-            <Link href={job.apply_link} target="_blank" className="text-center text-astrawhite border-1 border-astraprimary bg-astraprimary font-semibold w-7/10 py-3 rounded-lg">Apply Now</Link>
-            <button onClick={viewPost} className="!cursor-pointer text-astraprimary border-1 border-astraprimary font-semibold w-3/10 py-3 rounded-lg">View</button>
+            <Link href={job.apply_link} target="_blank" className="hover:bg-astradark text-center transition-all duration-150 ease-in-out text-astrawhite border-1 border-astraprimary bg-astraprimary font-semibold w-7/10 py-3 rounded-lg">Apply Now</Link>
+            <button onClick={viewPost} className="!cursor-pointer hover:scale-none hover:opacity-70 text-astraprimary border-1 border-astraprimary font-semibold w-3/10 py-3 rounded-lg">View</button>
         </div>
     
     </div>

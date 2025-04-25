@@ -140,7 +140,7 @@ function TimeRangeSelector({ timeRange, setTimeRange }) {
 
 function SummaryStats({ summary, chartConfig, activeChart, setActiveChart }) {
   return (
-    <div className="flex flex-grow flex-row gap-2 justify-center">
+    <div className="flex flex-grow flex-row flex-wrap gap-2 justify-center">
       {Object.keys(chartConfig).map((key) => {
         const { total, delta, percentage } = summary[key];
         const isActive = key === activeChart;
@@ -242,7 +242,7 @@ export default function BarGraph() {
   );
 
   return (
-    <Card>
+    <Card className='size-full'>
       <CardHeader className="flex items-center justify-between">
         <CardTitle>Activity Breakdown</CardTitle>
         <TimeRangeSelector timeRange={timeRange} setTimeRange={setTimeRange} />

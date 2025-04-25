@@ -39,7 +39,7 @@ function EventItem({ event, router }) {
                 <Calendar className="h-5 w-5 text-astrawhite" strokeWidth={2}/>
             </div>
             <div className="flex-1">
-                <p className="font-r">{event?.title}</p>
+                <p className="font-r line-clamp-1">{event?.title}</p>
                 <p className="font-s text-astradarkgray">{event?.location || ''}</p>
             </div>
             <div className="text-right">

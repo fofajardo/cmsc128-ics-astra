@@ -61,11 +61,11 @@ function FundDisplay({ color, title, funds }) {
   return (
     <div className="flex items-center justify-between max-w-full gap-6">
       <div className="flex items-center gap-2">
-        <span
-          className="w-4 h-4 rounded-full"
+        <div
+          className="size-4 rounded-full"
           style={{ backgroundColor: color }}
-        ></span>
-        <span className="text-astrablack font-r">{title}</span>
+        ></div>
+        <span className="text-astrablack font-r line-clamp-2">{title}</span>
       </div>
       <span className="text-astraprimary font-rb text-right">
         ₱{Number(funds).toLocaleString()}

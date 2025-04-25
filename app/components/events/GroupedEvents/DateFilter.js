@@ -31,7 +31,7 @@ export default function DateFilter({ placeholder }) {
         <Icon
           icon="material-symbols:calendar-month"
           className={`text-xl ${
-            selectedDate ? "text-white" : "text-astraprimary"
+            selectedDate ? "text-astrawhite" : "text-astraprimary"
           } cursor-pointer`} 
         />
       </button>

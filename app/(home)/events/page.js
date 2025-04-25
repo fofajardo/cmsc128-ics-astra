@@ -1,20 +1,22 @@
-"use client";
+'use client';
 
 import Image from "next/image";
 import { Icon } from "@iconify/react";
-import EventCard from "../../components/EventCard";
-import FilterDropdown from "../../components/FilterDropdown";
-import DateFilter from "../../components/DateFilter";
 import { useState } from "react";
-import Pagination from "../../components/Pagination";
-import EventCarousel from "../../components/EventCarousel";
+
+// Import the needed components for the events page.
+import EventCard from "@/components/events/GroupedEvents/EventCard/EventCard";
+import FilterDropdown from "@/components/events/GroupedEvents/FilterDropdown";
+import DateFilter from "@/components/events/GroupedEvents/DateFilter";
+import Pagination from "@/components/events/GroupedEvents/Pagination";
+import EventCarousel from "@/components/events/GroupedEvents/CardCarousel/EventCarousel";
+
+
 import events from "../../data/events";
-
-
-import eventsVector from "../../assets/events-vector.png"
+import eventsVector from "../../assets/events-vector.png";
 
 export default function EventsPage() {
-  const itemsPerPage = 5;
+  const itemsPerPage = 4;
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = Math.ceil(events.length / itemsPerPage);
 
@@ -24,7 +26,7 @@ export default function EventsPage() {
   );
 
   return (
-    <div className="w-full bg-white">
+    <div className="w-full bg-astradirtywhite">
       <div className="h-[100px]" />
 
       {/* Hero */}
@@ -58,7 +60,7 @@ export default function EventsPage() {
       </div>
 
       {/* Filters */}
-      <div className="relative z-10 bg-astrawhite w-full py-14 -mt-10 border-t border-astradarkgray">
+      <div className="relative z-10 bg-astradirtywhite w-full py-14 -mt-10 border-t border-astradarkgray">
         <div className="max-w-[1440px] mx-auto flex flex-col items-center gap-8 px-4">
           <div className="w-full max-w-[1000px]">
             <div className="flex items-stretch w-full border border-astragray bg-astrawhite">
@@ -126,7 +128,7 @@ export default function EventsPage() {
       </div>
 
       {/* Event Carousel Section */}
-      <div className="max-w-[1440px] mx-auto px-12 mt-24">
+      <div className="max-w-[1440px] mx-auto px-12 mt-24 pb-32 bg-astradirtywhite">
         <EventCarousel events={events} />
       </div>
 

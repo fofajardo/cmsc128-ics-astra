@@ -6,6 +6,9 @@ import BarGraph from "./components/bargraph";
 import { Donut } from "./components/piechart";
 import UpcomingEvents from "./components/UpcomingEvents";
 import ActivityOverview from "./components/ActivityOverview"
+import RecentActivity from "./components/RecentActivity";
+import AlumniActivity from "./components/AlumniActivity";
+
 
 export default function Dashboard() {
     return (
@@ -40,7 +43,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex flex-col lg:flex-row gap-8">
                     <ActivityBreakdown/>
-                    <RecentActivity/>
+                    <Activity/>
                 </div>
             </div>
         </>
@@ -48,19 +51,19 @@ export default function Dashboard() {
 }
 
 function ActivityBreakdown(){
-    return <div className="flex-3">
+    return <div className="flex-2 md:flex-3 size-auto">
         <BarGraph/>        
     </div>
 }
 
-function RecentActivity(){
-    return <div className="flex-2 bg-astrawhite">
-
+function Activity(){
+    return <div className="flex-2 size-auto">
+        <RecentActivity/>
     </div>
 }
 
 function AlumAct_Events(){
-    return <div className="flex-1 flex-grow flex flex-col gap-8">
+    return <div className="flex-2 flex-grow flex flex-col gap-8">
         <div className="flex-3 flex-grow">
             <ActivityOverview/>
         </div>
@@ -71,7 +74,7 @@ function AlumAct_Events(){
 }
 
 function FundsDonut(){
-    return <div className="flex-1 h-full md:row-start-1 md:row-span-8 md:col-start-3 md:h-auto">
+    return <div className="flex-1 h-auto md:row-start-1 md:row-span-8 md:col-start-3 md:h-auto">
                 <Donut/>
             </div>
 }
