@@ -84,16 +84,16 @@ const getWorkExperiencesByAlumId = (supabase) => async (req, res) => {
     }
 
     try {
-        const { alumId } = req.params;
+        const { userId } = req.params;
 
-        if (!isValidUUID(alumId)) {
+        if (!isValidUUID(userId)) {
             return res.status(httpStatus.BAD_REQUEST).json({
                 status: 'FAILED',
                 message: 'Invalid alum ID',
             });
         }
 
-        const { data, error } = await workExperiencesService.fetchWorkExperiencesByAlumId(supabase, alumId);
+        const { data, error } = await workExperiencesService.fetchWorkExperiencesByAlumId(supabase, userId);
 
         if (error) {
             return res.status(httpStatus.NOT_FOUND).json({
