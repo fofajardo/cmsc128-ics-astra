@@ -1,7 +1,15 @@
 import httpStatus from "http-status-codes";
 import reportsService from "../services/reportsService.js";
+import { Actions, Subjects } from "../../common/scopes.js";
 
 const getReports = (supabase) => async (req, res) => {
+    if (req.you.cannot(Actions.READ, Subjects.REPORT)) {
+        return res.status(httpStatus.FORBIDDEN).json({
+            status: "FORBIDDEN",
+            message: "You are not allowed to access this resource."
+        });
+    }
+
     try {
         const { page = 1, limit = 10 } = req.query;
         const { data, error } = await reportsService.fetchReports(supabase, page, limit);
@@ -38,6 +46,13 @@ const getReportById = (supabase) => async (req, res) => {
             });
         }
 
+        if (req.you.cannotAs(Actions.READ, Subjects.REPORT, data)) {
+            return res.status(httpStatus.FORBIDDEN).json({
+                status: "FORBIDDEN",
+                message: "You are not allowed to access this resource."
+            });
+        }
+
         return res.status(httpStatus.OK).json({
             status: "OK",
             report: data
@@ -52,6 +67,13 @@ const getReportById = (supabase) => async (req, res) => {
 };
 
 const createReport = (supabase) => async (req, res) => {
+    if (req.you.cannot(Actions.CREATE, Subjects.REPORT)) {
+        return res.status(httpStatus.FORBIDDEN).json({
+            status: "FORBIDDEN",
+            message: "You are not allowed to access this resource."
+        });
+    }
+
     try {
         const requiredFields = ["reporter_id", "type", "details"];
         const missingFields = requiredFields.filter(field => !req.body[field]);
@@ -115,6 +137,13 @@ const updateReport = (supabase) => async (req, res) => {
             });
         }
 
+        if (req.you.cannotAs(Actions.MANAGE, Subjects.REPORT)) {
+            return res.status(httpStatus.FORBIDDEN).json({
+                status: "FORBIDDEN",
+                message: "You are not allowed to access this resource."
+            });
+        }
+
         return res.status(httpStatus.OK).json({
             status: "UPDATED",
             message: "Report status updated"
@@ -133,6 +162,13 @@ const deleteReport = (supabase) => async (req, res) => {
         const { reportId } = req.params;
 
         const { error } = await reportsService.deleteReport(supabase, reportId);
+
+        if (req.you.cannotAs(Actions.MANAGE, Subjects.REPORT)) {
+            return res.status(httpStatus.FORBIDDEN).json({
+                status: "FORBIDDEN",
+                message: "You are not allowed to access this resource."
+            });
+        }
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
