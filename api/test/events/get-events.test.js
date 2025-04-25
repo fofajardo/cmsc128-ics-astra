@@ -22,22 +22,22 @@ describe('Alumni API Tests', function () {
     describe('GET /v1/events/:eventId', function () {
         it('should return 200 for GET /v1/events/eventId', async function () {
 
-            const event_id = '2e6f2442-4ac4-46ae-af67-65b4f2f6c15e';
+            const event_id = 'f9b7efab-003c-44f9-bea7-c856fb1e73cd';
             const res = await request(app).get(`/v1/events/${event_id}`);
-            
+
             expect(res.body).to.be.an('object');
-            
+
             expect(res.body).to.have.property('status').that.is.oneOf(['OK', 'FAILED']);
             expect(res.status).to.equal(httpStatus.OK);
-                        
+
             expect(res.body).to.have.property('event').that.is.an('object');
-            
+
             const eventData = res.body.event;
-        
+
             expect(eventData).to.have.property('event_date');
-            
+
             const eventDate = eventData.event_date;
-            
+
             const isoDateRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?([+-]\d{2}:\d{2}|Z)$/;
             expect(isoDateRegex.test(eventDate)).to.be.true;
 

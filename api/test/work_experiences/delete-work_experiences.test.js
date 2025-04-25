@@ -5,8 +5,10 @@ import { TestSignIn, TestSignOut, TestUsers } from '../auth/auth.common.js';
 
 import app from '../../index.js';
 
+
 const gAgent = request.agent(app);
-const kRoutePrefix = '/v1/work_experiences';
+const kRoutePrefix = '/v1/work-experiences';
+
 
 describe('Work Experiences API - Delete and Verify Deletion', function () {
 

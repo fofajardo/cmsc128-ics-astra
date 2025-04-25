@@ -1,7 +1,15 @@
 import httpStatus from "http-status-codes";
 import usersService from "../services/usersService.js";
+import {Actions, Subjects} from "../../common/scopes.js";
 
 const getUsers = (supabase) => async (req, res) => {
+    if (req.you.cannot(Actions.READ, Subjects.USER)) {
+        return res.status(httpStatus.FORBIDDEN).json({
+            status: "FORBIDDEN",
+            message: "You are not allowed to access this resource."
+        });
+    }
+
     try {
         const { page = 1, limit = 10 } = req.query;
         const { data, error } = await usersService.fetchUsers(supabase, page, limit);
@@ -39,6 +47,13 @@ const getUserById = (supabase) => async (req, res) => {
             });
         }
 
+        if (req.you.cannotAs(Actions.READ, Subjects.USER, data)) {
+            return res.status(httpStatus.FORBIDDEN).json({
+                status: "FORBIDDEN",
+                message: "You are not allowed to access this resource."
+            });
+        }
+
         return res.status(httpStatus.OK).json({
             status: "OK",
             user: data
@@ -53,6 +68,13 @@ const getUserById = (supabase) => async (req, res) => {
 };
 
 const createUser = (supabase) => async (req, res) => {
+    if (req.you.cannot(Actions.CREATE, Subjects.USER)) {
+        return res.status(httpStatus.FORBIDDEN).json({
+            status: "FORBIDDEN",
+            message: "You are not allowed to access this resource."
+        });
+    }
+
     try {
         const requiredFields = [
             "username",
@@ -60,9 +82,6 @@ const createUser = (supabase) => async (req, res) => {
             "password",
             "salt",
             "is_enabled",
-            "first_name",
-            "middle_name",
-            "last_name",
             "created_at",
             "updated_at",
             "role"
@@ -155,6 +174,13 @@ const updateUser = (supabase) => async (req, res) => {
             });
         }
 
+        if (req.you.cannotAs(Actions.MANAGE, Subjects.USER, existingUser)) {
+            return res.status(httpStatus.FORBIDDEN).json({
+                status: "FORBIDDEN",
+                message: "You are not allowed to access this resource."
+            });
+        }
+
         const {
             username,
             email,
@@ -218,6 +244,15 @@ const deleteUser = (supabase) => async (req, res) => {
     try {
         const { userId } = req.params;
         const hard = req.query.hard === "true";
+
+        if (req.you.cannotAs(Actions.MANAGE, Subjects.USER, {
+            id: userId,
+        })) {
+            return res.status(httpStatus.FORBIDDEN).json({
+                status: "FORBIDDEN",
+                message: "You are not allowed to access this resource."
+            });
+        }
 
         const { error } = hard
             ? await usersService.hardDeleteUser(supabase, userId)

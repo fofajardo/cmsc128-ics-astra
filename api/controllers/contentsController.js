@@ -1,5 +1,5 @@
-import httpStatus from "http-status-codes";
-import contentsService from "../services/contentsService";
+import httpStatus from "http-status-codes"; 
+import contentsService from "../services/contentsService.js";
 
 const getContents = (supabase) => async (req, res) => {
     try {
@@ -54,10 +54,24 @@ const getContentById = (supabase) => async (req, res) => {
 
 const createContent = (supabase) => async (req, res) => {
     try {
+        const allowedFields = ["id", "user_id", "title", "details", "views", "created_at", "updated_at", "views", "tags"];
+        const providedFields = Object.keys(req.body);
+
+        // Check for unexpected fields
+        const unexpectedFields = providedFields.filter((field) => !allowedFields.includes(field));
+        if (unexpectedFields.length > 0) {
+            return res.status(httpStatus.BAD_REQUEST).json({
+                status: "FAILED",
+                message: `Unexpected fields: ${unexpectedFields.join(", ")}`,
+            });
+        }
+        
         const requiredFields = [
+            "id",
             "user_id",
             "title",
-            "details"
+            "details",
+            "views"
         ];
 
         const missingFields = requiredFields.filter(
@@ -73,12 +87,23 @@ const createContent = (supabase) => async (req, res) => {
         }
 
         const {
+            id,
             user_id,
             title,
             details,
-            created_at = new Date().toISOString(),
-            updated_at = new Date().toISOString(),
+            created_at,
+            updated_at,
+            views
         } = req.body;
+
+        // Validte user_id format
+        const isValidUUID = /^[0-9a-fA-F-]{36}$/.test(user_id);
+        if (!isValidUUID) {
+            return res.status(httpStatus.BAD_REQUEST).json({
+                status: "FAILED",
+                message: "Invalid user_id format",
+            });
+        }
 
         const { data: existingContents, error: checkError } = await contentsService.checkExistingContent(supabase, title);
 
@@ -97,24 +122,31 @@ const createContent = (supabase) => async (req, res) => {
         }
 
         const { data, error } = await contentsService.insertContent(supabase, {
+            id,
             user_id,
             title,
             details,
             created_at,
-            updated_at
+            updated_at,
+            views,
         });
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
                 status: "FAILED",
-                message: error
+                message: error.message,
             });
         }
 
         return res.status(httpStatus.CREATED).json({
             status: 'CREATED',
             message: 'Content successfully created',
-            id: data.id
+            content: {
+                ...data,
+                created_at: new Date(data.created_at).toISOString(),
+                updated_at: new Date(data.updated_at).toISOString(),
+                views: data.views
+            }
         });
 
     } catch (error) {
@@ -128,6 +160,15 @@ const createContent = (supabase) => async (req, res) => {
 const updateContent = (supabase) => async (req, res) => {
     try {
         const contentId = req.params.contentId;
+
+        // Validte contentId format
+        const isValidUUID = /^[0-9a-fA-F-]{36}$/.test(contentId);
+        if (!isValidUUID) {
+            return res.status(httpStatus.BAD_REQUEST).json({
+                status: "FAILED",
+                message: "Invalid contentId format",
+            });
+        }
 
         const { data: existingContent, error: fetchError } = await contentsService.findContent(supabase, contentId);
 
@@ -145,6 +186,29 @@ const updateContent = (supabase) => async (req, res) => {
             created_at,
             updated_at,
         } = req.body;
+
+        // Validate restricted fields
+        if (user_id !== undefined) {
+            return res.status(httpStatus.BAD_REQUEST).json({
+                status: 'FAILED',
+                message: 'Updating user_id is not allowed',
+            });
+        }
+
+
+        if (title === '') {
+            return res.status(httpStatus.BAD_REQUEST).json({
+                status: 'FAILED',
+                message: 'Title cannot be empty',
+            });
+        }
+
+        if (details === '') {
+            return res.status(httpStatus.BAD_REQUEST).json({
+                status: 'FAILED',
+                message: 'Details cannot be empty',
+            });
+        }
 
         const hasRestrictedFieldChanges =
         user_id !== undefined ||
@@ -194,9 +258,19 @@ const updateContent = (supabase) => async (req, res) => {
 
 const deleteContent = (supabase) => async (req, res) => {
     try {
+        // console.log("req.params", req.params);
         const { contentId } = req.params;
 
-        const { data, error: findError } = await findContent(supabase, contentId);
+        // Vlidate contentId format
+        const isValidUUID = /^[0-9a-fA-F-]{36}$/.test(contentId);
+        if (!isValidUUID) {
+            return res.status(httpStatus.BAD_REQUEST).json({
+                status: "FAILED",
+                message: "Invalid contentId format",
+            });
+        }
+
+        const { data, error: findError } = await contentsService.findContent(supabase, contentId);
 
         if (findError || !data) {
             return res.status(httpStatus.NOT_FOUND).json({ 
@@ -216,7 +290,7 @@ const deleteContent = (supabase) => async (req, res) => {
 
         return res.status(httpStatus.OK).json({
             status: "DELETED",
-            message: `Content with ID ${contentId} has been deleted successfully.`
+            message: `Content with ID ${contentId} has been successfully deleted.`
         });
     } catch (error) {
         return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ 

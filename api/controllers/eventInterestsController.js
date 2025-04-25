@@ -157,12 +157,18 @@ const createEventInterest = (supabase) => async (req, res) => {
     }
 };
 
+const deleteEmptyEventInterest = () => async (req, res) => {
+    return res.status(httpStatus.BAD_REQUEST).json({
+        status: 'FAILED',
+        message: 'Invalid deletion. AlumId and contentId parameters are missing'
+    });
+};
 
 const deleteEventInterest = (supabase) => async (req, res) => {
     try {
-        const {alumnId, contentId} = req.params;
+        const {alumId, contentId} = req.params;
 
-        if (!isValidUUID(alumnId)) {
+        if (!isValidUUID(alumId)) {
             return res.status(httpStatus.BAD_REQUEST).json({
                 status: 'FAILED',
                 message: 'Invalid alumnId format'
@@ -175,15 +181,16 @@ const deleteEventInterest = (supabase) => async (req, res) => {
             });
         }
 
-        const { data: existingEventInterest, error: checkError } = await eventInterestsService.checkExistingEventInterest(supabase, alumnId, contentId);
+        const { data: existingEventInterest, error: checkError } = await eventInterestsService.checkExistingEventInterest(supabase, alumId, contentId);
 
-        if (checkError || !existingEventInterest) {
+        if (checkError || existingEventInterest.length === 0) {
             return res.status(httpStatus.NOT_FOUND).json({
                 status: 'FAILED',
                 message: 'Event interest not found'
             });
         }
-        const { error } = await eventInterestsService.deleteEventInterest(supabase, alumnId, contentId);
+
+        const { error } = await eventInterestsService.deleteEventInterest(supabase, alumId, contentId);
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -194,7 +201,7 @@ const deleteEventInterest = (supabase) => async (req, res) => {
 
         return res.status(httpStatus.OK).json({
             status: 'DELETED',
-            message: `Event interest for alumnus ${alumnId} and content ${contentId} has been successfully deleted.`
+            message: `Event interest for alumnus ${alumId} and content ${contentId} has been successfully deleted.`
         });
     } catch (error) {
         return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -209,6 +216,7 @@ const eventInterestsController = {
     getEventInterestByAlumnId,
     getEventInterestByContentId,
     createEventInterest,
+    deleteEmptyEventInterest,
     deleteEventInterest
 };
 

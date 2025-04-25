@@ -34,7 +34,7 @@ const deleteAlumniProfileData = async (supabase, userId) => {
         .from("alumni_profiles")
         .delete()
         .eq("alum_id", userId);
-}
+};
 
 const alumniService = {
     fetchAlumniProfiles,

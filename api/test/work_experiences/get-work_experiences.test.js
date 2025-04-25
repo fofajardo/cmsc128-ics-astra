@@ -5,7 +5,7 @@ import httpStatus from 'http-status-codes';
 import { TestSignIn, TestSignOut, TestUsers } from '../auth/auth.common.js';
 const gAgent = request.agent(app);
 
-const kRoutePrefix = '/v1/work_experiences';
+const kRoutePrefix = "/v1/work-experiences";
 
 describe('Work Experiences API Tests', function() {    
     // Sign in as a moderator before running the tests
@@ -13,9 +13,10 @@ describe('Work Experiences API Tests', function() {
 
     // Gets all work experiences
     // Should return 200.
-    describe('GET /v1/work_experiences/', function() {
+    describe('GET /v1/work-experiences/', function() {
         it(`should return 200 for GET ${kRoutePrefix}/`, async function() {
             const res = await gAgent
+
                 .get(kRoutePrefix)
                 .query({page: 1, limit: 10});
             

@@ -5,14 +5,14 @@ import httpStatus from 'http-status-codes';
 import { TestSignIn, TestSignOut, TestUsers } from '../auth/auth.common.js';
 const gAgent = request.agent(app);
 
-const kRoutePrefix = '/v1/work_experiences';
+const kRoutePrefix = '/v1/work-experiences';
 
 describe('Work Experiences API Tests', function() {
     this.timeout(4000); // Set timeout to 10 seconds
 
     before(() => TestSignIn(gAgent, TestUsers.moderator));
 
-    describe('POST /v1/work_experiences', function() {
+    describe('POST /v1/work-experiences', function() {
         const testWorkExperience = {
             user_id: '75b6e610-9d0b-4884-b405-1e682e3aa3de',
             title: 'Test Title',

@@ -1,6 +1,6 @@
-import {
-    pbkdf2, randomBytes, timingSafeEqual,
-} from "node:crypto";
+import {pbkdf2, randomBytes, timingSafeEqual,} from "node:crypto";
+import {AbilityBuilder, createMongoAbility, subject as setSubjectType} from "@casl/ability";
+import {Actions, RoleName, Subjects} from "../../common/scopes.js";
 
 const KEY_ITERATIONS = 310000;
 const KEY_LENGTH = 32;
@@ -52,9 +52,81 @@ function matchesPassword(aPassword, aSalt, aPrevKey) {
     });
 }
 
+async function defineScopes(aUser) {
+    const {can, cannot, rules} =
+        new AbilityBuilder(createMongoAbility);
+
+    let user = aUser?.data;
+    let role = user?.role ?? RoleName.UNLINKED;
+
+    if (role !== RoleName.UNLINKED) {
+        // General permissions for all roles.
+        can(Actions.MANAGE, Subjects.USER, {id: user.id});
+        can(Actions.MANAGE, Subjects.ALUMNI_PROFILE, {alum_id: user.id});
+        can(Actions.MANAGE, Subjects.CONTACT, {alum_id: user.id});
+        can(Actions.CREATE, Subjects.DONATION);
+        can(Actions.MANAGE, Subjects.DONATION, {alum_id: user.id});
+        can(Actions.READ, Subjects.EVENT);
+        can(Actions.CREATE, Subjects.REPORT);
+        can(Actions.MANAGE, Subjects.REPORT, {reporter_id: user.id});
+        can(Actions.READ, Subjects.CONTENT);
+
+        if (role === RoleName.ALUMNUS) {
+            can(Actions.READ, Subjects.EVENT);
+            can(Actions.CREATE, Subjects.DONATION);
+            can(Actions.MANAGE, Subjects.DONATION, {alum_id: user.id});
+            cannot(Actions.MANAGE, Subjects.EVENT);
+            can(Actions.MANAGE, Subjects.EVENT_INTEREST, {alum_id: user.id});
+            can(Actions.READ, Subjects.ALUMNI_PROFILE, {alum_id: user.id});
+            can(Actions.CREATE, Subjects.JOB);
+            can(Actions.MANAGE, Subjects.JOB, {alum_id: user.id});
+        } else if (role === RoleName.MODERATOR) {
+            can(Actions.READ, Subjects.ALL);
+            can(Actions.MANAGE, Subjects.CONTENT);
+            can(Actions.MANAGE, Subjects.REPORT);
+            can(Actions.MANAGE, Subjects.USER);
+            can(Actions.MANAGE, Subjects.EVENT);
+            can(Actions.MANAGE, Subjects.PROJECT);
+            can(Actions.MANAGE, Subjects.JOB);
+        } else if (role === RoleName.ADMIN) {
+            can(Actions.CREATE, Subjects.ALL);
+            can(Actions.READ, Subjects.ALL);
+            can(Actions.MANAGE, Subjects.ALL);
+        }
+    } else {
+        // Default permissions for users without a role.
+        // Soft-deleted users usually fall under this case.
+        cannot(Actions.CREATE, Subjects.ALL);
+        cannot(Actions.READ, Subjects.ALL);
+        cannot(Actions.MANAGE, Subjects.ALL);
+    }
+
+    return rules;
+}
+
+async function defineAbility(aUser) {
+    const rules = await defineScopes(aUser);
+    const ability = createMongoAbility(rules);
+    // Set some helper functions to avoid importing the subject helper.
+    const abilityHelper = {
+        canAs: function (action, subjectName, subject, field) {
+            const wrappedSubject = setSubjectType(subjectName, subject);
+            return ability.can(action, wrappedSubject, field);
+        },
+        cannotAs: function (action, subjectName, subject, field) {
+            const wrappedSubject = setSubjectType(subjectName, subject);
+            return ability.cannot(action, wrappedSubject, field);
+        },
+    };
+    Object.assign(ability, abilityHelper);
+    return ability;
+}
+
 const exports = {
     deriveKeyFromPassword,
     matchesPassword,
+    defineScopes,
+    defineAbility,
 };
 
 export default exports;
