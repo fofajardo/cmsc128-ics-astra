@@ -75,7 +75,7 @@ const getWorkExperienceById = (supabase) => async (req, res) => {
     }
 };
 
-const getWorkExperiencesByAlumId = (supabase) => async (req, res) => {
+const getWorkExperiencesByUserId = (supabase) => async (req, res) => {
     if (req.you.cannot(Actions.READ, Subjects.WORK_EXPERIENCES)) {
         return res.status(httpStatus.FORBIDDEN).json({
             status: 'FORBIDDEN',
@@ -404,7 +404,7 @@ const deleteWorkExperience = (supabase) => async (req, res) => {
 const workExperiencesController = {
     getWorkExperiences,
     getWorkExperienceById,
-    getWorkExperiencesByAlumId,
+    getWorkExperiencesByUserId,
     createWorkExperience,
     updateWorkExperience,
     deleteWorkExperience,

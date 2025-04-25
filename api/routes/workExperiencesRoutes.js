@@ -6,7 +6,7 @@ const workExperiencesRouter = (supabase) => {
 
     router.get('/', workExperiencesController.getWorkExperiences(supabase));
     router.get('/:workExperienceId', workExperiencesController.getWorkExperienceById(supabase));
-    router.get('/alum/:alumId', workExperiencesController.getWorkExperiencesByAlumId(supabase));
+    router.get('/alum/:userId', workExperiencesController.getWorkExperiencesByUserId(supabase));
     router.post('/', workExperiencesController.createWorkExperience(supabase));
     router.put('/:workExperienceId', workExperiencesController.updateWorkExperience(supabase));
     router.delete('/:workExperienceId', workExperiencesController.deleteWorkExperience(supabase));
