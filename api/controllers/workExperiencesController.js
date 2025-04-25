@@ -371,6 +371,13 @@ const deleteWorkExperience = (supabase) => async (req, res) => {
     try {
         const { workExperienceId } = req.params;
 
+        if (!workExperienceId) {
+            return res.status(httpStatus.BAD_REQUEST).json({
+                status: 'FAILED',
+                message: 'Work experience ID is required',
+            });
+        }
+
         if (!isValidUUID(workExperienceId)) {
             return res.status(httpStatus.BAD_REQUEST).json({
                 status: 'FAILED',
