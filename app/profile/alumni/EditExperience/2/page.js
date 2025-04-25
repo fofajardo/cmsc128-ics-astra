@@ -77,8 +77,17 @@ export default function EditExperienceModal({ existingExperience, onSave, onCanc
 
   return (
     <div className="bg-[var(--color-astrawhite)] rounded-lg shadow-xl w-full max-w-3xl p-6">
+      <div className="overflow-y-auto max-h-[70vh] p-2">
       <form onSubmit={handleSubmit} className="space-y-6">
-        <h2 className="text-2xl font-bold">Edit Experience</h2>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold">Edit Experience</h2>
+          <button
+            onClick={onCancel}
+            className="ml-4 p-2 text-gray-500 hover:text-gray-700"
+          >
+            <i className="fa-solid fa-times text-xl"></i>
+          </button>
+        </div>
 
         {/* Organization */}
         <div>
@@ -223,18 +232,19 @@ export default function EditExperienceModal({ existingExperience, onSave, onCanc
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100"
+            className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="px-4 py-2 bg-[var(--color-astraprimary)] text-white rounded-lg hover:bg-[var(--color-astradark)]"
+            className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 bg-[var(--color-astraprimary)] text-white rounded-lg hover:bg-[var(--color-astradark)]"
           >
             Save
           </button>
         </div>
       </form>
+    </div>
     </div>
   )
 }

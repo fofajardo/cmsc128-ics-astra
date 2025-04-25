@@ -63,7 +63,7 @@ export default function EditExperience({ experiences, hideExperienceForm }) {
                     <p>{experience.type}</p>
                   </div>
                   <p className="text-sm text-gray-500">
-                    {affiliation.startDate} {affiliation.isCurrentlyAffiliated ? "- Present" : `- ${affiliation.endDate}`}
+                    {experience.startDate} {experience.isCurrentlyAffiliated ? "- Present" : `- ${experience.endDate}`}
                   </p>
                 </div>
                 <div className="flex space-x-2">
