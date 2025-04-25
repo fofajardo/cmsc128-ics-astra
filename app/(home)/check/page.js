@@ -14,7 +14,7 @@ export default function InformationChanged() {
     <div className="min-h-screen flex items-center justify-center p-4 bg-[var(--color-astratintedwhite)]">
       <div className="w-full max-w-md">
         <div className="p-8 rounded-lg shadow-sm bg-[var(--color-astrawhite)]">
-          <h1 className="text-xl font-medium mb-2 text-[var(--color-astrablack)]">
+          <h1 className="text-[var(--color-astrablack)] text-3xl font-bold mb-2">
             Has your information changed?
           </h1>
           <p className="text-sm mb-6 text-gray-700">
