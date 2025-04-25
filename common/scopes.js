@@ -29,22 +29,23 @@ const RoleName = Object.freeze({
 // REVIEW: This should be kept in sync with entity names.
 const Subjects = Object.freeze({
     ALL: "all",
-    USER: "User",
     ALUMNI_PROFILE: "AlumniProfile",
+    CONTACT: "Contact",
     CONTENT: "Content",
-    JOB: "Job",
+    DEGREE_PROGRAM: "DegreeProgram",
+    DONATION: "Donation",
     EVENT: "Event",
     EVENT_INTEREST: "EventInterest",
-    PROJECT: "Project",
-    REPORT: "Report",
-    REQUEST: "Request",
-    CONTACT: "Contact",
-    DONATION: "Donation",
+    FORM_RESPONSE: "FormResponse",
+    JOB: "Job",
     ORGANIZATION: "Organization",
     // Organization affiliation is implied by alumni profile.
     PHOTO: "Photo",
-    DEGREE_PROGRAM: "DegreeProgram",
-    // Degree programs taken is implied by alumni profile.
+    PROJECT: "Project",
+    QUESTION: "Question",
+    REPORT: "Report",
+    REQUEST: "Request",
+    USER: "User",
     WORK_EXPERIENCE: "WorkExperience",
 });
 
