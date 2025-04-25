@@ -1,7 +1,8 @@
 'use client';
 import Image from 'next/image';
 import sampleImage from '../../assets/Donation.jpg';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+
 
 
 export default function ProjectCard({
@@ -11,9 +12,11 @@ export default function ProjectCard({
   goal = "PHP50K",
   raised = "PHP20K",
   donors = "30K",
+  showDonate= true
 }) {
+  const router = useRouter();
   return (
-    <div className="bg-astrawhite rounded-2xl shadow p-4  border-2 border-transparent transition-all duration-300 hover:border-astraprimary">
+    <div className="bg-astrawhite rounded-2xl shadow p-4  border-2 border-transparent transition-all duration-300 hover:border-[var(--color-astraprimary)]">
       <div className="rounded-xl overflow-hidden">
         <Image
           src={image}
@@ -25,16 +28,29 @@ export default function ProjectCard({
       </div>
       <h3 className="mt-4 font-lb">{title}</h3>
       <p className="text-astradarkgray font-s mt-2">{description}</p>
-      <div className="flex justify-between mt-4 font-s text-astradarkgray">
-        <span>{goal}</span>
-        <span>{raised}</span>
-        <span>{donors}</span>
-      </div>
-      <Link href="projects/donate">
-      <button className="mt-4 blue-button w-full">
-        Donate
-      </button>
-      </Link>
+      <div className="grid grid-cols-3 gap-2 text-center mt-4">
+  <div>
+    <p className="text-xs text-astradarkgray">Goal</p>
+    <p className="font-medium">{goal}</p>
+  </div>
+  <div>
+    <p className="text-xs text-astradarkgray">Raised</p>
+    <p className="font-medium">{raised}</p>
+  </div>
+  <div>
+    <p className="text-xs text-astradarkgray">Donors</p>
+    <p className="font-medium">{donors}</p>
+  </div>
+</div>
+
+    {showDonate &&(
+      <button
+      onClick={() => router.push('/projects/donate')}
+      className="mt-4 blue-button w-full">
+       Donate
+     </button>
+    )}
+      
       
     </div>
   );

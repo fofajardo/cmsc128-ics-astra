@@ -42,7 +42,7 @@ export default function ProjectsPage({projects}) {
     image: '/projects/assets/Donation.jpg',
     goal: 'PHP50K',
     raised: 'PHP20K',
-    donors: '30K',
+    donors: 'PHP30K',
   }));
 
   const visibleCompletedProjects = completedProjects.slice(startIndex, startIndex + completedVisibleCount);
@@ -227,7 +227,7 @@ export default function ProjectsPage({projects}) {
           {/* Card Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-500 ease-in-out">
             {visibleCompletedProjects.map((project, index) => (
-            <Link href= "/projects/about" key={index} className="block">  
+            <Link href={{ pathname: "/projects/about", query: { completed: "true" } }} key={index} className="block" >  
               <ProjectCard
                 image={project.image}
                 title={project.title}
@@ -236,6 +236,7 @@ export default function ProjectsPage({projects}) {
                 goalAmount={project.goalAmount}
                 donors={project.donors}
                 buttonText={project.buttonText}
+                showDonate={false}
               />
             </Link>
             ))}

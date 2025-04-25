@@ -1,10 +1,18 @@
 'use client';
-
+import { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
 export default function ProjectDetails() {
   const router = useRouter();
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const shareUrl = 'https://icsastra.com/f0b2ffa6';
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const searchParams = useSearchParams();
+const isCompleted = searchParams.get('completed') === 'true';
 
   return (
     <div className="min-h-screen bg-astrawhite text-astrablack-800">
@@ -77,7 +85,12 @@ export default function ProjectDetails() {
         <p className="text-xs text-astrablack">Los Baños, Laguna</p>
       </div>
     </div>
-    <button className="mt-3 sm:mt-0 border border-[var(--color-astraprimary)] text-blue-600 px-3 py-1 rounded text-sm hover:bg-blue-100 transition">
+    <button
+     onClick={() =>{
+      setIsContactModalOpen(true);
+      setIsSubmitted(false);
+     }}
+     className="mt-3 sm:mt-0 border border-[var(--color-astraprimary)] text-blue-600 px-3 py-1 rounded text-sm hover:bg-blue-100 transition">
       Contact
     </button>
   </div>
@@ -102,12 +115,22 @@ export default function ProjectDetails() {
           <p className="text-sm text-astrablack mb-6">📅 12 days left</p>
 
           <div className="flex gap-2 mb-6">
-            <button className="flex-1 bg-astrablack text-astrawhite hover:bg-[var(--color-astraprimary)] px-4 py-2 text-sm rounded">
+            <button
+             onClick={() => setIsShareModalOpen(true)}
+             className="flex-1 bg-astrablack text-astrawhite hover:bg-[var(--color-astraprimary)] px-4 py-2 text-sm rounded">
               Share
             </button>
             <button 
-              onClick={() => router.push('/projects/donate')}
-              className="flex-1 bg-[var(--color-astraprimary)] text-astrawhite hover:[var(--color-astraprimary)] px-4 py-2 text-sm rounded">
+              onClick={() =>{
+                if (isCompleted) router.push('/projects/donate');
+               }}
+               disabled={isCompleted}
+              className={`flex-1 px-4 py-2 text-sm rounded transition ${
+                isCompleted
+                ? 'bg-astralightgray-300 text-astradarkgray-500 cursor-not-allowed'
+                : 'bg-[var(--color-astraprimary)] text-astrawhite hover:bg-[var(--color-astraprimary)]'
+              }`}
+                >
               Donate
             </button>
           </div>
@@ -138,6 +161,116 @@ export default function ProjectDetails() {
           </div>
         </div>
       </div>
+      {isShareModalOpen && (
+  <div className="fixed inset-0 bg-blur bg-astrawhite/60 bg-opacity-40 flex items-center justify-center z-50">
+    <div className="bg-astralightgray rounded-xl p-6 w-[90%] max-w-md relative">
+      <button
+        onClick={() => setIsShareModalOpen(false)}
+        className="absolute top-4 left-4 text-xl text-astrablack"
+      >
+        ←
+      </button>
+      <h2 className="text-lg font-bold text-center mb-6">Quick share</h2>
+      <div className="flex items-center bg-white rounded-md shadow px-4 py-3">
+        <div className="flex-1">
+          <p className="text-xs text-astrablack mb-1">Your unique link</p>
+          <input
+            type="text"
+            readOnly
+            value={shareUrl}
+            className="w-full font-medium text-sm bg-transparent focus:outline-none"
+          />
+        </div>
+        <button
+          onClick={() => {
+            navigator.clipboard.writeText(shareUrl);
+            alert('Link copied to clipboard!');
+          }}
+          className="ml-4 text-sm font-semibold text-blue-600 hover:underline"
+        >
+          Copy link
+        </button>
+      </div>
     </div>
+  </div>
+)}
+  {isContactModalOpen && (
+  <div className="fixed inset-0 backdrop-blur-sm bg-astrawhite/50 flex items-center justify-center z-50">
+    <div className="bg-white rounded-xl p-6 w-[90%] max-w-md relative shadow-xl">
+      {/* Back Button */}
+      <button
+        onClick={() => setIsContactModalOpen(false)}
+        className="absolute top-4 left-4 text-xl text-gray-700"
+      >
+        ←
+      </button>
+
+      <h2 className="text-lg font-bold text-center mb-4">Contact</h2>
+
+      {/* Organizer Info */}
+      <div className="flex items-center gap-3 mb-6">
+        <Image src="/avatar.png" alt="Organizer" width={40} height={40} className="rounded-full" />
+        <div>
+          <p className="text-sm font-semibold">Mirella Arguelles</p>
+          <p className="text-xs text-astrablack">Organizer</p>
+          <p className="text-xs text-astrablack">Los Baños, Laguna</p>
+        </div>
+      </div>
+
+      {/* Success Message */}
+      {isSubmitted ? (
+        <div className="text-center text-green-600 font-medium mb-4">
+          ✅ Your message has been sent!
+        </div>
+      ) : (
+        <>
+          {/* Form */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              setIsSubmitted(true);
+              setFormData({ name: '', email: '', message: '' });
+            }}
+            className="space-y-4"
+          >
+            <input
+              type="text"
+              placeholder="Your name"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              className="w-full border rounded-md px-4 py-2 text-sm focus:outline-none"
+              required
+            />
+            <input
+              type="email"
+              placeholder="Your email"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              className="w-full border rounded-md px-4 py-2 text-sm focus:outline-none"
+              required
+            />
+            <textarea
+              placeholder="Your message"
+              rows={4}
+              value={formData.message}
+              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+              className="w-full border rounded-md px-4 py-2 text-sm resize-none focus:outline-none"
+              required
+            />
+            <button
+              type="submit"
+              className="bg-[var(--color-astraprimary)] text-white px-4 py-2 rounded text-sm hover:bg-blue-700 transition"
+            >
+              Send Message
+            </button>
+          </form>
+        </>
+      )}
+    </div>
+  </div>
+)}
+
+    </div>
+
   );
 }
