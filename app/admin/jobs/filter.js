@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function SearchFilter({onClose , onApply=()=>{}}) {
+export default function SearchFilter({onClose, onApply}) {
   const initialFilters = {
     companyName: "",
     location: "",

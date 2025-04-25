@@ -15,6 +15,7 @@ const myJobs = [
 ];
 
 const job = {
+    job_id:20021,
     salary:70000, 
     job_title:"Google Cloud Engineer", 
     company_name:"Google Philippines", 
