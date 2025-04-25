@@ -248,7 +248,7 @@ const createWorkExperience = (supabase) => async (req, res) => {
 };
 
 const updateWorkExperience = (supabase) => async (req, res) => {
-    if (req.you.cannot(Actions.UPDATE, Subjects.WORK_EXPERIENCES)) {
+    if (req.you.cannot(Actions.MANAGE, Subjects.WORK_EXPERIENCES)) {
         return res.status(httpStatus.FORBIDDEN).json({
             status: 'FORBIDDEN',
             message: 'You are not allowed to access this resource',
@@ -352,9 +352,8 @@ const updateWorkExperience = (supabase) => async (req, res) => {
     }
 };
 
-
 const deleteWorkExperience = (supabase) => async (req, res) => {
-    if (req.you.cannot(Actions.DELETE, Subjects.WORK_EXPERIENCES)) {
+    if (req.you.cannot(Actions.MANAGE, Subjects.WORK_EXPERIENCES)) {
         return res.status(httpStatus.FORBIDDEN).json({
             status: 'FORBIDDEN',
             message: 'You are not allowed to access this resource',
