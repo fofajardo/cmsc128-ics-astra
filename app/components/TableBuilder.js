@@ -217,11 +217,13 @@ export function PageTool({ pagination, setPagination }) {
                 disabled={currPage === 1}
                 className={`p-2 rounded-lg ${
                     currPage === 1
-                        ? 'text-astradarkgray cursor-not-allowed'
+                        ? 'text-astralightgray cursor-not-allowed'
                         : 'text-astraprimary hover:bg-astratintedwhite'
                 }`}
             >
-                <ArrowLeft className="w-5 h-5 stroke-3" />
+                <svg className="w-5 h-5 stroke-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+                </svg>
             </button>
     
             {getPageButtons()}
@@ -231,11 +233,13 @@ export function PageTool({ pagination, setPagination }) {
                 disabled={currPage === lastPage}
                 className={`p-2 rounded-lg ${
                     currPage === lastPage
-                        ? 'text-astradarkgray cursor-not-allowed'
+                        ? 'text-astralightgray cursor-not-allowed'
                         : 'text-astraprimary hover:bg-astratintedwhite'
                 }`}
             >
-                <ArrowRight className="w-5 h-5 stroke-3" />
+                <svg className="w-5 h-5 stroke-3" fill="none" stroke="currentColor" viewBox="0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                </svg>
             </button>
         </div>
     );
