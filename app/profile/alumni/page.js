@@ -12,17 +12,18 @@ import SkillTag from "@/components/SkillTag";
 
 export default function AlumniProfilePage() {
   const profileData = {
+    Title: "Mr.",
     FirstName: "Juan Miguel",
     MiddleName: "Ramirez",
     LastName: "Dela Cruz",
-    StudentNumber: "2017-00001",
-    Title: "Mr.",
+    Suffix: "Jr.",
     Gender: "Female",
-    IsMaidenName: false,
-    BirthDate: "2000/05/08",
+    IsMaidenName: true,
+    BirthDate: "2000-05-08",
     BirthPlace: "Manila",
-    CivilStatus: "Single",
     Citizenship: "Philippines",
+    CivilStatus: "Single",
+    StudentNumber: "2017-00001",
     Degree: "BS Computer Science",
     GraduationYear: "2021",
   };
@@ -46,12 +47,25 @@ export default function AlumniProfilePage() {
       company: "Department of Information and Communications Technology",
       title: "Full-Stack Web Developer",
       type: "Full-time",
-      startDate: "August 2021",
-      endDate: "Present",
+      startDate: "August 2019",
+      endDate: null,
       location: "Makati, Philippines",
       locationType: "On-site",
+      isCurrentlyWorking: true,
       description:
         "Assisted in the design and development of responsive and intuitive user interfaces (UI) and user experiences (UX) for web applications. Collaborated with backend developers to integrate frontend components with server-side logic and APIs.",
+    },
+    {
+      company: "ICS Research and Development Center",
+      title: "Intern",
+      type: "Internship",
+      startDate: "June 2019",
+      endDate: "July 2019",
+      location: "Laguna, Philippines",
+      locationType: "On-site",
+      isCurrentlyWorking: false,
+      description:
+        "Assisted in the development of a web-based application for data management. Gained hands-on experience in HTML, CSS, and JavaScript. Participated in team meetings and contributed to project discussions.",
     },
     {
       company: "Tech Solutions Inc.",
@@ -61,6 +75,7 @@ export default function AlumniProfilePage() {
       endDate: "July 2021",
       location: "Quezon City, Philippines",
       locationType: "Remote",
+      isCurrentlyWorking: false,
       description:
         "Developed interactive and responsive web pages using React and Redux. Worked closely with designers to create cohesive and visually appealing user experiences. Implemented unit tests to ensure application reliability.",
     },
@@ -73,7 +88,7 @@ export default function AlumniProfilePage() {
       location: "Makati, Philippines",
       isCurrentlyAffiliated: true,
       startDate: "January 2022",
-      endDate: "Present",
+      endDate: null,
       description:
         "Participated in collaborative projects and conferences to advocate for technological advancements and computing research across the country.",
     },
@@ -86,57 +101,7 @@ export default function AlumniProfilePage() {
       endDate: "December 2021",
       description:
         "Organized and managed volunteer programs for community outreach initiatives focused on digital literacy education.",
-    },
-    {
-      organization: "Tech Innovators Guild",
-      title: "Volunteer Coordinator",
-      location: "Pasig City, Philippines",
-      isCurrentlyAffiliated: false,
-      startDate: "March 2020",
-      endDate: "December 2021",
-      description:
-        "Organized and managed volunteer programs for community outreach initiatives focused on digital literacy education.",
-    },
-    {
-      organization: "Tech Innovators Guild",
-      title: "Volunteer Coordinator",
-      location: "Pasig City, Philippines",
-      isCurrentlyAffiliated: false,
-      startDate: "March 2020",
-      endDate: "December 2021",
-      description:
-        "Organized and managed volunteer programs for community outreach initiatives focused on digital literacy education.",
-    },
-    {
-      organization: "Tech Innovators Guild",
-      title: "Volunteer Coordinator",
-      location: "Pasig City, Philippines",
-      isCurrentlyAffiliated: false,
-      startDate: "March 2020",
-      endDate: "December 2021",
-      description:
-        "Organized and managed volunteer programs for community outreach initiatives focused on digital literacy education.",
-    },
-    {
-      organization: "Tech Innovators Guild",
-      title: "Volunteer Coordinator",
-      location: "Pasig City, Philippines",
-      isCurrentlyAffiliated: false,
-      startDate: "March 2020",
-      endDate: "December 2021",
-      description:
-        "Organized and managed volunteer programs for community outreach initiatives focused on digital literacy education.",
-    },
-    {
-      organization: "Tech Innovators Guild",
-      title: "Volunteer Coordinator",
-      location: "Pasig City, Philippines",
-      isCurrentlyAffiliated: false,
-      startDate: "March 2020",
-      endDate: "December 2021",
-      description:
-        "Organized and managed volunteer programs for community outreach initiatives focused on digital literacy education.",
-    },
+    }
   ];
 
   const [isShowPersonalForm, setIsShowPersonalForm] = useState(false);
@@ -203,17 +168,28 @@ export default function AlumniProfilePage() {
               </button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-7">
               {Object.entries(profileData)
-                .filter(([key]) => key !== "IsMaidenName")
-                .map(([key, value]) => (
-                  <div key={key} className="min-w-[150px]">
-                    <p className="text-sm text-gray-500 mb-1">
-                      {key.replace(/([A-Z])/g, " $1")}:
-                    </p>
-                    <p className="font-medium">{value}</p>
-                  </div>
-                ))}
+                .filter(([key, value]) => {
+                  const isMaidenName = key === "IsMaidenName";
+                  const isNullSuffix = key === "Suffix" && value === null;
+                  return !isMaidenName && !isNullSuffix;
+                })
+                .map(([key, value]) => {
+                  const label =
+                    key === "LastName"
+                      ? profileData.IsMaidenName
+                        ? "Maiden Name"
+                        : "Last Name"
+                      : key.replace(/([A-Z])/g, " $1");
+
+                  return (
+                    <div key={key} className="min-w-[150px]">
+                      <p className="text-sm text-gray-500 mb-1">{label}:</p>
+                      <p className="font-medium">{value}</p>
+                    </div>
+                  );
+                })}
             </div>
           </div>
         </div>
@@ -263,79 +239,83 @@ export default function AlumniProfilePage() {
       <section className="bg-white rounded-lg p-8 mb-6">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-[var(--color-astrablack)]">Experience</h2>
-            <div className="flex gap-2">
-              <button 
-                className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[var(--color-astradirtywhite)] rounded-md"
-                onClick={() => setIsShowAddExperienceForm(true)}
-              >
-                Add
-              </button>
-              <button 
-                className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[var(--color-astradirtywhite)] rounded-md"
-                onClick={() => setIsShowExperienceForm(true)}
-              >
-                Edit
-              </button>
-            </div>
+          <div className="flex gap-2">
+            <button 
+              className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[var(--color-astradirtywhite)] rounded-md"
+              onClick={() => setIsShowAddExperienceForm(true)}
+            >
+              Add
+            </button>
+            <button 
+              className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[var(--color-astradirtywhite)] rounded-md"
+              onClick={() => setIsShowExperienceForm(true)}
+            >
+              Edit
+            </button>
           </div>
+        </div>
 
-          <div className="space-y-6">
-            {experiences.map((exp, index) => (
-              <div key={index} className="flex">
-                <div className="mr-4">
-                  <div className={`w-2 h-full ${index === 0 ? "bg-[var(--color-astraprimary)]" : "bg-[var(--color-astradark)]"} rounded-full`}></div>
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-bold">{exp.company}</h3>
-                  <p className="text-gray-600">{exp.title} • {exp.type}</p>
-                  <p className="text-gray-500">{exp.startDate} - {exp.endDate}</p>
-                  <p className="text-gray-500">{exp.location}</p>
-                  <p className="text-gray-600 mt-2">{exp.description}</p>
-                </div>
+        <div className="space-y-6">
+          {experiences.map((exp, index) => (
+            <div key={index} className="flex">
+              <div className="mr-4">
+                <div className={`w-2 h-full ${index === 0 ? "bg-[var(--color-astraprimary)]" : "bg-[var(--color-astradark)]"} rounded-full`}></div>
               </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Organization Affiliations */}
-        <section className="bg-white rounded-lg p-8 mb-6">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-[var(--color-astrablack)]">Affiliations</h2>
-            <div className="flex gap-2">
-              <button 
-                className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[var(--color-astradirtywhite)] rounded-md"
-                onClick={() => setIsShowAddAffiliationForm(true)}
-              >
-                Add
-              </button>
-              <button 
-                className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[var(--color-astradirtywhite)] rounded-md"
-                onClick={() => setIsShowAffiliationForm(true)}
-              >
-                Edit
-              </button>
-            </div>
-          </div>
-
-          <div className="space-y-6">
-            {affiliations.map((aff, index) => (
-              <div key={index} className="flex">
-                <div className="mr-4">
-                  <div className={`w-2 h-full ${index === 0 ? "bg-[var(--color-astraprimary)]" : "bg-[var(--color-astradark)]"} rounded-full`}></div>
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-bold">{aff.organization}</h3>
-                  <p className="text-gray-600">{aff.title}</p>
-                  <p className="text-gray-500">{aff.startDate} - {aff.endDate}</p>
-                  <p className="text-gray-500">
-                    {aff.location} • {aff.isCurrentlyAffiliated ? "Currently Affiliated" : "Not Affiliated"}
-                  </p>
-                  <p className="text-gray-600 mt-2">{aff.description}</p>
-                </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold">{exp.company}</h3>
+                <p className="text-gray-600">{exp.title} • {exp.type}</p>
+                <p className="text-gray-500">
+                  {exp.startDate} {exp.isCurrentlyWorking ? "- Present" : `- ${exp.endDate}`}
+                </p>
+                <p className="text-gray-500">{exp.location}</p>
+                <p className="text-gray-600 mt-2">{exp.description}</p>
               </div>
-            ))}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Organization Affiliations */}
+      <section className="bg-white rounded-lg p-8 mb-6">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-[var(--color-astrablack)]">Affiliations</h2>
+          <div className="flex gap-2">
+            <button 
+              className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[var(--color-astradirtywhite)] rounded-md"
+              onClick={() => setIsShowAddAffiliationForm(true)}
+            >
+              Add
+            </button>
+            <button 
+              className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[var(--color-astradirtywhite)] rounded-md"
+              onClick={() => setIsShowAffiliationForm(true)}
+            >
+              Edit
+            </button>
           </div>
-        </section>
+        </div>
+
+        <div className="space-y-6">
+          {affiliations.map((aff, index) => (
+            <div key={index} className="flex">
+              <div className="mr-4">
+                <div className={`w-2 h-full ${index === 0 ? "bg-[var(--color-astraprimary)]" : "bg-[var(--color-astradark)]"} rounded-full`}></div>
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold">{aff.organization}</h3>
+                <p className="text-gray-600">{aff.title}</p>
+                <p className="text-gray-500">
+                  {aff.startDate} {aff.isCurrentlyAffiliated ? "- Present" : `- ${aff.endDate}`}
+                </p>
+                <p className="text-gray-500">
+                  {aff.location} • {aff.isCurrentlyAffiliated ? "Currently Affiliated" : "Not Affiliated"}
+                </p>
+                <p className="text-gray-600 mt-2">{aff.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
       </main>
 
       {/* Modal Forms */}

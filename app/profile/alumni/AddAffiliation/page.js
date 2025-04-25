@@ -65,7 +65,7 @@ export default function AddAffiliation({ hideAddAffiliationForm }) {
   }
 
   return (
-    <div className="w-full max-w-5xl mx-auto h-[80vh] overflow-y-auto p-4 bg-white rounded-lg shadow">
+    <div className="w-full max-w-5xl mx-auto p-4 bg-[var(--color-astrawhite)] rounded-lg flex flex-col">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Add Affiliation</h2>
         <button onClick={hideAddAffiliationForm} className="text-gray-500 hover:text-gray-700">
@@ -73,6 +73,7 @@ export default function AddAffiliation({ hideAddAffiliationForm }) {
         </button>
       </div>
 
+      <div className="overflow-y-auto max-h-[70vh] p-2">
       <form onSubmit={handleSubmit}>
         <div className="space-y-6">
           {/* Organization */}
@@ -84,7 +85,7 @@ export default function AddAffiliation({ hideAddAffiliationForm }) {
               value={formData.organization}
               onChange={handleChange}
               placeholder="Ex: ICS-ASTRA Development Team"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
@@ -99,7 +100,7 @@ export default function AddAffiliation({ hideAddAffiliationForm }) {
                 value={formData.title}
                 onChange={handleChange}
                 placeholder="Ex: Frontend Developer"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
@@ -111,7 +112,7 @@ export default function AddAffiliation({ hideAddAffiliationForm }) {
                 value={formData.location}
                 onChange={handleChange}
                 placeholder="Ex: Los Baños, Laguna"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
@@ -138,11 +139,11 @@ export default function AddAffiliation({ hideAddAffiliationForm }) {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
               <div className="grid grid-cols-2 gap-4">
-                <select name="startDate.month" value={formData.startDate.month} onChange={handleChange} className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                <select name="startDate.month" value={formData.startDate.month} onChange={handleChange} className="px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
                   <option value="">Month</option>
                   {months.map((month) => <option key={month} value={month}>{month}</option>)}
                 </select>
-                <select name="startDate.year" value={formData.startDate.year} onChange={handleChange} className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                <select name="startDate.year" value={formData.startDate.year} onChange={handleChange} className="px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
                   <option value="">Year</option>
                   {years.map((year) => <option key={year} value={year}>{year}</option>)}
                 </select>
@@ -154,11 +155,11 @@ export default function AddAffiliation({ hideAddAffiliationForm }) {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
                 <div className="grid grid-cols-2 gap-4">
-                  <select name="endDate.month" value={formData.endDate.month} onChange={handleChange} className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                  <select name="endDate.month" value={formData.endDate.month} onChange={handleChange} className="px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
                     <option value="">Month</option>
                     {months.map((month) => <option key={month} value={month}>{month}</option>)}
                   </select>
-                  <select name="endDate.year" value={formData.endDate.year} onChange={handleChange} className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                  <select name="endDate.year" value={formData.endDate.year} onChange={handleChange} className="px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
                     <option value="">Year</option>
                     {years.map((year) => <option key={year} value={year}>{year}</option>)}
                   </select>
@@ -175,7 +176,7 @@ export default function AddAffiliation({ hideAddAffiliationForm }) {
               value={formData.description}
               onChange={handleChange}
               placeholder="Describe your role and responsibilities"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 h-32"
+              className="w-full px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 h-32"
             ></textarea>
           </div>
         </div>
@@ -197,6 +198,7 @@ export default function AddAffiliation({ hideAddAffiliationForm }) {
           </button>
         </div>
       </form>
+    </div>
     </div>
   )
 }
