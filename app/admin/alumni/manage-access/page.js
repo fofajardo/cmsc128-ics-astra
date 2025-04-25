@@ -56,16 +56,20 @@ export default function AlumniAccess() {
     return (
       <div>
         {/* Filter Modal */}
-        {showFilter && (
-            <div
-                onClick={toggleFilter}     
-                className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-            >
-                <div onClick={e => e.stopPropagation()}>
-                <SearchFilter onClose={toggleFilter} initialFilters={appliedFilters} updateFilters={updateFilters}/>
-                </div>
-            </div>
-            )}
+          <div
+              onClick={toggleFilter}
+              className={`fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs transition-all duration-100 ease-out ${
+                  showFilter ? 'opacity-100' : 'opacity-0 pointer-events-none'
+              }`}
+          >
+          <div onClick={(e) => e.stopPropagation()}>
+              <SearchFilter
+              onClose={toggleFilter}
+              initialFilters={appliedFilters}
+              updateFilters={updateFilters}
+              />
+          </div>
+          </div>
 
         {toast && (
           <ToastNotification

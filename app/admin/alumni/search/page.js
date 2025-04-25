@@ -5,6 +5,7 @@ import {TableHeader, Table, PageTool} from '@/components/TableBuilder';
 import { users, alumniProfiles } from '@/components/DummyData'
 import SearchFilter from "./filter";
 import { ActionButton } from "@/components/Buttons";
+import SkillTag from "@/components/SkillTag";
 
 export default function AlumniSearch() {
     const [showFilter, setShowFilter] = useState(false);
@@ -52,16 +53,22 @@ export default function AlumniSearch() {
     return (
       <div>
         {/* Filter Modal */}
-        {showFilter && (
-            <div
-                onClick={toggleFilter}     
-                className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-            >
-                <div onClick={e => e.stopPropagation()}>
-                <SearchFilter onClose={toggleFilter} initialFilters={appliedFilters} updateFilters={updateFilters}/>
-                </div>
-            </div>
-            )}
+        <div
+            onClick={toggleFilter}
+            className={`fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs transition-all duration-100 ease-out ${
+                showFilter ? 'opacity-100' : 'opacity-0 pointer-events-none'
+            }`}
+        >
+        <div onClick={(e) => e.stopPropagation()}>
+            <SearchFilter
+            onClose={toggleFilter}
+            initialFilters={appliedFilters}
+            updateFilters={updateFilters}
+            />
+        </div>
+        </div>
+
+
         {/* Header with background */}
         <div className="relative">
           <img
@@ -100,7 +107,7 @@ const cols = [
     { label: 'Graduation Year', justify: 'center', visible: 'md' },
     { label: 'Location', justify: 'center', visible: 'lg' },
     { label: 'Field Of Work', justify: 'center', visible: 'lg' },
-    { label: 'Skills', justify: 'start', visible: 'md' },
+    { label: 'Skills', justify: 'center', visible: 'md' },
     { label: 'Quick Actions', justify: 'center', visible: 'all' },
 ];
 
@@ -144,30 +151,33 @@ function renderText(text) {
 }
 
 function renderSkills(skills) {
-    return (
-        <div className="relative group flex justify-center">
-            <div className="flex flex-wrap justify-center">
-                {skills.slice(0, 3).map((skill, index) => (
-                    <span
-                        key={index}
-                        className="inline-block px-4 py-1 mr-2 mb-2 font-s text-astradarkgray bg-astragray rounded-full"
-                    >
-                        {skill}
-                    </span>
-                ))}
-            </div>
+  const visibleSkills = skills.slice(0, 3);
+  const remainingCount = skills.length - 3;
 
-            {skills.length > 3 && (
-                <div className="absolute left-1/2 transform -translate-x-1/2 z-10 hidden group-hover:flex flex-col mt-2 p-4 bg-astratintedwhite text-astrablack shadow-lg rounded-xl w-max max-w-xs border border-astragray">
-                    {skills.map((skill, index) => (
-                        <div key={index} className="px-2 py-1 font-s whitespace-nowrap">
-                            {skill}
-                        </div>
-                    ))}
-                </div>
+  return (
+    <div className="relative group flex justify-center items-center cursor-default">
+        <div className="flex flex-wrap justify-center items-center">
+            {visibleSkills.map((skill, index) => (
+            <SkillTag key={index} text={skill} />
+            ))}
+            {remainingCount > 0 && (
+            <div className="size-8 flex justify-center items-center rounded-full text-xs font-medium border border-dashed text-astradarkgray bg-astratintedwhite cursor-default">
+                +{remainingCount}
+            </div>
             )}
         </div>
-    );
+
+        <div className="fixed bottom-8 right-8 hidden group-hover:block bg-astratintedwhite border border-astradarkgray rounded-lg shadow-2xl p-4 z-10 max-w-xs">
+            <ul className="list-disc list-inside text-astradarkgray">
+            {skills.map((skill, index) => (
+                <li key={index} className="text-s">
+                {skill}
+                </li>
+            ))}
+            </ul>
+        </div>
+    </div>
+  );
 }
 
 function renderActions(id) {

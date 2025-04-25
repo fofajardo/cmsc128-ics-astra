@@ -46,11 +46,16 @@ export default function SearchFilter({ onClose, initialFilters, updateFilters })
     onClose(); // Close modal
   };
 
+  const closeModal = () => {
+    setFilters(initialFilters);
+    onClose()
+  };
+
   return (
     <div className="bg-astrawhite p-6 rounded-2xl shadow-lg space-y-4">
       <div className="flex justify-between items-center">
         <div className="font-h2">Filter by:</div>
-        <button className="text-xl text-astradarkgray hover:text-astrablack font-bold" onClick={onClose}>×</button>
+        <button className="text-xl text-astradarkgray hover:text-astrablack font-bold" onClick={closeModal}>×</button>
       </div>
 
       {/* Graduation Year */}
