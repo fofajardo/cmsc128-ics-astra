@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import logo from "../assets/logo.png";
 import avatar from "../assets/avatar.png";
@@ -17,6 +17,7 @@ import {
   MessageCircle,
   ChevronDown,
   ChevronUp,
+  LogOut
 } from "lucide-react";
 
 // Menu items data
@@ -79,14 +80,66 @@ function Navbar({ toggleSidebar, isSidebarOpen, isScrolled }) {
           className="rounded-full cursor-pointer"
         />
       </div>
+            <AvatarMenu/>
+    </nav>
+  );
+}
+
+function AvatarMenu() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleLogout = () => {
+    console.log('Logged out');
+    setIsMenuOpen(false);
+  };
+
+  // Close menu on outside click
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  return (
+    <div className="relative" ref={menuRef}>
+      {/* Avatar Image */}
       <Image
         src={avatar}
         alt="Admin Avatar"
         width={46}
         height={46}
         className="rounded-full border-2 border-astraprimary shadow-md transition-transform duration-300 hover:scale-105 cursor-pointer"
+        onClick={toggleMenu}
       />
-    </nav>
+
+     {/* Floating Menu */}
+     <div
+        className={`absolute right-0 mt-2 p-4 w-48 bg-astratintedwhite rounded-lg shadow-lg border border-astragray z-10 transform transition-all duration-200 ease-in-out ${
+          isMenuOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'
+        }`}
+      >
+        <div className="py-1">
+          <button
+            onClick={handleLogout}
+            className="flex items-center justify-center w-full text-left px-4 py-2 text-sm text-astrared border border-astrared hover:bg-astrared hover:text-astrawhite rounded-lg transition-colors duration-150"
+          >
+            <LogOut className="w-4 h-4 mr-2 font-rb" />
+            Sign Out
+          </button>
+        </div>
+      </div>
+      </div>
   );
 }
 
