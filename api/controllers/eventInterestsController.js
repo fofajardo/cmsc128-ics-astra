@@ -5,12 +5,16 @@ import { Actions, Subjects } from "../../common/scopes.js";
 const getEventInterests = (supabase) => async (req, res) => {
     try {
         const { page = 1, limit = 10 } = req.query;
-        // if (req.you.cannot(Actions.MANAGE, Subjects.EVENT_INTEREST)) {
-        //     return res.status(httpStatus.FORBIDDEN).json({
-        //         status: 'FORBIDDEN',
-        //         message: 'You do not have permission to view event interests'
-        //     });
-        // }
+        const currentUserId = req.user.data.id;
+
+        console.log("current userId: ",currentUserId);
+
+        if (req.you.cannotAs(Actions.MANAGE, Subjects.EVENT_INTEREST,{alum_id:currentUserId})) {
+            return res.status(httpStatus.FORBIDDEN).json({
+                status: 'FORBIDDEN',
+                message: 'You do not have permission to view event interests'
+            });
+        }
         const { data, error } = await eventInterestsService.fetchEventInterests(supabase, page, limit);
 
         if (error) {
@@ -36,19 +40,25 @@ const getEventInterests = (supabase) => async (req, res) => {
 const getEventInterestByAlumnId = (supabase) => async (req, res) => {
     try {
         const { alumnId } = req.params;
+        const currentUserId = req.user.data.id;
 
-        // if (req.you.cannot(Actions.MANAGE, Subjects.EVENT_INTEREST)) {
-        //     return res.status(httpStatus.FORBIDDEN).json({
-        //         status: 'FORBIDDEN',
-        //         message: 'You do not have permission to view event interests'
-        //     });
-        // }
+        console.log("current userId: ",currentUserId);
+
         const { data, error } = await eventInterestsService.fetchEventInterestByAlumnId(supabase, alumnId);
 
         if (error) {
             return res.status(httpStatus.NOT_FOUND).json({
                 status: "FAILED",
                 message: "Event interests not found"
+            });
+        }
+
+
+        if (req.you.cannotAs(Actions.MANAGE, Subjects.EVENT_INTEREST, {alum_id:currentUserId})) {
+            console.log("dont have permission");
+            return res.status(httpStatus.FORBIDDEN).json({
+                status: 'FORBIDDEN',
+                message: 'You do not have permission to view event interests'
             });
         }
 
@@ -68,13 +78,16 @@ const getEventInterestByAlumnId = (supabase) => async (req, res) => {
 const getEventInterestByContentId = (supabase) => async (req, res) => {
     try {
         const { contentId } = req.params;
+        const currentUserId = req.user.data.id;
 
-        // if (req.you.cannot(Actions.MANAGE, Subjects.EVENT_INTEREST)) {
-        //     return res.status(httpStatus.FORBIDDEN).json({
-        //         status: 'FORBIDDEN',
-        //         message: 'You do not have permission to view event interests'
-        //     });
-        // }
+        console.log("current userId: ",currentUserId);
+
+        if (req.you.cannotAs(Actions.MANAGE, Subjects.EVENT_INTEREST,{alum_id:currentUserId})) {
+            return res.status(httpStatus.FORBIDDEN).json({
+                status: 'FORBIDDEN',
+                message: 'You do not have permission to view event interests'
+            });
+        }
         const { data, error } = await eventInterestsService.fetchEventInterestByContentId(supabase, contentId);
 
         if (error) {
@@ -99,12 +112,15 @@ const getEventInterestByContentId = (supabase) => async (req, res) => {
 
 const createEventInterest = (supabase) => async (req, res) => {
     try {
-        // if (req.you.cannot(Actions.MANAGE, Subjects.EVENT_INTEREST)) {
-        //     return res.status(httpStatus.FORBIDDEN).json({
-        //         status: 'FORBIDDEN',
-        //         message: 'You do not have permission to create event interests'
-        //     });
-        // }
+        const currentUserId = req.user.data.id;
+
+        console.log("current userId: ",currentUserId);
+        if (req.you.cannotAs(Actions.MANAGE, Subjects.EVENT_INTEREST, {alum_id:currentUserId})) {
+            return res.status(httpStatus.FORBIDDEN).json({
+                status: 'FORBIDDEN',
+                message: 'You do not have permission to create event interests'
+            });
+        }
         const requiredFields = [
             "user_id",
             "content_id",
@@ -150,7 +166,7 @@ const createEventInterest = (supabase) => async (req, res) => {
         if (existingEvents.length > 0) {
             return res.status(httpStatus.CONFLICT).json({
                 status: 'FAILED',
-                message: 'Event interest already exists'
+                message: 'Event interest alMANAGEy exists'
             });
         }
 
