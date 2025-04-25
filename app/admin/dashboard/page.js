@@ -7,7 +7,8 @@ import { Donut } from "./components/piechart";
 import UpcomingEvents from "./components/UpcomingEvents";
 import ActivityOverview from "./components/ActivityOverview"
 import RecentActivity from "./components/RecentActivity";
-import AlumniActivity from "./components/AlumniActivity";
+import TransitionGrow from "@/components/transitions/TransitionGrow";
+
 
 
 export default function Dashboard() {
@@ -51,31 +52,31 @@ export default function Dashboard() {
 }
 
 function ActivityBreakdown(){
-    return <div className="flex-2 md:flex-3 size-auto">
+    return <TransitionGrow className="flex-2 md:flex-3 size-auto">
         <BarGraph/>        
-    </div>
+    </TransitionGrow>
 }
 
 function Activity(){
-    return <div className="flex-2 size-auto">
+    return <TransitionGrow className="flex-2 size-auto">
         <RecentActivity/>
-    </div>
+    </TransitionGrow>
 }
 
 function AlumAct_Events(){
     return <div className="flex-2 flex-grow flex flex-col gap-8">
-        <div className="flex-3 flex-grow">
+        <TransitionGrow className="flex-3 flex-grow">
             <ActivityOverview/>
-        </div>
-        <div className="flex-2 flex-grow">
+        </TransitionGrow>
+        <TransitionGrow className="flex-2 flex-grow">
             <UpcomingEvents/>
-        </div>
+        </TransitionGrow>
     </div>
 }
 
 function FundsDonut(){
-    return <div className="flex-1 h-auto md:row-start-1 md:row-span-8 md:col-start-3 md:h-auto">
+    return <TransitionGrow className="flex-1 h-auto md:row-start-1 md:row-span-8 md:col-start-3 md:h-auto">
                 <Donut/>
-            </div>
+            </TransitionGrow>
 }
 
