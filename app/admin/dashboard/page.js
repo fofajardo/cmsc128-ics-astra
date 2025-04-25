@@ -4,6 +4,7 @@ import AdminStatCard from "@/components/AdminStatCard";
 import {GraduationCap, Calendar, Briefcase, HandHeart } from "lucide-react";
 import BarGraph from "./components/bargraph";
 import { Donut } from "./components/piechart";
+import UpcomingEvents from "./components/UpcomingEvents";
 
 export default function Dashboard() {
     return (
@@ -59,17 +60,17 @@ function RecentActivity(){
 
 function AlumAct_Events(){
     return <div className="flex-2 flex-grow flex flex-col gap-8">
-        <div className="flex-3 bg-astrawhite">
+        <div className="flex-3 bg-astrawhite flex-grow">
 
         </div>
-        <div className="flex-2 bg-astrawhite">
-
+        <div className="flex-2 flex-grow">
+            <UpcomingEvents/>
         </div>
     </div>
 }
 
 function FundsDonut(){
-    return <div className="flex-1 md:row-start-1 md:row-span-8 md:col-start-3 md:h-auto">
+    return <div className="flex-1 h-full md:row-start-1 md:row-span-8 md:col-start-3 md:h-auto">
                 <Donut/>
             </div>
 }

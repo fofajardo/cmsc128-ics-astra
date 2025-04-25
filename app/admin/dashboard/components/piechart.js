@@ -81,7 +81,7 @@ export function Donut() {
   }, [])
 
   return (
-    <Card className="flex flex-col">
+    <Card className="flex flex-col h-full">
       <CardHeader className="items-center pb-0">
         <CardTitle>Highest Funded Categories</CardTitle>
         <CardDescription>January - April 2025</CardDescription>
@@ -137,15 +137,15 @@ export function Donut() {
             </Pie>
           </PieChart>
         </ChartContainer>
-      </CardContent>
-      <CardFooter className="flex-col gap-2 font-s">
+        <CardFooter className="flex-col gap-2 font-s">
         <div className="flex items-center gap-2 font-medium leading-none">
           Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
         </div>
         <div className="leading-none text-muted-foreground">
           Showing 6 out of 25 Donation Drives
         </div>
-        <div className="space-y-1.5 min-w-full">
+
+        <div className="mt-4 flex flex-col space-y-1.5 min-w-full gap-2">
           {chartData.map((item, index) => (
             <div
               key={index}
@@ -160,6 +160,7 @@ export function Donut() {
           ))}
         </div>
       </CardFooter>
+      </CardContent>
     </Card>
   )
 }
