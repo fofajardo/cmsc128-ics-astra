@@ -4,7 +4,8 @@ import organizationsService from "../services/organizationsService.js";
 const getOrganizations = (supabase) => async (req, res) => {
     try {
 
-        const {data, error} = await organizationsService.fetchOrganizations(supabase, req.query);
+        const {page, limit} = req.query;
+        const {data, error} = await organizationsService.fetchOrganizations(supabase, page, limit);
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -17,7 +18,7 @@ const getOrganizations = (supabase) => async (req, res) => {
 
         return res.status(httpStatus.OK).json({
             status: 'OK',
-            organization: data || [],
+            organization: data,
         });
 
     } catch (error) {
@@ -49,6 +50,42 @@ const getOrganizationById = (supabase) => async (req, res) => {
             organization: data
         });
 
+    } catch (error) {
+        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+            status: 'FAILED',
+            message: error.message
+        });
+    }
+}
+
+const getAlumni = (supabase) => async (req, res) => {
+    try{
+        const { orgId } = req.params;
+        const page = req.query.page || 1;
+        const limit = req.query.limit || 10;
+
+        // Call the fetchAlumni service
+        const { data, error } = await organizationsService.fetchAlumni(supabase, orgId, page, limit);
+
+        if (error) {
+            return res.status(httpStatus.NOT_FOUND).json({
+                status: 'FAILED',
+                message: 'Organization not found'
+            });
+        }
+        
+        //edit data mapping for what data can be sent
+        return res.status(httpStatus.OK).json({
+            status: 'OK',
+            alumni: data.map(item => ({
+                name: `${item.users.first_name} ${item.users.last_name}`,  // Combine first and last name from users
+                email: item.users.email,
+                role: item.role, //metadata from organization_affiliations
+                joined_date: item.joined_date,
+                ...item.alumni_profiles  // Include selected fields from alumni_profiles
+              }))
+        });
+    
     } catch (error) {
         return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
             status: 'FAILED',
@@ -228,7 +265,8 @@ const organizationsController = {
     getOrganizationById,
     createOrganization,
     updateOrganization,
-    deleteOrganization
+    deleteOrganization,
+    getAlumni
 };
 
 export default organizationsController;

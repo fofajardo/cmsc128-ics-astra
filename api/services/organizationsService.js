@@ -16,6 +16,29 @@ const fetchOrganizationById = async (supabase, orgId) => {
         .single();
 }
 
+const fetchAlumni = async (supabase, orgId, page, limit) => {
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + Number(limit) - 1;
+
+    return await supabase
+        .from('organization_affiliations')
+        .select(`
+            role,
+            joined_date,
+            alumni_profiles(
+                *
+            ),
+            users (
+                first_name,
+                last_name,
+                email
+            )
+
+        `)
+        .eq('org_id', orgId)
+        .range(startIndex, endIndex);
+};
+
 const checkOrganizationIfExistingByNameAndAcronym = async (supabase, name, acronym) => {
     return await supabase
         .from("organizations")
@@ -29,7 +52,6 @@ const checkOrganizationIfExistingById = async (supabase, orgId) => {
         .select()
         .eq("id", orgId);
 }
-
 
 const insertOrganization = async (supabase, organizationData) => {
     return await supabase
@@ -59,7 +81,8 @@ const organizationsService = {
     checkOrganizationIfExistingById,
     insertOrganization,
     updateOrganization,
-    deleteOrganization
+    deleteOrganization,
+    fetchAlumni
 };
 
 export default organizationsService;

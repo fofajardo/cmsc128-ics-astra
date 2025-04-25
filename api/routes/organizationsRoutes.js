@@ -6,6 +6,7 @@ const organizationsRouter = (supabase) => {
 
     router.get("/", organizationsController.getOrganizations(supabase));
     router.get("/:orgId", organizationsController.getOrganizationById(supabase));
+    router.get("/:orgId/alumni", organizationsController.getAlumni(supabase));
     router.post("/", organizationsController.createOrganization(supabase));
     router.put("/:orgId", organizationsController.updateOrganization(supabase));
     router.delete("/:orgId", organizationsController.deleteOrganization(supabase));
