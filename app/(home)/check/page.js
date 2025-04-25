@@ -1,9 +1,12 @@
 "use client";
+import { useState } from "react";
+import EditForm from "@/profile/alumni/EditPersonal/page";
 
 export default function InformationChanged() {
+  const [showEditModal, setShowEditModal] = useState(false);
+
   const handleYesClick = () => {
-    // Note: Fetch data then redirect it to personal
-    window.location.href = "/profile/alumni/EditPersonal";
+    setShowEditModal(true);
   };
 
   const handleNoClick = () => {
@@ -11,7 +14,7 @@ export default function InformationChanged() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-[var(--color-astratintedwhite)]">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-[var(--color-astratintedwhite)] relative">
       <div className="w-full max-w-md">
         <div className="p-8 rounded-lg shadow-sm bg-[var(--color-astrawhite)]">
           <h1 className="text-[var(--color-astrablack)] text-3xl font-bold mb-2">
@@ -37,6 +40,14 @@ export default function InformationChanged() {
           </div>
         </div>
       </div>
+
+      {showEditModal && (
+        <div className="fixed inset-0 bg-[var(--color-astratintedwhite)] bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full p-4">
+            <EditForm hidePersonalForm={() => setShowEditModal(false)} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
