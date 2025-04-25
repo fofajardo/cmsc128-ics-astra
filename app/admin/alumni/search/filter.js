@@ -52,7 +52,7 @@ export default function SearchFilter({ onClose, initialFilters, updateFilters })
   };
 
   return (
-    <div className="bg-astrawhite p-6 rounded-2xl shadow-lg space-y-4">
+    <div className="flex flex-col bg-astrawhite p-6 max-w-screen rounded-2xl shadow-lg space-y-4">
       <div className="flex justify-between items-center">
         <div className="font-h2">Filter by:</div>
         <button className="text-xl text-astradarkgray hover:text-astrablack font-bold" onClick={closeModal}>×</button>
@@ -71,14 +71,14 @@ export default function SearchFilter({ onClose, initialFilters, updateFilters })
         </div>
         <div className="flex gap-2">
           <input
-            type="text"
+            type="number"
             placeholder="Oldest"
             value={filters.yearFrom}
             onChange={(e) => setFilters({ ...filters, yearFrom: e.target.value })}
             className="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white font-r"
           />
           <input
-            type="text"
+            type="number"
             placeholder="Latest"
             value={filters.yearTo}
             onChange={(e) => setFilters({ ...filters, yearTo: e.target.value })}
@@ -197,7 +197,7 @@ export default function SearchFilter({ onClose, initialFilters, updateFilters })
               <button
                 key={order}
                 onClick={() => setFilters({ ...filters, sortOrder: order })}
-                className={`w-full px-4 py-2 font-sb transition text-sm ${
+                className={`flex-1 px-2 md:px-4 font-sb transition ${
                   filters.sortOrder === order
                     ? "bg-astraprimary text-white"
                     : "bg-white text-astraprimary border border-astraprimary"

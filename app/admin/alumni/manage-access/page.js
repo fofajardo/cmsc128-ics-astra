@@ -62,13 +62,13 @@ export default function AlumniAccess() {
                   showFilter ? 'opacity-100' : 'opacity-0 pointer-events-none'
               }`}
           >
-          <div onClick={(e) => e.stopPropagation()}>
-              <SearchFilter
-              onClose={toggleFilter}
-              initialFilters={appliedFilters}
-              updateFilters={updateFilters}
-              />
-          </div>
+            <div onClick={(e) => e.stopPropagation()}>
+                <SearchFilter
+                onClose={toggleFilter}
+                initialFilters={appliedFilters}
+                updateFilters={updateFilters}
+                />
+            </div>
           </div>
 
         {toast && (
