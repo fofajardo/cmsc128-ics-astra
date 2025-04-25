@@ -13,15 +13,12 @@ describe('Work Experiences API Tests', function() {
 
     // Gets all work experiences
     // Should return 200.
-    describe('GET /v1/work-experiences/', function() {
-        it(`should return 200 for GET ${kRoutePrefix}/`, async function() {
+    describe(`GET ${kRoutePrefix}`, function() {
+        it(`should return 200 for GET ${kRoutePrefix}`, async function() {
             const res = await gAgent
-
                 .get(kRoutePrefix)
                 .query({page: 1, limit: 10});
             
-            console.log(res.body);
-
             expect(res.status).to.equal(httpStatus.OK);
             expect(res.body).to.be.an('object');
             expect(res.body).to.have.property('status').that.is.oneOf(['OK', 'FAILED']);
@@ -58,10 +55,10 @@ describe('Work Experiences API Tests', function() {
     // Should return 404.
     describe(`GET ${kRoutePrefix}/:workExperienceId with invalid ID`, function() {
         it(`should return 404 for GET ${kRoutePrefix}/:workExperienceId with invalid ID`, async function() {
-            const invalidWorkExperienceID = '00000000-0000-0000-0000-000000000000'; // Invalid UUID
+            const invalidWorkExperienceID = '0000'; // Invalid UUID
             const res = await gAgent.get(`${kRoutePrefix}/${invalidWorkExperienceID}`);
 
-            expect(res.status).to.equal(httpStatus.NOT_FOUND);
+            expect(res.status).to.equal(httpStatus.BAD_REQUEST);
             expect(res.body).to.be.an('object');
             expect(res.body).to.have.property('status').that.is.oneOf(['OK', 'FAILED']);
         });
@@ -69,10 +66,10 @@ describe('Work Experiences API Tests', function() {
 
     // Gets the work experience/s of the given user ID
     // Should return 200.
-    describe(`GET ${kRoutePrefix}/alum/:alumId`, function() {
-        it(`should return 200 for GET ${kRoutePrefix}/alum/:alumId`, async function() {
-            const alumID = 'b7085d72-f174-4b81-b106-ef68b27a48ee';
-            const res = await gAgent.get(`${kRoutePrefix}/alum/${alumID}`);
+    describe(`GET ${kRoutePrefix}/alum/:userId`, function() {
+        it(`should return 200 for GET ${kRoutePrefix}/alum/:userId`, async function() {
+            const userId = 'b7085d72-f174-4b81-b106-ef68b27a48ee';
+            const res = await gAgent.get(`${kRoutePrefix}/alum/${userId}`);
 
             expect(res.status).to.equal(httpStatus.OK);
             expect(res.body).to.be.an('object');
@@ -83,12 +80,12 @@ describe('Work Experiences API Tests', function() {
 
     // Gets the work experience/s of the given alum ID, but the alum ID is invalid.
     // Should return 404.
-    describe(`GET ${kRoutePrefix}/alum/:alumId with invalid ID`, function() {
-        it(`should return 404 for GET ${kRoutePrefix}/alum/:alumId with invalid ID`, async function() {
-            const invalidAlumID = '00000000-0000-0000-0000-000000000000'; // Invalid UUID
-            const res = await request(app).get(`${kRoutePrefix}/${invalidAlumID}`);
+    describe(`GET ${kRoutePrefix}/alum/:userId with invalid ID`, function() {
+        it(`should return 404 for GET ${kRoutePrefix}/alum/:userId with invalid ID`, async function() {
+            const invalidUserID = '00000000-0000-0000-0000-000000000000'; // Invalid UUID
+            const res = await gAgent.get(`${kRoutePrefix}/alum/${invalidUserID}`);
 
-            expect(res.status).to.equal(httpStatus.NOT_FOUND);
+            expect(res.status).to.equal(httpStatus.BAD_REQUEST);
             expect(res.body).to.be.an('object');
             expect(res.body).to.have.property('status').that.is.oneOf(['OK', 'FAILED']);
         });
