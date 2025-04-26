@@ -11,21 +11,24 @@ describe('Contents API - POST /v1/contents', function () {
     const validContent = {
         id: contentId, 
         user_id: '75b6e610-9d0b-4884-b405-1e682e3aa3de', 
-        title: 'My own content 10',
+        title: 'Example Content Here',
         details: 'This is a valid content body.',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-        views: 0
+        views: 0,
+        tags: ['tag1', 'tag2'] 
     };
 
-    it('should create a new content and return 201 with content object', async function () {
-        const res = await request(app)
+    it('should create a new content and return 201 with content object, then delete it', async function () {
+        // Create content
+        const createRes = await request(app)
             .post('/v1/contents')
             .send(validContent);
-    
-        expect(res.status).to.equal(httpStatus.CREATED);
-        expect(res.body).to.have.property('status', 'CREATED');
-        expect(res.body.content).to.include({
+
+        // Assert the content is created successfully
+        expect(createRes.status).to.equal(httpStatus.CREATED);
+        expect(createRes.body).to.have.property('status', 'CREATED');
+        expect(createRes.body.content).to.include({
             id: validContent.id,
             user_id: validContent.user_id,
             title: validContent.title,
@@ -34,6 +37,19 @@ describe('Contents API - POST /v1/contents', function () {
             updated_at: validContent.updated_at,
             views: validContent.views,
         });
+        expect(createRes.body.content.tags).to.deep.equal(validContent.tags);
+    });
+
+    after(async function () {
+        const res = await request(app)
+            .delete(`/v1/contents/${contentId}`);
+
+        if (res.body.status === 'DELETED') {
+            console.log('Successfully deleted dummy content');
+        } else {
+            console.log('Failed to delete dummy content');
+            console.log(res.body);
+        }
     });
 
     it('should return 400 when user_id is missing', async function () {

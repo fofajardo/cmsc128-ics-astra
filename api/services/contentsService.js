@@ -1,12 +1,33 @@
-const fetchContents = async (supabase, page = 1, limit = 10) => {
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + Number(limit) - 1;
+import { applyFilter } from "../utils/applyFilter.js";
 
-    return await supabase
+const fetchContents = async (supabase, filters) => {
+    let query = supabase
         .from("contents")
-        .select("*")
-        .range(startIndex, endIndex);
+        .select("*");
+
+    // Apply additional filters
+    query = applyFilter(query, filters, {
+        ilike: ["title", "details"],
+        range: {
+            created_at: [filters.created_at_from, filters.created_at_to]
+        },
+        sortBy: filters.sortBy || "created_at",
+        defaultOrder: filters.order || "desc",
+        specialKeys: ["created_at_from", "created_at_to", "sortBy", "order"]
+    });
+
+    // Add filter for tags if it's present
+    if (filters.tags) {
+        // Ensure tags are passed as a proper array format for PostgreSQL
+        query = query.contains('tags', Array.isArray(filters.tags) ? filters.tags : [filters.tags]);
+    }
+
+    return await query;
 };
+
+
+
+
 
 const fetchContentById = async (supabase, contentId) => {
     return await supabase
@@ -27,8 +48,7 @@ const insertContent = async (supabase, contentData) => {
     return await supabase
         .from("contents")
         .insert(contentData)
-        // .select("id") // insert content is not working
-        .select("*") //testing purposes, 
+        .select('*') 
         .single();
 };
 
