@@ -166,7 +166,7 @@ const createEventInterest = (supabase) => async (req, res) => {
         if (existingEvents.length > 0) {
             return res.status(httpStatus.CONFLICT).json({
                 status: 'FAILED',
-                message: 'Event interest alMANAGEy exists'
+                message: 'Event interest already exists'
             });
         }
 
