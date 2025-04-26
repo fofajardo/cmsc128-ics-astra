@@ -120,8 +120,6 @@ describe('Requests API Tests (GET)', function () {
             const nonExistentUserID = '00000000-0000-0000-0000-000000000000'; // Non-existent UUID
             const res = await gAgent.get(`${kRoutePrefix}/alum/${nonExistentUserID}`);
 
-            console.log(res.body); // Log the response body for debugging
-
             expect(res.status).to.equal(httpStatus.NOT_FOUND);
             expect(res.body).to.be.an('object');
             expect(res.body).to.have.property('status').that.is.oneOf(['OK', 'FAILED']);
@@ -160,8 +158,6 @@ describe('Requests API Tests (GET)', function () {
         it(`should return ${httpStatus.NOT_FOUND} for GET ${kRoutePrefix}/content/:contentId with non-existent ID`, async function () {
             const nonExistentContentID = '00000000-0000-0000-0000-000000000000'; // Non-existent UUID
             const res = await gAgent.get(`${kRoutePrefix}/content/${nonExistentContentID}`);
-
-            console.log(res.body);
 
             expect(res.status).to.equal(httpStatus.NOT_FOUND);
             expect(res.body).to.be.an('object');
