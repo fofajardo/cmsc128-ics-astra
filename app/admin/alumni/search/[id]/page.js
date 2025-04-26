@@ -5,20 +5,23 @@ import SkillTag from '@/components/SkillTag'
 import { users, alumniProfiles } from '@/components/DummyData'
 import { Mail, MapPin, GraduationCap, Image } from "lucide-react";
 import axios from "axios";
+import { capitalizeName } from "../../../../utils/format.js";
 
 export default async function AlumniSearchProfile({ params }) {
-    const { id } = params
-  
-    // 👇 fetch user and profile server-side
-    const [userRes, profileRes] = await Promise.all([
-      axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/users/${id}`),
-      axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/${id}`)
-    ]);
-  
-    const user = userRes.data;
-    const profile = profileRes.data;
+    const { id } = await params
 
-    if (error || !user || !profile) {
+    const [userRes, profileRes] = await Promise.all([
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/users/${id}`),
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/${id}`)
+    ]);
+
+    const user = userRes.data.user;
+    const profile = profileRes.data.alumniProfile;
+
+    console.log(user);
+    console.log(profile);
+
+    if (!user || !profile) {
         return <div className="text-center mt-20 text-red-500">{error || "Alumnus not found."}</div>;
     }
 
@@ -32,11 +35,11 @@ export default async function AlumniSearchProfile({ params }) {
                 {/* left section */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 w-full md:w-auto">
                     {/* avatar placeholder */}
-                    <img src={user.image} alt={user.first_name} className="w-18 h-18 rounded-full bg-gray-200 mx-auto sm:mx-4" />
+                    <img src={user.image} alt={profile.first_name} className="w-18 h-18 rounded-full bg-gray-200 mx-auto sm:mx-4" />
 
                     {/* text info */}
                     <div className="mt-2 sm:mt-0 text-center sm:text-left">
-                        <h3 className="font-lb text-astrablack">{user.first_name} {user.middle_name} {user.last_name}</h3>
+                        <h3 className="font-lb text-astrablack">{capitalizeName(profile.first_name + ' ' + profile.middle_name + ' ' + profile.last_name)}</h3>
                         <a className="block font-s text-astradark hover:underline">
                             {user.email}
                         </a>
@@ -58,7 +61,8 @@ export default async function AlumniSearchProfile({ params }) {
                     <div className="hidden md:block">
                         <span className="text-xs bg-astragray text-astradarkgray px-2 py-1 rounded-full flex items-center space-x-1">
                             <GraduationCap className="w-3 h-3" />
-                            <span>{new Date(profile.year_graduated).getFullYear()}</span>
+                            {/* TODO: FRG ikaw na rito */}
+                            {/* <span>{new Date(profile.year_graduated).getFullYear()}</span> */}
                         </span>
                     </div>
 
@@ -76,15 +80,15 @@ export default async function AlumniSearchProfile({ params }) {
                     {/* Personal Info */}
                     <div className="grid grid-cols-3 gap-y-8 text-center text-sm text-astrablack py-10">
                         <div>
-                            <p className="font-rb">{user.first_name}</p>
+                            <p className="font-rb">{capitalizeName(profile.first_name)}</p>
                             <p className="text-astradarkgray">First Name</p>
                         </div>
                         <div>
-                            <p className="font-rb">{user.middle_name || "N/A"}</p>
+                            <p className="font-rb">{capitalizeName(profile.middle_name || "N/A")}</p>
                             <p className="text-astradarkgray">Middle Name</p>
                         </div>
                         <div>
-                            <p className="font-rb">{user.last_name}</p>
+                            <p className="font-rb">{capitalizeName(profile.last_name)}</p>
                             <p className="text-astradarkgray">Surname</p>
                         </div>
 
@@ -169,7 +173,7 @@ export default async function AlumniSearchProfile({ params }) {
                         <h4 className="font-rb text-astrablack mb-0">Technical Skills</h4>
                         <hr className="h-2 border-astralightgray"></hr>
                         <div className="flex gap-2 justify-between flex-wrap text-sm">
-                            <SkillTag text="Frontend" color="bg-blue-100 text-blue-700" />
+                            {/* <SkillTag text="Frontend" color="bg-blue-100 text-blue-700" />
                             <SkillTag text="Database" color="bg-pink-100 text-pink-700" />
                             <SkillTag text="CSS" color="bg-blue-100 text-blue-700" />
                             <SkillTag text="C" color="bg-gray-200 text-gray-700" />
@@ -177,7 +181,18 @@ export default async function AlumniSearchProfile({ params }) {
                             <SkillTag text="Database" color="bg-pink-100 text-pink-700" />
                             <SkillTag text="HTML" color="bg-green-100 text-green-700" />
                             <SkillTag text="CSS" color="bg-blue-100 text-blue-700" />
-                            <SkillTag text="C" color="bg-gray-200 text-gray-700" />
+                            <SkillTag text="C" color="bg-gray-200 text-gray-700" /> */}
+                            {profile.skills
+                                ?.split(',')
+                                .map(skill => skill.trim())
+                                .filter(skill => skill.length > 0)
+                                .map((skill, idx) => (
+                                    <SkillTag
+                                        key={idx}
+                                        text={skill}
+                                        color="bg-blue-100 text-blue-700"
+                                    />
+                                ))}
                         </div>
                     </div>
 
@@ -186,6 +201,7 @@ export default async function AlumniSearchProfile({ params }) {
                         <h4 className="font-rb text-astrablack mb-0">Fields of Interest</h4>
                         <hr className="h-2 border-astralightgray"></hr>
                         <div className="flex gap-2 justify-between flex-wrap text-sm">
+                            {/* TODO: FRG, pa-connect nung sa fields of interest. */}
                             <SkillTag text="Frontend" color="bg-blue-100 text-blue-700" />
                             <SkillTag text="Database" color="bg-pink-100 text-pink-700" />
                             <SkillTag text="HTML" color="bg-green-100 text-green-700" />

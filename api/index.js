@@ -9,9 +9,7 @@ import registerRoutes from "./routes/loadRoutes.js";
 import { InferAbility } from "./middleware/inferAbility.js";
 import cors from "cors";
 
-env.config({
-    path: "../.env"
-});
+env.config();
 
 const gServer = express();
 // const supabase = createClient(process.env.DATABASE_URL, process.env.DATABASE_ANONYMOUS_KEY);
@@ -20,7 +18,6 @@ const testingSupabase = createClient(process.env.DATABASE_URL, process.env.DATAB
 // Use appropriate parsers to access the request/response body directly.
 gServer.use(express.json());
 gServer.use(express.urlencoded({ extended: false }));
-gServer.use(cors());
 
 gServer.get("/", (req, res) => {
     res.status(httpStatus.OK).json({ message: "API is working!" });

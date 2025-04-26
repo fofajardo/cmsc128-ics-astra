@@ -8,6 +8,7 @@ import { ActionButton } from "@/components/Buttons";
 import SkillTag from "@/components/SkillTag";
 import { Axis3DIcon } from "lucide-react";
 import axios from "axios";
+import { capitalizeName } from "../../../utils/format.js";
 
 export default function AlumniSearch() {
     const [showFilter, setShowFilter] = useState(false);
@@ -322,11 +323,3 @@ const mockdata = [
         skills: ["SQL", "Oracle", "Database Tuning", "Shell Scripting", "PL/SQL"]
     }
 ];
-
-function capitalizeName(name) {
-    return name
-        .toLowerCase()
-        .split(' ')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
-}
