@@ -2,7 +2,7 @@ import request from "supertest";
 import { expect } from "chai";
 import app from "../../index.js";
 import httpStatus from "http-status-codes";
-import {TestSignIn, TestSignOut, TestUsers} from "../auth/auth.common.js";
+import { TestSignIn, TestSignOut, TestUsers } from "../auth/auth.common.js";
 const gAgent = request.agent(app);
 
 describe('Projects API Tests', function () {
@@ -12,23 +12,6 @@ describe('Projects API Tests', function () {
 
     // Create a new dummy data for deletion test
     before(async function () {
-    const res = await gAgent
-        .post(`/v1/projects`)
-        .send({
-            project_id: projectId,
-            status: 0,
-            due_date: new Date('2025-04-01'),
-            date_completed: null,
-            goal_amount: 100000,
-            donation_link: 'astra.com/amis-server-upgrade',
-        });
-    if (res.body.status === 'CREATED')
-        console.log('Successfully created dummy project');
-    else
-        console.log('Failed to create dummy project');
-
-     // Create a new dummy data for deletion test
-     before(async function () {
         const res = await request(app)
             .post(`/v1/projects`)
             .send({
@@ -50,7 +33,7 @@ describe('Projects API Tests', function () {
             const res = await gAgent
                 .delete(`/v1/projects/${projectId}`)
 
-            // console.log(res.body);
+            console.log(res.body);
 
             expect(res.status).to.equal(httpStatus.OK);
             expect(res.body).to.be.an('object');
