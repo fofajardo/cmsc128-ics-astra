@@ -53,7 +53,6 @@ export default function AlumniSearch() {
                     }
                 });
                 console.log('Fetched alumni:', response.data);
-                console.log('Primary work experience:', response.data.list[0].primary_work_experience);
                 if (response.data.status === "OK") {
                     updateAlumList(
                         response.data.list.map(
