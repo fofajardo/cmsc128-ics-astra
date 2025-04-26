@@ -37,12 +37,12 @@ export default function Dashboard() {
                 </div>
             </div>
 
-            <div className="flex gap-8 flex-col bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24">
-                <div className="flex flex-col md:flex-row gap-8">
+            <div className="flex gap-4 flex-col bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24">
+                <div className="flex flex-col md:flex-row gap-4">
                     <AlumAct_Events/>
                     <FundsDonut/>
                 </div>
-                <div className="flex flex-col lg:flex-row gap-8">
+                <div className="flex flex-col lg:flex-row gap-4">
                     <ActivityBreakdown/>
                     <Activity/>
                 </div>
@@ -64,8 +64,8 @@ function Activity(){
 }
 
 function AlumAct_Events(){
-    return <div className="flex-2 flex-grow flex flex-col gap-8">
-        <TransitionGrow className="flex-3 flex-grow h-auto w-auto">
+    return <div className="flex-grow flex flex-col gap-4">
+        <TransitionGrow className="flex-2 flex-grow h-auto w-auto">
             <ActivityOverview/>
         </TransitionGrow>
         <TransitionGrow className="flex-2 flex-grow h-auto w-auto">
