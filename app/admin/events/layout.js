@@ -23,23 +23,6 @@ export default function AdminEventsLayout({ children }) {
     // Reset Filters and Pagination logic can go here
   };
 
-  const handleGoToTab = (newTab) => {
-    setCurrTab(newTab);
-    setInfo((prev) => ({
-      ...prev,
-      title: `${newTab} Events`,
-    }));
-    router.push('/admin/events/manage');
-  };
-
-  const dynamicTabClick = (tabName) => {
-    if (pathname === '/admin/events/manage') {
-      handleTabChange(tabName);
-    } else {
-      handleGoToTab(tabName);
-    }
-  };
-
   return (
     <>
       {/* Header with background */}

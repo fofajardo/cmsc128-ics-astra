@@ -17,12 +17,16 @@ export default function Filter() {
           ...prevData,
           [name]: value,
         }));
+
+        // put filtering logic here
       }
 
     const handleSelectChange = (selected, { name }) => {
         setSelect({...select, [name]: selected});
         setFormData({...formData, [name]: selected.value})
         // console.log(formData)
+
+        // put filtering logic here as well
     };
 
     const queryFilter = (e) => {

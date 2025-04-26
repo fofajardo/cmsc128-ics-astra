@@ -7,9 +7,9 @@ export default function SearchBar() {
     const [searchString, setSearchString] = useState('');
 
     const handleSearch = (event) => {
-        // search logic here
-        
         event.preventDefault()
+        
+        // search logic here
     }
 
     return (
