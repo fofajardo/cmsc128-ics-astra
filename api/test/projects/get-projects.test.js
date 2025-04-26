@@ -35,7 +35,7 @@ describe('Projects API Tests', function () {
 
             expect(projectData).to.have.property('project_id');
 
-            expect(projectData).to.have.property('status').that.is.oneOf([0, 1, 2]);
+            expect(projectData).to.have.property('project_status').that.is.oneOf([0, 1]);
 
             expect(projectData).to.have.property('due_date');
             expect(new Date(projectData.due_date).toString()).to.not.equal('Invalid Date');
@@ -45,6 +45,8 @@ describe('Projects API Tests', function () {
             expect(projectData).to.have.property('goal_amount').that.is.a('number');
 
             expect(projectData).to.have.property('donation_link').that.is.a('string');
+
+            expect(projectData).to.have.property('type').that.is.a('string');
         });
 
         // Test case to verify that the API returns 400 if invalid projectId

@@ -12,7 +12,7 @@ describe('Projects API Tests', function () {
             .post(`/v1/projects`)
             .send({
                 project_id: projectId,
-                status: 0,
+                project_status: 0,
                 due_date: new Date('2025-04-01'),
                 date_completed: null,
                 goal_amount: 100000,
