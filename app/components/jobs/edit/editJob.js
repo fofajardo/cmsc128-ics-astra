@@ -103,9 +103,9 @@ export default function JobForm({isEdit, close, job}){
                 <X onClick={close} size={25} color='black' className='!cursor-pointer '/>
             </div>
 
-            <form className="grid grid-cols-2 gap-4 mt-5 px-8">
+            <form className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5 px-8"> 
                 
-                <div className='col-span-2'>
+                <div className='cols-span-1 md:col-span-2'>
                     <div className='flex flex-row gap-2 justify-between'>
                         <label className='text-black font-medium text-lg'>Company</label>
                         {errors.company_name ?
@@ -199,7 +199,7 @@ export default function JobForm({isEdit, close, job}){
                     <input type="text" placeholder="Ex: https://hiring.com/apply" onChange={handleChange} value={formData.apply_link} name="apply_link" className='placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
                 </div>
 
-                <div className='col-span-2'>
+                <div className='col-span-1 md:col-span-2'>
                 <div className='flex flex-row gap-2 items-center justify-between'>
                         <label className='text-black font-medium text-lg'>Job Description</label>
                         {errors.details ?
