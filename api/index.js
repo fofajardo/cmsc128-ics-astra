@@ -9,7 +9,9 @@ import registerRoutes from "./routes/loadRoutes.js";
 import { InferAbility } from "./middleware/inferAbility.js";
 import cors from "cors";
 
-env.config();
+env.config({
+    path: "../.env"
+});
 
 const gServer = express();
 // const supabase = createClient(process.env.DATABASE_URL, process.env.DATABASE_ANONYMOUS_KEY);
@@ -41,6 +43,7 @@ registerRoutes(gServer, testingSupabase);
 
 export default gServer;
 
-gServer.listen(process.env.PORT, () => {
-    console.log(`Listening to port: ${process.env.PORT}`);
+const kPort = process.env.ICSA_API_PORT;
+gServer.listen(kPort, () => {
+    console.log(`Listening to port: ${kPort}`);
 });
