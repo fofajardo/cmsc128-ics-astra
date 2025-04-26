@@ -8,6 +8,8 @@ import { YearFilter } from "./components/YearFilter";
 import { NewsletterArchive } from "./components/NewsletterArchive";
 import { EventInvitations } from "./components/EventInvitations";
 import animations from "./styles/animations.module.css";
+import { FileText } from "lucide-react";
+import Link from "next/link";
 
 export default function WhatsUpPage() {
   const router = useRouter(); // Initialize router
@@ -58,6 +60,17 @@ export default function WhatsUpPage() {
     <main className={animations.fadeSlideUp}>
       <div className="flex flex-col pb-20 w-full bg-slate-100 max-md:pb-12 max-md:max-w-full">
         <HeroSection />
+
+        {/* Add Request Info button */}
+        <div className="flex justify-end px-4 mt-8 max-w-[1200px] mx-auto w-full">
+          <Link 
+            href="/whats-up/request-info"
+            className="flex items-center gap-2 px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <FileText className="w-4 h-4" />
+            Request Alumni Information
+          </Link>
+        </div>
 
         <section className="flex flex-col self-center mt-16 mb-0 w-full max-w-[1200px] max-md:mt-8 max-md:mb-2 max-md:max-w-full px-4">
           <EventInvitations />

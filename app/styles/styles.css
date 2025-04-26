@@ -76,3 +76,52 @@
 .landing-container {
     @apply h-full w-full flex justify-center items-center;
 }
+
+/* Invitations Page */
+.invitation-card {
+    @apply bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg;
+}
+
+.invitation-image {
+    @apply w-full h-48 object-cover;
+}
+
+.invitation-content {
+    @apply p-6;
+}
+
+.invitation-header {
+    @apply flex justify-between items-start mb-4;
+}
+
+.invitation-title {
+    @apply text-xl font-semibold text-gray-900;
+}
+
+.invitation-description {
+    @apply text-gray-600 mb-4;
+}
+
+.invitation-details {
+    @apply flex flex-col space-y-2;
+}
+
+.invitation-detail-item {
+    @apply flex items-center text-sm text-gray-600;
+}
+
+.invitation-actions {
+    @apply mt-4 flex justify-end space-x-3;
+}
+
+.invitation-button {
+    @apply px-4 py-2 rounded-full font-semibold transition-colors duration-200;
+}
+
+.invitation-accept {
+    @apply bg-[var(--secondary)] text-white hover:bg-[var(--primary)];
+}
+
+.invitation-decline {
+    @apply border border-[var(--secondary)] text-[var(--secondary)] hover:bg-gray-100;
+}

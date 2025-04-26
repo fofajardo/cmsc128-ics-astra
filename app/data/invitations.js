@@ -1,45 +1,61 @@
+import venue1 from "../assets/venue1.jpeg";
+import venue2 from "../assets/venue2.jpeg";
+import avatar1 from "../assets/avatar1.jpg";
+
 const invitations = [
   {
-    id: 1,
+    id: "alumni-homecoming-2024",
+    imageSrc: venue1,
     title: "Alumni Homecoming 2024",
-    date: "June 15, 2024",
-    time: "2:00 PM",
-    location: "UPLB Institute of Computer Science",
     description: "Join us for our annual alumni homecoming celebration!",
-    imageUrl: "/events/homecoming.jpg",
+    date: "2024-06-15 14:00",
+    location: "UPLB Institute of Computer Science",
+    attendees: "0/100",
+    avatars: [avatar1.src],
+    status: "Open",
+    theme: "blue",
     host: {
       name: "John Smith",
       title: "Alumni Association President",
       avatar: "/avatars/default.png"
-    }
+    },
+    eventDetail: "Join us for a day of reconnecting with fellow alumni, sharing memories, and celebrating our alma mater. The event will feature keynote speakers, networking sessions, and entertainment."
   },
   {
-    id: 2, 
+    id: "ics-tech-summit",
+    imageSrc: venue2,
     title: "ICS Tech Summit",
-    date: "July 20, 2024",
-    time: "9:00 AM",
-    location: "UPLB CAS Auditorium",
     description: "A gathering of tech professionals and academics.",
-    imageUrl: "/events/tech-summit.jpg",
+    date: "2024-07-20 09:00",
+    location: "UPLB CAS Auditorium",
+    attendees: "0/200",
+    avatars: [avatar1.src],
+    status: "Open",
+    theme: "green",
     host: {
       name: "Maria Garcia",
       title: "Event Coordinator",
       avatar: "/avatars/default.png"
-    }
+    },
+    eventDetail: "Join us for a day of tech talks, panel discussions, and networking with industry professionals and academics."
   },
   {
-    id: 3,
+    id: "career-fair-2024",
+    imageSrc: venue1,
     title: "Career Fair 2024",
-    date: "August 5, 2024",
-    time: "10:00 AM",
-    location: "UPLB Student Union",
     description: "Connect with potential employers in tech.",
-    imageUrl: "/events/career-fair.jpg",
+    date: "2024-08-05 10:00",
+    location: "UPLB Student Union",
+    attendees: "0/300",
+    avatars: [avatar1.src],
+    status: "Open",
+    theme: "red",
     host: {
       name: "David Chen",
       title: "Career Services Director",
       avatar: "/avatars/default.png"
-    }
+    },
+    eventDetail: "Join us for a day of networking with potential employers, learning about job opportunities, and attending career development workshops."
   }
 ];
 
