@@ -8,7 +8,7 @@ describe('Project API Tests', function () {
 
     after(async function () {
         const originalData = {
-            status: 0,
+            project_status: 0,
             due_date: new Date('2025-04-01'),
             date_completed: null,
             goal_amount: 35000,
@@ -19,9 +19,9 @@ describe('Project API Tests', function () {
             .put(`/v1/projects/${projectId}`)
             .send(originalData);
         if (res.body.status === 'UPDATED') {
-            console.log('Successfully revert donation fields');
+            console.log('Successfully revert project fields');
         } else
-            console.log('Failed to revert donation fields');
+            console.log('Failed to revert project fields');
     });
 
     describe('PUT /v1/projects/:projectId', function () {
@@ -35,7 +35,7 @@ describe('Project API Tests', function () {
             const dateString = '2025-05-01';
 
             const validUpdateData = {
-                status: 2,
+                project_status: 1,
                 due_date: new Date(dateString).toISOString(),
                 date_completed: new Date(dateString).toISOString(),
                 goal_amount: 75000,
@@ -61,7 +61,7 @@ describe('Project API Tests', function () {
 
             // Ensures data is correctly updated
             expect(verifyRes.body.project).to.be.an('object');
-            expect(verifyRes.body.project).to.have.property('status', validUpdateData.status);
+            expect(verifyRes.body.project).to.have.property('project_status', validUpdateData.project_status);
             expect(verifyRes.body.project).to.have.property('due_date', dateString);
             expect(verifyRes.body.project).to.have.property('date_completed', dateString);
             expect(verifyRes.body.project).to.have.property('goal_amount', validUpdateData.goal_amount);
@@ -78,7 +78,7 @@ describe('Project API Tests', function () {
             // console.log(preCheckRes.body);
 
             const validUpdateData = {
-                status: 1,
+                project_status: 1,
                 date_completed: null
             };
 
@@ -101,7 +101,7 @@ describe('Project API Tests', function () {
 
             // Ensures data is correctly updated
             expect(verifyRes.body.project).to.be.an('object');
-            expect(verifyRes.body.project).to.have.property('status', validUpdateData.status);
+            expect(verifyRes.body.project).to.have.property('project_status', validUpdateData.project_status);
             expect(verifyRes.body.project).to.have.property('date_completed', null);
         });
 
@@ -115,7 +115,7 @@ describe('Project API Tests', function () {
             // console.log(preCheckRes.body);
 
             const validUpdateData = {
-                status: '2',
+                project_status: '1',
             };
 
             const res = await request(app)
@@ -136,7 +136,7 @@ describe('Project API Tests', function () {
             const invalidProjectId = '389517e7-9a0b-9c96-84f9-3a7080186892'; // Invalid projectId
 
             const validUpdateData = {
-                status: 2,
+                project_status: 1,
             };
 
             const res = await request(app)
