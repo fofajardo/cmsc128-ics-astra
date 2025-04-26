@@ -15,9 +15,9 @@ const gServer = express();
 // const supabase = createClient(process.env.DATABASE_URL, process.env.DATABASE_ANONYMOUS_KEY);
 const testingSupabase = createClient(process.env.DATABASE_URL, process.env.DATABASE_SERVICE_KEY);
 
-// // Use appropriate parsers to access the request/response body directly.
-// gServer.use(express.json());
-// gServer.use(express.urlencoded({ extended: false }));
+// Use appropriate parsers to access the request/response body directly.
+gServer.use(express.json());
+gServer.use(express.urlencoded({ extended: false }));
 
 gServer.get("/", (req, res) => {
     res.status(httpStatus.OK).json({ message: "API is working!" });
