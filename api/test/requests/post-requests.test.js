@@ -49,6 +49,21 @@ describe('Requests API Tests (POST)', function() {
             expect(res.body).to.have.property('message');
         });
 
+        // ❌ Unexpected fields present
+        it(`should return ${httpStatus.BAD_REQUEST}, status FAILED, and a message when unexpected fields are present`, async function () {
+            const res = await gAgent
+                .post(kRoutePrefix)
+                .send({
+                    ...testRequest,
+                    date_reviewed: new Date().toISOString(), // Unexpected field
+                });
+            
+            expect(res.status).to.equal(httpStatus.BAD_REQUEST);
+            expect(res.body).to.be.an('object');
+            expect(res.body).to.have.property('status').to.equal('FAILED');
+            expect(res.body).to.have.property('message');
+        });
+
         // ❌ Invalid user_id
         it(`should return ${httpStatus.BAD_REQUEST}, status FAILED, and a message when user_id is invalid`, async function () {
             const res = await gAgent
