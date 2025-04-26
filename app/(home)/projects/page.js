@@ -214,7 +214,7 @@ export default function ProjectsPage({ projects }) {
               >
                 {filteredProjects.slice(0, visibleCount).map((project) => (
                   <Link
-                    href="/projects/about"
+                    href={`/projects/about/${project.id}`}
                     key={project.id}
                     className="block h-full"
                   >
@@ -377,46 +377,89 @@ export default function ProjectsPage({ projects }) {
         </div>
       </section>
 
-      {/* Donation Process (unchanged) */}
+      {/* Donation Process - Timeline Style */}
       <section className="bg-astrawhite pt-20 pb-40 px-4">
         <h2 className="font-h2 mb-2 text-astrablack text-center mb-12">
           Donation Process
         </h2>
-        <div className="max-w-3xl mx-auto space-y-8 relative">
-          {[
-            {
-              step: "Visit Our Donation Page",
-              desc: "Navigate to our secure donation platform where you can review our mission and impact.",
-              sub: "🔒 Secure and encrypted connection",
-            },
-            {
-              step: "Choose a project to support",
-              desc: "Choose from a number of causes to support.",
-              sub: "💳 Flexible payment options",
-            },
-            {
-              step: "Fill up the form",
-              desc: "Fill in your contact details and payment information. This helps us process your donation and send you a receipt.",
-              sub: "📝 Protected and confidential",
-            },
-            {
-              step: "Receive Confirmation",
-              desc: "After your donation is processed, you'll receive a confirmation after we verify your payment.",
-              sub: "📧 Confirmation",
-            },
-          ].map((item, index) => (
-            <div key={index} className="relative pl-10">
-              <div className="absolute left-0 top-1 text-astrawhite bg-astraprimary rounded-full w-6 h-6 flex items-center justify-center text-sm font-semibold">
-                {index + 1}
+        <div className="px-4 sm:px-6 md:px-8 max-w-6xl mx-auto">
+          <div className="relative pl-4 md:pl-0">
+            {/* Vertical timeline line */}
+            <div className="absolute left-0 md:hidden w-1 h-full bg-[var(--color-astraprimary)]"></div>
+            <div className="absolute left-1/2 hidden md:block transform -translate-x-1/2 w-1 h-full bg-[var(--color-astraprimary)]"></div>
+
+            {/* Timeline items */}
+            {[
+              {
+                step: "Visit Our Donation Page",
+                desc: "Navigate to our secure donation platform where you can review our mission and impact.",
+                sub: "🔒 Secure and encrypted connection",
+                position: "left",
+              },
+              {
+                step: "Choose a project to support",
+                desc: "Choose from a number of causes to support.",
+                sub: "💳 Flexible payment options",
+                position: "right",
+              },
+              {
+                step: "Fill up the form",
+                desc: "Fill in your contact details and payment information. This helps us process your donation and send you a receipt.",
+                sub: "📝 Protected and confidential",
+                position: "left",
+              },
+              {
+                step: "Receive Confirmation",
+                desc: "After your donation is processed, you'll receive a confirmation after we verify your payment.",
+                sub: "📧 Confirmation",
+                position: "right",
+              },
+            ].map((item, index) => (
+              <div
+                key={index}
+                className={`
+            relative mb-12 last:mb-0
+            ${item.position === "right" ? "md:pl-8 md:pr-0" : "md:pr-8 md:pl-0"}
+          `}
+              >
+                {/* Timeline dot */}
+                <div
+                  className={`
+              absolute top-0 left-[22px] w-6 h-6 bg-astraprimary rounded-full
+              transform -translate-x-1/2 hidden md:block
+              md:left-1/2 md:w-8 md:h-8
+            `}
+                >
+                  {/* Step number inside the dot */}
+                  <div className="w-full h-full flex items-center justify-center text-astrawhite text-sm font-semibold">
+                    {index + 1}
+                  </div>
+                </div>
+
+                {/* Mobile view step number */}
+                <div className="absolute left-0 top-1 text-astrawhite bg-astraprimary rounded-full w-6 h-6 flex items-center justify-center text-sm font-semibold md:hidden">
+                  {index + 1}
+                </div>
+
+                {/* Content container */}
+                <div
+                  className={`
+              md:ml-0 pl-10 md:pl-0
+              ${
+                item.position === "right"
+                  ? "md:pl-12 md:w-1/2 md:float-right"
+                  : "md:pr-12 md:w-1/2 md:float-left"
+              }
+            `}
+                >
+                  <h4 className="font-lb text-lg">{item.step}</h4>
+                  <p className="text-astradarkgray font-r mt-2">{item.desc}</p>
+                  <p className="font-s text-astraprimary mt-1">{item.sub}</p>
+                </div>
+                <div className="clear-both"></div>
               </div>
-              <h4 className="font-lb">{item.step}</h4>
-              <p className="text-astradarkgray font-r">{item.desc}</p>
-              <p className="font-s text-astraprimary mt-1">{item.sub}</p>
-              {index < 3 && (
-                <div className="absolute left-2.5 top-6 w-1 h-16 bg-blue-300"></div>
-              )}
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
@@ -451,15 +494,12 @@ export default function ProjectsPage({ projects }) {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-500 ease-in-out">
               {visibleCompletedProjects.map((project, index) => (
                 <Link
-                  href={{
-                    pathname: "/projects/about/${project.id}",
-                    query: { id: project.id },
-                    query: { completed: "true" },
-                  }}
+                  href={`/projects/about/${index}`}
                   key={index}
                   className="block"
                 >
                   <ProjectCard
+                    id={index}
                     image={project.image}
                     title={project.title}
                     description={project.description}
