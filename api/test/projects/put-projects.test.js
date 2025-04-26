@@ -2,8 +2,12 @@ import request from 'supertest';
 import { expect } from 'chai';
 import app from '../../index.js';
 import httpStatus from 'http-status-codes';
+import {TestSignIn, TestSignOut, TestUsers} from "../auth/auth.common.js";
+const gAgent = request.agent(app);
 
 describe('Project API Tests', function () {
+    before(() => TestSignIn(gAgent, TestUsers.moderator));
+
     const projectId = '7f857ca0-fcca-4c5b-b619-d0612597dbb1'
 
     after(async function () {
@@ -15,7 +19,7 @@ describe('Project API Tests', function () {
             donation_link: 'astra.com/pc-lab-modernization'
         };
 
-        const res = await request(app)
+        const res = await gAgent
             .put(`/v1/projects/${projectId}`)
             .send(originalData);
         if (res.body.status === 'UPDATED') {
@@ -27,7 +31,7 @@ describe('Project API Tests', function () {
     describe('PUT /v1/projects/:projectId', function () {
         it('should return 200 and update valid project details', async function () {
             //Precondition: Ensure the row exists before updating
-            const preCheckRes = await request(app).get(`/v1/projects/${projectId}`);
+            const preCheckRes = await gAgent.get(`/v1/projects/${projectId}`);
             expect(preCheckRes.status).to.equal(httpStatus.OK);
             expect(preCheckRes.body).to.be.an('object');
 
@@ -42,7 +46,7 @@ describe('Project API Tests', function () {
                 donation_link: 'astra.com/amis-server-upgrade-2',
             };
 
-            const res = await request(app)
+            const res = await gAgent
                 .put(`/v1/projects/${projectId}`)
                 .send(validUpdateData);
 
@@ -55,7 +59,7 @@ describe('Project API Tests', function () {
             expect(res.body).to.have.property('message').that.is.a('string');
 
             // GET request to verify update
-            const verifyRes = await request(app).get(`/v1/projects/${projectId}`);
+            const verifyRes = await gAgent.get(`/v1/projects/${projectId}`);
             expect(verifyRes.status).to.equal(httpStatus.OK);
             expect(verifyRes.body).to.be.an('object');
 
@@ -71,7 +75,7 @@ describe('Project API Tests', function () {
         // Test case to verify that the API returns 200 for partial updates
         it('should return 200 and update valid project details', async function () {
             //Precondition: Ensure the row exists before updating
-            const preCheckRes = await request(app).get(`/v1/projects/${projectId}`);
+            const preCheckRes = await gAgent.get(`/v1/projects/${projectId}`);
             expect(preCheckRes.status).to.equal(httpStatus.OK);
             expect(preCheckRes.body).to.be.an('object');
 
@@ -82,7 +86,7 @@ describe('Project API Tests', function () {
                 date_completed: null
             };
 
-            const res = await request(app)
+            const res = await gAgent
                 .put(`/v1/projects/${projectId}`)
                 .send(validUpdateData);
 
@@ -95,7 +99,7 @@ describe('Project API Tests', function () {
             expect(res.body).to.have.property('message').that.is.a('string');
 
             // GET request to verify update
-            const verifyRes = await request(app).get(`/v1/projects/${projectId}`);
+            const verifyRes = await gAgent.get(`/v1/projects/${projectId}`);
             expect(verifyRes.status).to.equal(httpStatus.OK);
             expect(verifyRes.body).to.be.an('object');
 
@@ -108,7 +112,7 @@ describe('Project API Tests', function () {
         // Test case to verify that the API returns 400 if invalid field values (status)
         it('should return 400, status FAILED, and a message', async function () {
             //Precondition: Ensure the row exists before updating
-            const preCheckRes = await request(app).get(`/v1/projects/${projectId}`);
+            const preCheckRes = await gAgent.get(`/v1/projects/${projectId}`);
             expect(preCheckRes.status).to.equal(httpStatus.OK);
             expect(preCheckRes.body).to.be.an('object');
 
@@ -118,7 +122,7 @@ describe('Project API Tests', function () {
                 project_status: '1',
             };
 
-            const res = await request(app)
+            const res = await gAgent
                 .put(`/v1/projects/${projectId}`)
                 .send(validUpdateData);
 
@@ -139,7 +143,7 @@ describe('Project API Tests', function () {
                 project_status: 1,
             };
 
-            const res = await request(app)
+            const res = await gAgent
                 .put(`/v1/projects/${invalidProjectId}`)
                 .send(validUpdateData);
 
@@ -160,7 +164,7 @@ describe('Project API Tests', function () {
                 goal_amount: 50000,
             };
 
-            const res = await request(app)
+            const res = await gAgent
                 .put(`/v1/projects/${notExistingProjectId}`)
                 .send(validUpdateData);
 
@@ -173,4 +177,6 @@ describe('Project API Tests', function () {
             expect(res.body).to.have.property('message').that.is.a('string');
         });
     });
+
+    after(() => TestSignOut(gAgent));
 });
