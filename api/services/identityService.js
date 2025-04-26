@@ -59,6 +59,14 @@ async function defineScopes(aUser) {
     let user = aUser?.data;
     let role = user?.role ?? RoleName.UNLINKED;
 
+    if (process.env.ICSA_API_SPECIAL_POWERS === "TRUE") {
+        can(Actions.CREATE, Subjects.ALL);
+        can(Actions.READ, Subjects.ALL);
+        can(Actions.MANAGE, Subjects.ALL);
+
+        return rules;
+    }
+
     if (role !== RoleName.UNLINKED) {
         // General permissions for all roles.
         can(Actions.MANAGE, Subjects.USER, { id: user.id });
