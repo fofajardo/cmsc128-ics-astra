@@ -4,8 +4,7 @@ import { useState, useEffect } from 'react';
 const TransitionGrow = ({
   children,
   className = '',
-  threshold = 0.25,
-  rootMargin = '0px',
+  threshold = 0.10,
   delay = 0,
 }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -35,18 +34,17 @@ const TransitionGrow = ({
         }
       }}
       threshold={scrollDirection === 'up' ? 0 : threshold}
-      rootMargin={rootMargin}
       className={`
         size-full
-        transition-all
+        transition-[opacity,transform]
         duration-250
         ease-out
         ${className}
         ${isVisible
-          ? 'opacity-100 blur-none scale-100 translate-y-0'
+          ? 'opacity-100 blur-none translate-y-0'
           : scrollDirection === 'up'
-          ? 'opacity-0 blur-sm scale-95 -translate-y-12'
-          : 'opacity-0 blur-sm scale-95 translate-y-12'
+          ? 'opacity-0 blur-sm -translate-y-12'
+          : 'opacity-0 blur-sm translate-y-12'
         }
       `}
       style={{ transitionDelay: `${delay}s` }}
