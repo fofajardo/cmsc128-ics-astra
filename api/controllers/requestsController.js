@@ -63,13 +63,6 @@ const getRequestById = (supabase) => async (req, res) => {
             });
         }
 
-        if (!data) {
-            return res.status(httpStatus.NOT_FOUND).json({
-                status: 'FAILED',
-                message: 'Request not found.',
-            });
-        }
-
         return res.status(httpStatus.OK).json({
             status: 'OK',
             request: data,
