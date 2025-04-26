@@ -28,9 +28,42 @@ export default function EditForm({ profileData, hidePersonalForm }) {
     }
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+  
+    const requiredFields = {
+      Title: formData.Title,
+      FirstName: formData.FirstName,
+      MiddleName: formData.MiddleName,
+      LastName: formData.LastName,
+      Degree: formData.Degree,
+      GraduationYear: formData.GraduationYear,
+      CivilStatus: formData.CivilStatus,
+      BirthDate: formData.BirthDate,
+      BirthPlace: formData.BirthPlace,
+      Citizenship: formData.Citizenship,
+    };
+  
+    const isEmpty = (value) =>
+      value === undefined ||
+      value === null ||
+      (typeof value === "string" && value.trim() === "");
+  
+    const missingFields = Object.entries(requiredFields).filter(([_, value]) =>
+      isEmpty(value)
+    );
+  
+    if (missingFields.length > 0) {
+      alert("Please fill out all required fields.");
+      return;
+    }
+
+    alert("Form submitted!");
+  };  
+
   return (
   <div className="max-h-[90vh] overflow-y-auto">
-    <form className="space-y-4 p-8">
+    <form className="space-y-4 p-8" onSubmit={handleSubmit}>
       {/* Profile Picture */}
       <div className="flex justify-center w-full mb-6 relative">
         <div className="relative">
@@ -219,7 +252,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
           <label className="block text-sm font-medium text-gray-700 mb-2">Place of Birth</label>
           <input
             type="text"
-            name="PlaceOfBirth"
+            name="BirthPlace"
             value={formData?.BirthPlace || ""}
             onChange={handleChange}
             className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
