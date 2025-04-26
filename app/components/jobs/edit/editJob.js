@@ -115,7 +115,7 @@ export default function JobForm({isEdit, close, job}){
                             <p className="text-sm text-astrared self-end">Required</p> : <></>
                         }
                     </div>
-                    <input type="text" placeholder="Ex: User Experience Researcher" onChange={handleChange} value={formData.job_title} name="job_title" className='placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
+                    <input type="text" placeholder="Ex: User Experience Researcher" onChange={handleChange} value={formData.job_title} name="job_title" className='focus:border-astraprimary placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
                 </div>
                 
                 <div className='col-span-1 md:col-span-1'>
@@ -125,7 +125,7 @@ export default function JobForm({isEdit, close, job}){
                             <p className="text-sm text-astrared self-end">Required</p> : <></>
                         }
                     </div>
-                    <input type="text" placeholder="Ex: Google" onChange={handleChange} value={formData.company_name} name="company_name" className='placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
+                    <input type="text" placeholder="Ex: Google" onChange={handleChange} value={formData.company_name} name="company_name" className='focus:border-astraprimary placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
                 </div>
                 
                 <div className=''>
@@ -135,7 +135,7 @@ export default function JobForm({isEdit, close, job}){
                             <p className="text-sm text-astrared self-end">Required</p> : <></>
                         }
                     </div>
-                    <input type="text" placeholder="Ex: Santa Rosa City, Laguna" onChange={handleChange} value={formData.location} name="location" className='placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
+                    <input type="text" placeholder="Ex: Santa Rosa City, Laguna" onChange={handleChange} value={formData.location} name="location" className='focus:border-astraprimary placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
                 </div>
 
                 <div>
@@ -156,7 +156,7 @@ export default function JobForm({isEdit, close, job}){
                             <p className="text-sm text-astrared self-end">Required</p> : <></>
                         }
                     </div>
-                    <input type="text" placeholder="Ex: ₱40,000 - ₱50,000" onChange={handleChange} value={formData.salary} name="salary" className='placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
+                    <input type="text" placeholder="Ex: ₱40,000 - ₱50,000" onChange={handleChange} value={formData.salary} name="salary" className='focus:border-astraprimary placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
                 </div>
 
                 <div>
@@ -177,7 +177,7 @@ export default function JobForm({isEdit, close, job}){
                             <p className="text-sm text-astrared self-end">Required</p> : <></>
                         }
                     </div>
-                    <input  type="date" placeholder="YYYY/MM/DD" onChange={handleChange} className='!cursor-pointer placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'
+                    <input  type="date" placeholder="YYYY/MM/DD" onChange={handleChange} className='focus:border-astraprimary !cursor-pointer placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'
                             name={"expires_at"} style={{ colorScheme: 'light', accentColor: '#0E6CF3' }}></input>
                 </div>
 
@@ -199,7 +199,7 @@ export default function JobForm({isEdit, close, job}){
                             <p className="text-sm text-astrared self-end">Required</p> : <></>
                         }
                     </div>
-                    <input type="text" placeholder="Ex: https://hiring.com/apply" onChange={handleChange} value={formData.apply_link} name="apply_link" className='placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
+                    <input type="text" placeholder="Ex: https://hiring.com/apply" onChange={handleChange} value={formData.apply_link} name="apply_link" className='focus:border-astraprimary placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
                 </div>
 
                 <div className=''>
@@ -209,7 +209,7 @@ export default function JobForm({isEdit, close, job}){
                             <p className="text-sm text-astrared self-end">Required</p> : <></>
                         }
                     </div>
-                    <input type="text" placeholder="Email address/phone number" onChange={handleChange} value={formData.hiring_manager} name="hiring_manager" className='placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
+                    <input type="text" placeholder="Email address/phone number" onChange={handleChange} value={formData.hiring_manager} name="hiring_manager" className='focus:border-astraprimary placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
                 </div>
 
                 <div className='col-span-1 md:col-span-2'>
@@ -220,7 +220,7 @@ export default function JobForm({isEdit, close, job}){
                         }
                     </div>
                     <textarea  type="text" placeholder="Provide a concise overview of the role, including job requirements, key responsibilities, and objectives. You may also include your company’s representative email for additional inquiries." 
-                            onChange={handleChange} name={"details"} value={formData.details} className='placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm resize-none h-[110px]'></textarea>
+                            onChange={handleChange} name={"details"} value={formData.details} className='focus:border-astraprimary placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm resize-none h-[110px]'></textarea>
                 </div>
 
                 <div className='col-span-1 md:col-span-2'>
@@ -231,7 +231,7 @@ export default function JobForm({isEdit, close, job}){
                         }
                     </div>
                     <textarea  type="text" placeholder="Provide the requirements that are needed for the role. You may include skills (technical/non-technical), certifications, and experiences that you are looking for in an applicant." 
-                            onChange={handleChange} name={"job_requirements"} value={formData.job_requirements} className='placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm resize-none h-[110px]'></textarea>
+                            onChange={handleChange} name={"job_requirements"} value={formData.job_requirements} className='focus:border-astraprimary placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm resize-none h-[110px]'></textarea>
                 </div>
             </form>
 
