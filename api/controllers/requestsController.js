@@ -426,7 +426,7 @@ const updateRequest = (supabase) => async (req, res) => {
 
         restrictedFields.forEach(field => {
             if (field in updateData) {
-                return res.status(httpStatus.FORBIDDEN).json({
+                return res.status(httpStatus.BAD_REQUEST).json({
                     status: 'FAILED',
                     message: `Field ${field} cannot be updated.`,
                 });

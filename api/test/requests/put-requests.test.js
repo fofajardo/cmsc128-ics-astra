@@ -116,7 +116,7 @@ describe('Requests API Tests (PUT)', function () {
         });
 
         // Try to update a restricted field (user_id)
-        it(`should return ${httpStatus.FORBIDDEN} for updating restricted field (user_id)`, async function () {
+        it(`should return ${httpStatus.BAD_REQUEST} for updating restricted field (user_id)`, async function () {
             const restrictedUpdateData = {
                 user_id: '00000000-0000-0000-0000-000000000000', 
             };
@@ -125,7 +125,7 @@ describe('Requests API Tests (PUT)', function () {
                 .put(`${kRoutePrefix}/${requestId}`)
                 .send(restrictedUpdateData);
 
-            expect(res.status).to.equal(httpStatus.FORBIDDEN);
+            expect(res.status).to.equal(httpStatus.BAD_REQUEST);
             expect(res.body).to.be.an('object');
 
             expect(res.body).to.have.property('status', 'FAILED');
