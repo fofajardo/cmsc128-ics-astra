@@ -182,7 +182,7 @@ export default function AlumniSearchProfile({ params }) {
       </TransitionGrow >
 
       {/* Right Column */}
-      <TransitionGrow  className="space-y-4">
+      <div  className="space-y-4">
         {/* Skills */}
         <div className="bg-white border border-astralightgray rounded-xl p-4 shadow-md">
           <h4 className="font-rb text-astrablack mb-0">Technical Skills</h4>
@@ -225,8 +225,23 @@ export default function AlumniSearchProfile({ params }) {
         <div className="bg-white border border-astralightgray rounded-xl p-4 shadow-md">
           <h4 className="font-rb text-astrablack mb-0">Proof of Graduation</h4>
           <hr className="h-2 border-astralightgray"></hr>
-          <div className="flex justify-center items-center h-60 bg-gray-100 rounded-md">
-            <Image className="w-16 h-16" strokeWidth="1"></Image>
+          <div className="relative flex justify-center items-center h-60 bg-gray-100 rounded-md border shadow">
+            {/* main image */}
+            <img
+              src="https://media.licdn.com/dms/image/v2/D5622AQG1fAsAsQh6HQ/feedshare-shrink_800/feedshare-shrink_800/0/1722688761782?e=2147483647&v=beta&t=uINCPcGEVdl801U3Zbcg5tkbeqgKzePV0R4TT6q6q0E"
+              alt="Proof"
+              className="w-full h-full object-cover rounded-md"
+              onError={(e) => {
+                e.target.style.display = 'none';
+                e.target.nextElementSibling.style.display = 'flex';
+              }}
+            />
+            
+            {/* fallback icon (hidden by default) */}
+            <div className="hidden absolute inset-0 flex-col items-center justify-center text-gray-400">
+              <Image className="w-16 h-16" strokeWidth="1" />
+              <span className="mt-2">Image not available</span>
+            </div>
           </div>
         </div>
         <div className='flex justify-center gap-2'>
@@ -262,7 +277,7 @@ export default function AlumniSearchProfile({ params }) {
             </>
           )}
         </div>
-      </TransitionGrow >
+      </div >
     </div>
 
     </div>
