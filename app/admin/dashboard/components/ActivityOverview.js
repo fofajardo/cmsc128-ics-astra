@@ -131,7 +131,7 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
           disabled={currentPage === 1}
           className={`p-2 rounded-lg ${currentPage === 1 ? 'text-astralightgray cursor-not-allowed' : 'text-astraprimary hover:bg-astratintedwhite'}`}
         >
-          <svg className="w-5 h-5 stroke-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 stroke-3" fill="none" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
           </svg>
         </button>
@@ -141,7 +141,7 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
           disabled={currentPage === totalPages}
           className={`p-2 rounded-lg ${currentPage === totalPages ? 'text-astralightgray cursor-not-allowed' : 'text-astraprimary hover:bg-astratintedwhite'}`}
         >
-          <svg className="w-5 h-5 stroke-3" fill="none" stroke="currentColor" viewBox="0 24 24">
+          <svg className="w-5 h-5 stroke-3" fill="none" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
           </svg>
         </button>

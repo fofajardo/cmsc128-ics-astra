@@ -52,31 +52,33 @@ export default function Dashboard() {
 }
 
 function ActivityBreakdown(){
-    return <TransitionGrow className="flex-2 md:flex-3 size-auto">
+    return <TransitionGrow className="flex-2 md:flex-3 h-auto w-auto">
         <BarGraph/>        
     </TransitionGrow>
 }
 
 function Activity(){
-    return <TransitionGrow className="flex-2 size-auto">
+    return <TransitionGrow className="flex-2 h-auto w-auto">
         <RecentActivity/>
     </TransitionGrow>
 }
 
 function AlumAct_Events(){
     return <div className="flex-2 flex-grow flex flex-col gap-8">
-        <TransitionGrow className="flex-3 flex-grow">
+        <TransitionGrow className="flex-3 flex-grow h-auto w-auto">
             <ActivityOverview/>
         </TransitionGrow>
-        <TransitionGrow className="flex-2 flex-grow">
+        <TransitionGrow className="flex-2 flex-grow h-auto w-auto">
             <UpcomingEvents/>
         </TransitionGrow>
     </div>
 }
 
 function FundsDonut(){
-    return <TransitionGrow className="flex-1 h-auto md:row-start-1 md:row-span-8 md:col-start-3 md:h-auto">
-                <Donut/>
+    return <TransitionGrow className="flex-1 h-auto w-auto md:row-start-1 md:row-span-8 md:col-start-3">
+                <div className="size-full">
+                    <Donut />
+                </div>
             </TransitionGrow>
 }
 
