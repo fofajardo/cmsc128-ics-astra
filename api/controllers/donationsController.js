@@ -1,11 +1,19 @@
 import httpStatus from 'http-status-codes';
 import donationsService from '../services/donationsService.js';
 import { isValidUUID, isValidDate } from '../utils/validators.js';
+import {Actions, Subjects} from "../../common/scopes.js";
 
 const getDonations = (supabase) => async (req, res) => {
+    if (req.you.cannot(Actions.READ, Subjects.DONATION)) {
+        return res.status(httpStatus.FORBIDDEN).json({
+            status: "FORBIDDEN",
+            message: "You are not allowed to access this resource."
+        });
+    }
+
     try {
-        const { page = 1, limit = 10 } = req.query;
-        const { data, error } = await donationsService.fetchDonations(supabase, page, limit);
+        const filters = req.query;
+        const { data, error } = await donationsService.fetchDonations(supabase, filters);
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -47,6 +55,13 @@ const getDonationById = (supabase) => async (req, res) => {
             });
         }
 
+        if (req.you.cannotAs(Actions.READ, Subjects.DONATION, data)) {
+            return res.status(httpStatus.FORBIDDEN).json({
+                status: "FORBIDDEN",
+                message: "You are not allowed to access this resource."
+            });
+        }
+
         return res.status(httpStatus.OK).json({
             status: 'OK',
             donation: data
@@ -61,15 +76,23 @@ const getDonationById = (supabase) => async (req, res) => {
 };
 
 const createDonation = (supabase) => async (req, res) => {
+    if (req.you.cannot(Actions.CREATE, Subjects.DONATION)) {
+        return res.status(httpStatus.FORBIDDEN).json({
+            status: "FORBIDDEN",
+            message: "You are not allowed to access this resource."
+        });
+    }
+
     try {
         // Validate request body format and required fields
         const requiredFields = [
-            'alum_id',
+            'user_id',
             'project_id',
             'donation_date',
             'reference_num',
             'mode_of_payment',
-            'amount'
+            'amount',
+            'is_anonymous'
         ];
 
         const missingFields = requiredFields.filter(field =>
@@ -87,25 +110,28 @@ const createDonation = (supabase) => async (req, res) => {
         }
 
         const {
-            alum_id,
+            user_id,
             project_id,
             donation_date,
             reference_num,
             mode_of_payment,
-            amount
+            amount,
+            comment = null,
+            is_anonymous = true
         } = req.body;
 
-        const alumId = alum_id;
+        const userId = user_id;
         const projectId = project_id;
         const donationDate = donation_date;
         const referenceNum = reference_num;
         const modeOfPayment = mode_of_payment;
+        const isAnonymous = is_anonymous;
 
         // Validate data types
-        if (!isValidUUID(alumId)) {
+        if (!isValidUUID(userId)) {
             return res.status(httpStatus.BAD_REQUEST).json({
                 status: 'FAILED',
-                message: 'Invalid alumId format',
+                message: 'Invalid userId format',
                 id: null
             });
         }
@@ -121,7 +147,9 @@ const createDonation = (supabase) => async (req, res) => {
         if ((typeof modeOfPayment !== 'number' || ![0, 1].includes(modeOfPayment)) ||
             !isValidDate(donationDate) ||
             typeof amount !== 'number' ||
-            typeof referenceNum !== 'string'
+            typeof referenceNum !== 'string' ||
+            (comment !== null && typeof comment !== 'string') ||
+            typeof isAnonymous !== 'boolean'
         ) {
             return res.status(httpStatus.BAD_REQUEST).json({
                 status: 'FAILED',
@@ -130,17 +158,17 @@ const createDonation = (supabase) => async (req, res) => {
             });
         }
 
-        // Check if alumId and projectId exists
-        const alumIdResponse = await supabase
+        // Check if userId and projectId exists
+        const userIdResponse = await supabase
             .from('alumni_profiles')
             .select('alum_id')
-            .eq('alum_id', alumId)
+            .eq('alum_id', userId)
             .single();
 
-        if (!alumIdResponse.data && alumIdResponse.error) {
+        if (!userIdResponse.data && userIdResponse.error) {
             return res.status(httpStatus.NOT_FOUND).json({
                 status: 'FAILED',
-                message: alumIdResponse.error.message,
+                message: userIdResponse.error.message,
                 id: null
             });
         }
@@ -161,12 +189,14 @@ const createDonation = (supabase) => async (req, res) => {
 
 
         const { data, error } = await donationsService.insertDonation(supabase, {
-            alum_id: alumId,
+            user_id: userId,
             project_id: projectId,
             donation_date: donationDate,
             reference_num: referenceNum,
             mode_of_payment: modeOfPayment,
-            amount: amount
+            amount: amount,
+            comment,
+            is_anonymous: isAnonymous
         });
 
         if (error) {
@@ -193,7 +223,7 @@ const updateDonation = (supabase) => async (req, res) => {
     try {
         const { donationId } = req.params;
         const projectId = req.body.project_id
-        const alumId = req.body.alum_id
+        const userId = req.body.user_id
 
         // Check if donationId exists in the request params
         if (!donationId) {
@@ -218,10 +248,10 @@ const updateDonation = (supabase) => async (req, res) => {
             });
         }
 
-        if (alumId && !isValidUUID(alumId)) {
+        if (userId && !isValidUUID(userId)) {
             return res.status(httpStatus.BAD_REQUEST).json({
                 status: 'FAILED',
-                message: 'Invalid alumId format',
+                message: 'Invalid userId format',
             });
         }
 
@@ -240,19 +270,26 @@ const updateDonation = (supabase) => async (req, res) => {
             });
         }
 
-        // Check if the alumnus exists in the database
-        if (alumId) {
+        if (req.you.cannotAs(Actions.MANAGE, Subjects.DONATION, donationData)) {
+            return res.status(httpStatus.FORBIDDEN).json({
+                status: "FORBIDDEN",
+                message: "You are not allowed to access this resource."
+            });
+        }
+
+        // Check if the user exists in the database
+        if (userId) {
             const { data: existingAlum, error: alumFetchError } = await supabase
                 .from('alumni_profiles')
                 .select()
-                .eq('alum_id', alumId)
+                .eq('alum_id', userId)
                 .single();
 
-            // If alumnus does not exist, return NOT_FOUND
+            // If user does not exist, return NOT_FOUND
             if (alumFetchError || !existingAlum) {
                 return res.status(httpStatus.NOT_FOUND).json({
                     status: 'FAILED',
-                    message: 'Alumnus not found',
+                    message: 'User not found',
                 });
             }
         }
@@ -274,34 +311,38 @@ const updateDonation = (supabase) => async (req, res) => {
             }
         }
 
-        // Disallow edits to alum_id and project_id
+        // Disallow edits to user_id and project_id
         if (
-            ('alum_id' in req.body && req.body.alum_id !== donationData.alum_id) ||
+            ('user_id' in req.body && req.body.user_id !== donationData.user_id) ||
             ('project_id' in req.body && req.body.project_id !== donationData.project_id)
         ) {
             return res.status(httpStatus.FORBIDDEN).json({
                 status: 'FORBIDDEN',
-                message: 'Editing of alum_id or project_id is not allowed'
+                message: 'Editing of user_id or project_id is not allowed'
             });
         }
 
         // Update only allowed fields
         const {
-            alum_id,
+            user_id,
             project_id,
             donation_date,
             reference_num,
             mode_of_payment,
-            amount
+            amount,
+            comment,
+            is_anonymous
         } = req.body;
 
         const updateData = {
-            // alum_id,
+            // user_id,
             // project_id,
             donation_date,
             reference_num,
             mode_of_payment,
-            amount
+            amount,
+            comment,
+            is_anonymous
         };
 
         // Remove undefined fields to avoid overwriting with nulls
@@ -312,7 +353,7 @@ const updateDonation = (supabase) => async (req, res) => {
         });
 
         // Validate request body
-        const allowedFields = ['alum_id', 'project_id', 'donation_date', 'reference_num', 'mode_of_payment', 'amount'];
+        const allowedFields = ['user_id', 'project_id', 'donation_date', 'reference_num', 'mode_of_payment', 'amount', 'comment', 'is_anonymous'];
 
         allowedFields.forEach(field => {
             if (!(field in req.body)) {
@@ -324,7 +365,9 @@ const updateDonation = (supabase) => async (req, res) => {
             if ((field === 'mode_of_payment' && (typeof value !== 'number' || ![0, 1].includes(value))) ||
                 (field === 'donation_date' && (value !== null && !isValidDate(value))) ||
                 (field === 'amount' && typeof value !== 'number') ||
-                (field === 'reference_num' && typeof value !== 'string')
+                (field === 'reference_num' && typeof value !== 'string') ||
+                (field === 'comment' && typeof value !== 'string') ||
+                (field === 'is_anonymous' && typeof value !== 'boolean')
             ) {
                 return res.status(httpStatus.BAD_REQUEST).json({
                     status: 'FAILED',
@@ -374,6 +417,13 @@ const deleteDonation = (supabase) => async (req, res) => {
             return res.status(httpStatus.NOT_FOUND).json({
                 status: 'FAILED',
                 message: 'Donation not found'
+            });
+        }
+
+        if (req.you.cannotAs(Actions.MANAGE, Subjects.DONATION, donationData)) {
+            return res.status(httpStatus.FORBIDDEN).json({
+                status: "FORBIDDEN",
+                message: "You are not allowed to access this resource."
             });
         }
 

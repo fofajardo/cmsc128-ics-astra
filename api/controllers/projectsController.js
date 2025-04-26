@@ -2,11 +2,19 @@ import httpStatus from 'http-status-codes';
 import projectsService from '../services/projectsService.js';
 import contentsService from '../services/contentsService.js';
 import { isValidUUID, isValidDate } from '../utils/validators.js';
+import {Actions, Subjects} from "../../common/scopes.js";
 
 const getProjects = (supabase) => async (req, res) => {
+    if (req.you.cannot(Actions.READ, Subjects.PROJECT)) {
+        return res.status(httpStatus.FORBIDDEN).json({
+            status: "FORBIDDEN",
+            message: "You are not allowed to access this resource."
+        });
+    }
+
     try {
-        const { page = 1, limit = 10 } = req.query;
-        const { data, error } = await projectsService.fetchProjects(supabase, page, limit);
+        const filters = req.query;
+        const { data, error } = await projectsService.fetchProjects(supabase, filters);
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -29,6 +37,13 @@ const getProjects = (supabase) => async (req, res) => {
 };
 
 const getProjectById = (supabase) => async (req, res) => {
+    if (req.you.cannot(Actions.READ, Subjects.PROJECT)) {
+        return res.status(httpStatus.FORBIDDEN).json({
+            status: "FORBIDDEN",
+            message: "You are not allowed to access this resource."
+        });
+    }
+
     try {
         const { projectId } = req.params;
 
@@ -62,6 +77,13 @@ const getProjectById = (supabase) => async (req, res) => {
 };
 
 const createProject = (supabase) => async (req, res) => {
+    if (req.you.cannot(Actions.CREATE, Subjects.PROJECT)) {
+        return res.status(httpStatus.FORBIDDEN).json({
+            status: "FORBIDDEN",
+            message: "You are not allowed to access this resource."
+        });
+    }
+
     try {
         const projectId = req.body['project_id'];
 
@@ -94,7 +116,7 @@ const createProject = (supabase) => async (req, res) => {
         // Check required fields
         const requiredFields = [
             'project_id',
-            'status',
+            'project_status',
             'due_date',
             // 'date_completed',
             'goal_amount',
@@ -113,7 +135,7 @@ const createProject = (supabase) => async (req, res) => {
         // Insert data to supabase
         const {
             project_id,
-            status,
+            project_status,
             due_date,
             date_completed,
             goal_amount,
@@ -121,7 +143,7 @@ const createProject = (supabase) => async (req, res) => {
         } = req.body;
 
         // Invalid date_completed will result to null (invalid date objects serialized to null)
-        if ((typeof status !== 'number' || ![0, 1, 2].includes(status)) ||
+        if ((typeof project_status !== 'number' || ![0, 1].includes(project_status)) ||
             !isValidDate(due_date) ||
             (date_completed !== undefined && date_completed !== null && !isValidDate(date_completed)) ||
             typeof goal_amount !== 'number' ||
@@ -138,7 +160,7 @@ const createProject = (supabase) => async (req, res) => {
 
         const { data, error } = await projectsService.insertProject(supabase, {
             project_id,
-            status,
+            project_status,
             due_date,
             date_completed,
             goal_amount,
@@ -167,6 +189,13 @@ const createProject = (supabase) => async (req, res) => {
 };
 
 const updateProject = (supabase) => async (req, res) => {
+    if (req.you.cannot(Actions.MANAGE, Subjects.PROJECT)) {
+        return res.status(httpStatus.FORBIDDEN).json({
+            status: "FORBIDDEN",
+            message: "You are not allowed to access this resource."
+        });
+    }
+
     try {
         const projectId = req.params.projectId;
 
@@ -200,7 +229,7 @@ const updateProject = (supabase) => async (req, res) => {
         // Update only allowed fields
         const {
             project_id,
-            status,
+            project_status,
             due_date,
             date_completed,
             goal_amount,
@@ -209,7 +238,7 @@ const updateProject = (supabase) => async (req, res) => {
 
         const updateData = {
             project_id,
-            status,
+            project_status,
             due_date,
             date_completed,
             goal_amount,
@@ -224,7 +253,7 @@ const updateProject = (supabase) => async (req, res) => {
         });
 
         // Validate request body
-        const allowedFields = ['status', 'due_date', 'date_completed', 'goal_amount', 'donation_link'];
+        const allowedFields = ['project_status', 'due_date', 'date_completed', 'goal_amount', 'donation_link'];
 
         allowedFields.forEach(field => {
             if (!(field in req.body)) {
@@ -233,7 +262,7 @@ const updateProject = (supabase) => async (req, res) => {
 
             const value = req.body[field];
 
-            if ((field === 'status' && (typeof value !== 'number' || ![0, 1, 2].includes(value))) ||
+            if ((field === 'project_status' && (typeof value !== 'number' || ![0, 1, 2].includes(value))) ||
                 (field === 'due_date' && !isValidDate(value)) ||
                 (field === 'date_completed' && (value !== null && !isValidDate(value))) ||
                 (field === 'goal_amount' && typeof value !== 'number') ||
@@ -270,6 +299,13 @@ const updateProject = (supabase) => async (req, res) => {
 };
 
 const deleteProject = (supabase) => async (req, res) => {
+    if (req.you.cannot(Actions.MANAGE, Subjects.PROJECT)) {
+        return res.status(httpStatus.FORBIDDEN).json({
+            status: "FORBIDDEN",
+            message: "You are not allowed to access this resource."
+        });
+    }
+
     try {
         const { projectId } = req.params;
 

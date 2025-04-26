@@ -1,6 +1,6 @@
 import httpStatus from "http-status-codes";
 import usersService from "../services/usersService.js";
-import {Actions, Subjects} from "../../common/scopes.js";
+import { Actions, Subjects } from "../../common/scopes.js";
 
 const getUsers = (supabase) => async (req, res) => {
     if (req.you.cannot(Actions.READ, Subjects.USER)) {
@@ -82,9 +82,6 @@ const createUser = (supabase) => async (req, res) => {
             "password",
             "salt",
             "is_enabled",
-            "first_name",
-            "middle_name",
-            "last_name",
             "created_at",
             "updated_at",
             "role"
@@ -262,9 +259,9 @@ const deleteUser = (supabase) => async (req, res) => {
             : await usersService.softDeleteUser(supabase, userId);
 
         if (error) {
-            return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ 
-                status: "FAILED", 
-                message: error.message 
+            return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+                status: "FAILED",
+                message: error.message
             });
         }
 
@@ -273,9 +270,9 @@ const deleteUser = (supabase) => async (req, res) => {
             message: `User ${userId} has been ${hard ? "hard" : "soft"} deleted.`
         });
     } catch (error) {
-        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ 
-            status: "FAILED", 
-            message: error.message 
+        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+            status: "FAILED",
+            message: error.message
         });
     }
 };

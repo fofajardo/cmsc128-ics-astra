@@ -2,6 +2,7 @@ import httpStatus from "http-status-codes";
 import usersService from "../services/usersService.js";
 import alumniProfilesService from "../services/alumniProfilesService.js";
 import { isValidUUID } from "../utils/validators.js";
+import { Actions, Subjects } from "../../common/scopes.js";
 
 const getAlumniProfiles = (supabase) => async (req, res) => {
     try {
@@ -41,6 +42,13 @@ const getAlumniProfileById = (supabase) => async (req, res) => {
             });
         }
 
+        if (req.you.cannotAs(Actions.READ, Subjects.ALUMNI_PROFILE, data)) {
+            return res.status(httpStatus.FORBIDDEN).json({
+                status: "FORBIDDEN",
+                message: "You are not allowed to access this profile."
+            });
+        }
+
         return res.status(httpStatus.OK).json({
             status: "OK",
             alumniProfile: data
@@ -55,6 +63,13 @@ const getAlumniProfileById = (supabase) => async (req, res) => {
 };
 
 const createAlumniProfile = (supabase) => async (req, res) => {
+    if (req.you.cannot(Actions.CREATE, Subjects.ALUMNI_PROFILE)) {
+        return res.status(httpStatus.FORBIDDEN).json({
+            status: "FORBIDDEN",
+            message: "You are not allowed to access this resource."
+        });
+    }
+
     try {
         const userId = req.params.userId;
 
@@ -74,8 +89,8 @@ const createAlumniProfile = (supabase) => async (req, res) => {
             });
         }
 
-        // Check if alumni profile already exists (GET /v1/alumni/:userId)
-        const { data: alumniData, error: alumniError } = await alumniProfilesService.fetchAlumniProfileById(supabase, userId);
+        // Check if alumni profile already exists
+        const { data: alumniData } = await alumniProfilesService.fetchAlumniProfileById(supabase, userId);
 
         if (alumniData) {
             return res.status(httpStatus.CONFLICT).json({
@@ -84,7 +99,7 @@ const createAlumniProfile = (supabase) => async (req, res) => {
             });
         }
 
-        // Check required fields
+        // Validate required fields (excluding created_at)
         const requiredFields = [
             "alum_id",
             "birthdate",
@@ -92,14 +107,16 @@ const createAlumniProfile = (supabase) => async (req, res) => {
             "address",
             "gender",
             "student_num",
-            // "degree_program",
-            "year_graduated",
             "skills",
             "honorifics",
             "citizenship",
             "sex",
             "primary_work_experience_id",
-            "civil_status"
+            "civil_status",
+            "first_name",
+            "middle_name",
+            "last_name",
+            "is_profile_public"
         ];
 
         const missingFields = requiredFields.filter(field => req.body[field] === undefined || req.body[field] === null);
@@ -111,7 +128,7 @@ const createAlumniProfile = (supabase) => async (req, res) => {
             });
         }
 
-        // Insert data to supabase
+        // Destructure and append created_at
         const {
             alum_id,
             birthdate,
@@ -119,15 +136,19 @@ const createAlumniProfile = (supabase) => async (req, res) => {
             address,
             gender,
             student_num,
-            // degree_program,
-            year_graduated,
             skills,
             honorifics,
             citizenship,
             sex,
             primary_work_experience_id,
-            civil_status
+            civil_status,
+            first_name,
+            middle_name,
+            last_name,
+            is_profile_public
         } = req.body;
+
+        const created_at = new Date().toISOString();
 
         const { data, error } = await alumniProfilesService.insertAlumniProfile(supabase, {
             alum_id,
@@ -136,14 +157,17 @@ const createAlumniProfile = (supabase) => async (req, res) => {
             address,
             gender,
             student_num,
-            // degree_program,
-            year_graduated,
             skills,
             honorifics,
             citizenship,
             sex,
             primary_work_experience_id,
-            civil_status
+            civil_status,
+            first_name,
+            middle_name,
+            last_name,
+            is_profile_public,
+            created_at // Set internally
         });
 
         if (error) {
@@ -188,6 +212,13 @@ const updateAlumniProfile = (supabase) => async (req, res) => {
             });
         }
 
+        if (req.you.cannotAs(Actions.MANAGE, Subjects.ALUMNI_PROFILE, userData)) {
+            return res.status(httpStatus.FORBIDDEN).json({
+                status: "FORBIDDEN",
+                message: "You are not allowed to access this resource."
+            });
+        }
+
         // Check if alumni profile exists
         const { data: alumniData, error: alumniError } = await alumniProfilesService.fetchAlumniProfileById(supabase, userId);
 
@@ -214,30 +245,22 @@ const updateAlumniProfile = (supabase) => async (req, res) => {
             location,
             address,
             gender,
-            // degree_program,
-            year_graduated,
             skills,
-            field,
-            job_title,
-            company,
-            citizenship,
             honorifics,
-            civil_status
+            citizenship,
+            civil_status,
+            is_profile_public
         } = req.body;
 
         const updateData = {
             location,
             address,
             gender,
-            // degree_program,
-            year_graduated,
             skills,
-            field,
-            job_title,
-            company,
-            citizenship,
             honorifics,
-            civil_status
+            citizenship,
+            civil_status,
+            is_profile_public
         };
 
         // Remove undefined fields to avoid overwriting with nulls
