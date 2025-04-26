@@ -6,7 +6,8 @@ import passport from "passport";
 import { createClient } from "@supabase/supabase-js";
 import { registerStrategies } from "./middleware/passportStrategies.js";
 import registerRoutes from "./routes/loadRoutes.js";
-import {InferAbility} from "./middleware/inferAbility.js";
+import { InferAbility } from "./middleware/inferAbility.js";
+import cors from "cors";
 
 env.config();
 
@@ -14,9 +15,9 @@ const gServer = express();
 // const supabase = createClient(process.env.DATABASE_URL, process.env.DATABASE_ANONYMOUS_KEY);
 const testingSupabase = createClient(process.env.DATABASE_URL, process.env.DATABASE_SERVICE_KEY);
 
-// // Use appropriate parsers to access the request/response body directly.
-// gServer.use(express.json());
-// gServer.use(express.urlencoded({ extended: false }));
+// Use appropriate parsers to access the request/response body directly.
+gServer.use(express.json());
+gServer.use(express.urlencoded({ extended: false }));
 
 gServer.get("/", (req, res) => {
     res.status(httpStatus.OK).json({ message: "API is working!" });

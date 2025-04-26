@@ -1,18 +1,21 @@
 "use client"
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import {TableHeader, Table, PageTool} from '@/components/TableBuilder';
+import { TableHeader, Table, PageTool } from '@/components/TableBuilder';
 import { users, alumniProfiles } from '@/components/DummyData'
 import SearchFilter from "./filter";
 import { ActionButton } from "@/components/Buttons";
 import SkillTag from "@/components/SkillTag";
+import { Axis3DIcon } from "lucide-react";
+import axios from "axios";
+import { capitalizeName } from "../../../utils/format.js";
 
 export default function AlumniSearch() {
     const [showFilter, setShowFilter] = useState(false);
     const info = { title: "Registered Alumni", search: "Search for an alumni" };
-    const toggleFilter = () => {setShowFilter((prev) => !prev);};
-  
-    const [alumList, updateAlumList] = useState(mockdata);
+    const toggleFilter = () => { setShowFilter((prev) => !prev); };
+
+    const [alumList, updateAlumList] = useState([]);
     const [appliedFilters, updateFilters] = useState({
         yearFrom: "",
         yearTo: "",
@@ -32,8 +35,6 @@ export default function AlumniSearch() {
     const [searchQuery, setSearchQuery] = useState('');
 
 
-
-    
     // FOR BACKEND PEEPS
     useEffect(() => {
         console.log('State updated:', {
@@ -43,63 +44,90 @@ export default function AlumniSearch() {
         });
 
         //refetch alum list
+        const fetchAlumniProfiles = async () => {
+            try {
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles`, {
+                    params: {
+                        page: pagination.currPage,
+                        limit: pagination.numToShow
+                    }
+                });
+                console.log('Fetched alumni:', response.data);
+
+                if (response.data.status === "OK") {
+                    updateAlumList(
+                        response.data.list.map(alum => ({
+                            id: alum.alum_id,
+                            image: "https://cdn-icons-png.flaticon.com/512/145/145974.png", // TODO: Jonz pa-implement nito
+                            alumname: capitalizeName(`${alum.first_name} ${alum.last_name}`),
+                            email: alum.email,
+                            graduationYear: alum.year_graduated?.split('-')[0], // TODO: Jonz pa-implement nito, fetch mo yung data from degree programs
+                            location: alum.location,
+                            fieldOfWork: alum.primary_work_experience_id, // TODO: FRG pa-implement nito
+                            skills: alum.skills ? alum.skills.split(',') : [],
+                        }))
+                    );
+                } else {
+                    console.error('Unexpected response:', response.data);
+                }
+            } catch (error) {
+                console.error('Failed to fetch alumni:', error);
+            }
+        };
+
+        fetchAlumniProfiles();
         //update pagination
 
     }, [appliedFilters, pagination, searchQuery]);
 
-
-
-
     return (
-      <div>
-        {/* Filter Modal */}
-        <div
-            onClick={toggleFilter}
-            className={`fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs transition-all duration-100 ease-out ${
-                showFilter ? 'opacity-100' : 'opacity-0 pointer-events-none'
-            }`}
-        >
-        <div onClick={(e) => e.stopPropagation()}>
-            <SearchFilter
-            onClose={toggleFilter}
-            initialFilters={appliedFilters}
-            updateFilters={updateFilters}
-            />
-        </div>
-        </div>
-
-
-        {/* Header with background */}
-        <div className="relative">
-          <img
-            src="/blue-bg.png"
-            alt="Background"
-            className="h-64 w-full object-cover"
-          />
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-astrawhite z-10">
-            <h1 className="font-h1 text-center">Alumni Search</h1>
-            <p className="font-s text-center">The ever-growing UPLB-ICS Alumni Network</p>
-          </div>
-        </div>
-  
-        {/* Table section */}
-        <div className="bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24">
-           <div className='flex flex-col py-4 px-1 md:px-4 lg:px-8'>
-                <TableHeader 
-                    info={info} 
-                    pagination={pagination} 
-                    setPagination={setPagination} 
-                    toggleFilter={toggleFilter}   
-                    searchQuery={searchQuery}
-                    setSearchQuery={setSearchQuery}/>
-                <Table cols={cols} data={createRows(alumList)} />
-                <PageTool pagination={pagination} setPagination={setPagination} />
+        <div>
+            {/* Filter Modal */}
+            <div
+                onClick={toggleFilter}
+                className={`fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs transition-all duration-100 ease-out ${showFilter ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                    }`}
+            >
+                <div onClick={(e) => e.stopPropagation()}>
+                    <SearchFilter
+                        onClose={toggleFilter}
+                        initialFilters={appliedFilters}
+                        updateFilters={updateFilters}
+                    />
+                </div>
             </div>
+
+            {/* Header with background */}
+            <div className="relative">
+                <img
+                    src="/blue-bg.png"
+                    alt="Background"
+                    className="h-64 w-full object-cover"
+                />
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-astrawhite z-10">
+                    <h1 className="font-h1 text-center">Alumni Search</h1>
+                    <p className="font-s text-center">The ever-growing UPLB-ICS Alumni Network</p>
+                </div>
+            </div>
+
+            {/* Table section */}
+            <div className="bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24">
+                <div className='flex flex-col py-4 px-1 md:px-4 lg:px-8'>
+                    <TableHeader
+                        info={info}
+                        pagination={pagination}
+                        setPagination={setPagination}
+                        toggleFilter={toggleFilter}
+                        searchQuery={searchQuery}
+                        setSearchQuery={setSearchQuery} />
+                    <Table cols={cols} data={createRows(alumList)} />
+                    <PageTool pagination={pagination} setPagination={setPagination} />
+                </div>
+            </div>
+
         </div>
-        
-      </div>
     );
-  }
+}
 
 const cols = [
     { label: 'Image:label-hidden', justify: 'center', visible: 'all' },
@@ -151,33 +179,33 @@ function renderText(text) {
 }
 
 function renderSkills(skills) {
-  const visibleSkills = skills.slice(0, 3);
-  const remainingCount = skills.length - 3;
+    const visibleSkills = skills.slice(0, 3);
+    const remainingCount = skills.length - 3;
 
-  return (
-    <div className="relative group flex justify-center items-center cursor-default">
-        <div className="flex flex-wrap justify-center items-center">
-            {visibleSkills.map((skill, index) => (
-            <SkillTag key={index} text={skill} />
-            ))}
-            {remainingCount > 0 && (
-            <div className="size-8 flex justify-center items-center rounded-full text-xs font-medium border border-dashed text-astradarkgray bg-astratintedwhite cursor-default">
-                +{remainingCount}
+    return (
+        <div className="relative group flex justify-center items-center cursor-default">
+            <div className="flex flex-wrap justify-center items-center">
+                {visibleSkills.map((skill, index) => (
+                    <SkillTag key={index} text={skill} />
+                ))}
+                {remainingCount > 0 && (
+                    <div className="size-8 flex justify-center items-center rounded-full text-xs font-medium border border-dashed text-astradarkgray bg-astratintedwhite cursor-default">
+                        +{remainingCount}
+                    </div>
+                )}
             </div>
-            )}
-        </div>
 
-        <div className="fixed bottom-8 right-8 hidden group-hover:block bg-astratintedwhite border border-astradarkgray rounded-lg shadow-2xl p-4 z-10 max-w-xs">
-            <ul className="list-disc list-inside text-astradarkgray">
-            {skills.map((skill, index) => (
-                <li key={index} className="text-s">
-                {skill}
-                </li>
-            ))}
-            </ul>
+            <div className="fixed bottom-8 right-8 hidden group-hover:block bg-astratintedwhite border border-astradarkgray rounded-lg shadow-2xl p-4 z-10 max-w-xs">
+                <ul className="list-disc list-inside text-astradarkgray">
+                    {skills.map((skill, index) => (
+                        <li key={index} className="text-s">
+                            {skill}
+                        </li>
+                    ))}
+                </ul>
+            </div>
         </div>
-    </div>
-  );
+    );
 }
 
 function renderActions(id) {
