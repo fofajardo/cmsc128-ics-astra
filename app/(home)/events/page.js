@@ -132,6 +132,36 @@ export default function EventsPage() {
         <EventCarousel events={events} />
       </div>
 
+      {/* What's Up Section */}
+      <div
+        className="relative w-full bg-cover bg-center"
+        style={{ backgroundImage: "url('/blue-bg.png')" }}
+      >
+        <div className="max-w-[1440px] mx-auto px-12 py-20 flex flex-col lg:flex-row items-center justify-between text-astrawhite gap-10">
+          <div className="max-w-[600px] space-y-6 text-center lg:text-left animate-whats-up-title">
+            <h1 className="text-[60px] font-extrabold leading-[1.1]">
+              What's Up
+            </h1>
+            <p className="text-lg font-medium">
+              Stay updated with the latest happenings and announcements!
+            </p>
+            <button className="mt-4 px-8 py-3 border-2 border-white text-white hover:bg-white hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer">
+              Learn More
+            </button>
+          </div>
+          <div className="w-full lg:w-[550px] flex justify-center">
+            <div className="relative w-full h-auto max-w-[550px] animate-float">
+              <Image
+                src={eventsVector}
+                alt="What's Up Illustration"
+                className="w-full h-auto object-contain transition-transform duration-300 hover:scale-105"
+                priority
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Animations */}
       <style jsx global>{`
         @keyframes floatUp {
@@ -160,12 +190,42 @@ export default function EventsPage() {
           }
         }
 
+        @keyframes whatsUpTitle {
+          from {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes whatsUpContent {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
         .animate-float {
           animation: floatUp 4s ease-in-out infinite;
         }
 
         .animate-hero-text {
           animation: fadeUp 1.5s ease forwards;
+        }
+
+        .animate-whats-up-title {
+          animation: whatsUpTitle 1.5s ease forwards;
+        }
+
+        .animate-whats-up-content {
+          animation: whatsUpContent 1.5s ease forwards;
         }
       `}</style>
     </div>
