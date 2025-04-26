@@ -1,9 +1,11 @@
+"use client"
 import * as React from 'react'
 import { GoBackButton } from '@/components/Buttons'
 import SkillTag from '@/components/SkillTag'
 import { users, alumniProfiles } from '@/components/DummyData'
 import { Mail, MapPin, GraduationCap, Image } from "lucide-react";
 import { ActionButton } from "@/components/Buttons";
+import TransitionGrow from '@/components/transitions/TransitionGrow';
 
 
 const getStatusBadge = (status) => {
@@ -24,7 +26,8 @@ const getStatusBadge = (status) => {
 
 
 export default function AlumniSearchProfile({ params }) {
-  const {id} = params
+  const unwrappedParams = React.use(params);
+  const {id} = unwrappedParams;
 
   const user = users.find((u) => u.id === id);
   const profile = alumniProfiles.find((p) => p.alum_id === id);
@@ -37,11 +40,11 @@ export default function AlumniSearchProfile({ params }) {
   return (
     <>    
     <div className="p-4 bg-astradirtywhite min-h-screen">
-      <div className="pb-2">
+    <div className="max-w-6xl mx-auto my-1">
         <GoBackButton />
       </div>
       {/* PROFILE SECTION */}
-      <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between bg-white border border-astralightgray rounded-xl px-6 py-4 shadow-sm gap-4">
+      <TransitionGrow className="max-w-6xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between bg-white border border-astralightgray rounded-xl px-6 py-4 shadow-sm gap-4">
         {/* left section */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 w-full md:w-auto">
           {/* avatar placeholder */}
@@ -83,12 +86,12 @@ export default function AlumniSearchProfile({ params }) {
           Contact
         </button>
         </div>
-      </div>
+      </TransitionGrow >
 
 
-      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
       {/* Left Column: Personal Info */}
-      <div className="md:col-span-2 bg-white rounded-xl border border-astralightgray p-6 shadow-md">
+      <TransitionGrow className="md:col-span-2 bg-white rounded-xl border border-astralightgray p-6 shadow-md">
         {/* Personal Info */}
         <div className="grid grid-cols-3 gap-y-8 text-center text-sm text-astrablack py-10">
           <div>
@@ -176,10 +179,10 @@ export default function AlumniSearchProfile({ params }) {
             </div>
           </div>
         </div>
-      </div>
+      </TransitionGrow >
 
       {/* Right Column */}
-      <div className="space-y-4">
+      <div  className="space-y-4">
         {/* Skills */}
         <div className="bg-white border border-astralightgray rounded-xl p-4 shadow-md">
           <h4 className="font-rb text-astrablack mb-0">Technical Skills</h4>
@@ -222,8 +225,23 @@ export default function AlumniSearchProfile({ params }) {
         <div className="bg-white border border-astralightgray rounded-xl p-4 shadow-md">
           <h4 className="font-rb text-astrablack mb-0">Proof of Graduation</h4>
           <hr className="h-2 border-astralightgray"></hr>
-          <div className="flex justify-center items-center h-60 bg-gray-100 rounded-md">
-            <Image className="w-16 h-16" strokeWidth="1"></Image>
+          <div className="relative flex justify-center items-center h-60 bg-gray-100 rounded-md border shadow">
+            {/* main image */}
+            <img
+              src="https://media.licdn.com/dms/image/v2/D5622AQG1fAsAsQh6HQ/feedshare-shrink_800/feedshare-shrink_800/0/1722688761782?e=2147483647&v=beta&t=uINCPcGEVdl801U3Zbcg5tkbeqgKzePV0R4TT6q6q0E"
+              alt="Proof"
+              className="w-full h-full object-cover rounded-md"
+              onError={(e) => {
+                e.target.style.display = 'none';
+                e.target.nextElementSibling.style.display = 'flex';
+              }}
+            />
+            
+            {/* fallback icon (hidden by default) */}
+            <div className="hidden absolute inset-0 flex-col items-center justify-center text-gray-400">
+              <Image className="w-16 h-16" strokeWidth="1" />
+              <span className="mt-2">Image not available</span>
+            </div>
           </div>
         </div>
         <div className='flex justify-center gap-2'>
@@ -259,7 +277,7 @@ export default function AlumniSearchProfile({ params }) {
             </>
           )}
         </div>
-      </div>
+      </div >
     </div>
 
     </div>
