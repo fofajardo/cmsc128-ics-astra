@@ -3,7 +3,7 @@ import donationsService from '../services/donationsService.js';
 import { isValidUUID, isValidDate } from '../utils/validators.js';
 import {Actions, Subjects} from "../../common/scopes.js";
 
-const getDonations = (supabase) => async (req, res) => {
+const getDonations = async (req, res) => {
     if (req.you.cannot(Actions.READ, Subjects.DONATION)) {
         return res.status(httpStatus.FORBIDDEN).json({
             status: "FORBIDDEN",
@@ -13,7 +13,7 @@ const getDonations = (supabase) => async (req, res) => {
 
     try {
         const filters = req.query;
-        const { data, error } = await donationsService.fetchDonations(supabase, filters);
+        const { data, error } = await donationsService.fetchDonations(req.supabase, filters);
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -35,7 +35,7 @@ const getDonations = (supabase) => async (req, res) => {
     }
 };
 
-const getDonationById = (supabase) => async (req, res) => {
+const getDonationById = async (req, res) => {
     try {
         const { donationId } = req.params;
 
@@ -46,7 +46,7 @@ const getDonationById = (supabase) => async (req, res) => {
             });
         }
 
-        const { data, error } = await donationsService.fetchDonationById(supabase, donationId);
+        const { data, error } = await donationsService.fetchDonationById(req.supabase, donationId);
 
         if (error) {
             return res.status(httpStatus.NOT_FOUND).json({
@@ -75,7 +75,7 @@ const getDonationById = (supabase) => async (req, res) => {
     }
 };
 
-const createDonation = (supabase) => async (req, res) => {
+const createDonation = async (req, res) => {
     if (req.you.cannot(Actions.CREATE, Subjects.DONATION)) {
         return res.status(httpStatus.FORBIDDEN).json({
             status: "FORBIDDEN",
@@ -188,7 +188,7 @@ const createDonation = (supabase) => async (req, res) => {
         }
 
 
-        const { data, error } = await donationsService.insertDonation(supabase, {
+        const { data, error } = await donationsService.insertDonation(req.supabase, {
             user_id: userId,
             project_id: projectId,
             donation_date: donationDate,
@@ -219,7 +219,7 @@ const createDonation = (supabase) => async (req, res) => {
     }
 };
 
-const updateDonation = (supabase) => async (req, res) => {
+const updateDonation = async (req, res) => {
     try {
         const { donationId } = req.params;
         const projectId = req.body.project_id
@@ -376,7 +376,7 @@ const updateDonation = (supabase) => async (req, res) => {
             }
         })
 
-        const { data, error } = await donationsService.updateDonationData(supabase, donationId, updateData)
+        const { data, error } = await donationsService.updateDonationData(req.supabase, donationId, updateData)
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -399,7 +399,7 @@ const updateDonation = (supabase) => async (req, res) => {
     }
 };
 
-const deleteDonation = (supabase) => async (req, res) => {
+const deleteDonation = async (req, res) => {
     try {
         const { donationId } = req.params;
 
@@ -411,7 +411,7 @@ const deleteDonation = (supabase) => async (req, res) => {
         }
 
         // Check if donation exists
-        const { data: donationData, error: donationError } = await donationsService.fetchDonationById(supabase, donationId);
+        const { data: donationData, error: donationError } = await donationsService.fetchDonationById(req.supabase, donationId);
 
         if (donationError || !donationData) {
             return res.status(httpStatus.NOT_FOUND).json({
@@ -427,7 +427,7 @@ const deleteDonation = (supabase) => async (req, res) => {
             });
         }
 
-        const { error } = await donationsService.deleteDonation(supabase, donationId);
+        const { error } = await donationsService.deleteDonation(req.supabase, donationId);
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({

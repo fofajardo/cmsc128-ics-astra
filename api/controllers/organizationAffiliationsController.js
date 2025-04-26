@@ -1,12 +1,12 @@
 import httpStatus from "http-status-codes";
 import organizationAffiliationsService from "../services/organizationAffiliationsService.js";
 
-const getAffiliatedOrganizations = (supabase) => async (req, res) => {
+const getAffiliatedOrganizations = async (req, res) => {
     try {
         const { alumId } = req.params;
         const { page = 1, limit = 10 } = req.query;
 
-        const { data, error } = await organizationAffiliationsService.fetchAffiliations(supabase, page, limit, alumId);
+        const { data, error } = await organizationAffiliationsService.fetchAffiliations(req.supabase, page, limit, alumId);
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -30,7 +30,8 @@ const getAffiliatedOrganizations = (supabase) => async (req, res) => {
     }
 };
 
-const affiliateAlumnusToOrganization = (supabase) => async (req, res) => {
+/** @type {import("express").RequestHandler} */
+const affiliateAlumnusToOrganization = async (req, res) => {
     try {
 
         const { alumId } = req.params;
@@ -58,7 +59,7 @@ const affiliateAlumnusToOrganization = (supabase) => async (req, res) => {
         } = req.body;
 
         // Check if affiliation already exists
-        const { data: existingAffiliations, error: checkError } = await organizationAffiliationsService.checkAffiliationIfExisting(supabase, org_id, alumId);
+        const { data: existingAffiliations, error: checkError } = await organizationAffiliationsService.checkAffiliationIfExisting(req.supabase, org_id, alumId);
 
         if (checkError) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -74,7 +75,7 @@ const affiliateAlumnusToOrganization = (supabase) => async (req, res) => {
             });
         }
 
-        const affiliationData = {   
+        const affiliationData = {
             org_id: org_id,
             alum_id: alumId,
             role: role,
@@ -82,7 +83,7 @@ const affiliateAlumnusToOrganization = (supabase) => async (req, res) => {
         };
 
         // Insert new user
-        const { data, error } = await organizationAffiliationsService.createAffiliation(supabase, affiliationData);
+        const { data, error } = await organizationAffiliationsService.createAffiliation(req.supabase, affiliationData);
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -104,15 +105,15 @@ const affiliateAlumnusToOrganization = (supabase) => async (req, res) => {
     }
 };
 
-const updateAffiliationData = (supabase) => async (req, res) => {
+const updateAffiliationData = async (req, res) => {
     try {
         const { alumId } = req.params;
         const { orgId } = req.params;
         const { role, joined_date } = req.body;
 
         // Check if affiliation already exists
-        const { data: existingAffiliations, error: checkError } = await organizationAffiliationsService.checkAffiliationIfExisting(supabase, orgId, alumId);
-            
+        const { data: existingAffiliations, error: checkError } = await organizationAffiliationsService.checkAffiliationIfExisting(req.supabase, orgId, alumId);
+
         if (checkError) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
                 status: 'FAILED',
@@ -131,9 +132,9 @@ const updateAffiliationData = (supabase) => async (req, res) => {
             role: role,
             joined_date: joined_date,
         };
-        
+
         // Update the affiliation
-        const { error } = await organizationAffiliationsService.updateAffiliation(supabase, orgId, alumId, updatedAffiliationData);
+        const { error } = await organizationAffiliationsService.updateAffiliation(req.supabase, orgId, alumId, updatedAffiliationData);
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -156,12 +157,12 @@ const updateAffiliationData = (supabase) => async (req, res) => {
 }
 
 
-const deleteAffiliatedOrganization = (supabase) => async (req, res) => {
+const deleteAffiliatedOrganization = async (req, res) => {
     try {
         const { alumId } = req.params;
         const { orgId } = req.params;
 
-            const { error } = await organizationAffiliationsService.deleteAffiliation(supabase, orgId, alumId);
+            const { error } = await organizationAffiliationsService.deleteAffiliation(req.supabase, orgId, alumId);
 
             if (error) {
                 return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({

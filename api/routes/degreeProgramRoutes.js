@@ -1,14 +1,14 @@
 import express from "express";
 import degreeProgramController from "../controllers/degreeProgramController.js";
 
-const degreeProgramsRouter = (supabase) => {
+const degreeProgramsRouter = () => {
     const router = express.Router();
 
-    router.get("/", degreeProgramController.getAllDegreePrograms(supabase));
-    router.get("/:id", degreeProgramController.getDegreeProgramById(supabase));
-    router.post("/", degreeProgramController.createDegreeProgram(supabase));
-    router.put("/:id", degreeProgramController.updateDegreeProgram(supabase));
-    router.delete("/:id", degreeProgramController.deleteDegreeProgram(supabase));
+    router.get("/", degreeProgramController.getAllDegreePrograms);
+    router.get("/:id", degreeProgramController.getDegreeProgramById);
+    router.post("/", degreeProgramController.createDegreeProgram);
+    router.put("/:id", degreeProgramController.updateDegreeProgram);
+    router.delete("/:id", degreeProgramController.deleteDegreeProgram);
 
     return router;
 };

@@ -4,7 +4,7 @@ import contentsService from '../services/contentsService.js';
 import { isValidUUID, isValidDate } from '../utils/validators.js';
 import {Actions, Subjects} from "../../common/scopes.js";
 
-const getProjects = (supabase) => async (req, res) => {
+const getProjects = async (req, res) => {
     if (req.you.cannot(Actions.READ, Subjects.PROJECT)) {
         return res.status(httpStatus.FORBIDDEN).json({
             status: "FORBIDDEN",
@@ -14,7 +14,7 @@ const getProjects = (supabase) => async (req, res) => {
 
     try {
         const filters = req.query;
-        const { data, error } = await projectsService.fetchProjects(supabase, filters);
+        const { data, error } = await projectsService.fetchProjects(req.supabase, filters);
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -36,7 +36,7 @@ const getProjects = (supabase) => async (req, res) => {
     }
 };
 
-const getProjectById = (supabase) => async (req, res) => {
+const getProjectById = async (req, res) => {
     if (req.you.cannot(Actions.READ, Subjects.PROJECT)) {
         return res.status(httpStatus.FORBIDDEN).json({
             status: "FORBIDDEN",
@@ -54,7 +54,7 @@ const getProjectById = (supabase) => async (req, res) => {
             });
         }
 
-        const { data, error } = await projectsService.fetchProjectById(supabase, projectId);
+        const { data, error } = await projectsService.fetchProjectById(req.supabase, projectId);
 
         if (error) {
             return res.status(httpStatus.NOT_FOUND).json({
@@ -76,7 +76,7 @@ const getProjectById = (supabase) => async (req, res) => {
     }
 };
 
-const createProject = (supabase) => async (req, res) => {
+const createProject = async (req, res) => {
     if (req.you.cannot(Actions.CREATE, Subjects.PROJECT)) {
         return res.status(httpStatus.FORBIDDEN).json({
             status: "FORBIDDEN",
@@ -94,7 +94,7 @@ const createProject = (supabase) => async (req, res) => {
             });
         }
 
-        const { data: contentData, error: contentError } = await contentsService.fetchContentById(supabase, projectId);
+        const { data: contentData, error: contentError } = await contentsService.fetchContentById(req.supabase, projectId);
 
         if (contentError || !contentData) {
             return res.status(httpStatus.NOT_FOUND).json({
@@ -104,7 +104,7 @@ const createProject = (supabase) => async (req, res) => {
         }
 
         // Check if project already exists (GET /v1/project/:projectId)
-        const { data: projectData, error: projectError } = await projectsService.fetchProjectById(supabase, projectId);
+        const { data: projectData, error: projectError } = await projectsService.fetchProjectById(req.supabase, projectId);
 
         if (projectData) {
             return res.status(httpStatus.CONFLICT).json({
@@ -158,7 +158,7 @@ const createProject = (supabase) => async (req, res) => {
         // Sanitize string fields
         const clean_donation_link = donation_link.trim();
 
-        const { data, error } = await projectsService.insertProject(supabase, {
+        const { data, error } = await projectsService.insertProject(req.supabase, {
             project_id,
             project_status,
             due_date,
@@ -188,7 +188,7 @@ const createProject = (supabase) => async (req, res) => {
     }
 };
 
-const updateProject = (supabase) => async (req, res) => {
+const updateProject = async (req, res) => {
     if (req.you.cannot(Actions.MANAGE, Subjects.PROJECT)) {
         return res.status(httpStatus.FORBIDDEN).json({
             status: "FORBIDDEN",
@@ -207,7 +207,7 @@ const updateProject = (supabase) => async (req, res) => {
         }
 
         // Check if project exists
-        const { data: projectData, error: projectError } = await projectsService.fetchProjectById(supabase, projectId);
+        const { data: projectData, error: projectError } = await projectsService.fetchProjectById(req.supabase, projectId);
 
         if (projectError || !projectData) {
             return res.status(httpStatus.NOT_FOUND).json({
@@ -275,7 +275,7 @@ const updateProject = (supabase) => async (req, res) => {
             }
         })
 
-        const { data, error } = await projectsService.updateProjectData(supabase, projectId, updateData)
+        const { data, error } = await projectsService.updateProjectData(req.supabase, projectId, updateData)
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -298,7 +298,7 @@ const updateProject = (supabase) => async (req, res) => {
     }
 };
 
-const deleteProject = (supabase) => async (req, res) => {
+const deleteProject = async (req, res) => {
     if (req.you.cannot(Actions.MANAGE, Subjects.PROJECT)) {
         return res.status(httpStatus.FORBIDDEN).json({
             status: "FORBIDDEN",
@@ -317,7 +317,7 @@ const deleteProject = (supabase) => async (req, res) => {
         }
 
         // Check if project exists
-        const { data: projectData, error: projectError } = await projectsService.fetchProjectById(supabase, projectId);
+        const { data: projectData, error: projectError } = await projectsService.fetchProjectById(req.supabase, projectId);
 
         if (projectError || !projectData) {
             return res.status(httpStatus.NOT_FOUND).json({
@@ -326,7 +326,7 @@ const deleteProject = (supabase) => async (req, res) => {
             });
         }
 
-        const { error } = await projectsService.deleteProject(supabase, projectId);
+        const { error } = await projectsService.deleteProject(req.supabase, projectId);
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({

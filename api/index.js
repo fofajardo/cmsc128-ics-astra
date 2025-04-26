@@ -7,6 +7,7 @@ import { createClient } from "@supabase/supabase-js";
 import { registerStrategies } from "./middleware/passportStrategies.js";
 import registerRoutes from "./routes/loadRoutes.js";
 import {InferAbility} from "./middleware/inferAbility.js";
+import {BuildSupabaseClient} from "./middleware/buildSupabaseClient.js";
 
 env.config({ path: [".env", "../.env"] });
 
@@ -35,7 +36,8 @@ gServer.use(passport.authenticate("session"));
 
 registerStrategies(testingSupabase);
 gServer.use(InferAbility);
-registerRoutes(gServer, testingSupabase);
+gServer.use(BuildSupabaseClient);
+registerRoutes(gServer);
 
 export default gServer;
 
