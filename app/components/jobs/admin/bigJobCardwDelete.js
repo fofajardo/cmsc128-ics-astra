@@ -2,9 +2,17 @@
 
 import { useState } from "react";
 import ConfirmationPrompt from "../edit/confirmation";
+import { useParams } from "next/navigation";
 
 export default function BigJobCardwDelete(job) {
     const [showPrompt, setPrompt] = useState(false);
+    const { id } = useParams();
+
+    const handleDelete = () => {
+        // handle delete job id logic here
+        
+        setPrompt(false);
+    };
 
     return (
     <div className="bg-astrawhite max-w-[1250px] w-19/20 min-h-[308px] h-auto rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] p-10 pb-7">
@@ -18,7 +26,7 @@ export default function BigJobCardwDelete(job) {
         </div>
         
         <p className="mt-5 text-black text-justify">{`${job.details}`}</p>
-        {showPrompt ? <ConfirmationPrompt isEdit={false} close={()=>setPrompt(false)}/> : <></>} 
+        {showPrompt ? <ConfirmationPrompt isEdit={false} close={()=>setPrompt(false)} object={id} handleConfirm={handleDelete}/> : <></>} 
     </div>
   )}
   

@@ -5,7 +5,7 @@ import BigJobCardwDelete from "@/components/jobs/admin/bigJobCardwDelete";
 
 export default function JobsAdminPage() {
     return (
-    <div className="mt-[80px] py-8 bg-astratintedwhite w-full flex flex-col items-center">
+    <div className="py-8 bg-astratintedwhite w-full flex flex-col items-center">
 
         <Back/>
 

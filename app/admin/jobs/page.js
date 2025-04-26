@@ -27,8 +27,21 @@ export default function Jobs() {
         currPage: 1,
         lastPage: 10,
         numToShow: 10,
-        total: 999
+        total: 999,
+        itemsPerPage: 5
     });
+
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const handleSearch = (searchInput) => {
+      setSearchQuery(searchInput);
+
+      // put job search logic here
+    }
+
+    const handleApply = () => {
+      // put filtering and sorting logic here
+    }
 
     return (
       <div>
@@ -39,7 +52,7 @@ export default function Jobs() {
                 className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
             >
                 <div onClick={e => e.stopPropagation()}>
-                <SearchFilter onClose={toggleFilter} />
+                <SearchFilter onClose={toggleFilter} onApply={handleApply}/>
                 </div>
             </div>
             )}
@@ -55,7 +68,7 @@ export default function Jobs() {
         {/* Table section */}
         <div className="bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24 flex flex-col">
             <div className='flex flex-col py-4 px-1 md:px-4 lg:px-8'>
-                <TableHeader info={info} pagination={pagination} toggleFilter={toggleFilter} />
+                <TableHeader info={info} pagination={pagination} setPagination={setPagination} toggleFilter={toggleFilter} setSearchQuery={handleSearch} searchQuery={searchQuery} />
                 <Table cols={cols} data={createRows(selectedIds, setSelectedIds, currTab)} />
                 <PageTool pagination={pagination} setPagination={setPagination} />
             </div>
@@ -67,42 +80,6 @@ export default function Jobs() {
       </div>
     );
   }
-
-
-
-  function getNotifyContent(action, selectedCount) {
-    const plural = selectedCount > 1 ? "s" : "";
-    let message = "";
-    let type = "success";
-  
-    switch (action) {
-      case "approve":
-        message = selectedCount > 0
-          ? `${selectedCount} pending account${plural} have been approved!`
-          : "All pending accounts have been approved!";
-        break;
-      case "decline":
-        message = selectedCount > 0
-          ? `${selectedCount} pending account${plural} have been declined!`
-          : "All pending accounts have been declined!";
-        type = "fail";
-        break;
-      case "remove":
-        message = selectedCount > 0
-          ? `Access has been removed from ${selectedCount} accounts!`
-          : "Access has been removed from all active accounts!";
-        type = "fail";
-        break;
-      case "reactivate":
-        message = selectedCount > 0
-          ? `${selectedCount} inactive account${plural} have been reactivated!`
-          : "All inactive accounts have been reactivated!";
-        break;
-    }
-  
-    return { notifyMessage: message, notifyType: type };
-  }
-  
 
   function BottomButtons({ selectedCount, currTab, setToast }) {
     const [modal, setModal] = useState({
@@ -264,6 +241,10 @@ function renderStatus(text) {
 }
 
 function renderActions(id, name) {
+      const handleDelete = () => {
+        // handle delete job id logic here
+        
+    };
     return (
 
         //Based muna sa currTab pero I think mas maganda kung sa mismong account/user kukunin yung active status
@@ -287,7 +268,8 @@ function renderActions(id, name) {
             <ActionButton
             label="Delete"
             color="red"
-            notifyMessage={`${name} has been declined!`}
+            onClick={handleDelete}
+            notifyMessage={`${name} has been deleted!`}
             notifyType="fail"
             />
         </div>
@@ -295,7 +277,8 @@ function renderActions(id, name) {
             <ActionButton
             label={<Trash2 size={20}/>}
             color="red"
-            notifyMessage={`${name} has been declined!`}
+            onClick={handleDelete}
+            notifyMessage={`${name} has been deleted!`}
             notifyType="fail"
             />
         </div>
