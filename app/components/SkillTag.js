@@ -28,11 +28,11 @@ function getColorFromText(text) {
 }
 
 
-export default function SkillTag({ text }) {
+export default function SkillTag({ text, margin }) {
   const color = getColorFromText(text);
 
   return (
-    <span className={`px-3 py-2 rounded-full text-xs font-medium border ${color} m-1`}>
+    <span className={`px-3 py-2 rounded-full text-xs font-medium border ${color} ${margin}`}>
       {text}
     </span>
   );
