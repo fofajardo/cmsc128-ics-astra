@@ -5,18 +5,20 @@ import SkillTag from '@/components/SkillTag'
 import { users, alumniProfiles } from '@/components/DummyData'
 import { Mail, MapPin, GraduationCap, Image } from "lucide-react";
 import axios from "axios";
-import { capitalizeName } from "../../../../utils/format.js";
+import { capitalizeName, formatDate } from "../../../../utils/format.js";
 
 export default async function AlumniSearchProfile({ params }) {
     const { id } = await params
 
-    const [userRes, profileRes] = await Promise.all([
+    const [userRes, profileRes, workExperienceRes] = await Promise.all([
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/users/${id}`),
-        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/${id}`)
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/${id}`),
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/work-experiences/alum/${id}`)
     ]);
 
     const user = userRes.data.user;
     const profile = profileRes.data.alumniProfile;
+    const workExperience = workExperienceRes.data.work_experiences;
 
     console.log(user);
     console.log(profile);
@@ -25,6 +27,19 @@ export default async function AlumniSearchProfile({ params }) {
         return <div className="text-center mt-20 text-red-500">{error || "Alumnus not found."}</div>;
     }
 
+    console.log(workExperience.length);
+
+    if (workExperience.length > 1) {
+        workExperience.map((experience) => {
+            experience.year_started = formatDate(experience.year_started);
+            experience.year_ended = experience.year_ended ? formatDate(experience.year_ended) : "Present";
+        });
+    } else
+    if (typeof workExperience === 'object' && workExperience !== null) {
+        workExperience.year_started = formatDate(workExperience.year_started);
+        workExperience.year_ended = workExperience.year_ended ? formatDate(workExperience.year_ended) : "Present";
+    }
+    
     return (
         <div className="p-4 bg-astradirtywhite min-h-screen">
             <div className="pb-2">
@@ -125,26 +140,31 @@ export default async function AlumniSearchProfile({ params }) {
                             Experience
                         </h4>
                         <div className="space-y-4 p-4 bg-astratintedwhite rounded-b-md text-sm">
-                            <div className="border-l-4 border-astralight rounded">
-                                <div className="ml-5">
-                                    <p className="font-semibold text-astrablack">Department of Information and Communications Technology</p>
-                                    <p className="italic text-astradarkgray">Makati, Philippines</p>
-                                    <p className="text-astradarkgray">August 2021 - Present</p>
+                            {workExperience.length > 0 ? (
+                                workExperience.map((experience, idx) => (
+                                    <div key={idx} className="border-l-4 border-astralight rounded">
+                                        <div className="ml-5">
+                                            <p className="font-semibold text-astrablack">{experience.company}</p>
+                                            <p className="italic text-astradarkgray">{experience.location}</p>
+                                            <p className="text-astradarkgray">
+                                                {experience.year_started} - {experience.year_ended ? experience.year_ended : "Present"}
+                                            </p>
+                                        </div>
+                                    </div>
+                            ))) : (
+                                {/* 
+                                    TODO: FIX DISPLAY, text div is not centered and does not flex  
+                                */},
+                                <div className="border-l-4 border-astralight rounded">
+                                    <div className="text-center mt-50 text-astradarkgray">
+                                        {"No work experience"}
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="border-l-4 border-astralight rounded">
-                                <div className="ml-5">
-                                    <p className="font-semibold text-astrablack">Department of Information and Communications Technology</p>
-                                    <p className="italic text-astradarkgray">Makati, Philippines</p>
-                                    <p className="text-astradarkgray">August 2021 - Present</p>
-                                </div>
-                            </div>
+                            )} 
                         </div>
                     </div>
-
-                    {/* Affiliations Section */}
                     <div className="mt-6">
-                        <h4 className="bg-astraprimary text-white px-4 py-2 rounded-t-md text-sm font-semibold">
+                        <h4 className="bg-astraprimary text-white px-4 py-2 rounded-t-md text</div>-sm font-semibold">
                             Affiliations
                         </h4>
                         <div className="space-y-4 p-4 bg-astratintedwhite rounded-b-md text-sm">
