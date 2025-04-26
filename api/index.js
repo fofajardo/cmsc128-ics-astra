@@ -8,9 +8,7 @@ import { registerStrategies } from "./middleware/passportStrategies.js";
 import registerRoutes from "./routes/loadRoutes.js";
 import {InferAbility} from "./middleware/inferAbility.js";
 
-env.config({
-    path: "../.env"
-});
+env.config();
 
 const gServer = express();
 // const supabase = createClient(process.env.DATABASE_URL, process.env.DATABASE_ANONYMOUS_KEY);
