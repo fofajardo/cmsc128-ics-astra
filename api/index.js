@@ -2,19 +2,15 @@ import env from "dotenv";
 import express from "express";
 import session from "express-session";
 import httpStatus from "http-status-codes";
-import passport from "passport";
-import { createClient } from "@supabase/supabase-js";
-import { registerStrategies } from "./middleware/passportStrategies.js";
 import registerRoutes from "./routes/loadRoutes.js";
 import {InferAbility} from "./middleware/inferAbility.js";
 import {BuildSupabaseClient} from "./middleware/buildSupabaseClient.js";
+import {BuildAuth} from "./middleware/buildAuth.js";
 import {ResponseHelper} from "./middleware/responseHelper.js";
 
 env.config({ path: [".env", "../.env"] });
 
 const gServer = express();
-// const supabase = createClient(process.env.DATABASE_URL, process.env.DATABASE_ANONYMOUS_KEY);
-const testingSupabase = createClient(process.env.DATABASE_URL, process.env.DATABASE_SERVICE_KEY);
 
 // Use appropriate parsers to access the request/response body directly.
 gServer.use(express.json());
@@ -32,12 +28,9 @@ gServer.use(session({
     // FIXME: sessions are not persisted.
 }));
 
-// Set up Passport.js authentication.
-gServer.use(passport.authenticate("session"));
-
-registerStrategies(testingSupabase);
 gServer.use(InferAbility);
 gServer.use(BuildSupabaseClient);
+gServer.use(BuildAuth);
 gServer.use(ResponseHelper);
 registerRoutes(gServer);
 
