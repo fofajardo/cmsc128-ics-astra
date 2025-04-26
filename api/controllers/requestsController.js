@@ -182,8 +182,7 @@ const createRequest = (supabase) => async (req, res) => {
     }
 
     try {
-        const { userId, contentId, requestType } = req.body;
-
+        const userId = req.body['user_id'];
         if (!isValidUUID(userId)) {
             return res.status(httpStatus.BAD_REQUEST).json({
                 status: 'FAILED',
@@ -201,6 +200,7 @@ const createRequest = (supabase) => async (req, res) => {
             });
         }
 
+        const contentId = req.body['content_id'];
         if (!isValidUUID(contentId)) {
             return res.status(httpStatus.BAD_REQUEST).json({
                 status: 'FAILED',
@@ -218,7 +218,8 @@ const createRequest = (supabase) => async (req, res) => {
             });
         }
 
-        if (!requestType) {
+        const requestType = req.body['type'];
+        if (requestType === undefined) {
             return res.status(httpStatus.BAD_REQUEST).json({
                 status: 'FAILED',
                 message: 'Request type is required.',
@@ -248,7 +249,7 @@ const createRequest = (supabase) => async (req, res) => {
             'description'
         ]
 
-        const missingFields = requiredFields.filter(field => !req.body[field]);
+        const missingFields = requiredFields.filter(field => req.body[field] === undefined || req.body[field] === null);
         if (missingFields.length > 0) {
             return res.status(httpStatus.BAD_REQUEST).json({
                 status: 'FAILED',
@@ -257,7 +258,7 @@ const createRequest = (supabase) => async (req, res) => {
         }
 
         for (const field of optionalFields) {
-            if (!req.body[field]) {
+            if (req.body[field] === undefined) {
                 req.body[field] = null; // Set optional fields to null if not provided
             }
         }
@@ -267,17 +268,17 @@ const createRequest = (supabase) => async (req, res) => {
             content_id,
             type,
             title,
-            description = null,
+            description,
         } = req.body;
 
         if ((!isValidUUID(user_id) || 
             !isValidUUID(content_id)) ||  
-            typeof type !== 'string' ||
+            typeof type !== 'number' ||
             typeof title !== 'string' ||
             (description !== null && typeof description !== 'string')) {
             return res.status(httpStatus.BAD_REQUEST).json({
                 status: 'FAILED',
-                message: 'Invalid user ID or content ID.',
+                message: 'One or more fields are invalid.',
             });
         }
         
@@ -465,7 +466,7 @@ const deleteRequest = (supabase) => async (req, res) => {
         // Check if the request exists
         const { data: existingRequest, error: requestError } = await requestsService.fetchRequestById(supabase, requestId);
 
-        if (existingRequest || !requestData) {
+        if (requestError || !existingRequest) {
             return res.status(httpStatus.NOT_FOUND).json({
                 status: 'FAILED',
                 message: 'Request not found.',
