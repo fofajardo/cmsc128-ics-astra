@@ -269,7 +269,27 @@ const createRequest = (supabase) => async (req, res) => {
             type,
             title,
             description,
+            date_requested,
+            date_reviewed,
+            status,
+            response
         } = req.body;
+
+        const restrictedFields = [
+            'date_requested',
+            'date_reviewed',
+            'status',
+            'response'
+        ]
+
+        restrictedFields.forEach(field => {
+            if (field in req.body) {
+                return res.status(httpStatus.BAD_REQUEST).json({
+                    status: 'FAILED',
+                    message: `Field ${field} cannot be set when creating a request.`,
+                });
+            }
+        });
 
         if ((!isValidUUID(user_id) || 
             !isValidUUID(content_id)) ||  
