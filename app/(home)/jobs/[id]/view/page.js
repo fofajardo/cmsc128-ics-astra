@@ -13,7 +13,7 @@ export default function JobsPage() {
 
         <div className="h-11"/>
        
-        <SmallJobCard {...job}/>
+        <SmallJobCard job={job} showApply={true}/>
     </div>
   )}
   

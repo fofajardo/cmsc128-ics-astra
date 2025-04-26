@@ -16,7 +16,7 @@ export default function JobEditCard({job}) {
     };
 
     return (
-    <div className="bg-astrawhite w-[351px] h-[308px] rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] p-6">
+    <div className="bg-astrawhite w-[351px] h-[308px] rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] p-6 hover:-translate-y-0.5 transition-all duration-100ms ease-in">
         
         <h1 className="text-astrablack text-2xl font-bold">₱{job.salary}<span className="text-xl font-normal">/month</span></h1>
         
@@ -43,8 +43,8 @@ export default function JobEditCard({job}) {
         </div>
        
         <div className="flex gap-2 items-center py-2.5 justify-center">
-            <button onClick={viewPost} className="!cursor-pointer text-astrawhite border-1 border-astraprimary bg-astraprimary font-semibold w-7/10 py-3 rounded-lg">View Post</button>
-            <button onClick={editPost} className="!cursor-pointer text-astraprimary border-1 border-astraprimary font-semibold w-3/10 py-3 rounded-lg">Edit</button>
+            <button onClick={viewPost} className="hover:bg-astradark hover:scale-none !cursor-pointer text-astrawhite border-1 border-astraprimary bg-astraprimary font-semibold w-7/10 py-3 rounded-lg">View Post</button>
+            <button onClick={editPost} className="hover:scale-none hover:opacity-70 !cursor-pointer text-astraprimary border-1 border-astraprimary font-semibold w-3/10 py-3 rounded-lg">Edit</button>
         </div>
     
     </div>

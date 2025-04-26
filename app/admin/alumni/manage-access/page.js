@@ -1,112 +1,101 @@
 "use client"
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import {TableHeader, Table, PageTool} from '@/components/TableBuilder';
-import { users, alumniProfiles } from '@/components/DummyData'
 import SearchFilter from "admin/alumni/search/filter";
-import ToastNotification from '@/components/ToastNotification';
-import { Check, GraduationCap, UserRoundPlus, UserRoundCheck, UserRoundX } from "lucide-react";
-import AdminStatCard from "@/components/AdminStatCard";
+import { Check } from "lucide-react";
 import { ActionButton } from "@/components/Buttons";
-import AdminTabs from "@/components/AdminTabs";
+import { useTab } from '../../../components/TabContext';
+import ConfirmModal from "@/components/ConfirmModal";
+import ToastNotification from "@/components/ToastNotification";
 
-export default function AlumniAccess() {
+
+export default function AlumniAccess() {   
     const [showFilter, setShowFilter] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
+    const { currTab, info } = useTab();
+    const [toast, setToast] = useState(null);
+    const toggleFilter = () => {setShowFilter((prev) => !prev);};
+    // console.log("Current tab from layout:", info);
 
-
-    const [info, setInfo] = useState({
-        title: "Pending Accounts",
-        search: "Search for an alumni",
+    const [alumList, updateAlumList] = useState(mockdata);
+    const [appliedFilters, updateFilters] = useState({
+      yearFrom: "",
+      yearTo: "",
+      location: "",
+      field: "",
+      skills: [],
+      sortCategory: "",
+      sortOrder: "asc",
     });
-    
-    const tabs = {
-        'Pending': 3,
-        'Approved': 0,
-        'Inactive': 2,
-    };
-
-    const [currTab, setCurrTab] = useState('Pending');
-
-    const handleTabChange = (newTab) => {
-        setCurrTab(newTab);
-
-        setInfo((prev) => ({
-          ...prev,
-          title: `${newTab} Accounts`,
-        }));
-
-        setSelectedIds([]);
-
-        // Reset Filters and Pagination
-        // Then refetch alumList
-
-    };
-    
-
-
-    const toggleFilter = () => {
-        console.log("Toggling filter modal:", !showFilter);
-        setShowFilter((prev) => !prev);
-    };
-  
     const [pagination, setPagination] = useState({
-        display: [1, 10],
-        currPage: 1,
-        lastPage: 10,
-        numToShow: 10,
-        total: 999
+      display: [1, 10],       // Displaying Alum #1 to #10
+      currPage: 1,            // Current active page
+      lastPage: 10,           // Last Page => total/numToShow
+      numToShow: 10,          // How many alum to show
+      total: 999              // How many alum in db
     });
+    const [searchQuery, setSearchQuery] = useState('');
+
+    useEffect(() => {
+      setSelectedIds([]);
+    }, [currTab]);
+
+
+    // FOR BACKEND PEEPS
+    useEffect(() => {
+      console.log('State updated:', {
+          appliedFilters,
+          pagination,
+          searchQuery,
+      });
+
+    }, [appliedFilters, pagination, searchQuery]);
+  
+
 
     return (
       <div>
         {/* Filter Modal */}
-        {showFilter && (
-            <div
-                onClick={toggleFilter}     
-                className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-            >
-                <div onClick={e => e.stopPropagation()}>
-                <SearchFilter onClose={toggleFilter} />
-                </div>
-            </div>
-            )}
-        {/* Header with background */}
-        <div className="relative">
-          <img
-            src="/blue-bg.png"
-            alt="Background"
-            className="h-80 w-full object-cover"
-          />
-          <div className="absolute inset-2 flex flex-col items-center justify-evenly text-astrawhite z-20">
-            <div className="text-center pt-6">
-                <h1 className="font-h1">Manage Access</h1>
-                <p className="font-s">The ever-growing UPLB-ICS Alumni Network</p>
-            </div>
-            <div className="pt-6 pb-4 overflow-y-scroll w-full scrollbar-hide">
-                    <div className="flex flex-row gap-3 min-w-max px-4 justify-center"> 
-                        <AdminStatCard title='Registered' value = {255} icon={<GraduationCap className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={'/admin/alumni/search'}/>
-                        <AdminStatCard title='Pending' value = {59} icon={<UserRoundPlus className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={false} onClick={() => handleTabChange('Pending')}/>
-                        <AdminStatCard title='Approved' value = {179} icon={<UserRoundCheck className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={false} onClick={() => handleTabChange('Approved')}/>
-                        <AdminStatCard title='Inactive' value = {12} icon={<UserRoundX className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={false} onClick={() => handleTabChange('Inactive')}/>
-                    </div>
+          <div
+              onClick={toggleFilter}
+              className={`fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs transition-all duration-100 ease-out ${
+                  showFilter ? 'opacity-100' : 'opacity-0 pointer-events-none'
+              }`}
+          >
+            <div onClick={(e) => e.stopPropagation()}>
+                <SearchFilter
+                onClose={toggleFilter}
+                initialFilters={appliedFilters}
+                updateFilters={updateFilters}
+                />
             </div>
           </div>
-        </div>
-  
-        <AdminTabs tabs ={tabs} currTab={currTab} handleTabChange={handleTabChange}/>
+
+        {toast && (
+          <ToastNotification
+            type={toast.type}
+            message={toast.message}
+            onClose={() => setToast(null)}
+          />
+        )}
 
         {/* Table section */}
         <div className="bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24 flex flex-col">
             <div className='flex flex-col py-4 px-1 md:px-4 lg:px-8'>
-                <TableHeader info={info} pagination={pagination} toggleFilter={toggleFilter} />
-                <Table cols={cols} data={createRows(selectedIds, setSelectedIds, currTab)} />
+                <TableHeader 
+                    info={info} 
+                    pagination={pagination} 
+                    setPagination={setPagination} 
+                    toggleFilter={toggleFilter}   
+                    searchQuery={searchQuery}
+                    setSearchQuery={setSearchQuery}/>
+                <Table cols={cols} data={createRows(alumList, selectedIds, setSelectedIds, currTab)} />
                 <PageTool pagination={pagination} setPagination={setPagination} />
             </div>
             <div className="flex flex-row justify-between md:pl-4 lg:pl-8">
                 <ActionButton label="Reset Selection" color = "blue" onClick={() => setSelectedIds([])}/>
                 
-                <BottomButtons selectedCount={selectedIds.length} currTab={currTab}/>
+                <BottomButtons selectedCount={selectedIds.length} currTab={currTab} setToast={setToast}/>
             </div>
         </div>
       </div>
@@ -114,62 +103,158 @@ export default function AlumniAccess() {
   }
 
 
-  function BottomButtons({ selectedCount, currTab }) {
+
+  function getNotifyContent(action, selectedCount) {
+    const plural = selectedCount > 1 ? "s" : "";
+    let message = "";
+    let type = "success";
+  
+    switch (action) {
+      case "approve":
+        message = selectedCount > 0
+          ? `${selectedCount} pending account${plural} have been approved!`
+          : "All pending accounts have been approved!";
+        break;
+      case "decline":
+        message = selectedCount > 0
+          ? `${selectedCount} pending account${plural} have been declined!`
+          : "All pending accounts have been declined!";
+        type = "fail";
+        break;
+      case "remove":
+        message = selectedCount > 0
+          ? `Access has been removed from ${selectedCount} accounts!`
+          : "Access has been removed from all active accounts!";
+        type = "fail";
+        break;
+      case "reactivate":
+        message = selectedCount > 0
+          ? `${selectedCount} inactive account${plural} have been reactivated!`
+          : "All inactive accounts have been reactivated!";
+        break;
+    }
+  
+    return { notifyMessage: message, notifyType: type };
+  }
+  
+
+  function BottomButtons({ selectedCount, currTab, setToast }) {
+    const [modal, setModal] = useState({
+      open: false,
+      action: null, // "approve", "decline", etc.
+      notifyMessage: '',
+      notifyType: 'success',
+    });
+  
+    const openModal = (actionType) => {
+      const { notifyMessage, notifyType } = getNotifyContent(actionType, selectedCount);
+      setModal({ open: true, action: actionType, notifyMessage, notifyType });
+    };
+  
+    const closeModal = () => {
+      setModal({ open: false, action: null });
+    };
+    
+    const handleConfirm = () => {
+      const { notifyMessage, notifyType } = getNotifyContent(modal.action, selectedCount);
+    
+      closeModal(); // first close the modal
+    
+      setTimeout(() => {
+        setToast({
+          type: notifyType,
+          message: notifyMessage
+        });
+      }, 50);
+    };
+    
+  
+    const modals = {
+      approve: {
+        title: `${selectedCount > 0 ? `Approve ${selectedCount} Accounts?` : `Approve All Accounts?`}`,
+        desc: selectedCount > 0
+          ? `You are about to approve ${selectedCount} selected pending accounts.`
+          : `You are about to approve all pending accounts.`,
+        label: selectedCount > 0 ? "Approve" : "Approve All",
+        color: "green"
+      },
+      decline: {
+        title: `${selectedCount > 0 ? `Decline ${selectedCount} Accounts?` : `Decline All Accounts?`}`,
+        desc: selectedCount > 0
+          ? `You are about to decline ${selectedCount} selected pending accounts.`
+          : `You are about to decline all pending accounts.`,
+        label: selectedCount > 0 ? "Decline" : "Decline All",
+        color: "red"
+      },
+      remove: {
+        title: `${selectedCount > 0 ? `Remove Access from ${selectedCount} Accounts?` : `Remove Access from All?`}`,
+        desc: selectedCount > 0
+          ? `You are about to remove access from ${selectedCount} approved accounts.`
+          : `You are about to remove access from all approved accounts.`,
+        label: selectedCount > 0 ? "Remove Access" : "Remove All Access",
+        color: "red"
+      },
+      reactivate: {
+        title: `${selectedCount > 0 ? `Reactivate ${selectedCount} Accounts?` : `Reactivate All Accounts?`}`,
+        desc: selectedCount > 0
+          ? `You are about to reactivate ${selectedCount} inactive accounts.`
+          : `You are about to reactivate all inactive accounts.`,
+        label: selectedCount > 0 ? "Reactivate" : "Reactivate All",
+        color: "blue"
+      }
+    };
+  
     return (
-      <div className="flex gap-3 md:pr-4 lg:pr-8">
-        {currTab === 'Pending' && (
-          <>
+      <>
+        <div className="flex gap-3 md:pr-4 lg:pr-8">
+          {currTab === "Pending" && (
+            <>
+              <ActionButton
+                label={selectedCount > 0 ? `Approve (${selectedCount})` : "Approve All"}
+                color="green"
+                onClick={() => openModal("approve")}
+              />
+              <ActionButton
+                label={selectedCount > 0 ? `Decline (${selectedCount})` : "Decline All"}
+                color="red"
+                onClick={() => openModal("decline")}
+              />
+            </>
+          )}
+  
+          {currTab === "Approved" && (
             <ActionButton
-              label={selectedCount > 0 ? `Approve (${selectedCount})` : "Approve All"}
-              color="green"
-              notifyMessage={
-                selectedCount > 0
-                  ? `${selectedCount} pending account${selectedCount > 1 ? "s" : ""} have been approved!`
-                  : "All pending accounts have been approved!"
-              }
-              notifyType="success"
-            />
-            <ActionButton
-              label={selectedCount > 0 ? `Decline (${selectedCount})` : "Decline All"}
+              label={selectedCount > 0 ? `Remove Access (${selectedCount})` : "Remove All"}
               color="red"
-              notifyMessage={
-                selectedCount > 0
-                  ? `${selectedCount} pending account${selectedCount > 1 ? "s" : ""} have been declined!`
-                  : "All pending accounts have been declined!"
-              }
-              notifyType="fail"
+              onClick={() => openModal("remove")}
             />
-          </>
-        )}
+          )}
   
-        {currTab === 'Approved' && (
-          <ActionButton
-            label={selectedCount > 0 ? `Remove Access (${selectedCount})` : "Remove All"}
-            color="red"
-            notifyMessage={
-              selectedCount > 0
-                ? `${selectedCount} active account${selectedCount > 1 ? "s" : ""} have been removed!`
-                : "All active accounts have been removed!"
-            }
-            notifyType="fail"
+          {currTab === "Inactive" && (
+            <ActionButton
+              label={selectedCount > 0 ? `Reactivate (${selectedCount})` : "Reactivate All"}
+              color="blue"
+              onClick={() => openModal("reactivate")}
+            />
+          )}
+        </div>
+        
+        {modal.open && (
+          <ConfirmModal
+            isOpen={modal.open}
+            onClose={closeModal}
+            onConfirm={handleConfirm}
+            title={modals[modal.action].title}
+            description={modals[modal.action].desc}
+            confirmLabel={modals[modal.action].label}
+            confirmColor={modals[modal.action].color}
+            count={selectedCount > 0 ? selectedCount : null}
           />
         )}
-  
-        {currTab === 'Inactive' && (
-          <ActionButton
-            label={selectedCount > 0 ? `Reactivate (${selectedCount})` : "Reactivate All"}
-            color="blue"
-            notifyMessage={
-              selectedCount > 0
-                ? `${selectedCount} inactive account${selectedCount > 1 ? "s" : ""} have been reactivated!`
-                : "All inactive accounts have been reactivated!"
-            }
-            notifyType="success"
-          />
-        )}
-      </div>
+      </>
     );
   }
+  
   
   
 
@@ -183,7 +268,7 @@ const cols = [
     { label: 'Quick Actions', justify: 'center', visible: 'all' },
 ];
 
-function createRows(selectedIds, setSelectedIds, currTab) {
+function createRows(alumList, selectedIds, setSelectedIds, currTab) {
     return alumList.map((alum) => ({
         'Checkbox:label-hidden': renderCheckboxes(alum.id, selectedIds, setSelectedIds),
         'Image:label-hidden': renderAvatar(alum.image, alum.alumname),
@@ -313,7 +398,7 @@ function renderActions(id, name, currTab) {
   
 
 
-const alumList = [
+const mockdata = [
     {
         id: 1,
         image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",

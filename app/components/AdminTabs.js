@@ -2,7 +2,7 @@
 // currTab = ''
 // handleTabChange()
 
-export default function AdminTabs({ tabs, currTab, handleTabChange }) {
+export default function AdminTabs({ tabs, currTab, size, handleTabChange }) {
     return (
       <div className="flex flex-row w-full overflow-y-scroll scrollbar-hide">
         {Object.entries(tabs).map(([label, notif]) => (
@@ -11,6 +11,7 @@ export default function AdminTabs({ tabs, currTab, handleTabChange }) {
             label={label}
             notif={notif}
             active={label === currTab}
+            size = {size}
             handleTabChange={handleTabChange}
           />
         ))}
@@ -19,7 +20,7 @@ export default function AdminTabs({ tabs, currTab, handleTabChange }) {
   }
   
   
-function Tab({ label, active, notif, handleTabChange }) {
+function Tab({ label, active, notif, size, handleTabChange }) {
   return (
     <div
       className={`flex justify-center items-center flex-1 border-b-2 ${
@@ -30,7 +31,7 @@ function Tab({ label, active, notif, handleTabChange }) {
     >
       <button
         onClick={() => handleTabChange(label)}
-        className={`items-center flex py-4 font-lb bg-transparent w-full justify-center ${
+        className={`items-center flex ${size ? `${size} py-2` : 'font-lb py-3'} bg-transparent w-full justify-center ${
           active ? 'text-astradark' : 'bg-astrawhite text-astradarkgray'
         }`}
       >

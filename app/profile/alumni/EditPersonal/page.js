@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from 'react';
 import { Camera } from 'lucide-react';
 
@@ -193,9 +194,10 @@ export default function EditForm({ profileData, hidePersonalForm }) {
           <input
             type="text"
             name="StudentID"
-            value={formData?.StudentID || ""}
+            value={formData?.StudentNumber || ""}
             onChange={handleChange}
-            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
+            disabled={true}
+            className="w-full rounded-lg border border-gray-300 px-4 py-2 bg-gray-100 cursor-not-allowed"
             placeholder="Enter your student ID"
           />
         </div>
@@ -207,8 +209,8 @@ export default function EditForm({ profileData, hidePersonalForm }) {
           <label className="block text-sm font-medium text-gray-700 mb-2">Birthdate</label>
           <input
             type="date"
-            name="Birthdate"
-            value={formData?.Birthdate || ""}
+            name="BirthDate"
+            value={formData?.BirthDate || ""}
             onChange={handleChange}
             className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
           />
@@ -218,7 +220,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
           <input
             type="text"
             name="PlaceOfBirth"
-            value={formData?.PlaceOfBirth || ""}
+            value={formData?.BirthPlace || ""}
             onChange={handleChange}
             className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
             placeholder="Enter your place of birth"
@@ -245,13 +247,12 @@ export default function EditForm({ profileData, hidePersonalForm }) {
             name="Gender"
             value={formData?.Gender || ""}
             onChange={handleChange}
-            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
+            disabled={true}
+            className="w-full rounded-lg border border-gray-300 px-4 py-2 bg-gray-100 cursor-not-allowed"
           >
-            <option value="">Select gender</option>
-            <option value="Female">Female</option>
+            <option value="">Sex</option>
             <option value="Male">Male</option>
-            <option value="Non-binary">Non-binary</option>
-            <option value="Prefer not to say">Prefer not to say</option>
+            <option value="Female">Female</option>
           </select>
         </div>
       </div>

@@ -1,8 +1,9 @@
 'use client';
-import EventDateLocation from "./EventDateLocation";
-import EventActions from "../GroupedEvents/EventActions";
 
-export default function EventDetails({ event, isInterested, handleInterestClick }) {
+import EventDateLocation from "./EventDateLocation";
+import EventActions from "./EventActions";
+
+export default function EventDetails({ event, isInterested, isGoing, handleInterestClick, handleGoingClick }) {
   return (
     <div className="w-full lg:w-[300px] bg-astrawhite rounded-xl shadow-md p-6 flex flex-col justify-between">
       <div>
@@ -10,13 +11,13 @@ export default function EventDetails({ event, isInterested, handleInterestClick 
         <EventDateLocation date={event.date} location={event.location} />
       </div>
 
-      <div className="mt-6 flex flex-col gap-2">
-        <EventActions
-          status={event.status}
-          isInterested={isInterested}
-          handleInterestClick={handleInterestClick}
-        />
-      </div>
+      <EventActions
+        status={event.status}
+        isInterested={isInterested}
+        isGoing={isGoing}
+        onInterestClick={handleInterestClick}
+        onGoingClick={handleGoingClick}
+      />
     </div>
   );
 }

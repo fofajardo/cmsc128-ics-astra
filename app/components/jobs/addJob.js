@@ -3,26 +3,75 @@
 import {X} from 'lucide-react';
 import Select from 'react-select';
 import { useState } from 'react';
+import ConfirmationPrompt from './edit/confirmation';
 
 export default function JobForm({isEdit, close}){
+    const [showPrompt, setPrompt] = useState(false);
     const employmentOptions =[{value: "1", label: "Part-Time"},{value: "2", label: "Full-time"}, {value: "3", label: "Temporary"}, {value: "4", label: "Freelance"}]
     const locationOptions =[{value: "1", label: "Onsite"},{value: "2", label: "Remote"}, {value: "3", label: "Hybrid"}]
     const statusOptions =[{value: "1", label: "Open"},{value: "2", label: "Closed"}]
+    const [errors, setErrors] = useState({})
     
-    const [formData, setFormData] = useState({company_name: '', job_title: '', location: '', salary: '', apply_link: ''});
+    const [formData, setFormData] = useState({company_name: '', job_title: '', location: '', salary: '', apply_link: '', details: '', expires_at: ''});
     const [employmentType, setEmploymentType] = useState(null)
     const [locationType, setLocationType] = useState(null)
     const [status, setStatus] = useState(null)
 
+    const handleClear = () => {
+        setFormData({company_name: '', job_title: '', location: '', salary: '', apply_link: '', details: '', expires_at: ''})
+        setEmploymentType(null)
+        setLocationType(null)
+        setStatus(null)
+        setErrors({})
+    }
+
     const handleChange = (e) => {
         e.preventDefault();
         const {name, value} = e.target;
-        console.log({name, value});
+        // console.log({name, value});
         setFormData((prevData) => ({
           ...prevData,
           [name]: value,
         }));
       }
+
+
+    const handleAdd = () => {
+        const requiredFields = [
+            "company_name",
+            "job_title",
+            "job_type",
+            "location",
+            "location_type",
+            "salary",
+            "status",
+            "expires_at",
+            "apply_link",
+            "details"
+        ];
+
+        const requiredErrors = requiredFields.filter((key) => !formData[key]);
+        const missingFields = requiredErrors.reduce((obj, value) => {
+            obj[value] = true
+            return obj;
+        }, {})
+
+        if (employmentType) delete missingFields.job_type
+        if (locationType) delete missingFields.location_type
+        if (status) delete missingFields.status
+
+        if (Object.keys(missingFields).length > 0){ 
+            setErrors(missingFields);
+            setPrompt(false)
+            console.log(missingFields)
+            return
+        }
+
+        // handle add job logic here
+
+        setPrompt(false);
+        close();
+    } 
 
     const selectStyle = {
         control: () =>
@@ -55,70 +104,121 @@ export default function JobForm({isEdit, close}){
                 <X onClick={close} size={25} color='black' className='!cursor-pointer '/>
             </div>
 
-            <form className="grid grid-cols-2 gap-4 mt-5 px-8">
+            <form className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5 px-8">
                 
-                <div className='col-span-2'>
-                    <label className='block text-black font-medium text-lg'>Company</label>
+                <div className='col-span-1 md:col-span-2'>
+                    <div className='flex flex-row gap-2 justify-between'>
+                        <label className='text-black font-medium text-lg'>Company</label>
+                        {errors.company_name ?
+                            <p className="text-sm text-astrared self-end">Required field</p> : <></>
+                        }
+                    </div>
                     <input type="text" placeholder="Ex: Google" onChange={handleChange} value={formData.company_name} name="company_name" className='placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
                 </div>
 
                 <div className=''>
-                    <label className='block text-black font-medium text-lg'>Title</label>
+                    <div className='flex flex-row gap-2 items-center justify-between'>
+                        <label className='text-black font-medium text-lg'>Title</label>
+                        {errors.job_title ?
+                            <p className="text-sm text-astrared self-end">Required field</p> : <></>
+                        }
+                    </div>
                     <input type="text" placeholder="Ex: User Experience Researcher" onChange={handleChange} value={formData.job_title} name="job_title" className='placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
                 </div>
                 
                 <div>
-                    <label className='block text-black font-medium text-lg'>Employment Type</label>
+                    <div className='flex flex-row gap-2 items-center justify-between'>
+                        <label className='text-black font-medium text-lg'>Employment Type</label>
+                        {errors.job_type ?
+                            <p className="text-sm text-astrared self-end">Required field</p> : <></>
+                        }
+                    </div>
                     <Select unstyled options={employmentOptions} placeholder="Please Select" onChange={setEmploymentType} value={employmentType} instanceId="employmentType" classNames={selectStyle}
                         styles={selectBaseStyle}/>
                 </div>
                 
                 <div className=''>
-                    <label className='block text-black font-medium text-lg'>Location</label>
+                <div className='flex flex-row gap-2 items-center justify-between'>
+                        <label className='text-black font-medium text-lg'>Location</label>
+                        {errors.location ?
+                            <p className="text-sm text-astrared self-end">Required field</p> : <></>
+                        }
+                    </div>
                     <input type="text" placeholder="Ex: Santa Rosa City, Laguna" onChange={handleChange} value={formData.location} name="location" className='placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
                 </div>
 
                 <div>
-                    <label className='block text-black font-medium text-lg'>Location Type</label>
+                <div className='flex flex-row gap-2 items-center justify-between'>
+                        <label className='text-black font-medium text-lg'>Location Type</label>
+                        {errors.location_type ?
+                            <p className="text-sm text-astrared self-end">Required field</p> : <></>
+                        }
+                    </div>
                     <Select unstyled options={locationOptions} placeholder="Please Select" onChange={setLocationType} value={locationType} instanceId="locationType" classNames={selectStyle}
                         styles={selectBaseStyle}/>
                 </div>
 
                 <div className=''>
-                    <label className='block text-black font-medium text-lg'>Job Salary (₱)</label>
+                    <div className='flex flex-row gap-2 items-center justify-between'>
+                        <label className='text-black font-medium text-lg'>Job Salary (₱)</label>
+                        {errors.salary ?
+                            <p className="text-sm text-astrared self-end">Required field</p> : <></>
+                        }
+                    </div>
                     <input type="text" placeholder="Ex: ₱40,000 - ₱50,000" onChange={handleChange} value={formData.salary} name="salary" className='placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
                 </div>
 
                 <div>
-                    <label className='block text-black font-medium text-lg'>Job Status</label>
+                    <div className='flex flex-row gap-2 items-center justify-between'>
+                        <label className='text-black font-medium text-lg'>Job Status</label>
+                        {errors.status ?
+                            <p className="text-sm text-astrared self-end">Required field</p> : <></>
+                        }
+                    </div>
                     <Select unstyled options={statusOptions} placeholder="Please Select" onChange={setStatus} value={status} instanceId="status"classNames={selectStyle}
                         styles={selectBaseStyle}/>
                 </div>
 
                 <div className=''>
-                    <label className='block text-black font-medium text-lg'>Deadline of Applications</label>
+                <div className='flex flex-row gap-2 items-center justify-between'>
+                        <label className='text-black font-medium text-lg'>Deadline of Applications</label>
+                        {errors.expires_at ?
+                            <p className="text-sm text-astrared self-end">Required field</p> : <></>
+                        }
+                    </div>
                     <input  type="date" placeholder="YYYY/MM/DD" onChange={handleChange} className='!cursor-pointer placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'
-                            style={{ colorScheme: 'light', accentColor: '#0E6CF3' }}></input>
+                            name={"expires_at"} style={{ colorScheme: 'light', accentColor: '#0E6CF3' }}></input>
                 </div>
 
                 <div className=''>
-                    <label className='block text-black font-medium text-lg'>Application Link</label>
+                    <div className='flex flex-row gap-2 items-center justify-between'>
+                        <label className='text-black font-medium text-lg'>Application Link</label>
+                        {errors.apply_link ?
+                            <p className="text-sm text-astrared self-end">Required field</p> : <></>
+                        }
+                    </div>
                     <input type="text" placeholder="Ex: https://hiring.com/apply" onChange={handleChange} value={formData.apply_link} name="apply_link" className='placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
                 </div>
 
-                <div className='col-span-2'>
-                    <label className='block text-black font-medium text-lg'>Job Description</label>
+                <div className='col-span-1 md:col-span-2'>
+                <div className='flex flex-row gap-2 items-center justify-between'>
+                        <label className='text-black font-medium text-lg'>Job Description</label>
+                        {errors.details ?
+                            <p className="text-sm text-astrared self-end">Required field</p> : <></>
+                        }
+                    </div>
                     <textarea  type="text" placeholder="Provide a concise overview of the role, including job requirements, key responsibilities, and objectives. You may also include your company’s representative email for additional inquiries." 
-                            className='placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm resize-none h-[110px]'></textarea>
+                            onChange={handleChange} name={"details"} value={formData.details} className='placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm resize-none h-[110px]'></textarea>
                 </div>
             </form>
 
             <div className="flex justify-between my-4 px-8">
-                <button className="!cursor-pointer text-astraprimary border-1 border-astraprimary font-semibold w-35 py-2 rounded-lg text-base">Clear Details</button>
-                <button className="!cursor-pointer text-astrawhite border-1 border-astraprimary bg-astraprimary font-semibold w-35 py-2 rounded-lg text-base">Publish Post</button>
+                <button onClick={handleClear} className="!cursor-pointer text-astraprimary border-1 border-astraprimary font-semibold w-35 py-2 rounded-lg text-base">Clear Details</button>
+                <button onClick={()=>{setPrompt(true)}} className="!cursor-pointer text-astrawhite border-1 border-astraprimary bg-astraprimary font-semibold w-35 py-2 rounded-lg text-base">Publish Post</button>
             </div>
 
         </div>
+        {showPrompt ? <ConfirmationPrompt isAdd={true} close={()=>setPrompt(false)} handleConfirm={handleAdd}/> : <></>}
     </div>
   )}
   

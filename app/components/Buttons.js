@@ -20,7 +20,7 @@ export function GoBackButton() {
   }
 
 
-  export function ActionButton({ label, color, onClick, route, notifyMessage, notifyType }) {
+  export function ActionButton({ label, color, size = 'small', flex, onClick, route, notifyMessage, notifyType }) {
     const router = useRouter();
     const [toast, setToast] = useState(null);
   
@@ -30,6 +30,12 @@ export function GoBackButton() {
       if (notifyMessage) {
         setToast({ type:notifyType || 'success', message: notifyMessage});
       }
+    };
+
+    const sizeClasses = {
+      small: 'px-3 py-2 font-sb',
+      medium: 'px-5 py-2 font-sb',
+      large: 'px-5 py-2 font-rb',
     };
   
     return (
@@ -41,7 +47,7 @@ export function GoBackButton() {
             onClose={() => setToast(null)}
           />
         )}
-        <button className={`${color}-button font-sb`} onClick={handleClick}>
+        <button className={`${color}-button ${sizeClasses[size] || sizeClasses.small} ${flex}`} onClick={handleClick}>
           {label}
         </button>
       </>

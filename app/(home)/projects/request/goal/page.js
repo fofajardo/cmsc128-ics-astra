@@ -156,7 +156,7 @@ const RequestFundraiser = () => {
           </button> 
           {isFormValid ? (
             <Link href="/projects/request/details" passHref> 
-              <button className="bg-astraprimary text-astrawhite font-semibold py-2 px-6 rounded-xl shadow hover:bg-astralightgray transition cursor-pointer w-[150px] h-[55px]"> 
+              <button className="blue-button font-semibold transition cursor-pointer w-[150px] h-[55px]"> 
                 Continue 
               </button> 
             </Link>

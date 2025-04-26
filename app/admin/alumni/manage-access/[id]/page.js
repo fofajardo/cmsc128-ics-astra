@@ -3,7 +3,25 @@ import { GoBackButton } from '@/components/Buttons'
 import SkillTag from '@/components/SkillTag'
 import { users, alumniProfiles } from '@/components/DummyData'
 import { Mail, MapPin, GraduationCap, Image } from "lucide-react";
-import AdminStatCard from "@/components/AdminStatCard";
+import { ActionButton } from "@/components/Buttons";
+
+
+const getStatusBadge = (status) => {
+  const statusMap = {
+    0: {text: "Pending", color: "bg-astrayellow"},
+    1: {text: "Approved", color: "bg-astragreen"},
+    2: {text: "Inactive", color: "bg-astrared"},
+  };
+  
+  const {text, color} = statusMap[status] || {};
+  
+  return (
+    <span className={`${color} text-white font-s px-3.5 py-0.5 rounded-lg w-fit mx-auto sm:mx-0 mt-1 sm:mt-0`}>
+      {text}
+    </span>
+  )  
+}
+
 
 export default function AlumniSearchProfile({ params }) {
   const {id} = params
@@ -17,31 +35,7 @@ export default function AlumniSearchProfile({ params }) {
   }
 
   return (
-    <>
-        {/* Header with background */}
-        <div className="relative">
-          <img
-            src="/blue-bg.png"
-            alt="Background"
-            className="h-80 w-full object-cover"
-          />
-          <div className="absolute inset-2 flex flex-col items-center justify-evenly text-astrawhite z-20">
-            <div className="text-center pt-6">
-                <h1 className="font-h1">Manage Access</h1>
-                <p className="font-s">The ever-growing UPLB-ICS Alumni Network</p>
-            </div>
-            <div className="pt-6 pb-4 overflow-y-scroll w-full scrollbar-hide">
-                    <div className="flex flex-row gap-3 min-w-max px-4 justify-center"> 
-                        <AdminStatCard title='Registered' value = {255} icon={<GraduationCap className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={'/admin/alumni/search'}/>
-                        <AdminStatCard title='Pending' value = {59} icon={<GraduationCap className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={'/admin/alumni/manage-access'}/>
-                        <AdminStatCard title='Approved' value = {179} icon={<GraduationCap className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={'/admin/alumni/manage-access'}/>
-                        <AdminStatCard title='Inactive' value = {12} icon={<GraduationCap className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={'/admin/alumni/manage-access'}/>
-                    </div>
-            </div>
-          </div>
-        </div>
-    
-    
+    <>    
     <div className="p-4 bg-astradirtywhite min-h-screen">
       <div className="pb-2">
         <GoBackButton />
@@ -57,9 +51,7 @@ export default function AlumniSearchProfile({ params }) {
           <div className="mt-2 sm:mt-0 text-center sm:text-left">
             <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2 justify-center sm:justify-start">
               <h3 className="font-lb text-astrablack">{user.first_name} {user.middle_name} {user.last_name}</h3>
-              <span className="bg-astrayellow text-white font-s px-3.5 py-0.5 rounded-lg w-fit mx-auto sm:mx-0 mt-1 sm:mt-0">
-                Pending
-              </span>
+              {getStatusBadge(profile.status)}
             </div>
             <a className="block font-s text-astradark hover:underline">
               {user.email}
@@ -233,6 +225,39 @@ export default function AlumniSearchProfile({ params }) {
           <div className="flex justify-center items-center h-60 bg-gray-100 rounded-md">
             <Image className="w-16 h-16" strokeWidth="1"></Image>
           </div>
+        </div>
+        <div className='flex justify-center gap-2'>
+          {profile.status === 0 && (
+            <>
+            <ActionButton 
+              label="Approve" color = "green" size = 'large' flex = 'flex-1' 
+              notifyMessage={`${user.first_name} ${user.middle_name} ${user.last_name} has been approved!`}
+              notifyType="success"
+              />
+            <ActionButton label="Decline" color = "red" size = 'large' flex = 'flex-1'
+              notifyMessage={`${user.first_name} ${user.middle_name} ${user.last_name} has been declined!`}
+              notifyType="fail"
+              />
+            </>
+          )}
+
+          {profile.status === 1 && (
+            <>
+            <ActionButton label="Remove Access" color = "red" size = 'large' flex = 'flex-1'
+              notifyMessage={`Access has been removed from ${user.first_name} ${user.middle_name} ${user.last_name}!`}
+              notifyType="fail"
+              />
+            </>
+          )}
+
+          {profile.status === 2 && (
+            <>
+            <ActionButton label="Reactivate" color = "blue" size = 'large' flex = 'flex-1'
+              notifyMessage={`${user.first_name} ${user.middle_name} ${user.last_name} has been reactivated!`}
+              notifyType="success"
+              />
+            </>
+          )}
         </div>
       </div>
     </div>

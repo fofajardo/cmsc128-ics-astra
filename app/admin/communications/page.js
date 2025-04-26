@@ -504,3 +504,4 @@ const alumList = [
         skills: ["SQL", "Oracle", "Database Tuning", "Shell Scripting", "PL/SQL"]
     }
 ];
+    

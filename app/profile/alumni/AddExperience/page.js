@@ -28,7 +28,6 @@ export default function AddExperience({ hideAddExperienceForm }) {
     "Full-time",
     "Part-time",
     "Contractual",
-    ""
   ]
 
   const locationTypes = ["On-site", "Hybrid", "Remote"]
@@ -78,7 +77,7 @@ export default function AddExperience({ hideAddExperienceForm }) {
   }
 
   return (
-    <div className="w-full max-w-5xl mx-auto">
+    <div className="w-full max-w-5xl mx-auto p-4 bg-[var(--color-astrawhite)] rounded-lg flex flex-col">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Add Experience</h2>
         <button onClick={hideAddExperienceForm} className="text-gray-500 hover:text-gray-700">
@@ -86,6 +85,7 @@ export default function AddExperience({ hideAddExperienceForm }) {
         </button>
       </div>
 
+      <div className="overflow-y-auto max-h-[70vh] p-2">
       <form onSubmit={handleSubmit}>
         <div className="space-y-6">
           {/* Company */}
@@ -97,7 +97,7 @@ export default function AddExperience({ hideAddExperienceForm }) {
               value={formData.company}
               onChange={handleChange}
               placeholder="Ex: Department of Information and Communications Technology"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
@@ -112,7 +112,7 @@ export default function AddExperience({ hideAddExperienceForm }) {
                 value={formData.title}
                 onChange={handleChange}
                 placeholder="Ex: Software Engineer"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
@@ -122,7 +122,7 @@ export default function AddExperience({ hideAddExperienceForm }) {
                 name="type"
                 value={formData.type}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 required
               >
                 <option value="">Select type</option>
@@ -159,7 +159,7 @@ export default function AddExperience({ hideAddExperienceForm }) {
                   name="startDate.month"
                   value={formData.startDate.month}
                   onChange={handleChange}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   required
                 >
                   <option value="">Month</option>
@@ -171,7 +171,7 @@ export default function AddExperience({ hideAddExperienceForm }) {
                   name="startDate.year"
                   value={formData.startDate.year}
                   onChange={handleChange}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   required
                 >
                   <option value="">Year</option>
@@ -190,7 +190,7 @@ export default function AddExperience({ hideAddExperienceForm }) {
                     name="endDate.month"
                     value={formData.endDate.month}
                     onChange={handleChange}
-                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                     required
                   >
                     <option value="">Month</option>
@@ -202,7 +202,7 @@ export default function AddExperience({ hideAddExperienceForm }) {
                     name="endDate.year"
                     value={formData.endDate.year}
                     onChange={handleChange}
-                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                     required
                   >
                     <option value="">Year</option>
@@ -225,7 +225,7 @@ export default function AddExperience({ hideAddExperienceForm }) {
                 value={formData.location}
                 onChange={handleChange}
                 placeholder="Ex: Makati, Philippines"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
@@ -235,7 +235,7 @@ export default function AddExperience({ hideAddExperienceForm }) {
                 name="locationType"
                 value={formData.locationType}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 required
               >
                 <option value="">Select location type</option>
@@ -254,7 +254,7 @@ export default function AddExperience({ hideAddExperienceForm }) {
               value={formData.description}
               onChange={handleChange}
               placeholder="Describe your role and responsibilities"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 h-32"
+              className="w-full px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 h-32"
             ></textarea>
           </div>
         </div>
@@ -264,18 +264,19 @@ export default function AddExperience({ hideAddExperienceForm }) {
           <button
             type="button"
             onClick={hideAddExperienceForm}
-            className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 font-medium"
+            className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="px-6 py-2 bg-[var(--color-astraprimary)] text-white rounded-lg hover:bg-[var(--color-astradark)] font-medium"
+            className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 bg-[var(--color-astraprimary)] text-white rounded-lg hover:bg-[var(--color-astradark)]"
           >
             Save
           </button>
         </div>
       </form>
+    </div>
     </div>
   )
 }
