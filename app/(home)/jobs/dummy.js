@@ -1,14 +1,16 @@
-const jobs = [
+const dummyJobs = [
     { job_id: 0, salary: 70000, job_title: "Full Stack Flutter Developer", company_name: "iLearn Technology Solutions, Inc.", location: "Makati City, Philippines", expires_at: new Date(), employment_type: "Full-Time", location_type: "Hybrid", apply_link: "https://amis.uplb.edu.ph/" },
     { job_id: 1, salary: 70000, job_title: "Full Stack Flutter Developer", company_name: "iLearn Technology Solutions, Inc.", location: "Makati City, Philippines", expires_at: new Date(), employment_type: "Full-Time", location_type: "Hybrid", apply_link: "https://amis.uplb.edu.ph/" },
     { job_id: 2, salary: 70000, job_title: "Full Stack Flutter Developer", company_name: "iLearn Technology Solutions, Inc.", location: "Makati City, Philippines", expires_at: new Date(), employment_type: "Full-Time", location_type: "Hybrid", apply_link: "https://amis.uplb.edu.ph/" },
     { job_id: 3, salary: 70000, job_title: "Full Stack Flutter Developer", company_name: "iLearn Technology Solutions, Inc.", location: "Makati City, Philippines", expires_at: new Date(), employment_type: "Full-Time", location_type: "Hybrid", apply_link: "https://amis.uplb.edu.ph/" },
     { job_id: 4, salary: 70000, job_title: "Full Stack Flutter Developer", company_name: "iLearn Technology Solutions, Inc.", location: "Makati City, Philippines", expires_at: new Date(), employment_type: "Full-Time", location_type: "Hybrid", apply_link: "https://amis.uplb.edu.ph/" },
     { job_id: 5, salary: 70000, job_title: "Full Stack Flutter Developer", company_name: "iLearn Technology Solutions, Inc.", location: "Makati City, Philippines", expires_at: new Date(), employment_type: "Full-Time", location_type: "Hybrid", apply_link: "https://amis.uplb.edu.ph/" },
-    { job_id: 6, salary: 70000, job_title: "Full Stack Flutter Developer", company_name: "iLearn Technology Solutions, Inc.", location: "Makati City, Philippines", expires_at: new Date(), employment_type: "Full-Time", location_type: "Hybrid", apply_link: "https://amis.uplb.edu.ph/" }
+    { job_id: 6, salary: 70000, job_title: "Full Stack Flutter Developer", company_name: "iLearn Technology Solutions, Inc.", location: "Makati City, Philippines", expires_at: new Date(), employment_type: "Full-Time", location_type: "Hybrid", apply_link: "https://amis.uplb.edu.ph/" },
+    { job_id: 7, salary: 70000, job_title: "Full Stack Flutter Developer", company_name: "iLearn Technology Solutions, Inc.", location: "Makati City, Philippines", expires_at: new Date(), employment_type: "Full-Time", location_type: "Hybrid", apply_link: "https://amis.uplb.edu.ph/" },
+    { job_id: 8, salary: 70000, job_title: "Full Stack Flutter Developer", company_name: "iLearn Technology Solutions, Inc.", location: "Makati City, Philippines", expires_at: new Date(), employment_type: "Full-Time", location_type: "Hybrid", apply_link: "https://amis.uplb.edu.ph/" }
   ];  
 
-const myJobs = [
+const dummyMyJobs = [
     { job_id: 0, salary: 270000, job_title: "Google Cloud Engineer", company_name: "Google Philippines", location: "Taguig City, Philippines", expires_at: new Date(), employment_type: "Full-Time", location_type: "Onsite" },
     { job_id: 1, salary: 270000, job_title: "Google Cloud Engineer", company_name: "Google Philippines", location: "Taguig City, Philippines", expires_at: new Date(), employment_type: "Full-Time", location_type: "Onsite" },
     { job_id: 2, salary: 270000, job_title: "Google Cloud Engineer", company_name: "Google Philippines", location: "Taguig City, Philippines", expires_at: new Date(), employment_type: "Full-Time", location_type: "Onsite" }
@@ -71,4 +73,4 @@ const locationTypeOptions = [
     {value: "hybrid", label: "Hybrid"}
 ]
 
-export {job, jobs, myJobs, filters, jobTypeOptions, statusOptions, locationTypeOptions};
+export {job, dummyJobs, dummyMyJobs, filters, jobTypeOptions, statusOptions, locationTypeOptions};
