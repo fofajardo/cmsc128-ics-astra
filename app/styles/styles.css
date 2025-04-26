@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+/*Navigation bar*/
+.navbar-main {
+    @apply fixed left-0 right-0 z-10 bg-transparent backdrop-blur-md transition-colors duration-300 text-white;
+}
+.navbar-scrolled {
+    @apply bg-[var(--secondary)] text-white;
+}
+.navbar-container {
+    @apply max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4;
+}
+.navbar-logo-section {
+    @apply flex items-center space-x-3 rtl:space-x-reverse text-white;
+}
+.navbar-logo-image {
+    @apply h-8 md:h-10; 
+}
+.navbar-logo-text {
+    @apply self-center text-xl font-semibold whitespace-nowrap dark:text-white md:text-2xl; 
+}
+.navbar-menu-button {
+    @apply inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-white rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200;
+}
+.navbar-menu-container {
+    @apply flex flex-col font-medium p-4 mt-4 border border-transparent rounded-lg bg-transparent text-white md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-transparent;
+}
+.navbar-link {
+    @apply text-white py-2 px-3 rounded-full hover:bg-[var(--secondary)] hover:text-black dark:hover:bg-[var(--secondary)] dark:hover:text-white font-semibold;
+}
+
+.navbar-scrolled .navbar-link {
+    @apply  hover:bg-gray-300 hover:text-black;
+}
+
+.navbar-log-in-button {
+    @apply bg-transparent text-white py-2 px-3 rounded-full font-semibold hover:bg-[var(--secondary)] hover:text-white ;
+}
+.navbar-scrolled .navbar-log-in-button {
+    @apply bg-transparent text-white border-[1px] border-white hover:bg-gray-300 hover:text-black;
+}
+
+.navbar-sign-up-button {
+    @apply bg-white text-[var(--maroon)] py-2 px-3 rounded-full font-semibold hover:bg-[var(--secondary)] hover:text-white ;
+}
+.navbar-scrolled .navbar-sign-up-button {
+    @apply bg-white text-black hover:bg-gray-300;
+}
+
+
+
+/* Footer */
+.footer {
+    @apply bg-white flex justify-center items-center p-4;
+}
+.footer-container {
+    @apply mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8 flex flex-col sm:flex-row justify-between items-center;
+}
+.footer-grid {
+    @apply grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3;
+}
+.footer-heading {
+    @apply text-base font-semibold text-gray-900 uppercase;
+}
+.footer-list {
+    @apply text-gray-500 font-medium space-y-2;
+}
+.footer-link {
+    @apply hover:underline text-sm;
+}
+
+/* Landing Page */
+.landing-page {
+    @apply h-screen bg-cover bg-center;
+}
+.landing-container {
+    @apply h-full w-full flex justify-center items-center;
+}
