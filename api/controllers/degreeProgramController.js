@@ -61,6 +61,42 @@ const getDegreeProgramById = (supabase) => async (req, res) => {
   }
 };
 
+const getDegreeProgramsByUserId = (supabase) => async (req, res) => {
+  try {
+
+      const filters = req.query;
+
+      const { userId } = req.params;
+
+      const { data, error } = await degreeProgramService.fetchDegreeProgramsByUserId(supabase, userId, filters);
+
+      if (error) {
+          return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+              status: "FAILED",
+              message: error.message,
+          });
+      }
+
+      if (!data || data.length === 0) {
+          return res.status(httpStatus.NOT_FOUND).json({
+              status: "FAILED",
+              message: "No degree programs found for this user",
+          });
+      }
+
+      return res.status(httpStatus.OK).json({
+          status: "OK",
+          degreePrograms: data,
+      });
+  }
+  catch (error) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+          status: "FAILED",
+          message: error.message,
+      });
+  }
+};
+
 const createDegreeProgram = (supabase) => async (req, res) => {
   try {
     const { name, level } = req.body;
@@ -173,6 +209,7 @@ const deleteDegreeProgram = (supabase) => async (req, res) => {
 const degreeProgramController = {
   getAllDegreePrograms,
   getDegreeProgramById,
+  getDegreeProgramsByUserId,
   createDegreeProgram,
   updateDegreeProgram,
   deleteDegreeProgram,

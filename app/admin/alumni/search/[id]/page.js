@@ -16,9 +16,20 @@ export default async function AlumniSearchProfile({ params }) {
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/work-experiences/alum/${id}`)
     ]);
 
+    let degreeProgramRes;
+    try {
+        // FIXME: This is a temporary fix for the degree program API call
+        // I cannot find where the error is coming from
+        degreeProgramRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/degree-programs/alum/${id}`);
+    } catch (error) {
+        console.error("Error fetching degree program:", error);
+        degreeProgramRes = { data: { degree_programs: [] } }; // Fallback to an empty array
+    }
+
     const user = userRes.data.user;
     const profile = profileRes.data.alumniProfile;
     const workExperience = workExperienceRes.data.work_experiences;
+    const degreeProgram = degreeProgramRes.data.degree_programs;
 
     console.log(user);
     console.log(profile);
@@ -26,8 +37,6 @@ export default async function AlumniSearchProfile({ params }) {
     if (!user || !profile) {
         return <div className="text-center mt-20 text-red-500">{error || "Alumnus not found."}</div>;
     }
-
-    console.log(workExperience.length);
 
     if (workExperience.length > 1) {
         workExperience.map((experience) => {
@@ -38,6 +47,16 @@ export default async function AlumniSearchProfile({ params }) {
     if (typeof workExperience === 'object' && workExperience !== null) {
         workExperience.year_started = formatDate(workExperience.year_started);
         workExperience.year_ended = workExperience.year_ended ? formatDate(workExperience.year_ended) : "Present";
+    }
+
+    if (degreeProgram.length > 1) {
+        degreeProgram = degreeProgram[0];
+        degreeProgram.year_started = formatDate(degreeProgram.year_started);
+        degreeProgram.year_graduated = degreeProgram.year_graduated ? formatDate(degreeProgram.year_graduated) : "Present";
+    } else 
+    if (typeof degreeProgram === 'object' && degreeProgram !== null) {
+        degreeProgram.year_started = formatDate(degreeProgram.year_started);
+        degreeProgram.year_graduated = degreeProgram.year_graduated ? formatDate(degreeProgram.year_graduated) : "Present";
     }
     
     return (
@@ -77,6 +96,7 @@ export default async function AlumniSearchProfile({ params }) {
                         <span className="text-xs bg-astragray text-astradarkgray px-2 py-1 rounded-full flex items-center space-x-1">
                             <GraduationCap className="w-3 h-3" />
                             {/* TODO: FRG ikaw na rito */}
+                            {<span> {degreeProgram.year_graduated} </span>}
                             {/* <span>{new Date(profile.year_graduated).getFullYear()}</span> */}
                         </span>
                     </div>
@@ -108,7 +128,9 @@ export default async function AlumniSearchProfile({ params }) {
                         </div>
 
                         <div>
-                            <p className="font-rb">{profile.honorifics}</p>
+                            <p className="font-rb">
+                                {(profile.honorifics) ? profile.honorifics : "N/A"}
+                            </p>
                             <p className="text-astradarkgray">Title</p>
                         </div>
                         <div>

@@ -1,3 +1,5 @@
+import { applyFilter } from "../utils/applyFilter.js";
+
 const fetchAllDegreePrograms = async (supabase) => {
   return await supabase
     .from("degree_programs")
@@ -10,6 +12,15 @@ const fetchDegreeProgramById = async (supabase, id) => {
     .select("*")
     .eq("id", id)
     .single();
+};
+
+const fetchDegreeProgramsByUserId = async (supabase, userId, filters) => {
+    // TODO: Add filters
+    return await supabase
+        .from("degree_programs")
+        .select("*")
+        .sort("year_graduated", { ascending: false })
+        .eq("user_id", userId)
 };
 
 const insertDegreeProgram = async (supabase, degreeProgramData) => {
@@ -37,6 +48,7 @@ const deleteDegreeProgramById = async (supabase, id) => {
 const degreeProgramService = {
   fetchAllDegreePrograms,
   fetchDegreeProgramById,
+  fetchDegreeProgramsByUserId,
   insertDegreeProgram,
   updateDegreeProgramById,
   deleteDegreeProgramById,

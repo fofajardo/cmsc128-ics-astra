@@ -6,6 +6,7 @@ const degreeProgramsRouter = (supabase) => {
 
     router.get("/", degreeProgramController.getAllDegreePrograms(supabase));
     router.get("/:id", degreeProgramController.getDegreeProgramById(supabase));
+    router.get("/alum/:userId", degreeProgramController.getDegreeProgramsByUserId(supabase));
     router.post("/", degreeProgramController.createDegreeProgram(supabase));
     router.put("/:id", degreeProgramController.updateDegreeProgram(supabase));
     router.delete("/:id", degreeProgramController.deleteDegreeProgram(supabase));
