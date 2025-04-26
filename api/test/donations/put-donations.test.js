@@ -217,7 +217,7 @@ describe('Donations API Tests', function () {
     after(async function () {
         const donationId = '39f817bf-7301-4a60-bb59-7f29c05d7f91';
         const originalData = {
-            alum_id: alumId,
+            user_id: userId,
             project_id: projectId,
             donation_date: new Date('2025-04-06').toISOString(),
             reference_num: '1234-abvc-1234',
