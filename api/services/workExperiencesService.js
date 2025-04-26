@@ -65,11 +65,11 @@ const fetchWorkExperienceById = async (supabase, workExperienceId) => {
         .single();
 };
 
-const fetchWorkExperiencesByAlumId = async (supabase, alumId) => {
+const fetchWorkExperiencesByAlumId = async (supabase, userId) => {
     return await supabase
         .from('work_experiences')
         .select('*')
-        .eq('alum_id', alumId);
+        .eq('user_id', userId);
 };
 
 const insertWorkExperience = async (supabase, workExperienceData) => {
