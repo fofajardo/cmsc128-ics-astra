@@ -53,17 +53,19 @@ export default function AlumniSearch() {
                     }
                 });
                 console.log('Fetched alumni:', response.data);
-
+                console.log('Primary work experience:', response.data.list[0].primary_work_experience);
                 if (response.data.status === "OK") {
                     updateAlumList(
-                        response.data.list.map(alum => ({
+                        response.data.list.map(
+                            
+                            alum => ({
                             id: alum.alum_id,
                             image: "https://cdn-icons-png.flaticon.com/512/145/145974.png", // TODO: Jonz pa-implement nito
                             alumname: capitalizeName(`${alum.first_name} ${alum.last_name}`),
                             email: alum.email,
                             graduationYear: alum.year_graduated?.split('-')[0], // TODO: Jonz pa-implement nito, fetch mo yung data from degree programs
                             location: alum.location,
-                            fieldOfWork: alum.primary_work_experience_id, // TODO: FRG pa-implement nito
+                            fieldOfWork: alum.primary_work_experience?.field || "No Position Title", // TODO: FRG pa-implement nito
                             skills: alum.skills ? alum.skills.split(',') : [],
                         }))
                     );
