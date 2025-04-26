@@ -57,7 +57,7 @@ const getRequestById = (supabase) => async (req, res) => {
         const { data, error } = await requestsService.fetchRequestById(supabase, requestId);
 
         if (error) {
-            return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+            return res.status(httpStatus.NOT_FOUND).json({
                 status: 'FAILED',
                 message: error.message,
             });
@@ -93,6 +93,16 @@ const getRequestsByUserId = (supabase) => async (req, res) => {
             });
         }
 
+        // Check if the user exists
+        const { data: userData, error: userError } = await alumniService.fetchAlumniProfileById(supabase, userId);
+
+        if (userError || !userData) {
+            return res.status(httpStatus.NOT_FOUND).json({
+                status: 'FAILED',
+                message: 'User not found.',
+            });
+        }
+
         const { data, error } = await requestsService.fetchRequestsByUserId(supabase, userId);
 
         if (error) {
@@ -104,7 +114,7 @@ const getRequestsByUserId = (supabase) => async (req, res) => {
 
         return res.status(httpStatus.OK).json({
             status: 'OK',
-            list: data || [],
+            list: data,
         });
     } catch (error) {
         return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -132,6 +142,16 @@ const getRequestsByContentId = (supabase) => async (req, res) => {
             });
         }
 
+        // Check if the content exists
+        const { data: contentData, error: contentError } = await contentsService.fetchContentById(supabase, contentId);
+
+        if (contentError || !contentData) {
+            return res.status(httpStatus.NOT_FOUND).json({
+                status: 'FAILED',
+                message: 'Content not found.',
+            });
+        }
+
         const { data, error } = await requestsService.fetchRequestsByContentId(supabase, contentId);
 
         if (error) {
@@ -143,7 +163,7 @@ const getRequestsByContentId = (supabase) => async (req, res) => {
 
         return res.status(httpStatus.OK).json({
             status: 'OK',
-            list: data || [],
+            list: data,
         });
     } catch (error) {
         return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
