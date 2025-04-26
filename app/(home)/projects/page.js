@@ -6,49 +6,130 @@ import NavbarUser from "../../components/NavbarUser";
 import ProjectCard from "../../components/projects/ProjectCard";
 import Link from "next/link";
 import { Icon } from "@iconify/react";
+import { Filter } from "lucide-react";
 
-export default function ProjectsPage({projects}) {
+export default function ProjectsPage({ projects }) {
   const [visibleCount, setVisibleCount] = useState(6);
   const [startIndex, setStartIndex] = useState(0);
   const completedVisibleCount = 3;
-  
-// change to actual data, 6 can also be changed to actual number of completed projects
-  const completedProjects = projects || Array(6).fill({
-    image: "/projects/assets/Donation.jpg",
-    title: "Snacks to Support Student Success",
-    description: "This project aims to provide snacks to students to encourage attendance and enhance focus.",
-    amountRaised: "PHP20K",
-    goalAmount: "PHP50K",
-    donors: "30K",
-    buttonText: "Read story"
-  });
 
-   // Navigate Left
-   const handlePrev = () => {
+  // Filter modal state
+  const [showFilter, setShowFilter] = useState(false);
+  const [selectedType, setSelectedType] = useState("All");
+  const [tempSelectedType, setTempSelectedType] = useState(selectedType);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const toggleFilter = () => {
+    setTempSelectedType(selectedType); // reset modal input to current selection
+    setShowFilter((prev) => !prev);
+  };
+
+  // Sample completed projects data
+  const completedProjects =
+    projects ||
+    Array(6).fill({
+      image: "/projects/assets/Donation.jpg",
+      title: "tapos na",
+      description:
+        "This project aims to provide snacks to students to encourage attendance and enhance focus.",
+      amountRaised: "₱10,000",
+      goalAmount: "₱30,000",
+      donors: "32",
+      buttonText: "Read story",
+    });
+
+  // Navigate Left for completed projects carousel
+  const handlePrev = () => {
     setStartIndex((prev) => Math.max(prev - 1, 0));
   };
 
-  // Navigate Right
+  // Navigate Right for completed projects carousel
   const handleNext = () => {
-    setStartIndex((prev) => 
+    setStartIndex((prev) =>
       Math.min(prev + 1, completedProjects.length - completedVisibleCount)
     );
   };
 
+  // Sample all projects data
   const allProjects = [...Array(12).keys()].map((i) => ({
     id: i,
-    title: `Snacks to Support Student Success ${i + 1}`,
-    description: `This project aims to provide middle school students the resources they need to excel academically, emotionally, and physically... ${i + 1}`,
-    image: '/projects/assets/Donation.jpg',
-    goal: 'PHP50K',
-    raised: 'PHP20K',
-    donors: 'PHP30K',
+    title: `${i % 2 === 0 ? "Scholarship" : "Fundraiser"} Project ${i + 1}`,
+    description: `This project aims to provide middle school students the resources they need to excel academically, emotionally, and physically... ${
+      i + 1
+    }`,
+    image: "/projects/assets/Donation.jpg",
+    goal: "₱50,000",
+    raised: i % 3 === 0 ? "₱10,000" : i % 3 === 1 ? "₱35,000" : "₱48,000",
+    donors: "30",
+    type: i % 2 === 0 ? "Scholarship" : "Fundraiser",
+    endDate: "2025-06-30",
   }));
 
-  const visibleCompletedProjects = completedProjects.slice(startIndex, startIndex + completedVisibleCount);
+  // Filter projects based on type and search term
+  const filteredProjects = allProjects.filter((project) => {
+    const matchesType = selectedType === "All" || project.type === selectedType;
+    const matchesSearch = project.title
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    return matchesType && matchesSearch;
+  });
+
+  const visibleCompletedProjects = completedProjects.slice(
+    startIndex,
+    startIndex + completedVisibleCount
+  );
+
   return (
     <div className="min-h-screen flex flex-col">
       <NavbarUser />
+
+      {/* Filter Modal */}
+      {showFilter && (
+        <div
+          onClick={toggleFilter}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-astrawhite p-8 rounded-xl w-80"
+          >
+            <h3 className="font-lb text-xl mb-4">Filter Projects</h3>
+            <div className="flex flex-col gap-4">
+              <div>
+                <label className="font-s text-astradarkgray mb-2 block">
+                  Project Type
+                </label>
+                <select
+                  className="w-full p-2 border border-astragray rounded-lg"
+                  value={tempSelectedType}
+                  onChange={(e) => setTempSelectedType(e.target.value)}
+                >
+                  <option value="All">All Projects</option>
+                  <option value="Fundraiser">Fundraisers</option>
+                  <option value="Scholarship">Scholarships</option>
+                </select>
+              </div>
+              <div className="flex justify-end gap-3 mt-4">
+                <button
+                  className="px-4 py-2 border border-astragray text-astradarkgray rounded-lg"
+                  onClick={toggleFilter}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="px-4 py-2 bg-astraprimary text-astrawhite rounded-lg"
+                  onClick={() => {
+                    setSelectedType(tempSelectedType); // apply the filter
+                    toggleFilter();
+                  }}
+                >
+                  Apply
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Hero Section */}
       <section className="relative bg-[url('/blue-bg.png')] bg-cover bg-center text-white text-center py-32">
@@ -75,42 +156,179 @@ export default function ProjectsPage({projects}) {
           </Link>
         </motion.div>
       </section>
-      {/* -----------------need edits----------------*/}
-      {/* Project Grid */}
-       <section className="bg-astrawhite py-16 px-4">
-       <div className="max-w-6xl mx-auto">
-      <h2 className="font-h2 mb-8">Fund the future of technology</h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {allProjects.slice(0, visibleCount).map((project) => (
-            <Link href="/projects/about" key={project.id} className="block">
-              <ProjectCard
-              image={project.image}
-              title={project.title}
-              description={project.description}
-              goal={project.goal}
-              raised={project.raised}
-              donors={project.donors}
-                 />
-            </Link>
-              ))}
+      {/* Project Grid - Dynamic */}
+      <section className="bg-astrawhite py-16 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-8 gap-4">
+            <h2 className="font-h2">Fund the future of technology</h2>
+
+            {/* Search and Filter - Responsive */}
+            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+              <div className="relative flex-grow">
+                <input
+                  type="text"
+                  placeholder="Search projects..."
+                  className="border border-astragray rounded-lg p-2 pl-10 w-full"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <Icon
+                  icon="ic:round-search"
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-astradarkgray text-xl"
+                />
+              </div>
+              <button
+                onClick={toggleFilter}
+                className="flex items-center justify-center gap-2 border border-astragray rounded-lg p-2 hover:bg-astralightgray transition-colors"
+              >
+                <Filter size={18} />
+                <span>Filter</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Project type indicator */}
+          {selectedType !== "All" && (
+            <div className="mb-4 flex items-center">
+              <span className="bg-astraprimary text-astrawhite px-3 py-1 rounded-lg text-sm">
+                {selectedType}
+              </span>
+              <button
+                onClick={() => setSelectedType("All")}
+                className="ml-2 text-astradarkgray hover:text-astraprimary"
+              >
+                <Icon icon="ic:round-close" className="text-xl" />
+              </button>
+            </div>
+          )}
+
+          {filteredProjects.length > 0 ? (
+            <>
+              {/* Dynamic Grid - adapts to content and screen size */}
+              <div
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8"
+                style={{
+                  gridAutoRows: "1fr", // Ensures equal height rows
+                }}
+              >
+                {filteredProjects.slice(0, visibleCount).map((project) => (
+                  <Link
+                    href="/projects/about"
+                    key={project.id}
+                    className="block h-full"
+                  >
+                    <ProjectCard
+                      id={project.id}
+                      image={project.image}
+                      title={project.title}
+                      description={project.description}
+                      goal={project.goal}
+                      raised={project.raised}
+                      donors={project.donors}
+                      type={project.type}
+                      endDate={project.endDate}
+                    />
+                  </Link>
+                ))}
+              </div>
+
+              {/* Loading Indicator for large datasets */}
+              {visibleCount < filteredProjects.length &&
+                filteredProjects.length > 20 && (
+                  <div className="flex justify-center items-center py-4">
+                    <div className="animate-pulse text-astradarkgray">
+                      Loading more projects...
+                    </div>
+                  </div>
+                )}
+            </>
+          ) : (
+            <div className="text-center py-16">
+              <p className="text-astradarkgray font-s text-lg">
+                No projects found matching your criteria.
+              </p>
+              <button
+                onClick={() => {
+                  setSelectedType("All");
+                  setSearchTerm("");
+                }}
+                className="mt-4 blue-button"
+              >
+                Reset Filters
+              </button>
+            </div>
+          )}
+
+          {/* See More Button - Dynamic count */}
+          {visibleCount < filteredProjects.length && (
+            <div className="flex justify-center mt-6">
+              <button
+                onClick={() => setVisibleCount(filteredProjects.length)}
+                className="px-6 py-2 font-r bg-astrawhite border border-astraprimary text-astraprimary rounded hover:bg-blue-100 transition cursor-pointer flex items-center gap-2"
+              >
+                <span>Show All</span>
+                <span className="bg-astraprimary text-astrawhite px-2 py-0.5 rounded-full text-sm">
+                  {filteredProjects.length - visibleCount} more
+                </span>
+              </button>
+            </div>
+          )}
+
+          {/* Add this to the useEffect in your component to handle resize */}
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+        // Dynamic grid management
+        function handleGridResponsiveness() {
+          const cards = document.querySelectorAll('.grid > a');
+          const width = window.innerWidth;
+          
+          // Reset heights first
+          cards.forEach(card => {
+            card.style.height = 'auto';
+          });
+          
+          // Set initial visible count based on screen size
+          if (width < 640) {
+            setVisibleCount(prev => prev < 3 ? 3 : prev);
+          } else if (width < 1024) {
+            setVisibleCount(prev => prev < 4 ? 4 : prev);
+          } else {
+            setVisibleCount(prev => prev < 6 ? 6 : prev);
+          }
+          
+          // Lazy load images for performance
+          if ('IntersectionObserver' in window) {
+            const imgObserver = new IntersectionObserver((entries, observer) => {
+              entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                  const img = entry.target;
+                  const src = img.getAttribute('data-src');
+                  if (src) {
+                    img.src = src;
+                    img.removeAttribute('data-src');
+                  }
+                  observer.unobserve(img);
+                }
+              });
+            });
+            
+            document.querySelectorAll('img[data-src]').forEach(img => {
+              imgObserver.observe(img);
+            });
+          }
+        }
+        
+        window.addEventListener('resize', handleGridResponsiveness);
+        handleGridResponsiveness();
+      `,
+            }}
+          />
         </div>
+      </section>
 
-      {/* See More Button */}
-         {visibleCount < allProjects.length && (
-          <div className="flex justify-center mt-6">
-            <button
-            onClick={() => setVisibleCount(visibleCount + 3)}
-            className="px-6 py-2 font-r bg-astrawhite border border-astraprimary text-astraprimary rounded hover:bg-blue-100 transition cursor-pointer">
-            See More
-           </button>
-          </div>
-            )}
-          </div>
-        </section>
-
-
-      {/* Why Your Support Matters (no need edits)*/}
+      {/* Why Your Support Matters (unchanged) */}
       <section className="bg-astralightgray pt-20 pb-40 px-4 text-center">
         <h2 className="font-h2 mb-2 text-astrablack">
           Why Your Support Matters
@@ -143,7 +361,7 @@ export default function ProjectsPage({projects}) {
                   Transparent <br /> Operations
                 </>
               ),
-              desc: "Accountability you can compile aFnd run.",
+              desc: "Accountability you can compile and run.",
             },
           ].map((item, i) => (
             <div
@@ -159,7 +377,7 @@ export default function ProjectsPage({projects}) {
         </div>
       </section>
 
-      {/* Donation Process */}
+      {/* Donation Process (unchanged) */}
       <section className="bg-astrawhite pt-20 pb-40 px-4">
         <h2 className="font-h2 mb-2 text-astrablack text-center mb-12">
           Donation Process
@@ -183,7 +401,7 @@ export default function ProjectsPage({projects}) {
             },
             {
               step: "Receive Confirmation",
-              desc: "After your donation is processed, you’ll receive a confirmation after we verify your payment.",
+              desc: "After your donation is processed, you'll receive a confirmation after we verify your payment.",
               sub: "📧 Confirmation",
             },
           ].map((item, index) => (
@@ -202,59 +420,122 @@ export default function ProjectsPage({projects}) {
         </div>
       </section>
 
-      {/* Completed Fundraisers */}
+      {/* Completed Fundraisers - Dynamic Grid */}
       <section className="bg-astralightgray pt-20 pb-30">
-      <div className="max-w-7xl mx-auto px-4 relative">
-        <h2 className="font-h2 text-astrablack mb-3">
-          Completed Fundraisers
-        </h2>
-        <p className="text-astrablack font-r mb-10">
-        See the fundraisers and scholarships we've brought to life together.
-        </p>
-        
-        <div className="relative">
-          {/* Left Arrow */}
-          <button
-            onClick={handlePrev}
-            disabled={startIndex === 0}
-            className={`absolute left-[-20px] top-1/2 transform -translate-y-1/2 z-10 bg-white shadow-md hover:bg-astragray transition-all p-2 rounded-full ${
-              startIndex === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
-            }`}
-          >
-            <Icon icon="ic:baseline-keyboard-arrow-left" className="text-3xl" />
-          </button>
+        <div className="max-w-7xl mx-auto px-4 relative">
+          <h2 className="font-h2 text-astrablack mb-3">
+            Completed Fundraisers
+          </h2>
+          <p className="text-astrablack font-r mb-10">
+            See the fundraisers and scholarships we've brought to life together.
+          </p>
 
-          {/* Card Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-500 ease-in-out">
-            {visibleCompletedProjects.map((project, index) => (
-            <Link href={{ pathname: "/projects/about", query: { completed: "true" } }} key={index} className="block" >  
-              <ProjectCard
-                image={project.image}
-                title={project.title}
-                description={project.description}
-                amountRaised={project.amountRaised}
-                goalAmount={project.goalAmount}
-                donors={project.donors}
-                buttonText={project.buttonText}
-                showDonate={false}
+          <div className="relative">
+            {/* Left Arrow */}
+            <button
+              onClick={handlePrev}
+              disabled={startIndex === 0}
+              className={`absolute -left-6 top-1/2 transform -translate-y-1/2 z-10 bg-white shadow-md hover:bg-astragray transition-all p-2 rounded-full hidden md:flex items-center justify-center ${
+                startIndex === 0
+                  ? "opacity-50 cursor-not-allowed"
+                  : "cursor-pointer"
+              }`}
+            >
+              <Icon
+                icon="ic:baseline-keyboard-arrow-left"
+                className="text-3xl"
               />
-            </Link>
+            </button>
+
+            {/* Card Grid - Dynamic based on screen size */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-500 ease-in-out">
+              {visibleCompletedProjects.map((project, index) => (
+                <Link
+                  href={{
+                    pathname: "/projects/about/${project.id}",
+                    query: { id: project.id },
+                    query: { completed: "true" },
+                  }}
+                  key={index}
+                  className="block"
+                >
+                  <ProjectCard
+                    image={project.image}
+                    title={project.title}
+                    description={project.description}
+                    goal={project.goalAmount}
+                    raised={project.amountRaised}
+                    donors={project.donors}
+                    endDate={project.endDate || "2025-01-01"}
+                    type={project.type || "Fundraiser"}
+                    showDonate={false}
+                  />
+                </Link>
+              ))}
+            </div>
+
+            {/* Right Arrow */}
+            <button
+              onClick={handleNext}
+              disabled={
+                startIndex >= completedProjects.length - completedVisibleCount
+              }
+              className={`absolute -right-6 top-1/2 transform -translate-y-1/2 z-10 bg-white shadow-md hover:bg-astragray transition-all p-2 rounded-full hidden md:flex items-center justify-center ${
+                startIndex >= completedProjects.length - completedVisibleCount
+                  ? "opacity-50 cursor-not-allowed"
+                  : "cursor-pointer"
+              }`}
+            >
+              <Icon
+                icon="ic:baseline-keyboard-arrow-right"
+                className="text-3xl"
+              />
+            </button>
+          </div>
+
+          {/* Mobile-only Pagination Dots */}
+          <div className="flex justify-center mt-6 md:hidden">
+            {Array.from({
+              length: Math.ceil(
+                completedProjects.length / completedVisibleCount
+              ),
+            }).map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setStartIndex(idx * completedVisibleCount)}
+                className={`mx-1 w-2 h-2 rounded-full ${
+                  startIndex === idx * completedVisibleCount
+                    ? "bg-astraprimary"
+                    : "bg-astragray"
+                }`}
+              />
             ))}
           </div>
 
-          {/* Right Arrow */}
-          <button
-            onClick={handleNext}
-            disabled={startIndex >= completedProjects.length - completedVisibleCount}
-            className={`absolute right-[-20px] top-1/2 transform -translate-y-1/2 z-10 bg-white shadow-md hover:bg-astragray transition-all p-2 rounded-full ${
-              startIndex >= completedProjects.length - completedVisibleCount ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
-            }`}
-          >
-            <Icon icon="ic:baseline-keyboard-arrow-right" className="text-3xl" />
-          </button>
+          {/* Responsive completedVisibleCount adjustment */}
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+        function adjustVisibleCount() {
+          const width = window.innerWidth;
+          if (width < 640) {
+            setCompletedVisibleCount(1);
+          } else if (width < 1024) {
+            setCompletedVisibleCount(2);
+          } else {
+            setCompletedVisibleCount(3);
+          }
+        }
+        window.addEventListener('resize', adjustVisibleCount);
+        adjustVisibleCount();
+        
+        // Reset startIndex when count changes to avoid showing blank spaces
+        setStartIndex(0);
+      `,
+            }}
+          />
         </div>
-      </div>
-    </section>
+      </section>
     </div>
   );
 }
