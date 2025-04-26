@@ -38,84 +38,46 @@ const fetchRequests = async (supabase, filters) => {
 }
 
 const fetchRequestById = async (supabase, requestId) => {
-    const { data, error } = await supabase
+    return await supabase
         .from("requests")
         .select("*")
         .eq("id", requestId)
-        .single();
-
-    if (error) {
-        throw new Error(error.message);
-    }
-
-    return data;
+        .single()
 }
 
 const fetchRequestsByUserId = async (supabase, userId) => {
-    const { data, error } = await supabase
+    return await supabase
         .from("requests")
         .select("*")
-        .eq("user_id", userId);
-
-    if (error) {
-        throw new Error(error.message);
-    }
-
-    return data;
+        .eq("user_id", userId)
 }
 
 const fetchRequestsByContentId = async (supabase, contentId) => {
-    const { data, error } = await supabase
+    return await supabase
         .from("requests")
         .select("*")
-        .eq("content_id", contentId);
-
-    if (error) {
-        throw new Error(error.message);
-    }
-
-    return data;
+        .eq("content_id", contentId)
 }
 
 const insertRequest = async (supabase, requestData) => {
-    const { data, error } = await supabase
+    return await supabase
         .from("requests")
         .insert(requestData)
-        .select("*");
-
-    if (error) {
-        throw new Error(error.message);
-    }
-
-    return data;
+        .select("*")
 }
 
 const updateRequest = async (supabase, requestId, updateData) => {
-    const { data, error } = await supabase
+    return await supabase
         .from("requests")
         .update(updateData)
         .eq("id", requestId)
-        .select("*");
-
-    if (error) {
-        throw new Error(error.message);
-    }
-
-    return data;
 }
 
 const deleteRequest = async (supabase, requestId) => {
-    const { data, error } = await supabase
+    return await supabase
         .from("requests")
         .delete()
         .eq("id", requestId)
-        .select("*");
-
-    if (error) {
-        throw new Error(error.message);
-    }
-
-    return data;
 }
 
 const requestsService = {
