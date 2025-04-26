@@ -1,11 +1,24 @@
-const fetchEvents = async (supabase, page = 1, limit = 10) => {
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + Number(limit) - 1;
+import { applyFilter } from "../utils/applyFilter.js";
 
-    return await supabase
+const fetchEvents = async (supabase, filters) => {
+    let query = supabase
         .from("events")
-        .select("*")
-        .range(startIndex, endIndex);
+        .select("*");
+
+    query = applyFilter(query, filters,{
+        ilike: ["venue"],
+        range: {
+            event_date: [filters.event_date_from,filters.event_date_to]
+        },
+        sortBy: "event_date",
+        defaultOrder: "desc",
+        specialKeys: [
+            "event_date_from",
+            "event_date_to"
+        ]
+    });
+
+    return await query;
 };
 
 const fetchEventById = async (supabase, eventId) => {

@@ -1,8 +1,11 @@
 import express from "express";
 import usersController from "../controllers/usersController.js";
+import { RequireAuthenticated } from "../middleware/requireAuthenticated.js";
 
 const usersRouter = (supabase) => {
     const router = express.Router();
+    
+    router.use(RequireAuthenticated); // Applies to all routes below
 
     router.get("/", usersController.getUsers(supabase));
     router.get("/:userId", usersController.getUserById(supabase));

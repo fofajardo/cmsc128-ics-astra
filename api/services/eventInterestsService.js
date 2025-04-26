@@ -12,13 +12,13 @@ const fetchEventInterestByAlumnId = async (supabase, alumnId) => {
     return await supabase
         .from("event_interests")
         .select("content_id")
-        .eq("alum_id", alumnId);
+        .eq("user_id", alumnId);
 };
 
 const fetchEventInterestByContentId = async (supabase, contentId) => {
     return await supabase
         .from("event_interests")
-        .select("alum_id")
+        .select("user_id")
         .eq("content_id", contentId);
 };
 
@@ -26,7 +26,7 @@ const checkExistingEventInterest = async (supabase, alumnId, contentId) => {
     return await supabase
         .from("event_interests")
         .select()
-        .match({ alum_id: alumnId, content_id: contentId });
+        .match({ user_id: alumnId, content_id: contentId });
 };
 
 const insertEventInterest = async (supabase, eventInterestData) => {
@@ -40,7 +40,7 @@ const findEventInterests = async (supabase, alumnId, contentId) => {
     return await supabase
         .from("event_interests")
         .select("*")
-        .match({ alum_id: alumnId, content_id: contentId })
+        .match({ user_id: alumnId, content_id: contentId })
         .single();
 };
 
@@ -49,7 +49,7 @@ const deleteEventInterest = async (supabase, alumnId, contentId) => {
     return await supabase
         .from('event_interests')
         .delete()
-        .match({ alum_id: alumnId, content_id: contentId });
+        .match({ user_id: alumnId, content_id: contentId });
 };
 
 const eventInterestsService = {
