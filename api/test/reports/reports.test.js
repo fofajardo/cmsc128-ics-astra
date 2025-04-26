@@ -4,8 +4,12 @@ import { expect } from 'chai';
 import app from '../../index.js';
 import httpStatus from 'http-status-codes';
 import { isValidUUID } from '../../utils/validators.js';
+import { TestSignIn, TestSignOut, TestUsers } from "../auth/auth.common.js";
+const gAgent = request.agent(app);
 
 describe('Reports API Tests', function () {
+    before(() => TestSignIn(gAgent, TestUsers.admin));
+
     let createdReportId = null;
 
     const validReporterId = 'b4a6b230-20b9-4137-af62-8b535841c391'; // Replace with a valid test UUID
@@ -14,7 +18,7 @@ describe('Reports API Tests', function () {
         it('should create a report and return 201', async function () {
             expect(isValidUUID(validReporterId)).to.be.true;
 
-            const res = await request(app)
+            const res = await gAgent
                 .post('/v1/reports')
                 .send({
                     reporter_id: validReporterId,
@@ -34,7 +38,7 @@ describe('Reports API Tests', function () {
         });
 
         it('should return 400 when required fields are missing', async function () {
-            const res = await request(app)
+            const res = await gAgent
                 .post('/v1/reports')
                 .send({});
 
@@ -45,7 +49,7 @@ describe('Reports API Tests', function () {
 
     describe('GET /v1/reports', function () {
         it('should return a list of reports', async function () {
-            const res = await request(app)
+            const res = await gAgent
                 .get('/v1/reports')
                 .query({ page: 1, limit: 10 });
 
@@ -58,7 +62,7 @@ describe('Reports API Tests', function () {
         it('should return a specific report by id', async function () {
             expect(isValidUUID(createdReportId)).to.be.true;
 
-            const res = await request(app)
+            const res = await gAgent
                 .get(`/v1/reports/${createdReportId}`);
 
             expect(res.status).to.equal(httpStatus.OK);
@@ -70,7 +74,7 @@ describe('Reports API Tests', function () {
             const fakeId = '84f4c991-3f7c-4f75-b2b3-25dbf1d4b95f';
             expect(isValidUUID(fakeId)).to.be.true;
 
-            const res = await request(app)
+            const res = await gAgent
                 .get(`/v1/reports/${fakeId}`);
 
             expect(res.status).to.equal(httpStatus.NOT_FOUND);
@@ -81,7 +85,7 @@ describe('Reports API Tests', function () {
         it('should update report status', async function () {
             const updatedFields = { status: 1 };
 
-            const res = await request(app)
+            const res = await gAgent
                 .put(`/v1/reports/${createdReportId}`)
                 .send(updatedFields);
 
@@ -92,17 +96,19 @@ describe('Reports API Tests', function () {
 
     describe('DELETE /v1/reports/:id', function () {
         it('should delete a report', async function () {
-            const res = await request(app)
+            const res = await gAgent
                 .delete(`/v1/reports/${createdReportId}`);
 
             expect(res.status).to.be.oneOf([httpStatus.OK, httpStatus.NO_CONTENT]);
         });
 
         it('should return 404 after deletion', async function () {
-            const res = await request(app)
+            const res = await gAgent
                 .get(`/v1/reports/${createdReportId}`);
 
             expect(res.status).to.equal(httpStatus.NOT_FOUND);
         });
     });
+
+    after(() => TestSignOut(gAgent));
 });

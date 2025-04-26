@@ -1,6 +1,6 @@
-import {pbkdf2, randomBytes, timingSafeEqual,} from "node:crypto";
-import {AbilityBuilder, createMongoAbility, subject as setSubjectType} from "@casl/ability";
-import {Actions, RoleName, Subjects} from "../../common/scopes.js";
+import { pbkdf2, randomBytes, timingSafeEqual, } from "node:crypto";
+import { AbilityBuilder, createMongoAbility, subject as setSubjectType } from "@casl/ability";
+import { Actions, RoleName, Subjects } from "../../common/scopes.js";
 
 const KEY_ITERATIONS = 310000;
 const KEY_LENGTH = 32;
@@ -53,7 +53,7 @@ function matchesPassword(aPassword, aSalt, aPrevKey) {
 }
 
 async function defineScopes(aUser) {
-    const {can, cannot, rules} =
+    const { can, cannot, rules } =
         new AbilityBuilder(createMongoAbility);
 
     let user = aUser?.data;
@@ -61,25 +61,25 @@ async function defineScopes(aUser) {
 
     if (role !== RoleName.UNLINKED) {
         // General permissions for all roles.
-        can(Actions.MANAGE, Subjects.USER, {id: user.id});
-        can(Actions.MANAGE, Subjects.ALUMNI_PROFILE, {alum_id: user.id});
-        can(Actions.MANAGE, Subjects.CONTACT, {alum_id: user.id});
+        can(Actions.MANAGE, Subjects.USER, { id: user.id });
+        can(Actions.MANAGE, Subjects.ALUMNI_PROFILE, { alum_id: user.id });
+        can(Actions.MANAGE, Subjects.CONTACT, { alum_id: user.id });
         can(Actions.CREATE, Subjects.DONATION);
-        can(Actions.MANAGE, Subjects.DONATION, {alum_id: user.id});
+        can(Actions.MANAGE, Subjects.DONATION, { alum_id: user.id });
         can(Actions.READ, Subjects.EVENT);
         can(Actions.CREATE, Subjects.REPORT);
-        can(Actions.MANAGE, Subjects.REPORT, {reporter_id: user.id});
+        can(Actions.MANAGE, Subjects.REPORT, { reporter_id: user.id });
         can(Actions.READ, Subjects.CONTENT);
 
         if (role === RoleName.ALUMNUS) {
             can(Actions.READ, Subjects.EVENT);
             can(Actions.CREATE, Subjects.DONATION);
-            can(Actions.MANAGE, Subjects.DONATION, {alum_id: user.id});
+            can(Actions.MANAGE, Subjects.DONATION, { alum_id: user.id });
             cannot(Actions.MANAGE, Subjects.EVENT);
-            can(Actions.MANAGE, Subjects.EVENT_INTEREST, {alum_id: user.id});
-            can(Actions.READ, Subjects.ALUMNI_PROFILE, {alum_id: user.id});
+            can(Actions.MANAGE, Subjects.EVENT_INTEREST, { alum_id: user.id });
+            can(Actions.READ, Subjects.ALUMNI_PROFILE, { alum_id: user.id });
             can(Actions.CREATE, Subjects.JOB);
-            can(Actions.MANAGE, Subjects.JOB, {alum_id: user.id});
+            can(Actions.MANAGE, Subjects.JOB, { alum_id: user.id });
         } else if (role === RoleName.MODERATOR) {
             can(Actions.READ, Subjects.ALL);
             can(Actions.MANAGE, Subjects.CONTENT);

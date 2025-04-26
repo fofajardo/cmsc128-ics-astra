@@ -12,7 +12,9 @@ describe('Projects API Tests', function () {
         it('should return 200 and a list of projects', async function () {
             const res = await gAgent
                 .get('/v1/projects')
-                .query({ page: 1, limit: 10 });
+                .query({sort_by: 'goal_amount', order: 'desc'});
+
+            // console.log(res.body);
 
             expect(res.status).to.equal(httpStatus.OK);
             expect(res.body).to.be.an('object');
@@ -36,7 +38,7 @@ describe('Projects API Tests', function () {
 
             expect(projectData).to.have.property('project_id');
 
-            expect(projectData).to.have.property('status').that.is.oneOf([0, 1, 2]);
+            expect(projectData).to.have.property('project_status').that.is.oneOf([0, 1]);
 
             expect(projectData).to.have.property('due_date');
             expect(new Date(projectData.due_date).toString()).to.not.equal('Invalid Date');
@@ -46,6 +48,8 @@ describe('Projects API Tests', function () {
             expect(projectData).to.have.property('goal_amount').that.is.a('number');
 
             expect(projectData).to.have.property('donation_link').that.is.a('string');
+
+            expect(projectData).to.have.property('type').that.is.a('string');
         });
 
         // Test case to verify that the API returns 400 if invalid projectId

@@ -2,8 +2,12 @@ import request from 'supertest';
 import { expect } from 'chai';
 import app from '../../index.js';
 import httpStatus from 'http-status-codes';
+import {TestSignIn, TestSignOut, TestUsers} from "../auth/auth.common.js";
+const gAgent = request.agent(app);
 
 describe('Users API Tests', function () {
+    before(() => TestSignIn(gAgent, TestUsers.admin));
+
     describe('POST /v1/users/', function () {
         const testUser = {
             username: 'jnidv',
@@ -11,9 +15,6 @@ describe('Users API Tests', function () {
             password: 'password',
             salt: 'abcd1234',
             is_enabled: true,
-            first_name: 'Jan Neal Isaac',
-            middle_name: 'De Guzman',
-            last_name: 'Villamin',
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
             role: 'alumnus'
@@ -23,7 +24,7 @@ describe('Users API Tests', function () {
 
         // ✅ Successfully creates a user
         it('should return 201, status CREATED, a message, and an id', async function () {
-            const res = await request(app)
+            const res = await gAgent
                 .post(`/v1/users/`)
                 .send(testUser);
 
@@ -40,7 +41,7 @@ describe('Users API Tests', function () {
 
         // ❌ Required fields missing
         it('should return 400, status FAILED, and a message when required fields are missing', async function () {
-            const res = await request(app)
+            const res = await gAgent
                 .post(`/v1/users/`)
                 .send({});
 
@@ -52,7 +53,7 @@ describe('Users API Tests', function () {
 
         // ❌ Duplicate username/email
         it('should return 409, status FAILED, and a message when username or email already exists', async function () {
-            const res = await request(app)
+            const res = await gAgent
                 .post(`/v1/users/`)
                 .send(testUser); // sending same user as before
 
@@ -65,11 +66,13 @@ describe('Users API Tests', function () {
         // 🧹 Clean up using DELETE route
         after(async function () {
             if (createdUserId) {
-                const res = await request(app)
+                const res = await gAgent
                     .delete(`/v1/users/${createdUserId}?hard=true`);
 
                 expect(res.status).to.be.oneOf([httpStatus.OK, httpStatus.NO_CONTENT]);
             }
         });
+
+        after(() => TestSignOut(gAgent));
     });
 });

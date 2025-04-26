@@ -15,7 +15,7 @@ describe('Donations API Tests', function () {
         const res = await gAgent
             .post(`/v1/donations`)
             .send({
-                alum_id: 'b4a6b230-20b9-4137-af62-8b535841c391',
+                user_id: 'b4a6b230-20b9-4137-af62-8b535841c391',
                 project_id: '7f857ca0-fcca-4c5b-b619-d0612597dbb1',
                 donation_date: new Date('2025-04-13'),
                 reference_num: '9876-zxyw-9876',

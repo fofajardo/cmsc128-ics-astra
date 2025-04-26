@@ -26,6 +26,23 @@ describe('Projects API Tests', function () {
         console.log('Successfully created dummy project');
     else
         console.log('Failed to create dummy project');
+
+     // Create a new dummy data for deletion test
+     before(async function () {
+        const res = await request(app)
+            .post(`/v1/projects`)
+            .send({
+                project_id: projectId,
+                project_status: 0,
+                due_date: new Date('2025-04-01'),
+                date_completed: null,
+                goal_amount: 100000,
+                donation_link: 'astra.com/amis-server-upgrade',
+            });
+        if (res.body.status === 'CREATED')
+            console.log('Successfully created dummy project');
+        else
+            console.log('Failed to create dummy project');
     });
 
     describe('DELETE /v1/projects/:projectId', function () {

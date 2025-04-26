@@ -8,7 +8,7 @@ const gAgent = request.agent(app);
 describe('Donations API Tests', function () {
     before(() => TestSignIn(gAgent, TestUsers.admin));
 
-    const alumId = 'b4a6b230-20b9-4137-af62-8b535841c391';
+    const userId = 'b4a6b230-20b9-4137-af62-8b535841c391';
     const projectId = '7f857ca0-fcca-4c5b-b619-d0612597dbb1';
 
     describe('PUT /v1/donations/:donationId', function () {
@@ -25,7 +25,7 @@ describe('Donations API Tests', function () {
             const dateString = '2025-04-13';
 
             const validUpdateData = {
-                alum_id: alumId,
+                user_id: userId,
                 project_id: projectId,
                 donation_date: new Date(dateString).toISOString(),
                 reference_num: '4321-cvba-4321',
@@ -37,7 +37,7 @@ describe('Donations API Tests', function () {
                 .put(`/v1/donations/${donationId}`)
                 .send(validUpdateData);
 
-            // console.log(res.body);
+            console.log(res.body);
 
             expect(res.status).to.equal(httpStatus.OK);
             expect(res.body).to.be.an('object');
@@ -52,7 +52,7 @@ describe('Donations API Tests', function () {
 
             // Ensures data is correctly updated
             expect(verifyRes.body.donation).to.be.an('object');
-            expect(verifyRes.body.donation).to.have.property('alum_id', validUpdateData.alum_id);
+            expect(verifyRes.body.donation).to.have.property('user_id', validUpdateData.user_id);
             expect(verifyRes.body.donation).to.have.property('project_id', validUpdateData.project_id);
             expect(verifyRes.body.donation).to.have.property('donation_date', dateString);
             expect(verifyRes.body.donation).to.have.property('reference_num', validUpdateData.reference_num);
@@ -104,7 +104,7 @@ describe('Donations API Tests', function () {
             const dateString = '2025-04-13';
 
             const validUpdateData = {
-                alum_id: alumId,
+                user_id: userId,
                 project_id: projectId,
                 donation_date: new Date(dateString).toISOString(),
                 reference_num: '4321-cvba-4321',
@@ -125,15 +125,15 @@ describe('Donations API Tests', function () {
             expect(res.body).to.have.property('message').that.is.a('string');
         });
 
-        // Test case to verify that the API returns 403 if trying to edit alumId
-        it('should return 403, status FORBIDDEN, and a message when trying to edit alumId', async function () {
+        // Test case to verify that the API returns 403 if trying to edit userId
+        it('should return 403, status FORBIDDEN, and a message when trying to edit userId', async function () {
             const donationId = '39f817bf-7301-4a60-bb59-7f29c05d7f91';
-            const alumId = 'b7085d72-f174-4b81-b106-ef68b27a48ee';
+            const userId = 'b7085d72-f174-4b81-b106-ef68b27a48ee';
 
             const dateString = '2025-04-13';
 
             const validUpdateData = {
-                alum_id: alumId,
+                user_id: userId,
                 project_id: projectId,
                 donation_date: new Date(dateString).toISOString(),
                 reference_num: '4321-cvba-4321',
@@ -162,7 +162,7 @@ describe('Donations API Tests', function () {
             const dateString = '2025-04-13';
 
             const validUpdateData = {
-                alum_id: alumId,
+                user_id: userId,
                 project_id: projectId,
                 donation_date: new Date(dateString).toISOString(),
                 reference_num: '4321-cvba-4321',
@@ -186,13 +186,13 @@ describe('Donations API Tests', function () {
         // Test case to verify that the API returns 404 if non-existing donationId
         it('should return 404, status FAILED, and a message when non-existing donationId', async function () {
             const donationId = '39f817bf-7301-4a60-bb59-7f29c05d7f92';  // non-existing donationId
-            const alumId = 'b7085d72-f174-4b81-b106-ef68b27a48ee';
+            const userId = 'b7085d72-f174-4b81-b106-ef68b27a48ee';
             const projectId = 'f9b7efab-003c-44f9-bea7-c856fb1e73cd';
 
             const dateString = '2025-04-13';
 
             const validUpdateData = {
-                alum_id: alumId,
+                user_id: userId,
                 project_id: projectId,
                 donation_date: new Date(dateString).toISOString(),
                 reference_num: '4321-cvba-4321',

@@ -12,7 +12,7 @@ describe('Donations API Tests', function () {
         it('should return 200 and a list of donations', async function () {
             const res = await gAgent
                 .get('/v1/donations')
-                .query({ page: 1, limit: 10 });
+                .query({ page: 1, limit: 5, sort_by: 'amount', order: 'asc'});
 
             // console.log(res.body);
 
@@ -28,7 +28,7 @@ describe('Donations API Tests', function () {
             const donationId = '39f817bf-7301-4a60-bb59-7f29c05d7f91';  // Actual donationId
             const res = await gAgent.get(`/v1/donations/${donationId}`);
 
-            // console.log(res.body);
+            console.log(res.body);
 
             expect(res.status).to.equal(httpStatus.OK);
             expect(res.body).to.be.an('object');
@@ -40,7 +40,7 @@ describe('Donations API Tests', function () {
 
             expect(donationData).to.have.property('id');
 
-            expect(donationData).to.have.property('alum_id');
+            expect(donationData).to.have.property('user_id');
 
             expect(donationData).to.have.property('project_id');
 

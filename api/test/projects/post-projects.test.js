@@ -11,6 +11,16 @@ describe('Projects API Tests', function () {
     const contentId = '318c8aab-0564-42f8-aba6-5785d0e66288';
 
     describe('POST /v1/projects', function () {
+        const contentId = '389517e7-4a0b-4c96-84f9-3a7080186892';
+
+        after(async function () {
+            const res = await request(app)
+                .delete(`/v1/projects/${contentId}`);
+            if (res.body.status === 'DELETED') {
+                console.log('Successfully deleted dummy project');
+            } else
+                console.log('Failed to delete dummy project');
+        });
 
         // Test case to verify that the API returns 400 if required fields are missing
         it('should return 400, status FAILED, and a message when required fields are missing', async function () {
@@ -33,7 +43,7 @@ describe('Projects API Tests', function () {
                 .post(`/v1/projects`)
                 .send({
                     project_id: contentId,
-                    status: '0',    // should be int
+                    project_status: '0',    // should be int
                     due_date: new Date('2025-04-01'),
                     date_completed: null,
                     goal_amount: 100000,
@@ -55,7 +65,7 @@ describe('Projects API Tests', function () {
                 .post(`/v1/projects`)
                 .send({
                     project_id: contentId,
-                    status: 0,
+                    project_status: 0,
                     due_date: new Date('invalid-date-string'),  // invalid date
                     date_completed: null,
                     goal_amount: 100000,
@@ -77,14 +87,14 @@ describe('Projects API Tests', function () {
                 .post(`/v1/projects`)
                 .send({
                     project_id: contentId,
-                    status: 0,
+                    project_status: 0,
                     due_date: new Date('2025-04-01'),
                     date_completed: null,
                     goal_amount: 100000,
                     donation_link: 'astra.com/amis-server-upgrade',
                 });
 
-            // console.log(res.body);
+            console.log(res.body);
 
             expect(res.status).to.equal(httpStatus.CREATED);
             expect(res.body).to.be.an('object');
@@ -101,7 +111,7 @@ describe('Projects API Tests', function () {
                 .post(`/v1/projects`)
                 .send({
                     project_id: invalidContentId,
-                    status: 0,
+                    project_status: 0,
                     due_date: new Date('2025-04-01'),
                     date_completed: null,
                     goal_amount: 100000,
@@ -124,7 +134,7 @@ describe('Projects API Tests', function () {
                 .post(`/v1/projects`)
                 .send({
                     project_id: nonExistentId,
-                    status: 0,
+                    project_status: 0,
                     due_date: new Date('2025-04-01'),
                     date_completed: null,
                     goal_amount: 100000,
@@ -142,7 +152,7 @@ describe('Projects API Tests', function () {
                 .post(`/v1/projects`)
                 .send({
                     project_id: contentId,
-                    status: 0,
+                    project_status: 0,
                     due_date: new Date('2025-04-01'),
                     date_completed: null,
                     goal_amount: 100000,
