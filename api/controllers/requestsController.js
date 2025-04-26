@@ -1,10 +1,10 @@
-import httpStatus from 'http-status';
+import httpStatus from 'http-status-codes';
 import requestsService from '../services/requestsService.js';
 import alumniService from '../services/alumniProfilesService.js';
 import contentsService from '../services/contentsService.js';
 
-import { isValidUUID, isValidDate } from '../utils/validators';
-import { Actions, Subjects } from '../../common/scopes';
+import { isValidUUID, isValidDate } from '../utils/validators.js';
+import { Actions, Subjects } from '../../common/scopes.js';
 
 const getRequests = (supabase) => async (req, res) => {
     if (req.you.cannot(Actions.READ, Subjects.Requests)) {
@@ -16,7 +16,7 @@ const getRequests = (supabase) => async (req, res) => {
 
     try {
         const filters = req.query
-        const { data, error } = await requestsService.getRequests(supabase, filters);
+        const { data, error } = await requestsService.fetchRequests(supabase, filters);
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -54,7 +54,7 @@ const getRequestById = (supabase) => async (req, res) => {
                 message: 'Invalid request ID.',
             });
         }
-        const { data, error } = await requestsService.getRequestById(supabase, requestId);
+        const { data, error } = await requestsService.fetchRequestById(supabase, requestId);
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -100,7 +100,7 @@ const getRequestsByUserId = (supabase) => async (req, res) => {
             });
         }
 
-        const { data, error } = await requestsService.getRequestsByUserId(supabase, userId);
+        const { data, error } = await requestsService.fetchRequestsByUserId(supabase, userId);
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -139,7 +139,7 @@ const getRequestsByContentId = (supabase) => async (req, res) => {
             });
         }
 
-        const { data, error } = await requestsService.getRequestsByContentId(supabase, contentId);
+        const { data, error } = await requestsService.fetchRequestsByContentId(supabase, contentId);
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -179,7 +179,7 @@ const createRequest = (supabase) => async (req, res) => {
         }
 
         // Check if the user exists
-        const { data: userData, error: userError } = await alumniService.getAlumniById(supabase, userId);
+        const { data: userData, error: userError } = await alumniService.fetchAlumniProfileById(supabase, userId);
 
         if (userError || !userData) {
             return res.status(httpStatus.BAD_REQUEST).json({
@@ -196,7 +196,7 @@ const createRequest = (supabase) => async (req, res) => {
         }
 
         // Check if the content exists
-        const { data: contentData, error: contentError } = await contentsService.getContentById(supabase, contentId);
+        const { data: contentData, error: contentError } = await contentsService.fetchContentById(supabase, contentId);
 
         if (contentError || !contentData) {
             return res.status(httpStatus.BAD_REQUEST).json({
@@ -215,7 +215,7 @@ const createRequest = (supabase) => async (req, res) => {
         const { requestId } = req.params;
         if ( requestId != undefined ) {
             // Check if the request ID is valid
-            const { data: requestData, error: requestError } = await requestsService.getRequestById(supabase, requestId);
+            const { data: requestData, error: requestError } = await requestsService.fetchRequestById(supabase, requestId);
             if (requestData) {
                 return res.status(httpStatus.BAD_REQUEST).json({
                     status: 'FAILED',
@@ -315,7 +315,7 @@ const updateRequest = (supabase) => async (req, res) => {
         }
 
         // Check if the request exists
-        const { data: requestData, error: requestError } = await requestsService.getRequestById(supabase, requestId);
+        const { data: requestData, error: requestError } = await requestsService.fetchRequestById(supabase, requestId);
 
         if (requestError || !requestData) {
             return res.status(httpStatus.BAD_REQUEST).json({
@@ -450,7 +450,7 @@ const deleteRequest = (supabase) => async (req, res) => {
         }
 
         // Check if the request exists
-        const { data: existingRequest, error: requestError } = await requestsService.getRequestById(supabase, requestId);
+        const { data: existingRequest, error: requestError } = await requestsService.fetchRequestById(supabase, requestId);
 
         if (existingRequest || !requestData) {
             return res.status(httpStatus.NOT_FOUND).json({
