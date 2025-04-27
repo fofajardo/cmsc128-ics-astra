@@ -1,15 +1,19 @@
 'use client';
 
 import { useParams, useRouter } from "next/navigation";
-import eventList from "../eventDummy";
 import { useState } from "react";
+import eventList from "../eventDummy";
+
 import BackButton from "@/components/events/IndividualEvent/BackButton";
 import HeaderEvent from "@/components/events/IndividualEvent/HeaderEvent";
 import EditEventModal from "@/components/events/IndividualEvent/EditEventModal/EditEventModal";
 import DeleteConfirmationModal from "@/components/events/IndividualEvent/DeleteEventModal/DeleteEventModal";
-import { CalendarDays, MapPin } from "lucide-react";
-import Image from "next/image";
-import ToastNotification from "@/components/ToastNotification"; // IMPORTANT: Import your new ToastNotification
+import ToastNotification from "@/components/ToastNotification";
+
+import EventDetailsCard from "./EventDetails.Card";
+import SendEventCard from "./SendEventCard";
+import AttendeesTabs from "./AttendeesTabs";
+import AttendeesList from "./AttendeesList";
 
 export default function EventAdminDetailPage() {
   const router = useRouter();
@@ -24,7 +28,7 @@ export default function EventAdminDetailPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [toastData, setToastData] = useState(null); // NEW: instead of toastMessage
+  const [toastData, setToastData] = useState(null);
 
   const itemsPerPage = 5;
 
@@ -79,16 +83,6 @@ export default function EventAdminDetailPage() {
     });
   };
 
-  const attendees = event?.attendeesList || [];
-  const interested = event?.interestedList || [];
-
-  const currentList = activeTab === "going" ? attendees : interested;
-  const totalPages = Math.ceil(currentList.length / itemsPerPage);
-  const paginatedList = currentList.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
   if (!event) {
     return <div className="p-10 text-center text-xl">Event not found.</div>;
   }
@@ -97,7 +91,6 @@ export default function EventAdminDetailPage() {
     <div className="bg-astradirtyastrawhite min-h-screen pt-[100px] px-6 sm:px-12 py-6 max-w-screen-xl mx-auto relative">
       <BackButton />
 
-      {/* Toast Notification */}
       {toastData && (
         <ToastNotification
           type={toastData.type}
@@ -106,9 +99,7 @@ export default function EventAdminDetailPage() {
         />
       )}
 
-      {/* Main Layout */}
       <div className="flex flex-col lg:flex-row gap-6">
-        {/* Left Side */}
         <div className="flex-1 flex flex-col">
           <HeaderEvent
             event={event}
@@ -118,165 +109,41 @@ export default function EventAdminDetailPage() {
           />
         </div>
 
-        {/* Right Side */}
         <div className="flex flex-col justify-between gap-6 w-full lg:max-w-xs">
-          {/* Event Details Card */}
-          <div className="bg-astrawhite p-6 rounded-2xl shadow-md flex flex-col">
-            <h2 className="text-lg font-semibold mb-4">Event Details</h2>
-            <div className="flex items-center text-sm text-gray-600 mb-2">
-              <CalendarDays className="w-5 h-5 mr-2 text-gray-500" />
-              {event.date} | {event.time}
-            </div>
-            <div className="flex items-center text-sm text-gray-600 mb-6">
-              <MapPin className="w-5 h-5 mr-2 text-gray-500" />
-              {event.location}
-            </div>
-            <button
-              onClick={() => setShowEditModal(true)}
-              className="w-full bg-astraprimary hover:bg-astradark text-white font-semibold py-2 rounded-lg mb-2 transition-all"
-            >
-              Edit
-            </button>
-            <button
-              onClick={() => setShowDeleteModal(true)}
-              className="w-full bg-astrared hover:bg-[#e63228] text-white font-semibold py-2 rounded-lg transition-all"
-            >
-              Delete
-            </button>
-          </div>
-
-          {/* Send This Event Card */}
-          <div className="bg-astrawhite p-6 rounded-2xl shadow-md flex flex-col flex-1">
-            <h2 className="text-lg font-semibold mb-4">Send this event to</h2>
-            <select
-              className="w-full border border-gray-300 rounded-lg p-2 mb-4 text-gray-700"
-              value={selectedOption}
-              onChange={(e) => setSelectedOption(e.target.value)}
-            >
-              <option>Everyone</option>
-              <option>Selected Users</option>
-              <option>Groups</option>
-            </select>
-
-            <label className="text-sm text-gray-600 mb-1 block">Message (optional)</label>
-            <textarea
-              className="w-full border border-gray-300 rounded-lg p-2 mb-4 flex-1 text-gray-700"
-              rows="3"
-              placeholder="Type here..."
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-            />
-
-            <button
-              onClick={handleSend}
-              className="w-full bg-astraprimary hover:bg-astradark text-white font-semibold py-2 rounded-lg transition-all"
-            >
-              Send
-            </button>
-          </div>
+          <EventDetailsCard
+            event={event}
+            onEdit={() => setShowEditModal(true)}
+            onDelete={() => setShowDeleteModal(true)}
+          />
+          <SendEventCard
+            selectedOption={selectedOption}
+            setSelectedOption={setSelectedOption}
+            message={message}
+            setMessage={setMessage}
+            handleSend={handleSend}
+          />
         </div>
       </div>
 
-      {/* Attendees Section */}
       <div className="bg-astrawhite mt-10 p-6 rounded-2xl shadow-md">
-        {/* Tabs */}
-        <div className="flex gap-6 border-b mb-6">
-          <button
-            onClick={() => { setActiveTab("going"); setCurrentPage(1); }}
-            className={`pb-2 text-lg font-semibold transition-all rounded-t-md px-4 py-2 ${
-              activeTab === "going"
-                ? "bg-astragray text-astrablue"
-                : "text-gray-500 hover:bg-astraprimary hover:text-white"
-            }`}
-          >
-            Going ({attendees.length} / 50)
-          </button>
-          <button
-            onClick={() => { setActiveTab("interested"); setCurrentPage(1); }}
-            className={`pb-2 text-lg font-semibold transition-all rounded-t-md px-4 py-2 ${
-              activeTab === "interested"
-                ? "bg-astragray text-astrablue"
-                : "text-gray-500 hover:bg-astraprimary hover:text-white"
-            }`}
-          >
-            Interested ({interested.length})
-          </button>
-        </div>
+        <AttendeesTabs
+          attendees={event.attendeesList || []}
+          interested={event.interestedList || []}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          setCurrentPage={setCurrentPage}
+        />
 
-        {/* Content */}
-        <div className="flex flex-col md:flex-row">
-          {/* Left: Attendee Count */}
-          <div className="hidden md:flex flex-col items-center justify-center w-48 border-r pr-6">
-            <div className="text-5xl font-bold text-astrablue">{currentList.length}</div>
-            <div className="text-gray-500 mt-2 text-center">Attendees</div>
-          </div>
-
-          {/* Right: List */}
-          <div className="flex-1">
-            {paginatedList.map((person, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between border-b py-4 hover:bg-gray-100 rounded-lg transition-all px-2"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 relative rounded-full overflow-hidden">
-                    <Image
-                      src={person.avatar}
-                      alt={person.name}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <div className="font-semibold text-gray-800">{person.name}</div>
-                    <div className="text-sm text-gray-500">Alumni | Class of {person.classYear}</div>
-                  </div>
-                </div>
-                <div className="text-sm text-gray-500 text-right">
-                  {person.title} at {person.company}
-                </div>
-              </div>
-            ))}
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex items-center justify-center mt-6 gap-2">
-                <button
-                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                  disabled={currentPage === 1}
-                  className="px-3 py-1 text-gray-600 hover:text-astrablue disabled:opacity-50"
-                >
-                  ←
-                </button>
-
-                {Array.from({ length: totalPages }).map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setCurrentPage(i + 1)}
-                    className={`w-8 h-8 rounded-full font-semibold ${
-                      currentPage === i + 1
-                        ? "bg-astrablue text-white"
-                        : "text-gray-600 hover:bg-gray-200"
-                    } transition-all`}
-                  >
-                    {i + 1}
-                  </button>
-                ))}
-
-                <button
-                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                  disabled={currentPage === totalPages}
-                  className="px-3 py-1 text-gray-600 hover:text-astrablue disabled:opacity-50"
-                >
-                  →
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
+        <AttendeesList
+          attendees={event.attendeesList || []}
+          interested={event.interestedList || []}
+          activeTab={activeTab}
+          itemsPerPage={itemsPerPage}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
       </div>
 
-      {/* Modals */}
       {showEditModal && (
         <EditEventModal
           event={event}

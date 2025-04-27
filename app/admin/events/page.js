@@ -25,6 +25,16 @@ export default function Events() {
   });
   const [editingId, setEditingId] = useState(null);
 
+  const cols = [
+    { label: "Event", justify: "center", visible: "all" },
+    { label: "Location", justify: "center", visible: "sm" },
+    { label: "Type", justify: "center", visible: "md" },
+    { label: "Date", justify: "center", visible: "lg" },
+    { label: "Going", justify: "center", visible: "lg" },
+    { label: "Interested", justify: "center", visible: "lg" },
+    { label: "Actions", justify: "center", visible: "all" },
+  ];
+
   const toggleAddModal = () => {
     setFormData({
       title: "",
@@ -147,15 +157,6 @@ export default function Events() {
   );
 }
 
-const cols = [
-  { label: "Event", justify: "center", visible: "all" },
-  { label: "Location", justify: "center", visible: "sm" },
-  { label: "Type", justify: "center", visible: "md" },
-  { label: "Date", justify: "center", visible: "lg" },
-  { label: "Going", justify: "center", visible: "lg" },
-  { label: "Interested", justify: "center", visible: "lg" },
-  { label: "Actions", justify: "center", visible: "all" },
-];
 
 function createRows(events, handleDelete, toggleEditModal) {
   return events.map((event) => ({
