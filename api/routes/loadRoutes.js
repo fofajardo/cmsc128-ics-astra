@@ -24,6 +24,7 @@ import donationsRouter from "./donationsRoutes.js";
 import organizationsRouter from "./organizationsRoutes.js";
 import organizationAffiliationsRouter from "./organizationAffiliationsRoutes.js";
 import reportsRouter from "./reportsRoutes.js";
+import requestsRouter from "./requestsRoutes.js";
 
 const registerRoutes = (app, supabase) => {
     ensureDirectoriesExist(); // Ensure the directory exists before using it
@@ -42,6 +43,7 @@ const registerRoutes = (app, supabase) => {
     app.use("/v1/organizations", organizationsRouter(supabase));
     app.use("/v1/users", organizationAffiliationsRouter(supabase));
     app.use("/v1/reports", reportsRouter(supabase));
+    app.use("/v1/requests", requestsRouter(supabase));
 }
 
 export default registerRoutes;
