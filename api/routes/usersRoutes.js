@@ -2,16 +2,16 @@ import express from "express";
 import usersController from "../controllers/usersController.js";
 import { RequireAuthenticated } from "../middleware/requireAuthenticated.js";
 
-const usersRouter = (supabase) => {
+const usersRouter = () => {
     const router = express.Router();
     
     router.use(RequireAuthenticated); // Applies to all routes below
 
-    router.get("/", usersController.getUsers(supabase));
-    router.get("/:userId", usersController.getUserById(supabase));
-    router.post("/", usersController.createUser(supabase));
-    router.put("/:userId", usersController.updateUser(supabase));
-    router.delete("/:userId", usersController.deleteUser(supabase));
+    router.get("/", usersController.getUsers);
+    router.get("/:userId", usersController.getUserById);
+    router.post("/", usersController.createUser);
+    router.put("/:userId", usersController.updateUser);
+    router.delete("/:userId", usersController.deleteUser);
 
     return router;
 };

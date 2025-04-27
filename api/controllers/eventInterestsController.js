@@ -2,7 +2,7 @@ import httpStatus from "http-status-codes";
 import eventInterestsService from "../services/eventInterestsService.js";
 import { isValidUUID } from "../utils/validators.js";
 import { Actions, Subjects } from "../../common/scopes.js";
-const getEventInterests = (supabase) => async (req, res) => {
+const getEventInterests = async (req, res) => {
     try {
         const { page = 1, limit = 10 } = req.query;
         const currentUserId = req.user.data.id;
@@ -15,7 +15,7 @@ const getEventInterests = (supabase) => async (req, res) => {
                 message: 'You do not have permission to view event interests'
             });
         }
-        const { data, error } = await eventInterestsService.fetchEventInterests(supabase, page, limit);
+        const { data, error } = await eventInterestsService.fetchEventInterests(req.supabase, page, limit);
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -37,14 +37,14 @@ const getEventInterests = (supabase) => async (req, res) => {
     }
 };
 
-const getEventInterestByAlumnId = (supabase) => async (req, res) => {
+const getEventInterestByAlumnId = async (req, res) => {
     try {
         const { alumnId } = req.params;
         const currentUserId = req.user.data.id;
 
         console.log("current userId: ",currentUserId);
 
-        const { data, error } = await eventInterestsService.fetchEventInterestByAlumnId(supabase, alumnId);
+        const { data, error } = await eventInterestsService.fetchEventInterestByAlumnId(req.supabase, alumnId);
 
         if (error) {
             return res.status(httpStatus.NOT_FOUND).json({
@@ -75,7 +75,7 @@ const getEventInterestByAlumnId = (supabase) => async (req, res) => {
     }
 };
 
-const getEventInterestByContentId = (supabase) => async (req, res) => {
+const getEventInterestByContentId = async (req, res) => {
     try {
         const { contentId } = req.params;
         const currentUserId = req.user.data.id;
@@ -88,7 +88,7 @@ const getEventInterestByContentId = (supabase) => async (req, res) => {
                 message: 'You do not have permission to view event interests'
             });
         }
-        const { data, error } = await eventInterestsService.fetchEventInterestByContentId(supabase, contentId);
+        const { data, error } = await eventInterestsService.fetchEventInterestByContentId(req.supabase, contentId);
 
         if (error) {
             return res.status(httpStatus.NOT_FOUND).json({
@@ -110,7 +110,7 @@ const getEventInterestByContentId = (supabase) => async (req, res) => {
     }
 };
 
-const createEventInterest = (supabase) => async (req, res) => {
+const createEventInterest = async (req, res) => {
     try {
         const currentUserId = req.user.data.id;
 
@@ -154,7 +154,7 @@ const createEventInterest = (supabase) => async (req, res) => {
             });
         }
 
-        const { data: existingEvents, error: checkError } = await eventInterestsService.checkExistingEventInterest(supabase, user_id, content_id);
+        const { data: existingEvents, error: checkError } = await eventInterestsService.checkExistingEventInterest(req.supabase, user_id, content_id);
 
         if (checkError) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -170,7 +170,7 @@ const createEventInterest = (supabase) => async (req, res) => {
             });
         }
 
-        const { data, error } = await eventInterestsService.insertEventInterest(supabase, {
+        const { data, error } = await eventInterestsService.insertEventInterest(req.supabase, {
             user_id,
             content_id
         });
@@ -196,7 +196,7 @@ const createEventInterest = (supabase) => async (req, res) => {
     }
 };
 
-const deleteEmptyEventInterest = () => async (req, res) => {
+const deleteEmptyEventInterest = async (req, res) => {
     if (req.you.cannot(Actions.MANAGE, Subjects.EVENT_INTEREST)) {
         return res.status(httpStatus.FORBIDDEN).json({
             status: 'FORBIDDEN',
@@ -209,7 +209,7 @@ const deleteEmptyEventInterest = () => async (req, res) => {
     });
 };
 
-const deleteEventInterest = (supabase) => async (req, res) => {
+const deleteEventInterest = async (req, res) => {
     try {
         const {alumId, contentId} = req.params;
 
@@ -233,7 +233,7 @@ const deleteEventInterest = (supabase) => async (req, res) => {
             });
         }
 
-        const { data: existingEventInterest, error: checkError } = await eventInterestsService.checkExistingEventInterest(supabase, alumId, contentId);
+        const { data: existingEventInterest, error: checkError } = await eventInterestsService.checkExistingEventInterest(req.supabase, alumId, contentId);
 
         if (checkError || existingEventInterest.length === 0) {
             return res.status(httpStatus.NOT_FOUND).json({
@@ -242,7 +242,7 @@ const deleteEventInterest = (supabase) => async (req, res) => {
             });
         }
 
-        const { error } = await eventInterestsService.deleteEventInterest(supabase, alumId, contentId);
+        const { error } = await eventInterestsService.deleteEventInterest(req.supabase, alumId, contentId);
 
         if (error) {
             console.log("unable to delete");

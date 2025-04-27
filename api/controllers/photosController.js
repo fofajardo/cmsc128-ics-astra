@@ -3,9 +3,9 @@ import photosService from "../services/photosService.js";
 import fs from "fs";
 import path from "path";
 
-const getAllPhotos = (supabase) => async (req, res) => {
+const getAllPhotos = async (req, res) => {
   try {
-        const { data, error } = await photosService.fetchAllPhotos(supabase);
+        const { data, error } = await photosService.fetchAllPhotos(req.supabase);
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -33,11 +33,11 @@ const getAllPhotos = (supabase) => async (req, res) => {
     }
 };
 
-const getPhotoById = (supabase) => async (req, res) => {
+const getPhotoById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const { data, error } = await photosService.fetchPhotoById(supabase, id);
+    const { data, error } = await photosService.fetchPhotoById(req.supabase, id);
 
     if (error || !data) {
       return res.status(httpStatus.NOT_FOUND).json({
@@ -58,7 +58,7 @@ const getPhotoById = (supabase) => async (req, res) => {
   }
 };
 
-const uploadPhoto = (supabase) => async (req, res) => {
+const uploadPhoto = async (req, res) => {
     try {
         const { user_id, content_id, type } = req.body;
         const file = req.file;
@@ -99,7 +99,7 @@ const uploadPhoto = (supabase) => async (req, res) => {
             image_key: storageData.path, // Save the new unique file path
         };
 
-        const { data, error } = await photosService.insertPhoto(supabase, photoData);
+        const { data, error } = await photosService.insertPhoto(req.supabase, photoData);
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -121,7 +121,7 @@ const uploadPhoto = (supabase) => async (req, res) => {
     }
 };
 
-const updatePhoto = (supabase) => async (req, res) => {
+const updatePhoto = async (req, res) => {
   try {
     const { id } = req.params;
     const { user_id, content_id, type } = req.body;
@@ -160,7 +160,7 @@ const updatePhoto = (supabase) => async (req, res) => {
         updates.image_key = storageData.path; // Update the image key
     }
 
-    const { data, error } = await photosService.updatePhotoById(supabase, id, updates);
+    const { data, error } = await photosService.updatePhotoById(req.supabase, id, updates);
 
     if (error) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -189,7 +189,7 @@ const updatePhoto = (supabase) => async (req, res) => {
   }
 };
 
-const deletePhoto = (supabase) => async (req, res) => {
+const deletePhoto = async (req, res) => {
     try {
         const { id } = req.params;
     
@@ -201,7 +201,7 @@ const deletePhoto = (supabase) => async (req, res) => {
         }
   
         // Fetch the photo details to get the file path (image_key)
-        const { data: photo, error: fetchError } = await photosService.fetchPhotoById(supabase, id);
+        const { data: photo, error: fetchError } = await photosService.fetchPhotoById(req.supabase, id);
     
         if (fetchError || !photo) {
             return res.status(httpStatus.NOT_FOUND).json({
@@ -223,7 +223,7 @@ const deletePhoto = (supabase) => async (req, res) => {
         }
   
         // Delete the photo record from the database
-        const { error: deleteError } = await photosService.deletePhotoById(supabase, id);
+        const { error: deleteError } = await photosService.deletePhotoById(req.supabase, id);
     
         if (deleteError) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({

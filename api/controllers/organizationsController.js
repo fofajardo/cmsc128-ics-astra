@@ -1,11 +1,11 @@
 import httpStatus from "http-status-codes";
 import organizationsService from "../services/organizationsService.js";
 
-const getOrganizations = (supabase) => async (req, res) => {
+const getOrganizations = async (req, res) => {
     try {
 
         const {page, limit} = req.query;
-        const {data, error} = await organizationsService.fetchOrganizations(supabase, page, limit);
+        const {data, error} = await organizationsService.fetchOrganizations(req.supabase, page, limit);
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -29,12 +29,12 @@ const getOrganizations = (supabase) => async (req, res) => {
     }
 }
 
-const getOrganizationById = (supabase) => async (req, res) => {
+const getOrganizationById = async (req, res) => {
     try {
         const { orgId } = req.params;
         //console.log(orgId);
 
-        const { data, error } = await organizationsService.fetchOrganizationById(supabase, orgId);  
+        const { data, error } = await organizationsService.fetchOrganizationById(req.supabase, orgId);  
 
         if (error) {
             return res.status(httpStatus.NOT_FOUND).json({
@@ -58,14 +58,14 @@ const getOrganizationById = (supabase) => async (req, res) => {
     }
 }
 
-const getAlumni = (supabase) => async (req, res) => {
+const getAlumni = async (req, res) => {
     try{
         const { orgId } = req.params;
         const page = req.query.page || 1;
         const limit = req.query.limit || 10;
 
         // Call the fetchAlumni service
-        const { data, error } = await organizationsService.fetchAlumni(supabase, orgId, page, limit);
+        const { data, error } = await organizationsService.fetchAlumni(req.supabase, orgId, page, limit);
 
         if (error) {
             return res.status(httpStatus.NOT_FOUND).json({
@@ -94,7 +94,7 @@ const getAlumni = (supabase) => async (req, res) => {
     }
 }
 
-const createOrganization = (supabase) => async (req, res) => {
+const createOrganization = async (req, res) => {
     try {
         // Check required fields
         const requiredFields = [
@@ -121,7 +121,7 @@ const createOrganization = (supabase) => async (req, res) => {
         } = req.body;
 
         // Check if organization exists by name and acronym
-        const { data: existingOrgs, error: checkError } = await organizationsService.checkOrganizationIfExistingByNameAndAcronym(supabase, name, acronym);
+        const { data: existingOrgs, error: checkError } = await organizationsService.checkOrganizationIfExistingByNameAndAcronym(req.supabase, name, acronym);
 
         if (checkError) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -145,7 +145,7 @@ const createOrganization = (supabase) => async (req, res) => {
         };
 
         // Insert new user
-        const { data, error } = await organizationsService.insertOrganization(supabase, orgData);
+        const { data, error } = await organizationsService.insertOrganization(req.supabase, orgData);
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -168,12 +168,12 @@ const createOrganization = (supabase) => async (req, res) => {
     }
 };
 
-const updateOrganization = (supabase) => async (req, res) => {
+const updateOrganization = async (req, res) => {
     try {
         const { orgId } = req.params;
 
         // Check if id exists (simplified for test compatibility)
-        const { data: existingOrgs, error: fetchError } = await organizationsService.checkOrganizationIfExistingById(supabase, orgId);
+        const { data: existingOrgs, error: fetchError } = await organizationsService.checkOrganizationIfExistingById(req.supabase, orgId);
 
         if (fetchError || !existingOrgs) {
             return res.status(httpStatus.NOT_FOUND).json({
@@ -212,7 +212,7 @@ const updateOrganization = (supabase) => async (req, res) => {
         // updateData.updated_at = new Date().toISOString();
 
         // Update user in database
-        const { error: updateError } = await organizationsService.updateOrganization(supabase, orgId, updateData);
+        const { error: updateError } = await organizationsService.updateOrganization(req.supabase, orgId, updateData);
 
         if (updateError) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -234,11 +234,11 @@ const updateOrganization = (supabase) => async (req, res) => {
     }
 };
 
-const deleteOrganization = (supabase) => async (req, res) => {
+const deleteOrganization = async (req, res) => {
     try {
         const { orgId } = req.params;
 
-            const { error } = await organizationsService.deleteOrganization(supabase, orgId);
+            const { error } = await organizationsService.deleteOrganization(req.supabase, orgId);
 
             if (error) {
                 return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
