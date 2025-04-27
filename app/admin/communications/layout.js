@@ -43,12 +43,12 @@ export default function AdminAlumniLayout({ children }) {
       title: `${newTab}`,
       search: `Search for ${newTab.toLowerCase()}`
     }));
-    router.push('/admin/communications');
+    router.push('/admin/whats-up');
   };
 
   //if from profile page, go back and set tab
   const dynamicTabClick = (tabName) => {
-    if (pathname === '/admin/comunications'){
+    if (pathname === '/admin/whjats-up'){
       handleTabChange(tabName);
     }else {
       handleGoToTab(tabName);
