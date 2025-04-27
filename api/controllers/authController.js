@@ -4,6 +4,7 @@ import passport from "passport";
 const signInPassportLocal = passport.authenticate("local");
 
 async function signInGate(aRequest, aResponse, aNext) {
+    console.log("signInGate: Checking request body:", aRequest.body);
     if (aRequest.isAuthenticated()) {
         return aResponse.status(httpStatus.BAD_REQUEST).json({
             status: "FAILED",
