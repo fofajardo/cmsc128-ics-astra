@@ -1,7 +1,7 @@
 import { InView } from 'react-intersection-observer';
 import { useState } from 'react';
 
-const TransitionGrow = ({
+const TransitionSlide = ({
   children,
   className = '',
   threshold = 0,
@@ -47,4 +47,4 @@ const TransitionGrow = ({
   );
 };
 
-export default TransitionGrow;
+export default TransitionSlide;
