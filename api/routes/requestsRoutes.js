@@ -1,16 +1,16 @@
 import express from 'express';
 import requestsController from '../controllers/requestsController.js';
 
-const requestsRouter = (supabase) => {
+const requestsRouter = () => {
     const router = express.Router();
 
-    router.get('/', requestsController.getRequests(supabase));
-    router.get('/:requestId', requestsController.getRequestById(supabase));
-    router.get('/alum/:userId', requestsController.getRequestsByUserId(supabase));
-    router.get('/content/:contentId', requestsController.getRequestsByContentId(supabase));
-    router.post('/', requestsController.createRequest(supabase));
-    router.put('/:requestId', requestsController.updateRequest(supabase));
-    router.delete('/:requestId', requestsController.deleteRequest(supabase));
+    router.get('/', requestsController.getRequests());
+    router.get('/:requestId', requestsController.getRequestById());
+    router.get('/alum/:userId', requestsController.getRequestsByUserId());
+    router.get('/content/:contentId', requestsController.getRequestsByContentId());
+    router.post('/', requestsController.createRequest());
+    router.put('/:requestId', requestsController.updateRequest());
+    router.delete('/:requestId', requestsController.deleteRequest());
 
     return router;
 }
