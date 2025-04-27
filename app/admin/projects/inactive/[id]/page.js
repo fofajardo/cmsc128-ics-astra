@@ -14,6 +14,7 @@ export default function InactiveProjectDetail({ params }) {
   const [toast, setToast] = useState(null);
   const [showContactModal, setShowContactModal] = useState(false);
   const [message, setMessage] = useState("");
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   
   //dummy data
   const project = {
@@ -21,6 +22,7 @@ export default function InactiveProjectDetail({ params }) {
     title: "Research Excellence Scholarship",
     type: "Scholarship",
     image: "/projects/assets/Donation.jpg",
+    urlLink: "https://example.com/project/12345",
     description: "Supporting promising students in their final year research projects with funding for equipment, materials, and conference attendance.",
     longDescription: "The Research Excellence Scholarship was created to support exceptional students in their final year of study who are working on innovative research projects in computer science and information technology. Recipients received funding to cover the costs of specialized equipment, research materials, data access, and travel expenses for presenting their work at academic conferences. The scholarship committee selected candidates based on the originality and potential impact of their research proposals, academic performance, and faculty recommendations. By providing this support, we helped nurture the next generation of researchers and innovators in the field.",
     goal: "₱250,000",
@@ -73,10 +75,24 @@ export default function InactiveProjectDetail({ params }) {
   //handle share button click
   //placeholder
   const handleShare = () => {
-    setToast({ 
-      type: 'success', 
-      message: 'Share link copied to clipboard!' 
+    setIsShareModalOpen(true);
+  };
+
+  //Open edit modal with current project data
+  const handleEdit = () => {
+    const cleanedGoal = parseInt(projectData.goal.replace(/[^0-9]/g, ""), 10);
+    const cleanedRaised = parseInt(
+      projectData.raised.replace(/[^0-9]/g, ""),
+      10
+    );
+
+    setEditFormData({
+      ...projectData,
+      goal: cleanedGoal,
+      raised: cleanedRaised,
     });
+    setErrors({});
+    setShowEditModal(true);
   };
 
   //handle send message button click
@@ -308,6 +324,45 @@ export default function InactiveProjectDetail({ params }) {
           </div>
         </div>
       </div>
+
+      {/* Share modal */}
+      {isShareModalOpen && (
+        <div className="fixed inset-0 bg-blur bg-astrawhite/60 bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-astralightgray rounded-xl p-6 w-[90%] max-w-md relative">
+            <button
+              onClick={() => setIsShareModalOpen(false)}
+              className="absolute top-4 left-4 text-xl text-astrablack"
+            >
+              ←
+            </button>
+            <h2 className="text-lg font-bold text-center mb-6">Quick share</h2>
+            <div className="flex items-center bg-white rounded-md shadow px-4 py-3">
+              <div className="flex-1">
+                <p className="text-xs text-astrablack mb-1">Your unique link</p>
+                <input
+                  type="text"
+                  readOnly
+                  value={project.urlLink}
+                  className="w-full font-medium text-sm bg-transparent focus:outline-none"
+                />
+              </div>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(project.urlLink);
+                  setToast({
+                    type: "success",
+                    message: "Share link copied to clipboard!",
+                  });
+                  setTimeout(() => setIsShareModalOpen(false), 1000);
+                }}
+                className="ml-4 text-sm font-semibold text-blue-600 hover:underline"
+              >
+                Copy link
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* Contact Modal */}
       {showContactModal && (
