@@ -174,6 +174,7 @@ export default function AboutPage() {
       {/* Mission section */}
       <section className="py-12 md:py-16 w-full">
         <div className="px-6 sm:px-8 md:px-12 max-w-6xl mx-auto">
+        <div className="px-6 sm:px-8 md:px-12 max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
             <div className="order-2 md:order-1">
               <h2 className="text-[var(--color-astraprimary)] text-3xl md:text-4xl font-bold mb-6 md:mb-8">Mission</h2>
@@ -208,6 +209,7 @@ export default function AboutPage() {
 
       {/* History Section */}
       <section className="py-12 md:py-16 w-full">
+        <div className="px-6 sm:px-8 md:px-12 max-w-6xl mx-auto">
         <div className="px-6 sm:px-8 md:px-12 max-w-6xl mx-auto">
           <h2 className="text-[var(--color-astraprimary)] text-3xl md:text-4xl font-bold mb-12 md:mb-16 text-center">
             History of ICS
