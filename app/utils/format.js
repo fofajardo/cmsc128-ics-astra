@@ -6,12 +6,21 @@ export function capitalizeName(name) {
         .join(' ');
 }
 
-export function formatDate(date) {
-    const options = { 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric'
+export function formatDate(date, format) {
+    if (date === null) {
+        return 'N/A';
+    }
+
+    const formatOptions = {
+        'short': { year: '2-digit', month: '2-digit', day: '2-digit' },
+        'long': { year: 'numeric', month: 'long', day: 'numeric' },
+        'month-year': { year: 'numeric', month: 'long' },
+        'year': { year: 'numeric' },
+        '' : { year: 'numeric', month: '2-digit', day: '2-digit' }
     };
+
+    const options = formatOptions[format] || {};
+
     return new Date(date).toLocaleDateString('en-US', options);
 }
 
