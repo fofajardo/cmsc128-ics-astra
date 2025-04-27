@@ -41,7 +41,7 @@ const registerRoutes = (app) => {
     app.use("/v1/projects", projectsRouter());
     app.use("/v1/donations", donationsRouter());
     app.use("/v1/organizations", organizationsRouter());
-    app.use("/v1/users", organizationAffiliationsRouter());
+    app.use("/v1/organization-affiliations", organizationAffiliationsRouter());
     app.use("/v1/reports", reportsRouter());
     app.use("/v1/requests", requestsRouter());
 }
