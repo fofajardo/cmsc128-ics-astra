@@ -1,14 +1,14 @@
 import express from "express";
 import contentsController from "../controllers/contentsController.js";
 
-const contentsRouter = (supabase) => {
+const contentsRouter = () => {
     const router = express.Router();
 
-    router.get("/", contentsController.getContents(supabase));
-    router.get("/:contentId", contentsController.getContentById(supabase));
-    router.post("/", contentsController.createContent(supabase));
-    router.put("/:contentId", contentsController.updateContent(supabase));
-    router.delete("/:contentId", contentsController.deleteContent(supabase));
+    router.get("/", contentsController.getContents);
+    router.get("/:contentId", contentsController.getContentById);
+    router.post("/", contentsController.createContent);
+    router.put("/:contentId", contentsController.updateContent);
+    router.delete("/:contentId", contentsController.deleteContent);
 
     return router;
 };

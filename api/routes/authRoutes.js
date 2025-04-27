@@ -4,9 +4,11 @@ import controller from "../controllers/authController.js";
 const authRouter = () => {
     const router = express.Router();
 
+    router.post("/sign-up", controller.signUp);
+
     router.post("/sign-in", [
         controller.signInGate,
-        controller.signInPassportLocal,
+        controller.signInSbLocal,
         controller.signedInUser
     ]);
 

@@ -1,11 +1,11 @@
 import httpStatus from "http-status-codes"; 
 import contentsService from "../services/contentsService.js";
 
-const getContents = (supabase) => async (req, res) => {
+const getContents = async (req, res) => {
     try {
         const filters = req.query;
 
-        const { data, error } = await contentsService.fetchContents(supabase, filters);
+        const { data, error } = await contentsService.fetchContents(req.supabase, filters);
 
         if (error) {
             console.log(error)
@@ -29,11 +29,11 @@ const getContents = (supabase) => async (req, res) => {
     }
 };
 
-const getContentById = (supabase) => async (req, res) => {
+const getContentById = async (req, res) => {
     try {
         const { contentId } = req.params;
 
-        const { data, error } = await contentsService.fetchContentById(supabase, contentId);
+        const { data, error } = await contentsService.fetchContentById(req.supabase, contentId);
 
         if (error || !data) {
             return res.status(httpStatus.NOT_FOUND).json({
@@ -55,7 +55,7 @@ const getContentById = (supabase) => async (req, res) => {
     }
 };
 
-const createContent = (supabase) => async (req, res) => {
+const createContent = async (req, res) => {
     try {
         const allowedFields = ["id", "user_id", "title", "details", "views", "created_at", "updated_at", "tags"];
         const providedFields = Object.keys(req.body);
@@ -108,7 +108,7 @@ const createContent = (supabase) => async (req, res) => {
             });
         }
 
-        const { data: existingContents, error: checkError } = await contentsService.checkExistingContent(supabase, title);
+        const { data: existingContents, error: checkError } = await contentsService.checkExistingContent(req.supabase, title);
 
         if (checkError) {
             console.error('Create Content Error:', checkError);
@@ -125,7 +125,7 @@ const createContent = (supabase) => async (req, res) => {
             });
         }
 
-        const { data, error } = await contentsService.insertContent(supabase, {
+        const { data, error } = await contentsService.insertContent(req.supabase, {
             id,
             user_id,
             title,
@@ -164,7 +164,7 @@ const createContent = (supabase) => async (req, res) => {
     }
 };
 
-const updateContent = (supabase) => async (req, res) => {
+const updateContent = async (req, res) => {
     try {
         const contentId = req.params.contentId;
 
@@ -177,7 +177,7 @@ const updateContent = (supabase) => async (req, res) => {
             });
         }
 
-        const { data: existingContent, error: fetchError } = await contentsService.findContent(supabase, contentId);
+        const { data: existingContent, error: fetchError } = await contentsService.findContent(req.supabase, contentId);
 
         if (fetchError || !existingContent) {
             return res.status(httpStatus.NOT_FOUND).json({
@@ -242,7 +242,7 @@ const updateContent = (supabase) => async (req, res) => {
 
         updateData.updated_at = new Date().toISOString();
 
-        const { error: updateError } = await contentsService.updateContentData(supabase, contentId, updateData);
+        const { error: updateError } = await contentsService.updateContentData(req.supabase, contentId, updateData);
 
         if (updateError) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -264,7 +264,7 @@ const updateContent = (supabase) => async (req, res) => {
     }
 };
 
-const deleteContent = (supabase) => async (req, res) => {
+const deleteContent = async (req, res) => {
     try {
         const { contentId } = req.params;
 
@@ -277,7 +277,7 @@ const deleteContent = (supabase) => async (req, res) => {
             });
         }
 
-        const { data, error: findError } = await contentsService.findContent(supabase, contentId);
+        const { data, error: findError } = await contentsService.findContent(req.supabase, contentId);
 
         if (findError || !data) {
             return res.status(httpStatus.NOT_FOUND).json({ 
@@ -286,7 +286,7 @@ const deleteContent = (supabase) => async (req, res) => {
             });
         }
 
-        const { error: deleteError } = await contentsService.deleteContentData(supabase, contentId);
+        const { error: deleteError } = await contentsService.deleteContentData(req.supabase, contentId);
 
         if (deleteError) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ 

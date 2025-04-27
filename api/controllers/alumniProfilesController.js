@@ -4,10 +4,10 @@ import alumniProfilesService from "../services/alumniProfilesService.js";
 import { isValidUUID } from "../utils/validators.js";
 import { Actions, Subjects } from "../../common/scopes.js";
 
-const getAlumniProfiles = (supabase) => async (req, res) => {
+const getAlumniProfiles = async (req, res) => {
     try {
         const { page = 1, limit = 10 } = req.query;
-        const { data, error } = await alumniProfilesService.fetchAlumniProfiles(supabase, page, limit);
+        const { data, error } = await alumniProfilesService.fetchAlumniProfiles(req.supabase, page, limit);
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -29,11 +29,11 @@ const getAlumniProfiles = (supabase) => async (req, res) => {
     }
 };
 
-const getAlumniProfileById = (supabase) => async (req, res) => {
+const getAlumniProfileById = async (req, res) => {
     try {
         const { userId } = req.params;
 
-        const { data, error } = await alumniProfilesService.fetchAlumniProfileById(supabase, userId);
+        const { data, error } = await alumniProfilesService.fetchAlumniProfileById(req.supabase, userId);
 
         if (error) {
             return res.status(httpStatus.NOT_FOUND).json({
@@ -62,7 +62,7 @@ const getAlumniProfileById = (supabase) => async (req, res) => {
     }
 };
 
-const createAlumniProfile = (supabase) => async (req, res) => {
+const createAlumniProfile = async (req, res) => {
     if (req.you.cannot(Actions.CREATE, Subjects.ALUMNI_PROFILE)) {
         return res.status(httpStatus.FORBIDDEN).json({
             status: "FORBIDDEN",
@@ -80,7 +80,7 @@ const createAlumniProfile = (supabase) => async (req, res) => {
             });
         }
 
-        const { data: userData, error: userError } = await usersService.fetchUserById(supabase, userId);
+        const { data: userData, error: userError } = await usersService.fetchUserById(req.supabase, userId);
 
         if (userError || !userData) {
             return res.status(httpStatus.NOT_FOUND).json({
@@ -90,7 +90,7 @@ const createAlumniProfile = (supabase) => async (req, res) => {
         }
 
         // Check if alumni profile already exists
-        const { data: alumniData } = await alumniProfilesService.fetchAlumniProfileById(supabase, userId);
+        const { data: alumniData } = await alumniProfilesService.fetchAlumniProfileById(req.supabase, userId);
 
         if (alumniData) {
             return res.status(httpStatus.CONFLICT).json({
@@ -150,7 +150,7 @@ const createAlumniProfile = (supabase) => async (req, res) => {
 
         const created_at = new Date().toISOString();
 
-        const { data, error } = await alumniProfilesService.insertAlumniProfile(supabase, {
+        const { data, error } = await alumniProfilesService.insertAlumniProfile(req.supabase, {
             alum_id,
             birthdate,
             location,
@@ -191,7 +191,7 @@ const createAlumniProfile = (supabase) => async (req, res) => {
     }
 };
 
-const updateAlumniProfile = (supabase) => async (req, res) => {
+const updateAlumniProfile = async (req, res) => {
     try {
         const userId = req.params.userId;
 
@@ -203,7 +203,7 @@ const updateAlumniProfile = (supabase) => async (req, res) => {
         }
 
         // Check if user exists
-        const { data: userData, error: userError } = await usersService.fetchUserById(supabase, userId);
+        const { data: userData, error: userError } = await usersService.fetchUserById(req.supabase, userId);
 
         if (userError || !userData) {
             return res.status(httpStatus.NOT_FOUND).json({
@@ -220,7 +220,7 @@ const updateAlumniProfile = (supabase) => async (req, res) => {
         }
 
         // Check if alumni profile exists
-        const { data: alumniData, error: alumniError } = await alumniProfilesService.fetchAlumniProfileById(supabase, userId);
+        const { data: alumniData, error: alumniError } = await alumniProfilesService.fetchAlumniProfileById(req.supabase, userId);
 
         if (alumniError || !alumniData) {
             return res.status(httpStatus.NOT_FOUND).json({
@@ -270,7 +270,7 @@ const updateAlumniProfile = (supabase) => async (req, res) => {
             }
         });
 
-        const { data, error } = await alumniProfilesService.updateAlumniProfileData(supabase, userId, updateData)
+        const { data, error } = await alumniProfilesService.updateAlumniProfileData(req.supabase, userId, updateData)
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
