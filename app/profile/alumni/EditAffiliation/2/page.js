@@ -1,7 +1,8 @@
 "use client"
 import { useState, useEffect } from "react"
+import ToastNotification from "@/components/ToastNotification"
 
-export default function EditAffiliationModal({ existingAffiliation, onSave, onCancel }) {
+export default function EditAffiliationModal({ existingAffiliation, onCancel }) {
   const [formData, setFormData] = useState({
     organization: "",
     title: "",
@@ -33,6 +34,7 @@ export default function EditAffiliationModal({ existingAffiliation, onSave, onCa
 
   const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
   const years = Array.from({ length: 30 }, (_, i) => new Date().getFullYear() - i)
+  const [showToast, setShowToast] = useState(false)
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -56,6 +58,25 @@ export default function EditAffiliationModal({ existingAffiliation, onSave, onCa
 
   const handleSubmit = (e) => {
     e.preventDefault()
+
+    // Validate required fields
+    if (!formData.organization || !formData.title || !formData.location || !formData.startDate.month || !formData.startDate.year) {
+      setShowToast({
+        type: "fail",
+        message: "Please fill in all required fields.",
+      })
+      return
+    }
+
+    // Validate end date if not currently affiliated
+    if (!formData.isCurrentlyAffiliated && (!formData.endDate.month || !formData.endDate.year)) {
+      setShowToast({
+        type: "fail",
+        message: "End date is required.",
+      })
+      return
+    }
+
     const updatedAffiliation = {
       ...formData,
       startDate: `${formData.startDate.month} ${formData.startDate.year}`,
@@ -63,13 +84,14 @@ export default function EditAffiliationModal({ existingAffiliation, onSave, onCa
         ? "Present" // Mark as "Present" if still affiliated
         : `${formData.endDate.month} ${formData.endDate.year}`,
     }
-    onSave(updatedAffiliation)
+    
+    setShowToast({ type: "success", message: "Affiliation updated successfully!" })
   }
 
   return (
-    <div className="bg-[var(--color-astrawhite)] rounded-lg shadow-xl w-full max-w-3xl p-6">
+    <div className="w-full max-w-3xl mx-auto p-8 bg-[var(--color-astrawhite)] rounded-lg flex flex-col">
     <div className="overflow-y-auto max-h-[70vh] p-2">
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6" noValidate>
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">Edit Affiliation</h2>
           <button
@@ -82,7 +104,7 @@ export default function EditAffiliationModal({ existingAffiliation, onSave, onCa
 
         {/* Organization */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Organization</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Organization <span className="text-[var(--color-astrared)]">*</span></label>
           <input
             type="text"
             name="organization"
@@ -96,7 +118,7 @@ export default function EditAffiliationModal({ existingAffiliation, onSave, onCa
         {/* Title & Location */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Title <span className="text-[var(--color-astrared)]">*</span></label>
             <input
               type="text"
               name="title"
@@ -107,7 +129,7 @@ export default function EditAffiliationModal({ existingAffiliation, onSave, onCa
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Location <span className="text-[var(--color-astrared)]">*</span></label>
             <input
               type="text"
               name="location"
@@ -137,7 +159,7 @@ export default function EditAffiliationModal({ existingAffiliation, onSave, onCa
         {/* Dates */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Start Date <span className="text-[var(--color-astrared)]">*</span></label>
             <div className="grid grid-cols-2 gap-4">
               <select
                 name="startDate.month"
@@ -164,7 +186,7 @@ export default function EditAffiliationModal({ existingAffiliation, onSave, onCa
 
           {!formData.isCurrentlyAffiliated && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">End Date <span className="text-[var(--color-astrared)]">*</span></label>
               <div className="grid grid-cols-2 gap-4">
                 <select
                   name="endDate.month"
@@ -221,6 +243,13 @@ export default function EditAffiliationModal({ existingAffiliation, onSave, onCa
         </div>
       </form>
     </div>
+    {showToast && (
+      <ToastNotification
+        type={showToast.type}
+        message={showToast.message}
+        onClose={() => setShowToast(null)} // Close the toast when it disappears
+      />
+    )}
     </div>
   )
 }

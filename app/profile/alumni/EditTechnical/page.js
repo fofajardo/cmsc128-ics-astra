@@ -2,10 +2,12 @@
 import { useState } from "react"
 import SkillTag from "@/components/SkillTag"
 import { XCircle } from "lucide-react"
+import ToastNotification from "@/components/ToastNotification"
 
 export default function EditTechnical({ technicalSkills, hideTechnicalForm }) {
   const [skills, setSkills] = useState([...technicalSkills])
   const [newSkill, setNewSkill] = useState("")
+  const [showToast, setShowToast] = useState(null)
 
   const handleAddSkill = (e) => {
     if (e.key === "Enter" && newSkill.trim() !== "") {
@@ -26,7 +28,7 @@ export default function EditTechnical({ technicalSkills, hideTechnicalForm }) {
 
   const handleSave = () => {
     console.log("Saving skills:", skills)
-    hideTechnicalForm()
+    setShowToast({ type: "success", message: "Skills saved successfully!" })
   }
 
   return (
@@ -39,13 +41,13 @@ export default function EditTechnical({ technicalSkills, hideTechnicalForm }) {
       </div>
 
       <div className="mb-6">
-        <div className="border border-gray-300 bg-white rounded-lg p-3 min-h-[64px] w-full flex flex-wrap gap-3">
+        <div className="border border-gray-300 bg-white rounded-lg p-3 min-h-[64px] w-full flex flex-wrap gap-x-2 gap-y-2">
           {skills.map((skill, index) => (
-            <div key={index} className="relative group">
+            <div key={index} className="relative group flex items-center">
               <SkillTag text={skill.text} color={skill.color} />
               <button
                 onClick={() => handleRemoveSkill(index)}
-                className="absolute -left-3 -top-2 bg-white rounded-full p-1 shadow group-hover:block hidden"
+                className="absolute -left-2 -top-2 bg-white rounded-full p-1 shadow group-hover:block hidden"
               >
                 <XCircle className="text-red-500 w-4 h-4" />
               </button>
@@ -57,7 +59,7 @@ export default function EditTechnical({ technicalSkills, hideTechnicalForm }) {
             onChange={(e) => setNewSkill(e.target.value)}
             onKeyDown={handleAddSkill}
             placeholder="Add skill and press Enter"
-            className="flex-grow min-w-[200px] outline-none text-sm bg-transparent"
+            className="text-sm bg-white border border-gray-300 rounded-full px-4 py-2 min-w-[140px] h-[36px] outline-none"
           />
         </div>
       </div>
@@ -84,6 +86,15 @@ export default function EditTechnical({ technicalSkills, hideTechnicalForm }) {
           </button>
         </div>
       </div>
+
+      {/* Show Toast Notification */}
+      {showToast && (
+        <ToastNotification
+          type={showToast.type}
+          message={showToast.message}
+          onClose={() => setShowToast(null)} // Close the toast when it disappears
+        />
+      )}
     </div>
   )
 }

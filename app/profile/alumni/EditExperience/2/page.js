@@ -1,7 +1,8 @@
 "use client"
 import { useState, useEffect } from "react"
+import ToastNotification from "@/components/ToastNotification"
 
-export default function EditExperienceModal({ existingExperience, onSave, onCancel }) {
+export default function EditExperienceModal({ existingExperience, onCancel }) {
   const [formData, setFormData] = useState({
     company: "",
     title: "",
@@ -19,6 +20,8 @@ export default function EditExperienceModal({ existingExperience, onSave, onCanc
     },
     description: "",
   })
+
+  const [showToast, setShowToast] = useState(false)
 
   useEffect(() => {
     if (existingExperience) {
@@ -65,20 +68,45 @@ export default function EditExperienceModal({ existingExperience, onSave, onCanc
 
   const handleSubmit = (e) => {
     e.preventDefault()
+
+    // Check if required fields are filled based on current work status
+    if (!formData.company || !formData.title || !formData.location || !formData.startDate.month || !formData.startDate.year) {
+      setShowToast({
+        type: "fail",
+        message: "Please fill in all required fields.",
+      })
+      return
+    }
+
+    // If not currently working, validate end date
+    if (!formData.isCurrentlyWorking && (!formData.endDate.month || !formData.endDate.year)) {
+      setShowToast({
+        type: "fail",
+        message: "End date is required.",
+      })
+      return
+    }
+
     const updatedExperience = {
       ...formData,
       startDate: `${formData.startDate.month} ${formData.startDate.year}`,
       endDate: formData.isCurrentlyWorking
-        ? null // End date should be null when still working
+        ? "Present" // Mark as "Present" if still working
         : `${formData.endDate.month} ${formData.endDate.year}`,
     }
-    onSave(updatedExperience)
+    
+    
+    // Toast Notification
+    setShowToast({
+      type: "success",
+      message: "Experience updated successfully!",
+    })
   }
 
   return (
-    <div className="bg-[var(--color-astrawhite)] rounded-lg shadow-xl w-full max-w-3xl p-6">
+    <div className="w-full max-w-3xl mx-auto p-8 bg-[var(--color-astrawhite)] rounded-lg flex flex-col">
       <div className="overflow-y-auto max-h-[70vh] p-2">
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6" noValidate>
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">Edit Experience</h2>
           <button
@@ -91,7 +119,7 @@ export default function EditExperienceModal({ existingExperience, onSave, onCanc
 
         {/* Organization */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Organization</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Company or Organization <span className="text-[var(--color-astrared)]">*</span></label>
           <input
             type="text"
             name="company"
@@ -105,7 +133,7 @@ export default function EditExperienceModal({ existingExperience, onSave, onCanc
         {/* Title & Location */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Title <span className="text-[var(--color-astrared)]">*</span></label>
             <input
               type="text"
               name="title"
@@ -116,33 +144,19 @@ export default function EditExperienceModal({ existingExperience, onSave, onCanc
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
-            <input
-              type="text"
-              name="location"
-              value={formData.location}
+            <label className="block text-sm font-medium text-gray-700 mb-1">Employment Type <span className="text-[var(--color-astrared)]">*</span></label>
+            <select
+              name="type"
+              value={formData.type}
               onChange={handleChange}
               className="w-full px-4 py-1 border border-gray-300 rounded-lg"
-              required
-            />
+            >
+              <option value="Full-time">Full-time</option>
+              <option value="Part-time">Part-time</option>
+              <option value="Contract">Contractual</option>
+              <option value="Internship">Internship</option>
+            </select>
           </div>
-        </div>
-
-        {/* Location Type */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Location Type</label>
-          <select
-            name="locationType"
-            value={formData.locationType}
-            onChange={handleChange}
-            className="w-full px-4 py-1 border border-gray-300 rounded-lg"
-            required
-          >
-            <option value="">Select type</option>
-            <option value="Face-to-face">Face-to-face</option>
-            <option value="Remote">Remote</option>
-            <option value="Hybrid">Hybrid</option>
-          </select>
         </div>
 
         {/* Current Work Checkbox */}
@@ -156,14 +170,14 @@ export default function EditExperienceModal({ existingExperience, onSave, onCanc
             className="h-4 w-4 text-blue-600 border-gray-300 rounded"
           />
           <label htmlFor="isCurrentlyWorking" className="ml-2 text-sm text-gray-700">
-            I am currently working here
+            I am currently working in this role
           </label>
         </div>
 
         {/* Dates */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Start Date <span className="text-[var(--color-astrared)]">*</span></label>
             <div className="grid grid-cols-2 gap-4">
               <select
                 name="startDate.month"
@@ -190,7 +204,7 @@ export default function EditExperienceModal({ existingExperience, onSave, onCanc
 
           {!formData.isCurrentlyWorking && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">End Date <span className="text-[var(--color-astrared)]">*</span></label>
               <div className="grid grid-cols-2 gap-4">
                 <select
                   name="endDate.month"
@@ -215,6 +229,34 @@ export default function EditExperienceModal({ existingExperience, onSave, onCanc
           )}
         </div>
 
+        {/* Location Type */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Location <span className="text-[var(--color-astrared)]">*</span></label>
+            <input
+              type="text"
+              name="location"
+              value={formData.location}
+              onChange={handleChange}
+              placeholder="Enter location"
+              className="w-full px-4 py-1 border border-gray-300 rounded-lg"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Location Type <span className="text-[var(--color-astrared)]">*</span></label>
+            <select
+              name="locationType"
+              value={formData.locationType}
+              onChange={handleChange}
+              className="w-full px-4 py-1 border border-gray-300 rounded-lg"
+            >
+              <option value="On-site">On-site</option>
+              <option value="Remote">Remote</option>
+              <option value="Hybrid">Hybrid</option>
+            </select>
+          </div>
+        </div>
+        
         {/* Description */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
@@ -245,6 +287,14 @@ export default function EditExperienceModal({ existingExperience, onSave, onCanc
         </div>
       </form>
     </div>
+    {/* Show Toast Notification */}
+    {showToast && (
+      <ToastNotification
+        type={showToast.type}
+        message={showToast.message}
+        onClose={() => setShowToast(null)} // Close the toast when it disappears
+      />
+    )}
     </div>
   )
 }

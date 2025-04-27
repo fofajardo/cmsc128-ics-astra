@@ -1,10 +1,12 @@
 "use client"
 import { useState } from "react"
 import EditAffiliationModal from "./2/page" // Adjust path as needed
+import ToastNotification from "@/components/ToastNotification"
 
 export default function EditAffiliation({ affiliations, hideAffiliationForm }) {
   const [editedAffiliations, setEditedAffiliations] = useState([...affiliations])
   const [selectedAffiliationIndex, setSelectedAffiliationIndex] = useState(null)
+  const [showToast, setShowToast] = useState(false)
 
   const handleEdit = (index) => {
     setSelectedAffiliationIndex(index)
@@ -29,7 +31,7 @@ export default function EditAffiliation({ affiliations, hideAffiliationForm }) {
 
   const handleSave = () => {
     console.log("Saving affiliations:", editedAffiliations)
-    hideAffiliationForm()
+    setShowToast({ type: "success", message: "Affiliations saved successfully!" })
   }
 
   return (
@@ -84,13 +86,21 @@ export default function EditAffiliation({ affiliations, hideAffiliationForm }) {
       </div>
 
       {selectedAffiliationIndex !== null && (
-        <div className="fixed inset-0 bg-gray-200 bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <EditAffiliationModal
             existingAffiliation={editedAffiliations[selectedAffiliationIndex]}
             onSave={handleModalSave}
             onCancel={handleModalCancel}
           />
         </div>
+      )}
+
+      {showToast && (
+        <ToastNotification
+          type={showToast.type}
+          message={showToast.message}
+          onClose={() => setShowToast(false)}
+        />
       )}
     </div>
   )

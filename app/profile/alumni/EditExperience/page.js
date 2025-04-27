@@ -1,10 +1,12 @@
 "use client"
 import { useState } from "react"
 import EditExperienceModal from "./2/page"
+import ToastNotification from "@/components/ToastNotification"
 
 export default function EditExperience({ experiences, hideExperienceForm }) {
   const [editedExperiences, setEditedExperiences] = useState([...experiences])
   const [selectedExperienceIndex, setSelectedExperienceIndex] = useState(null)
+  const [showToast, setShowToast] = useState(false)
 
   const handleEdit = (index) => {
     setSelectedExperienceIndex(index)
@@ -23,9 +25,9 @@ export default function EditExperience({ experiences, hideExperienceForm }) {
     setSelectedExperienceIndex(null)
   }
 
-  const handleModalSave = (updatedAffiliation) => {
+  const handleModalSave = (updatedExperience) => {
     const updated = [...editedExperiences]
-    updated[selectedAffiliationIndex] = updatedAffiliation
+    updated[selectedExperienceIndex] = updatedExperience
     setEditedExperiences(updated)
     setSelectedExperienceIndex(null) // close modal
   }
@@ -35,8 +37,8 @@ export default function EditExperience({ experiences, hideExperienceForm }) {
   }
 
   const handleSave = () => {
-    console.log("Saving affiliations:", editedExperiences)
-    hideExperienceForm()
+    console.log("Saving experiences:", editedExperiences)
+    setShowToast({ type: "success", message: "Experiences saved successfully!" })
   }
 
   return (
@@ -63,7 +65,7 @@ export default function EditExperience({ experiences, hideExperienceForm }) {
                     <p>{experience.type}</p>
                   </div>
                   <p className="text-sm text-gray-500">
-                    {experience.startDate} {experience.isCurrentlyAffiliated ? "- Present" : `- ${experience.endDate}`}
+                    {experience.startDate} {experience.isCurrentlyWorking ? "- Present" : `- ${experience.endDate}`}
                   </p>
                 </div>
                 <div className="flex space-x-2">
@@ -96,13 +98,21 @@ export default function EditExperience({ experiences, hideExperienceForm }) {
 
 
       {selectedExperienceIndex !== null && (
-        <div className="fixed inset-0 bg-gray-200 bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <EditExperienceModal
             existingExperience={editedExperiences[selectedExperienceIndex]}
             onSave={handleModalSave}
             onCancel={handleModalCancel}
           />
         </div>
+      )}
+
+      {showToast && (
+        <ToastNotification
+          type={showToast.type}
+          message={showToast.message}
+          onClose={() => setShowToast(false)}
+        />
       )}
     </div>
   )

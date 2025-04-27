@@ -1,5 +1,6 @@
 "use client"
 import { useState } from "react"
+import ToastNotification from "@/components/ToastNotification"
 
 export default function AddExperience({ hideAddExperienceForm }) {
   const [formData, setFormData] = useState({
@@ -21,16 +22,16 @@ export default function AddExperience({ hideAddExperienceForm }) {
   })
 
   const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-
   const years = Array.from({ length: 30 }, (_, i) => new Date().getFullYear() - i)
-
   const employmentTypes = [
     "Full-time",
     "Part-time",
     "Contractual",
+    "Internship"
   ]
+  const locationTypes = ["On-site", "Remote", "Hybrid"]
 
-  const locationTypes = ["On-site", "Hybrid", "Remote"]
+  const [showToast, setShowToast] = useState(false)
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -55,6 +56,24 @@ export default function AddExperience({ hideAddExperienceForm }) {
   const handleSubmit = (e) => {
     e.preventDefault()
 
+    // Validate required fields
+    if (!formData.company || !formData.title || !formData.type || !formData.location || !formData.startDate.month || !formData.startDate.year) {
+      setShowToast({
+        type: "fail",
+        message: "Please fill in all required fields.",
+      })
+      return
+    }
+
+    // If not currently working, validate end date
+    if (!formData.isCurrentlyWorking && (!formData.endDate.month || !formData.endDate.year)) {
+      setShowToast({
+        type: "fail",
+        message: "End date is required.",
+      })
+      return
+    }
+
     // Format dates
     const startDateFormatted = `${formData.startDate.month} ${formData.startDate.year}`
     const endDateFormatted = formData.isCurrentlyWorking
@@ -72,8 +91,10 @@ export default function AddExperience({ hideAddExperienceForm }) {
       description: formData.description,
     }
 
-    console.log("New experience:", newExperience)
-    hideAddExperienceForm()
+    setShowToast({
+      type: "success",
+      message: "Your experience has been added!",
+    });
   }
 
   return (
@@ -86,11 +107,11 @@ export default function AddExperience({ hideAddExperienceForm }) {
       </div>
 
       <div className="overflow-y-auto max-h-[70vh] p-2">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} noValidate>
         <div className="space-y-6">
           {/* Company */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Company or Organization</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Company or Organization <span className="text-[var(--color-astrared)]">*</span></label>
             <input
               type="text"
               name="company"
@@ -105,7 +126,7 @@ export default function AddExperience({ hideAddExperienceForm }) {
           {/* Title & Employment Type */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Title <span className="text-[var(--color-astrared)]">*</span></label>
               <input
                 type="text"
                 name="title"
@@ -117,7 +138,7 @@ export default function AddExperience({ hideAddExperienceForm }) {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Employment Type</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Employment Type <span className="text-[var(--color-astrared)]">*</span></label>
               <select
                 name="type"
                 value={formData.type}
@@ -153,7 +174,8 @@ export default function AddExperience({ hideAddExperienceForm }) {
           {/* Start and End Dates */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Start Date <span className="text-[var(--color-astrared)]">*</span></label>
+              
               <div className="grid grid-cols-2 gap-4">
                 <select
                   name="startDate.month"
@@ -184,7 +206,7 @@ export default function AddExperience({ hideAddExperienceForm }) {
 
             {!formData.isCurrentlyWorking && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">End Date <span className="text-[var(--color-astrared)]">*</span></label>
                 <div className="grid grid-cols-2 gap-4">
                   <select
                     name="endDate.month"
@@ -218,7 +240,7 @@ export default function AddExperience({ hideAddExperienceForm }) {
           {/* Location & Location Type */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Location <span className="text-[var(--color-astrared)]">*</span></label>
               <input
                 type="text"
                 name="location"
@@ -230,7 +252,7 @@ export default function AddExperience({ hideAddExperienceForm }) {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Location Type</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Location Type <span className="text-[var(--color-astrared)]">*</span></label>
               <select
                 name="locationType"
                 value={formData.locationType}
@@ -238,7 +260,6 @@ export default function AddExperience({ hideAddExperienceForm }) {
                 className="w-full px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 required
               >
-                <option value="">Select location type</option>
                 {locationTypes.map((type) => (
                   <option key={type} value={type}>{type}</option>
                 ))}
@@ -277,6 +298,14 @@ export default function AddExperience({ hideAddExperienceForm }) {
         </div>
       </form>
     </div>
+
+      {showToast && (
+        <ToastNotification
+          type={showToast.type}
+          message={showToast.message}
+          onClose={() => setShowToast(null)}
+        />
+      )}
     </div>
   )
 }

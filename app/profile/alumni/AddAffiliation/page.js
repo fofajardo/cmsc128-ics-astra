@@ -1,5 +1,6 @@
 "use client"
 import { useState } from "react"
+import ToastNotification from "@/components/ToastNotification"
 
 export default function AddAffiliation({ hideAddAffiliationForm }) {
   const [formData, setFormData] = useState({
@@ -20,6 +21,7 @@ export default function AddAffiliation({ hideAddAffiliationForm }) {
 
   const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
   const years = Array.from({ length: 30 }, (_, i) => new Date().getFullYear() - i)
+  const [showToast, setShowToast] = useState(false)
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -44,6 +46,24 @@ export default function AddAffiliation({ hideAddAffiliationForm }) {
   const handleSubmit = (e) => {
     e.preventDefault()
 
+    // Custom validation
+    if (!formData.organization || !formData.title || !formData.location || !formData.startDate.month || !formData.startDate.year) {
+      setShowToast({
+        type: "fail",
+        message: "Please fill in all required fields.",
+      })
+      return
+    }
+
+    // If currently affiliated, only start date is required, else end date must be filled
+    if (!formData.isCurrentlyAffiliated && (!formData.endDate.month || !formData.endDate.year)) {
+      setShowToast({
+        type: "fail",
+        message: "End date is required.",
+      })
+      return
+    }
+
     const startDateFormatted = `${formData.startDate.month} ${formData.startDate.year}`
     const endDateFormatted = formData.isCurrentlyAffiliated
       ? "Present"
@@ -60,8 +80,10 @@ export default function AddAffiliation({ hideAddAffiliationForm }) {
       description: formData.description,
     }
 
-    console.log("New affiliation:", newAffiliation)
-    hideAddAffiliationForm()
+    setShowToast({
+      type: "success",
+      message: "Your affiliation has been added!",
+    });
   }
 
   return (
@@ -74,11 +96,11 @@ export default function AddAffiliation({ hideAddAffiliationForm }) {
       </div>
 
       <div className="overflow-y-auto max-h-[70vh] p-2">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} noValidate>
         <div className="space-y-6">
           {/* Organization */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Organization</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Organization <span className="text-[var(--color-astrared)]">*</span></label>
             <input
               type="text"
               name="organization"
@@ -93,7 +115,7 @@ export default function AddAffiliation({ hideAddAffiliationForm }) {
           {/* Title and Location */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Title <span className="text-[var(--color-astrared)]">*</span></label>
               <input
                 type="text"
                 name="title"
@@ -105,7 +127,7 @@ export default function AddAffiliation({ hideAddAffiliationForm }) {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Location <span className="text-[var(--color-astrared)]">*</span></label>
               <input
                 type="text"
                 name="location"
@@ -137,7 +159,7 @@ export default function AddAffiliation({ hideAddAffiliationForm }) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {/* Start */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Start Date <span className="text-[var(--color-astrared)]">*</span></label>
               <div className="grid grid-cols-2 gap-4">
                 <select name="startDate.month" value={formData.startDate.month} onChange={handleChange} className="px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
                   <option value="">Month</option>
@@ -153,7 +175,7 @@ export default function AddAffiliation({ hideAddAffiliationForm }) {
             {/* End */}
             {!formData.isCurrentlyAffiliated && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">End Date <span className="text-[var(--color-astrared)]">*</span></label>
                 <div className="grid grid-cols-2 gap-4">
                   <select name="endDate.month" value={formData.endDate.month} onChange={handleChange} className="px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
                     <option value="">Month</option>
@@ -199,6 +221,13 @@ export default function AddAffiliation({ hideAddAffiliationForm }) {
         </div>
       </form>
     </div>
+    {showToast && (
+      <ToastNotification
+        type={showToast.type}
+        message={showToast.message}
+        onClose={() => setShowToast(false)}
+      />
+    )}
     </div>
   )
 }

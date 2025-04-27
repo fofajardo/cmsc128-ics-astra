@@ -1,12 +1,16 @@
 "use client";
 import React, { useState } from 'react';
 import { Camera } from 'lucide-react';
+import ToastNotification from '@/components/ToastNotification';
+import { set } from 'date-fns';
 
 export default function EditForm({ profileData, hidePersonalForm }) {
   const [formData, setFormData] = useState(profileData || {});
   const [isMaidenNameChecked, setIsMaidenNameChecked] = useState(
     profileData?.Title === "Ms." || profileData?.Title === "Mrs." ? profileData?.IsMaidenName : false
   );
+
+  const [showToast, setShowToast] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -54,16 +58,22 @@ export default function EditForm({ profileData, hidePersonalForm }) {
     );
   
     if (missingFields.length > 0) {
-      alert("Please fill out all required fields.");
+      setShowToast({
+        type: "fail",
+        message: "Please fill in the missing fields.",
+      });
       return;
     }
 
-    alert("Form submitted!");
+    setShowToast({
+      type: "success",
+      message: "Your profile has been saved!",
+    });
   };  
 
   return (
   <div className="max-h-[90vh] overflow-y-auto">
-    <form className="space-y-4 p-8" onSubmit={handleSubmit}>
+    <form className="space-y-4 p-8" onSubmit={handleSubmit} noValidate>
       {/* Profile Picture */}
       <div className="flex justify-center w-full mb-6 relative">
         <div className="relative">
@@ -307,6 +317,15 @@ export default function EditForm({ profileData, hidePersonalForm }) {
         </button>
       </div>
     </form>
+
+    {/* Show Toast Notification */}
+    {showToast && (
+      <ToastNotification
+        type={showToast.type}
+        message={showToast.message}
+        onClose={() => setShowToast(null)} // Close the toast when it disappears
+      />
+    )}
   </div>
   );
 }
