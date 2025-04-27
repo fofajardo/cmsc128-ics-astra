@@ -154,6 +154,7 @@ export default function ProjectsAdmin() {
             <div className="flex flex-row gap-3 min-w-max px-4 justify-center">
               {/*active drives card */}
               <AdminStatCard
+                delay={0.0}
                 title="Active Drives"
                 value={8}
                 icon={
@@ -168,6 +169,7 @@ export default function ProjectsAdmin() {
 
                {/*total raised card */}
               <AdminStatCard
+                delay={0.1}
                 title="Total Raised"
                 value="₱1.2M"
                 icon={
@@ -181,6 +183,7 @@ export default function ProjectsAdmin() {
 
                {/*contributors card */}
               <AdminStatCard
+                delay={0.2}
                 title="Contributors"
                 value={258}
                 icon={

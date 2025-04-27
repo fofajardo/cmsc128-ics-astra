@@ -43,6 +43,7 @@ export default function AdminEventsLayout({ children }) {
             <div className="flex flex-row gap-3 min-w-max px-4 justify-center">
               {/* Now 3 DIFFERENT calendar icons */}
               <AdminStatCard
+                delay={0.0}
                 title="Active Events"
                 value={17}
                 icon={<CalendarCheck2 className="size-13 text-astrawhite" strokeWidth={3} />} // ✅ Different icon
@@ -50,6 +51,7 @@ export default function AdminEventsLayout({ children }) {
                 onClick={() => {}}
               />
               <AdminStatCard
+                delay={0.1}
                 title="Past Events"
                 value={42}
                 icon={<CalendarRange className="size-13 text-astrawhite" strokeWidth={3} />} // ✅ Different icon
@@ -57,6 +59,7 @@ export default function AdminEventsLayout({ children }) {
                 onClick={() => {}}
               />
               <AdminStatCard
+                delay={0.2}
                 title="Total Events"
                 value={59}
                 icon={<CalendarClock className="size-13 text-astrawhite" strokeWidth={3} />} // ✅ Different icon
