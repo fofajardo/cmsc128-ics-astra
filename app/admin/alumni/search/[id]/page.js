@@ -29,7 +29,7 @@ export default async function AlumniSearchProfile({ params }) {
     const user = userRes.data.user;
     const profile = profileRes.data.alumniProfile;
     const workExperience = workExperienceRes.data.work_experiences;
-    const degreeProgram = degreeProgramRes.data.degree_programs;
+    // const degreeProgram = degreeProgramRes.data.degree_programs;
 
     console.log(user);
     console.log(profile);
@@ -244,20 +244,21 @@ export default async function AlumniSearchProfile({ params }) {
                         <hr className="h-2 border-astralightgray"></hr>
                         <div className="flex gap-2 justify-between flex-wrap text-sm">
                             {/* TODO: FRG, pa-connect nung sa fields of interest. */}
-                            {}
-                            <SkillTag text="Frontend" color="bg-blue-100 text-blue-700" />
-                            <SkillTag text="Database" color="bg-pink-100 text-pink-700" />
-                            <SkillTag text="HTML" color="bg-green-100 text-green-700" />
-                            <SkillTag text="Frontend" color="bg-blue-100 text-blue-700" />
-                            <SkillTag text="CSS" color="bg-blue-100 text-blue-700" />
-                            <SkillTag text="C" color="bg-gray-200 text-gray-700" />
-                            <SkillTag text="HTML" color="bg-green-100 text-green-700" />
-                            <SkillTag text="CSS" color="bg-blue-100 text-blue-700" />
-                            <SkillTag text="HTML" color="bg-green-100 text-green-700" />
-                            <SkillTag text="Frontend" color="bg-blue-100 text-blue-700" />
-                            <SkillTag text="CSS" color="bg-blue-100 text-blue-700" />
-                            <SkillTag text="Database" color="bg-pink-100 text-pink-700" />
-                            <SkillTag text="Javascript" color="bg-yellow-100 text-yellow-700" />
+                            {workExperience.length > 0 ? (
+                                workExperience.map((experience, idx) => {
+                                    const colors = [
+                                        "bg-blue-100 text-blue-700",
+                                        "bg-pink-100 text-pink-700",
+                                        "bg-green-100 text-green-700",
+                                    ];
+                                    const color = colors[idx % colors.length];
+                                    return <SkillTag key={idx} text={experience.field} color={color} />;
+                                })
+                            ) : (
+                                <div className="text-center mt-50 text-astradarkgray">
+                                    {"No particular field of interest"}
+                                </div>
+                            )} 
                         </div>
                     </div>
 
