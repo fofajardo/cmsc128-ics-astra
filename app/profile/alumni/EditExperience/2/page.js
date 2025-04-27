@@ -259,7 +259,7 @@ export default function EditExperienceModal({ existingExperience, onCancel }) {
         
         {/* Description */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Description (Optional)</label>
           <textarea
             name="description"
             value={formData.description}

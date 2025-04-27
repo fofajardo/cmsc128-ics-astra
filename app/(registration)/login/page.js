@@ -11,10 +11,14 @@ export default function LoginPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const newErrors = []
-    if (!email.includes("@")) newErrors.push("Invalid email format.")
-    if (password.length < 8) newErrors.push("Password must be at least 8 characters.")
-    setErrors(newErrors)
-    return newErrors.length === 0
+  
+    // Check if all fields are filled
+    if (!email || !password) {
+      newErrors.push("Please fill in all fields.")
+    }
+  
+    setErrors(newErrors)  // Store the error messages
+    return newErrors.length === 0  // Return true if no errors
   };
 
   return (
