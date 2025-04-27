@@ -18,7 +18,7 @@ export default function BigJobCardwEdit(job) {
     };
 
     return (
-    <div className="bg-astrawhite max-w-[1250px] w-19/20 min-h-[308px] h-auto rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] p-10 pb-7">
+        <div className="bg-astrawhite max-w-[1250px] w-19/20 lg:w-12/20 min-h-[308px] h-auto rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] lg:p-10 pb-7 pt-10 px-7">
         
         <div className="flex items-start gap-2">
             <div className="mr-2">
