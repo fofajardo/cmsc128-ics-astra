@@ -2,7 +2,7 @@ import env from "dotenv";
 import express from "express";
 import httpStatus from "http-status-codes";
 import registerRoutes from "./routes/loadRoutes.js";
-import {InferAbility} from "./middleware/inferAbility.js";
+import { InferAbility } from "./middleware/inferAbility.js";
 import {BuildSupabaseClient} from "./middleware/buildSupabaseClient.js";
 import {BuildAuth} from "./middleware/buildAuth.js";
 import {ResponseHelper} from "./middleware/responseHelper.js";
