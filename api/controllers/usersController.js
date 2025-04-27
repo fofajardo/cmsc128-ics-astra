@@ -2,7 +2,7 @@ import httpStatus from "http-status-codes";
 import usersService from "../services/usersService.js";
 import { Actions, Subjects } from "../../common/scopes.js";
 
-const getUsers = (supabase) => async (req, res) => {
+const getUsers = async (req, res) => {
     if (req.you.cannot(Actions.READ, Subjects.USER)) {
         return res.status(httpStatus.FORBIDDEN).json({
             status: "FORBIDDEN",
@@ -12,7 +12,7 @@ const getUsers = (supabase) => async (req, res) => {
 
     try {
         const { page = 1, limit = 10 } = req.query;
-        const { data, error } = await usersService.fetchUsers(supabase, page, limit);
+        const { data, error } = await usersService.fetchUsers(req.supabase, page, limit);
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -34,11 +34,11 @@ const getUsers = (supabase) => async (req, res) => {
     }
 };
 
-const getUserById = (supabase) => async (req, res) => {
+const getUserById = async (req, res) => {
     try {
         const { userId } = req.params;
 
-        const { data, error } = await usersService.fetchUserById(supabase, userId);
+        const { data, error } = await usersService.fetchUserById(req.supabase, userId);
 
         if (error) {
             return res.status(httpStatus.NOT_FOUND).json({
@@ -67,7 +67,7 @@ const getUserById = (supabase) => async (req, res) => {
     }
 };
 
-const createUser = (supabase) => async (req, res) => {
+const createUser = async (req, res) => {
     if (req.you.cannot(Actions.CREATE, Subjects.USER)) {
         return res.status(httpStatus.FORBIDDEN).json({
             status: "FORBIDDEN",
@@ -110,7 +110,7 @@ const createUser = (supabase) => async (req, res) => {
             role
         } = req.body;
 
-        const { data: existingUsers, error: checkError } = await usersService.checkExistingUser(supabase, username, email);
+        const { data: existingUsers, error: checkError } = await usersService.checkExistingUser(req.supabase, username, email);
 
         if (checkError) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -126,7 +126,7 @@ const createUser = (supabase) => async (req, res) => {
             });
         }
 
-        const { data, error } = await usersService.insertUser(supabase, {
+        const { data, error } = await usersService.insertUser(req.supabase, {
             username,
             email,
             password,
@@ -161,11 +161,11 @@ const createUser = (supabase) => async (req, res) => {
     }
 };
 
-const updateUser = (supabase) => async (req, res) => {
+const updateUser = async (req, res) => {
     try {
         const userId = req.params.userId;
 
-        const { data: existingUser, error: fetchError } = await usersService.fetchUserById(supabase, userId);
+        const { data: existingUser, error: fetchError } = await usersService.fetchUserById(req.supabase, userId);
 
         if (fetchError || !existingUser) {
             return res.status(httpStatus.NOT_FOUND).json({
@@ -218,7 +218,7 @@ const updateUser = (supabase) => async (req, res) => {
 
         updateData.updated_at = new Date().toISOString();
 
-        const { error: updateError } = await usersService.updateUserData(supabase, userId, updateData);
+        const { error: updateError } = await usersService.updateUserData(req.supabase, userId, updateData);
 
         if (updateError) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -240,7 +240,7 @@ const updateUser = (supabase) => async (req, res) => {
     }
 };
 
-const deleteUser = (supabase) => async (req, res) => {
+const deleteUser = async (req, res) => {
     try {
         const { userId } = req.params;
         const hard = req.query.hard === "true";
@@ -255,8 +255,8 @@ const deleteUser = (supabase) => async (req, res) => {
         }
 
         const { error } = hard
-            ? await usersService.hardDeleteUser(supabase, userId)
-            : await usersService.softDeleteUser(supabase, userId);
+            ? await usersService.hardDeleteUser(req.supabase, userId)
+            : await usersService.softDeleteUser(req.supabase, userId);
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({

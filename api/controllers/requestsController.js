@@ -6,7 +6,7 @@ import contentsService from '../services/contentsService.js';
 import { isValidUUID, isValidDate } from '../utils/validators.js';
 import { Actions, Subjects } from '../../common/scopes.js';
 
-const getRequests = (supabase) => async (req, res) => {
+const getRequests = async (req, res) => {
     if (req.you.cannot(Actions.READ, Subjects.Requests)) {
         return res.status(httpStatus.FORBIDDEN).json({
             status: 'FAILED',
@@ -16,7 +16,7 @@ const getRequests = (supabase) => async (req, res) => {
 
     try {
         const filters = req.query
-        const { data, error } = await requestsService.fetchRequests(supabase, filters);
+        const { data, error } = await requestsService.fetchRequests(req.supabase, filters);
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -37,7 +37,7 @@ const getRequests = (supabase) => async (req, res) => {
     }
 }
 
-const getRequestById = (supabase) => async (req, res) => {
+const getRequestById = async (req, res) => {
     if (req.you.cannot(Actions.READ, Subjects.Requests)) {
         return res.status(httpStatus.FORBIDDEN).json({
             status: 'FAILED',
@@ -47,14 +47,14 @@ const getRequestById = (supabase) => async (req, res) => {
 
     try {
         const { requestId } = req.params;
-        
+
         if (!isValidUUID(requestId)) {
             return res.status(httpStatus.BAD_REQUEST).json({
                 status: 'FAILED',
                 message: 'Invalid request ID.',
             });
         }
-        const { data, error } = await requestsService.fetchRequestById(supabase, requestId);
+        const { data, error } = await requestsService.fetchRequestById(req.supabase, requestId);
 
         if (error) {
             return res.status(httpStatus.NOT_FOUND).json({
@@ -75,7 +75,7 @@ const getRequestById = (supabase) => async (req, res) => {
     }
 }
 
-const getRequestsByUserId = (supabase) => async (req, res) => {
+const getRequestsByUserId = async (req, res) => {
     if (req.you.cannot(Actions.READ, Subjects.Requests)) {
         return res.status(httpStatus.FORBIDDEN).json({
             status: 'FAILED',
@@ -85,7 +85,7 @@ const getRequestsByUserId = (supabase) => async (req, res) => {
 
     try {
         const { userId } = req.params;
-        
+
         if (!isValidUUID(userId)) {
             return res.status(httpStatus.BAD_REQUEST).json({
                 status: 'FAILED',
@@ -94,7 +94,7 @@ const getRequestsByUserId = (supabase) => async (req, res) => {
         }
 
         // Check if the user exists
-        const { data: userData, error: userError } = await alumniService.fetchAlumniProfileById(supabase, userId);
+        const { data: userData, error: userError } = await alumniService.fetchAlumniProfileById(req.supabase, userId);
 
         if (userError || !userData) {
             return res.status(httpStatus.NOT_FOUND).json({
@@ -103,7 +103,7 @@ const getRequestsByUserId = (supabase) => async (req, res) => {
             });
         }
 
-        const { data, error } = await requestsService.fetchRequestsByUserId(supabase, userId);
+        const { data, error } = await requestsService.fetchRequestsByUserId(req.supabase, userId);
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -124,7 +124,7 @@ const getRequestsByUserId = (supabase) => async (req, res) => {
     }
 }
 
-const getRequestsByContentId = (supabase) => async (req, res) => {
+const getRequestsByContentId = async (req, res) => {
     if (req.you.cannot(Actions.READ, Subjects.Requests)) {
         return res.status(httpStatus.FORBIDDEN).json({
             status: 'FAILED',
@@ -134,7 +134,7 @@ const getRequestsByContentId = (supabase) => async (req, res) => {
 
     try {
         const { contentId } = req.params;
-        
+
         if (!isValidUUID(contentId)) {
             return res.status(httpStatus.BAD_REQUEST).json({
                 status: 'FAILED',
@@ -143,7 +143,7 @@ const getRequestsByContentId = (supabase) => async (req, res) => {
         }
 
         // Check if the content exists
-        const { data: contentData, error: contentError } = await contentsService.fetchContentById(supabase, contentId);
+        const { data: contentData, error: contentError } = await contentsService.fetchContentById(req.supabase, contentId);
 
         if (contentError || !contentData) {
             return res.status(httpStatus.NOT_FOUND).json({
@@ -152,7 +152,7 @@ const getRequestsByContentId = (supabase) => async (req, res) => {
             });
         }
 
-        const { data, error } = await requestsService.fetchRequestsByContentId(supabase, contentId);
+        const { data, error } = await requestsService.fetchRequestsByContentId(req.supabase, contentId);
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -173,7 +173,7 @@ const getRequestsByContentId = (supabase) => async (req, res) => {
     }
 }
 
-const createRequest = (supabase) => async (req, res) => {
+const createRequest = async (req, res) => {
     if (req.you.cannot(Actions.CREATE, Subjects.Requests)) {
         return res.status(httpStatus.FORBIDDEN).json({
             status: 'FAILED',
@@ -191,7 +191,7 @@ const createRequest = (supabase) => async (req, res) => {
         }
 
         // Check if the user exists
-        const { data: userData, error: userError } = await alumniService.fetchAlumniProfileById(supabase, userId);
+        const { data: userData, error: userError } = await alumniService.fetchAlumniProfileById(req.supabase, userId);
 
         if (userError || !userData) {
             return res.status(httpStatus.BAD_REQUEST).json({
@@ -209,7 +209,7 @@ const createRequest = (supabase) => async (req, res) => {
         }
 
         // Check if the content exists
-        const { data: contentData, error: contentError } = await contentsService.fetchContentById(supabase, contentId);
+        const { data: contentData, error: contentError } = await contentsService.fetchContentById(req.supabase, contentId);
 
         if (contentError || !contentData) {
             return res.status(httpStatus.BAD_REQUEST).json({
@@ -229,7 +229,7 @@ const createRequest = (supabase) => async (req, res) => {
         const { requestId } = req.params;
         if ( requestId != undefined ) {
             // Check if the request ID is valid
-            const { data: requestData, error: requestError } = await requestsService.fetchRequestById(supabase, requestId);
+            const { data: requestData, error: requestError } = await requestsService.fetchRequestById(req.supabase, requestId);
             if (requestData) {
                 return res.status(httpStatus.BAD_REQUEST).json({
                     status: 'FAILED',
@@ -291,8 +291,8 @@ const createRequest = (supabase) => async (req, res) => {
             }
         });
 
-        if ((!isValidUUID(user_id) || 
-            !isValidUUID(content_id)) ||  
+        if ((!isValidUUID(user_id) ||
+            !isValidUUID(content_id)) ||
             typeof type !== 'number' ||
             typeof title !== 'string' ||
             (description !== null && typeof description !== 'string')) {
@@ -301,8 +301,8 @@ const createRequest = (supabase) => async (req, res) => {
                 message: 'One or more fields are invalid.',
             });
         }
-        
-        const { data, error } = await requestsService.insertRequest(supabase, {
+
+        const { data, error } = await requestsService.insertRequest(req.supabase, {
             user_id,
             content_id,
             type,
@@ -330,7 +330,7 @@ const createRequest = (supabase) => async (req, res) => {
     }
 }
 
-const updateRequest = (supabase) => async (req, res) => {
+const updateRequest = async (req, res) => {
     if (req.you.cannot(Actions.MANAGE, Subjects.Requests)) {
         return res.status(httpStatus.FORBIDDEN).json({
             status: 'FAILED',
@@ -340,7 +340,7 @@ const updateRequest = (supabase) => async (req, res) => {
 
     try {
         const { requestId } = req.params;
-        
+
         if (!isValidUUID(requestId)) {
             return res.status(httpStatus.BAD_REQUEST).json({
                 status: 'FAILED',
@@ -349,7 +349,7 @@ const updateRequest = (supabase) => async (req, res) => {
         }
 
         // Check if the request exists
-        const { data: requestData, error: requestError } = await requestsService.fetchRequestById(supabase, requestId);
+        const { data: requestData, error: requestError } = await requestsService.fetchRequestById(req.supabase, requestId);
 
         if (requestError || !requestData) {
             return res.status(httpStatus.BAD_REQUEST).json({
@@ -359,12 +359,12 @@ const updateRequest = (supabase) => async (req, res) => {
         }
 
         // Columns of the request table
-        const { 
-            user_id, 
-            content_id, 
-            type, 
+        const {
+            user_id,
+            content_id,
+            type,
             status,
-            title, 
+            title,
             description,
             date_requested,
             date_reviewed,
@@ -390,7 +390,7 @@ const updateRequest = (supabase) => async (req, res) => {
         });
 
         const allowedFields = [
-            'status',            
+            'status',
             'response'
         ]
 
@@ -405,7 +405,7 @@ const updateRequest = (supabase) => async (req, res) => {
                     status: 'FAILED',
                     message: 'Invalid status value.',
                 });
-            } else 
+            } else
             if (field === 'response' && typeof value !== 'string') {
                 return res.status(httpStatus.BAD_REQUEST).json({
                     status: 'FAILED',
@@ -415,12 +415,12 @@ const updateRequest = (supabase) => async (req, res) => {
         });
 
         const restrictedFields = [
-            'user_id', 
-            'content_id', 
-            'type', 
-            'title', 
-            'description', 
-            'date_requested', 
+            'user_id',
+            'content_id',
+            'type',
+            'title',
+            'description',
+            'date_requested',
             'date_reviewed'
         ]
 
@@ -437,7 +437,7 @@ const updateRequest = (supabase) => async (req, res) => {
             updateData.date_reviewed = new Date().toISOString(); // Set current time
         }
 
-        const { data, error } = await requestsService.updateRequest(supabase, requestId, updateData);
+        const { data, error } = await requestsService.updateRequest(req.supabase, requestId, updateData);
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -458,7 +458,7 @@ const updateRequest = (supabase) => async (req, res) => {
     }
 }
 
-const deleteRequest = (supabase) => async (req, res) => {
+const deleteRequest = async (req, res) => {
     if (req.you.cannot(Actions.MANAGE, Subjects.Requests)) {
         return res.status(httpStatus.FORBIDDEN).json({
             status: 'FAILED',
@@ -468,7 +468,7 @@ const deleteRequest = (supabase) => async (req, res) => {
 
     try {
         const { requestId } = req.params;
-        
+
         if (!requestId) {
             return res.status(httpStatus.BAD_REQUEST).json({
                 status: 'FAILED',
@@ -484,7 +484,7 @@ const deleteRequest = (supabase) => async (req, res) => {
         }
 
         // Check if the request exists
-        const { data: existingRequest, error: requestError } = await requestsService.fetchRequestById(supabase, requestId);
+        const { data: existingRequest, error: requestError } = await requestsService.fetchRequestById(req.supabase, requestId);
 
         if (requestError || !existingRequest) {
             return res.status(httpStatus.NOT_FOUND).json({
@@ -493,7 +493,7 @@ const deleteRequest = (supabase) => async (req, res) => {
             });
         }
 
-        const { error } = await requestsService.deleteRequest(supabase, requestId);
+        const { error } = await requestsService.deleteRequest(req.supabase, requestId);
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({

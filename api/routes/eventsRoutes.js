@@ -2,16 +2,16 @@ import express from "express";
 import eventsController from "../controllers/eventsController.js";
 import {RequireAuthenticated} from "../middleware/requireAuthenticated.js";
 
-const eventsRouter = (supabase) => {
+const eventsRouter = () => {
     const router = express.Router();
 
     router.use(RequireAuthenticated);
-    router.get("/", eventsController.getEvents(supabase));
-    router.get("/:eventId", eventsController.getEventById(supabase));
-    router.post("/", eventsController.createEvent(supabase));
-    router.put("/:eventId", eventsController.updateEvent(supabase));
-    router.delete("/",eventsController.deleteEmptyEvent());
-    router.delete("/:eventId",  eventsController.deleteEvent(supabase));
+    router.get("/", eventsController.getEvents);
+    router.get("/:eventId", eventsController.getEventById);
+    router.post("/", eventsController.createEvent);
+    router.put("/:eventId", eventsController.updateEvent);
+    router.delete("/",eventsController.deleteEmptyEvent);
+    router.delete("/:eventId",  eventsController.deleteEvent);
 
     return router;
 };

@@ -3,7 +3,7 @@ import eventsService from "../services/eventsService.js";
 import { isValidUUID, isValidDate } from "../utils/validators.js";
 import { Actions, Subjects } from "../../common/scopes.js";
 
-const getEvents = (supabase) => async (req, res) => {
+const getEvents = async (req, res) => {
     try {
         console.log('User role:', req.user?.role);
         console.log('Permissions check:', req.you.can(Actions.READ, Subjects.EVENT)); //Fix: alumnus permission results to false here
@@ -16,7 +16,7 @@ const getEvents = (supabase) => async (req, res) => {
 
             });
         }
-        const { data, error } = await eventsService.fetchEvents(supabase, filters);
+        const { data, error } = await eventsService.fetchEvents(req.supabase, filters);
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -38,7 +38,7 @@ const getEvents = (supabase) => async (req, res) => {
     }
 };
 
-const getEventById = (supabase) => async (req, res) => {
+const getEventById = async (req, res) => {
     try {
         console.log('User role:', req.user?.role);
         console.log('Permissions check:', req.you.can(Actions.READ, Subjects.EVENT));
@@ -51,7 +51,7 @@ const getEventById = (supabase) => async (req, res) => {
         }
         const { eventId } = req.params;
 
-        const { data, error } = await eventsService.fetchEventById(supabase, eventId);
+        const { data, error } = await eventsService.fetchEventById(req.supabase, eventId);
 
         if (error) {
             return res.status(httpStatus.NOT_FOUND).json({
@@ -72,7 +72,7 @@ const getEventById = (supabase) => async (req, res) => {
         });
     }
 };
-const createEvent = (supabase) => async (req, res) => {
+const createEvent = async (req, res) => {
     try {
         if (req.you.cannot(Actions.MANAGE, Subjects.EVENT)) {
             return res.status(httpStatus.FORBIDDEN).json({
@@ -129,7 +129,7 @@ const createEvent = (supabase) => async (req, res) => {
                 message: 'Invalid eventId format'
             });
         }
-        const { data: existingEvents, error: checkError } = await eventsService.checkExistingEvent(supabase, datetime, venue);
+        const { data: existingEvents, error: checkError } = await eventsService.checkExistingEvent(req.supabase, datetime, venue);
 
         if (checkError) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -145,7 +145,7 @@ const createEvent = (supabase) => async (req, res) => {
             });
         }
 
-        const { data, error } = await eventsService.insertEvent(supabase, {
+        const { data, error } = await eventsService.insertEvent(req.supabase, {
             event_id,
             event_date: datetime,
             venue,
@@ -176,7 +176,7 @@ const createEvent = (supabase) => async (req, res) => {
 };
 
 
-const updateEvent = (supabase) => async (req, res) => {
+const updateEvent = async (req, res) => {
     try {
         const eventId = req.params.eventId;
         if (req.you.cannot(Actions.MANAGE, Subjects.EVENT)) {
@@ -193,7 +193,7 @@ const updateEvent = (supabase) => async (req, res) => {
             });
         }
 
-        const { data: existingEvent, error: fetchError } = await eventsService.findEvent(supabase, eventId);
+        const { data: existingEvent, error: fetchError } = await eventsService.findEvent(req.supabase, eventId);
 
         if (fetchError || !existingEvent) {
             return res.status(httpStatus.NOT_FOUND).json({
@@ -233,7 +233,7 @@ const updateEvent = (supabase) => async (req, res) => {
         });
 
 
-        const { error: updateError } = await eventsService.updateEventData(supabase, eventId, updateData);
+        const { error: updateError } = await eventsService.updateEventData(req.supabase, eventId, updateData);
 
         if (updateError) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -256,7 +256,7 @@ const updateEvent = (supabase) => async (req, res) => {
     }
 };
 
-const deleteEmptyEvent = () => async (req, res) => {
+const deleteEmptyEvent = async (req, res) => {
     if (req.you.cannot(Actions.MANAGE, Subjects.EVENT)) {
         return res.status(httpStatus.FORBIDDEN).json({
             status: 'FORBIDDEN',
@@ -269,7 +269,7 @@ const deleteEmptyEvent = () => async (req, res) => {
     });
 };
 
-const deleteEvent = (supabase) => async (req, res) => {
+const deleteEvent = async (req, res) => {
     try {
         const { eventId } = req.params;
 
@@ -290,7 +290,7 @@ const deleteEvent = (supabase) => async (req, res) => {
             });
         }
 
-        const { data: existingEvent, error: checkError } = await eventsService.checkExistingEventById(supabase, eventId);
+        const { data: existingEvent, error: checkError } = await eventsService.checkExistingEventById(req.supabase, eventId);
 
         if (checkError || existingEvent.length === 0) {
 
@@ -299,7 +299,7 @@ const deleteEvent = (supabase) => async (req, res) => {
                 message: 'Event interest not found'
             });
         }
-        const { error } = await eventsService.deleteEvent(supabase, eventId);
+        const { error } = await eventsService.deleteEvent(req.supabase, eventId);
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
