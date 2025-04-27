@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import {TableHeader, Table, PageTool} from '@/components/TableBuilder';
 import SearchFilter from "admin/alumni/search/filter";
-import { Check } from "lucide-react";
+import { Check, Eye, Trash2, CheckCircle2, ShieldCheck} from "lucide-react";
 import { ActionButton } from "@/components/Buttons";
 import { useTab } from '../../../components/TabContext';
 import ConfirmModal from "@/components/ConfirmModal";
@@ -328,7 +328,7 @@ function renderName(name, email) {
     return (
         <div>
             <div className="font-rb">{name}</div>
-            <div className="text-astradarkgray font-s">{email}</div>
+            <div className="text-astradarkgray font-s hidden md:block">{email}</div>
         </div>
     );
 }
@@ -344,15 +344,23 @@ function renderActions(id, name, currTab) {
         //Based muna sa currTab pero I think mas maganda kung sa mismong account/user kukunin yung active status
         
       <div className="flex justify-center gap-3 md:pr-4 lg:pr-2">
-        <ActionButton
-          label="View"
-          color="gray"
-          route={`/admin/alumni/manage-access/${id}`}
-        />
-  
+        <div className="hidden md:block">
+            <ActionButton
+            label="View"
+            color="gray"
+            route={`/admin/alumni/manage-access/${id}`}
+            />
+        </div>
+        <div className="block md:hidden">
+            <ActionButton
+            label={<Eye size={20}/>}
+            color="gray"
+            route={`/admin/alumni/manage-access/${id}`}
+            />
+        </div>
         {currTab === 'Pending' && (
           <>
-            <div className="hidden lg:block">
+            <div className="hidden md:block">
               <ActionButton 
                 label="Approve"
                 color="green"
@@ -360,9 +368,25 @@ function renderActions(id, name, currTab) {
                 notifyType="success"
               />
             </div>
-            <div className="hidden lg:block">
+            <div className="block md:hidden">
+              <ActionButton 
+                label={<CheckCircle2 size={20}/>}
+                color="green"
+                notifyMessage={`${name} has been approved!`}
+                notifyType="success"
+              />
+            </div>
+            <div className="hidden md:block">
               <ActionButton
                 label="Decline"
+                color="red"
+                notifyMessage={`${name} has been declined!`}
+                notifyType="fail"
+              />
+            </div>
+            <div className="block md:hidden">
+              <ActionButton
+                label={<Trash2 size={20}/>}
                 color="red"
                 notifyMessage={`${name} has been declined!`}
                 notifyType="fail"
@@ -372,25 +396,45 @@ function renderActions(id, name, currTab) {
         )}
   
         {currTab === 'Approved' && (
-          <div className="hidden lg:block">
-            <ActionButton
-              label="Remove Access"
-              color="red"
-              notifyMessage={`${name} has been removed!`}
-              notifyType="fail"
-            />
-          </div>
+          <>
+            <div className="hidden md:block">
+              <ActionButton
+                label="Remove Access"
+                color="red"
+                notifyMessage={`${name} has been removed!`}
+                notifyType="fail"
+              />
+            </div>
+            <div className="block md:hidden">
+              <ActionButton
+                label={<Trash2 size={20}/>}
+                color="red"
+                notifyMessage={`${name} has been removed!`}
+                notifyType="fail"
+              />
+            </div>
+          </>
         )}
   
         {currTab === 'Inactive' && (
-          <div className="hidden lg:block">
-            <ActionButton
-              label="Reactivate"
-              color="blue"
-              notifyMessage={`${name} has been reactivated!`}
-              notifyType="success"
-            />
-          </div>
+          <>
+            <div className="hidden md:block">
+              <ActionButton
+                label="Reactivate"
+                color="blue"
+                notifyMessage={`${name} has been reactivated!`}
+                notifyType="success"
+              />
+            </div>
+            <div className="block md:hidden">
+              <ActionButton
+                label={<ShieldCheck size={20}/>}
+                color="blue"
+                notifyMessage={`${name} has been reactivated!`}
+                notifyType="success"
+              />
+            </div>
+          </>
         )}
       </div>
     );

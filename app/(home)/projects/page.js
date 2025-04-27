@@ -149,7 +149,7 @@ export default function ProjectsPage({ projects }) {
           </h1>
 
           {/* Request a fundraiser button */}
-          <Link href="/projects/request" passHref>
+          <Link href="/projects/request/goal" passHref>
             <button className="mt-12 border-2 border-astrawhite text-astrawhite hover:bg-astrawhite hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-[200px] h-[60px]">
               Request a Fundraiser
             </button>
@@ -163,7 +163,7 @@ export default function ProjectsPage({ projects }) {
           <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-8 gap-4">
             <h2 className="font-h2">Fund the future of technology</h2>
 
-            {/* Search and Filter - Responsive */}
+            {/* Search and Filter*/}
             <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
               <div className="relative flex-grow">
                 <input
@@ -205,11 +205,11 @@ export default function ProjectsPage({ projects }) {
 
           {filteredProjects.length > 0 ? (
             <>
-              {/* Dynamic Grid - adapts to content and screen size */}
+              {/* Dynamic Grid*/}
               <div
                 className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8"
                 style={{
-                  gridAutoRows: "1fr", // Ensures equal height rows
+                  gridAutoRows: "1fr",
                 }}
               >
                 {filteredProjects.slice(0, visibleCount).map((project) => (
@@ -260,7 +260,7 @@ export default function ProjectsPage({ projects }) {
             </div>
           )}
 
-          {/* See More Button - Dynamic count */}
+          {/* See More Button */}
           {visibleCount < filteredProjects.length && (
             <div className="flex justify-center mt-6">
               <button
@@ -275,7 +275,7 @@ export default function ProjectsPage({ projects }) {
             </div>
           )}
 
-          {/* Add this to the useEffect in your component to handle resize */}
+          {/*to handle resizing*/}
           <script
             dangerouslySetInnerHTML={{
               __html: `
@@ -328,7 +328,7 @@ export default function ProjectsPage({ projects }) {
         </div>
       </section>
 
-      {/* Why Your Support Matters (unchanged) */}
+      {/* Why Your Support Matters*/}
       <section className="bg-astralightgray pt-20 pb-40 px-4 text-center">
         <h2 className="font-h2 mb-2 text-astrablack">
           Why Your Support Matters
@@ -377,7 +377,7 @@ export default function ProjectsPage({ projects }) {
         </div>
       </section>
 
-      {/* Donation Process - Timeline Style */}
+      {/* Donation Process*/}
       <section className="bg-astrawhite pt-20 pb-40 px-4">
         <h2 className="font-h2 mb-2 text-astrablack text-center mb-12">
           Donation Process
@@ -463,7 +463,7 @@ export default function ProjectsPage({ projects }) {
         </div>
       </section>
 
-      {/* Completed Fundraisers - Dynamic Grid */}
+      {/* Completed Fundraisers*/}
       <section className="bg-astralightgray pt-20 pb-30">
         <div className="max-w-7xl mx-auto px-4 relative">
           <h2 className="font-h2 text-astrablack mb-3">
@@ -490,7 +490,7 @@ export default function ProjectsPage({ projects }) {
               />
             </button>
 
-            {/* Card Grid - Dynamic based on screen size */}
+            {/* Card Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-500 ease-in-out">
               {visibleCompletedProjects.map((project, index) => (
                 <Link
