@@ -60,16 +60,14 @@ const getPhotoById = (supabase) => async (req, res) => {
 
 const uploadPhoto = (supabase) => async (req, res) => {
     try {
-        const { user_id, content_id } = req.body;
+        const { user_id, content_id, type } = req.body;
         const file = req.file;
 
         // Validate that at least one of user_id or content_id exists, and file is provided
-        if (!file || (!user_id && !content_id)) {
-            // console.log("File:", file);
-            // console.log("Body:", req.body);
+        if (!file || (!user_id && !content_id) || type === undefined) {
             return res.status(httpStatus.BAD_REQUEST).json({
                 status: "FAILED",
-                message: "File is required, and at least one of user_id or content_id must be provided",
+                message: "File and 'type' are required, and at least one of user_id or content_id must be provided",
             });
         }
 
@@ -97,6 +95,7 @@ const uploadPhoto = (supabase) => async (req, res) => {
         const photoData = {
             user_id: user_id || null,
             content_id: content_id || null,
+            type, // Include the new 'type' column
             image_key: storageData.path, // Save the new unique file path
         };
 
@@ -125,7 +124,7 @@ const uploadPhoto = (supabase) => async (req, res) => {
 const updatePhoto = (supabase) => async (req, res) => {
   try {
     const { id } = req.params;
-    const { user_id, content_id } = req.body;
+    const { user_id, content_id, type } = req.body;
     const file = req.file;
 
     if (!id) {
@@ -138,7 +137,28 @@ const updatePhoto = (supabase) => async (req, res) => {
     const updates = {};
     if (user_id) updates.user_id = user_id;
     if (content_id) updates.content_id = content_id;
-    if (file) updates.file = file;
+    if (type !== undefined) updates.type = type; // Include the 'type' column
+    if (file) {
+        // Generate a unique filename for the new file
+        const uniqueFilename = `${Date.now()}-${file.originalname}`;
+        const oldPath = path.join(file.destination, file.filename);
+        const fileContent = fs.readFileSync(oldPath);
+
+        const { data: storageData, error: storageError } = await supabase.storage
+            .from("user-photos-bucket")
+            .upload(uniqueFilename, fileContent, {
+                contentType: file.mimetype,
+            });
+
+        if (storageError) {
+            return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+                status: "FAILED",
+                message: `Failed to upload file to Supabase storage: ${storageError.message}`,
+            });
+        }
+
+        updates.image_key = storageData.path; // Update the image key
+    }
 
     const { data, error } = await photosService.updatePhotoById(supabase, id, updates);
 
