@@ -1,7 +1,7 @@
 "use client"
-
 import { useState } from "react"
 import { Mail, Eye, EyeOff, User, Bell, ChevronRight } from "lucide-react"
+import ToastNotification from "@/components/ToastNotification"
 
 export default function AccountSettings() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false)
@@ -10,6 +10,7 @@ export default function AccountSettings() {
   const [activeTab, setActiveTab] = useState("email")
   const [isVerificationVisible, setIsVerificationVisible] = useState(false)
   const [isSubscribed, setIsSubscribed] = useState(false)
+  const [showToast, setShowToast] = useState(false)
 
   const [newEmail, setNewEmail] = useState("")
   const [verificationCode, setVerificationCode] = useState("")
@@ -35,7 +36,10 @@ export default function AccountSettings() {
       setEmailError("Please enter a valid email address.")
       return
     }
-    setEmailError("")
+    setShowToast({
+      type: "success",
+      message: "Verification code sent to email!"
+    })
     setIsVerificationVisible(true)
   }
 
@@ -44,7 +48,10 @@ export default function AccountSettings() {
       setCodeError("Please enter the verification code.")
     } else {
       setCodeError("")
-      alert("Email verified!")
+      setShowToast({
+        type: "success",
+        message: "Email updated successfully!"
+      })
     }
   }
 
@@ -60,15 +67,25 @@ export default function AccountSettings() {
     }
 
     setPasswordError("")
-    alert("Password updated!")
+    setShowToast({
+      type: "success",
+      message: "Password updated successfully!"
+    })
   }
 
   const handleResendCode = () => {
-    alert("Verification code resent!")
+    setShowToast({
+      type: "success",
+      message: "Verification code resent!"
+    })
   }
 
   const handleToggleSubscription = () => {
     setIsSubscribed(!isSubscribed)
+    setShowToast({
+      type: "success",
+      message: isSubscribed ? "Unsubscribed from newsletter!" : "Subscribed to newsletter!"
+    })
   }
 
   return (
@@ -219,7 +236,7 @@ export default function AccountSettings() {
                     onClick={handleSavePassword}
                     className="w-full bg-[var(--color-astraprimary)] hover:bg-[var(--color-astradark)] text-white py-2 px-4 rounded-md"
                   >
-                    Save Password
+                    Change Password
                   </button>
                 </div>
               </div>
@@ -244,6 +261,14 @@ export default function AccountSettings() {
           </div>
         </div>
       </div>
+
+      {showToast && (
+        <ToastNotification
+          type={showToast.type}
+          message={showToast.message}
+          onClose={() => setShowToast(false)}
+        />
+      )}
     </div>
   )
 }
