@@ -101,7 +101,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
       {/* Preferred Title & Maiden Name */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Title</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Title <span className="text-[var(--color-astrared)]">*</span></label>
           <div className="flex gap-4">
             {["Mr.", "Ms.", "Mrs.", "Mx."].map((title) => (
               <label key={title} className="inline-flex items-center">
@@ -137,7 +137,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
       {/* Name Fields */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">First Name <span className="text-[var(--color-astrared)]">*</span></label>
           <input
             type="text"
             name="FirstName"
@@ -148,7 +148,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Middle Name</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Middle Name <span className="text-[var(--color-astrared)]">*</span></label>
           <input
             type="text"
             name="MiddleName"
@@ -159,7 +159,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Last Name <span className="text-[var(--color-astrared)]">*</span></label>
           <input
             type="text"
             name="LastName"
@@ -185,7 +185,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
       {/* Degree & Graduation Year */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">UPLB Degree</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">UPLB Degree <span className="text-[var(--color-astrared)]">*</span></label>
           <select
             name="Degree"
             value={formData?.Degree || ""}
@@ -200,7 +200,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Graduation Year</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Graduation Year <span className="text-[var(--color-astrared)]">*</span></label>
           <input
             type="number"
             name="GraduationYear"
@@ -217,7 +217,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
       {/* Civil Status & Student ID */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Civil Status</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Civil Status <span className="text-[var(--color-astrared)]">*</span></label>
           <select
             name="CivilStatus"
             value={formData?.CivilStatus || ""}
@@ -249,7 +249,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
       {/* Birth Info */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Birthdate</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Birthdate <span className="text-[var(--color-astrared)]">*</span></label>
           <input
             type="date"
             name="BirthDate"
@@ -259,7 +259,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Place of Birth</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Place of Birth <span className="text-[var(--color-astrared)]">*</span></label>
           <input
             type="text"
             name="BirthPlace"
@@ -274,7 +274,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
       {/* Citizenship & Gender */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Country of Citizenship</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Country of Citizenship <span className="text-[var(--color-astrared)]">*</span></label>
           <input
             type="text"
             name="Citizenship"
@@ -285,7 +285,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Gender</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Gender <span className="text-[var(--color-astrared)]">*</span></label>
           <select
             name="Gender"
             value={formData?.Gender || ""}

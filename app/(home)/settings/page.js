@@ -187,7 +187,7 @@ export default function AccountSettings() {
                 <h2 className="text-[var(--color-astrablack)] text-xl font-semibold mb-4">Change Password</h2>
                 <div className="space-y-4">
                   <div>
-                    <label htmlFor="current-password" className="block text-sm font-medium text-[var(--color-astrablack)]">Current Password</label>
+                    <label htmlFor="current-password" className="block text-sm font-medium text-[var(--color-astrablack)]">Current Password <span className="text-[var(--color-astrared)]">*</span></label>
                     <div className="relative">
                       <input
                         id="current-password"
@@ -202,7 +202,7 @@ export default function AccountSettings() {
                     </div>
                   </div>
                   <div>
-                    <label htmlFor="new-password" className="block text-sm font-medium text-[var(--color-astrablack)]">New Password</label>
+                    <label htmlFor="new-password" className="block text-sm font-medium text-[var(--color-astrablack)]">New Password <span className="text-[var(--color-astrared)]">*</span></label>
                     <div className="relative">
                       <input
                         id="new-password"
@@ -217,7 +217,7 @@ export default function AccountSettings() {
                     </div>
                   </div>
                   <div>
-                    <label htmlFor="confirm-password" className="block text-sm font-medium text-[var(--color-astrablack)]">Confirm Password</label>
+                    <label htmlFor="confirm-password" className="block text-sm font-medium text-[var(--color-astrablack)]">Confirm Password <span className="text-[var(--color-astrared)]">*</span></label>
                     <div className="relative">
                       <input
                         id="confirm-password"
