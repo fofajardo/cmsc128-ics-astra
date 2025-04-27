@@ -16,15 +16,15 @@ export default async function AlumniSearchProfile({ params }) {
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/work-experiences/alum/${id}`)
     ]);
 
-    let degreeProgramRes;
-    try {
-        // FIXME: This is a temporary fix for the degree program API call
-        // I cannot find where the error is coming from
-        degreeProgramRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/degree-programs/alum/${id}`);
-    } catch (error) {
-        console.error("Error fetching degree program:", error);
-        degreeProgramRes = { data: { degree_programs: [] } }; // Fallback to an empty array
-    }
+    // let degreeProgramRes;
+    // try {
+    //     // FIXME: This is a temporary fix for the degree program API call
+    //     // I cannot find where the error is coming from
+    //     degreeProgramRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/degree-programs/alum/${id}`);
+    // } catch (error) {
+    //     console.error("Error fetching degree program:", error);
+    //     degreeProgramRes = { data: { degree_programs: [] } }; // Fallback to an empty array
+    // }
 
     const user = userRes.data.user;
     const profile = profileRes.data.alumniProfile;
@@ -38,26 +38,26 @@ export default async function AlumniSearchProfile({ params }) {
         return <div className="text-center mt-20 text-red-500">{error || "Alumnus not found."}</div>;
     }
 
-    if (workExperience.length > 1) {
-        workExperience.map((experience) => {
-            experience.year_started = formatDate(experience.year_started);
-            experience.year_ended = experience.year_ended ? formatDate(experience.year_ended) : "Present";
-        });
-    } else
-    if (typeof workExperience === 'object' && workExperience !== null) {
-        workExperience.year_started = formatDate(workExperience.year_started);
-        workExperience.year_ended = workExperience.year_ended ? formatDate(workExperience.year_ended) : "Present";
-    }
+    // if (workExperience.length > 1) {
+    //     workExperience.map((experience) => {
+    //         experience.year_started = formatDate(experience.year_started);
+    //         experience.year_ended = experience.year_ended ? formatDate(experience.year_ended) : "Present";
+    //     });
+    // } else
+    // if (typeof workExperience === 'object' && workExperience !== null) {
+    //     workExperience.year_started = formatDate(workExperience.year_started);
+    //     workExperience.year_ended = workExperience.year_ended ? formatDate(workExperience.year_ended) : "Present";
+    // }
 
-    if (degreeProgram.length > 1) {
-        degreeProgram = degreeProgram[0];
-        degreeProgram.year_started = formatDate(degreeProgram.year_started);
-        degreeProgram.year_graduated = degreeProgram.year_graduated ? formatDate(degreeProgram.year_graduated) : "Present";
-    } else 
-    if (typeof degreeProgram === 'object' && degreeProgram !== null) {
-        degreeProgram.year_started = formatDate(degreeProgram.year_started);
-        degreeProgram.year_graduated = degreeProgram.year_graduated ? formatDate(degreeProgram.year_graduated) : "Present";
-    }
+    // if (degreeProgram.length > 1) {
+    //     degreeProgram = degreeProgram[0];
+    //     degreeProgram.year_started = formatDate(degreeProgram.year_started);
+    //     degreeProgram.year_graduated = degreeProgram.year_graduated ? formatDate(degreeProgram.year_graduated) : "Present";
+    // } else 
+    // if (typeof degreeProgram === 'object' && degreeProgram !== null) {
+    //     degreeProgram.year_started = formatDate(degreeProgram.year_started);
+    //     degreeProgram.year_graduated = degreeProgram.year_graduated ? formatDate(degreeProgram.year_graduated) : "Present";
+    // }
     
     return (
         <div className="p-4 bg-astradirtywhite min-h-screen">
@@ -96,7 +96,7 @@ export default async function AlumniSearchProfile({ params }) {
                         <span className="text-xs bg-astragray text-astradarkgray px-2 py-1 rounded-full flex items-center space-x-1">
                             <GraduationCap className="w-3 h-3" />
                             {/* TODO: FRG ikaw na rito */}
-                            {<span> {degreeProgram.year_graduated} </span>}
+                            {/* <span> {degreeProgram.year_graduated} </span> */}
                             {/* <span>{new Date(profile.year_graduated).getFullYear()}</span> */}
                         </span>
                     </div>
@@ -244,6 +244,7 @@ export default async function AlumniSearchProfile({ params }) {
                         <hr className="h-2 border-astralightgray"></hr>
                         <div className="flex gap-2 justify-between flex-wrap text-sm">
                             {/* TODO: FRG, pa-connect nung sa fields of interest. */}
+                            {}
                             <SkillTag text="Frontend" color="bg-blue-100 text-blue-700" />
                             <SkillTag text="Database" color="bg-pink-100 text-pink-700" />
                             <SkillTag text="HTML" color="bg-green-100 text-green-700" />
