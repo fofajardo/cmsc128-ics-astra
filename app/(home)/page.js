@@ -1,15 +1,21 @@
+'use client'
+
+import Image from 'next/image';
+import Head from 'next/head';
+import Slideshow from '@/components/Slideshow';
+
 export default function Page() {
-    const backgroundImage = '/uplb.png'; 
-    const title = ''; 
   
     return (
-      <div
-        className="landing-page"
-        style={{ backgroundImage: `url(${backgroundImage})` }}
-      >
-        <div className="landing-container">
-          <h1 className="landing-title">{title}</h1>
+      <div className = "landing-page">
+        <title>ICS-ASTRA</title>
+        <link rel = "icon" href = "/astra-logo.png" />
+
+        <div className = "showcase">
+          <Slideshow />
         </div>
+
+        
       </div>
     );
   }
