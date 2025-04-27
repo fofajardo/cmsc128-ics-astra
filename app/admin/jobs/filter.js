@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function SearchFilter({onClose , onApply=()=>{}}) {
+export default function SearchFilter({onClose, onApply}) {
   const initialFilters = {
     companyName: "",
     location: "",
@@ -17,7 +17,6 @@ export default function SearchFilter({onClose , onApply=()=>{}}) {
 
   const handleResetAll = () => {
     setFilters(initialFilters);
-    setSkillInput("");
   };
 
   const handleApply = () => {
@@ -28,16 +27,16 @@ export default function SearchFilter({onClose , onApply=()=>{}}) {
   };
 
   return (
-    <div className="bg-astrawhite p-6 rounded-2xl shadow-lg space-y-4">
+    <div className="bg-astrawhite p-6 rounded-2xl shadow-lg space-y-4 overflow-y-auto h-auto">
       <div className="flex justify-between items-center">
-        <div className="font-h2">Filter by:</div>
+        <div className="text-astrablack text-2xl font-semibold">Filter by:</div>
         <button className="text-xl text-astradarkgray hover:text-astrablack font-bold" onClick={onClose}>&times;</button>
       </div>
 
       {/* Company Name */}
       <div>
         <div className="flex justify-between items-center mb-1">
-          <div className="font-rb">Company</div>
+          <div className="text-black font-medium text-lg">Company</div>
           <button
             onClick={() => setFilters({ ...filters, companyName: ""})}
             className="text-astraprimary font-sb text-sm"
@@ -57,7 +56,7 @@ export default function SearchFilter({onClose , onApply=()=>{}}) {
       {/* Location */}
       <div>
         <div className="flex justify-between items-center mb-1">
-          <div className="font-rb">Location</div>
+          <div className="text-black font-medium text-lg">Location</div>
           <button
             onClick={() => setFilters({ ...filters, location: "" })}
             className="text-astraprimary font-sb text-sm"
@@ -77,7 +76,7 @@ export default function SearchFilter({onClose , onApply=()=>{}}) {
       {/* Job Type */}
       <div>
         <div className="flex justify-between items-center mb-1">
-          <div className="font-rb">Job Type</div>
+          <div className="text-black font-medium text-lg">Job Type</div>
           <button
             onClick={() => setFilters({ ...filters, jobType: "" })}
             className="text-astraprimary font-sb text-sm"
@@ -100,7 +99,7 @@ export default function SearchFilter({onClose , onApply=()=>{}}) {
         {/* Date Posted */}
         <div>
             <div className="flex justify-between items-center mb-1">
-            <div className="font-rb">Date Posted</div>
+            <div className="text-black font-medium text-lg">Date Posted</div>
             <button
                 onClick={() => setFilters({ ...filters, fromDate: "", yearDate: "" })}
                 className="text-astraprimary font-sb text-sm"
@@ -129,7 +128,7 @@ export default function SearchFilter({onClose , onApply=()=>{}}) {
       {/* Sort */}
       <div>
         <div className="flex justify-between items-center mb-1">
-          <div className="font-h2">Sort by:</div>
+          <div className="text-astrablack text-2xl font-semibold">Sort by:</div>
           <button
             onClick={() => setFilters({ ...filters, sortCategory: "", sortOrder: "asc" })}
             className="text-astraprimary font-sb text-sm"
