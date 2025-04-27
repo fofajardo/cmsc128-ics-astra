@@ -149,7 +149,7 @@ export default function ProjectsPage({ projects }) {
           </h1>
 
           {/* Request a fundraiser button */}
-          <Link href="/projects/request" passHref>
+          <Link href="/projects/request/goal" passHref>
             <button className="mt-12 border-2 border-astrawhite text-astrawhite hover:bg-astrawhite hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-[200px] h-[60px]">
               Request a Fundraiser
             </button>

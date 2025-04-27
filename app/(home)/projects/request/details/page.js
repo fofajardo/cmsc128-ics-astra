@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react"; 
 import { useRouter, useSearchParams } from "next/navigation"; 
 import Link from "next/link"; 
+import BackButton from "@/components/events/IndividualEvent/BackButton";
  
 const RequestFundraiserDetails = () => { 
   const router = useRouter();
@@ -70,11 +71,6 @@ const RequestFundraiserDetails = () => {
 
   // Check if both fields are valid and filled
   const isFormValid = title.trim() && description.trim() && !titleError && !descriptionError;
-
-  // Handle back button
-  const handleBack = () => {
-    router.back();
-  };
 
   return ( 
     <div className="min-h-screen w-full flex flex-col md:flex-row"> 
@@ -146,12 +142,7 @@ const RequestFundraiserDetails = () => {
  
         {/* Bottom navigation */} 
         <div className="flex justify-between px-6 md:px-12 py-5 border-astralightgray border-t-1"> 
-          <button 
-            onClick={handleBack}
-            className="flex items-center text-astradarkgray hover:text-astraprimary transition-colors font-r transition cursor-pointer"
-          > 
-            <i className="fas fa-arrow-left mr-2"></i> 
-          </button> 
+          <BackButton />
           {isFormValid ? (
             <Link href="/projects/request/photo" passHref> 
               <button className="blue-button font-semibold transition cursor-pointer w-[150px] h-[55px]"> 
