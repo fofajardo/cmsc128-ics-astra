@@ -7,7 +7,6 @@ import { createClient } from "@supabase/supabase-js";
 import { registerStrategies } from "./middleware/passportStrategies.js";
 import registerRoutes from "./routes/loadRoutes.js";
 import { InferAbility } from "./middleware/inferAbility.js";
-import cors from "cors";
 
 env.config();
 
