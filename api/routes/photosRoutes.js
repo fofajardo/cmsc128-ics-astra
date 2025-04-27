@@ -1,6 +1,7 @@
 import express from "express";
 import photosController from "../controllers/photosController.js";
 import multer from "multer";
+import { RequireAuthenticated } from "../middleware/requireAuthenticated.js";
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -16,6 +17,8 @@ const upload = multer({ storage });
 const photosRouter = (supabase) => {
     const router = express.Router();
 
+    router.use(RequireAuthenticated);
+    
     router.get("/", photosController.getAllPhotos(supabase));
     router.get("/:id", photosController.getPhotoById(supabase));
     router.post("/", upload.single("File"), photosController.uploadPhoto(supabase));
