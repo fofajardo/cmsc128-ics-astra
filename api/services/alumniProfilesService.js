@@ -4,14 +4,36 @@ const fetchAlumniProfiles = async (supabase, page = 1, limit = 10) => {
 
     return await supabase
         .from("alumni_profiles")
-        .select("*")
+        // .select("*")
+        // remove unnecessary columns to reduce data transfer
+        .select(`
+            *,
+            primary_work_experience:work_experiences (
+                title,
+                field,
+                company,
+                year_started,
+                year_ended,
+                salary
+            )
+        `)
         .range(startIndex, endIndex);
 };
 
 const fetchAlumniProfileById = async (supabase, userId) => {
     return await supabase
         .from("alumni_profiles")
-        .select("*")
+        .select(`
+            *,
+            primary_work_experience:work_experiences (
+                title,
+                field,
+                company,
+                year_started,
+                year_ended,
+                salary
+            )
+        `)
         .eq("alum_id", userId)
         .single();
 };

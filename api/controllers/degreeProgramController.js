@@ -183,7 +183,7 @@ const degreeProgramController = {
   getDegreeProgramById,
   createDegreeProgram,
   updateDegreeProgram,
-  deleteDegreeProgram,
+  deleteDegreeProgram
 };
 
 export default degreeProgramController;

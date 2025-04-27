@@ -2,11 +2,11 @@ import express from "express";
 import degreeProgramController from "../controllers/degreeProgramController.js";
 import {RequireAuthenticated} from "../middleware/requireAuthenticated.js";
 
-const degreeProgramsRouter = () => {
+const degreeProgramsRouter = (supabase) => {
     const router = express.Router();
 
     router.use(RequireAuthenticated);
-
+    
     router.get("/", degreeProgramController.getAllDegreePrograms);
     router.get("/:id", degreeProgramController.getDegreeProgramById);
     router.post("/", degreeProgramController.createDegreeProgram);

@@ -1,3 +1,5 @@
+import { applyFilter } from "../utils/applyFilter.js";
+
 const fetchAllDegreePrograms = async (supabase) => {
   return await supabase
     .from("degree_programs")
