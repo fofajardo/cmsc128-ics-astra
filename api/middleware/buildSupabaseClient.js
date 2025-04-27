@@ -20,7 +20,7 @@ export function BuildSupabaseClient(aRequest, aResponse, aNext) {
 
     aRequest.supabase = createServerClient(
         process.env.DATABASE_URL,
-        process.env.DATABASE_ANONYMOUS_KEY,
+        process.env.DATABASE_SERVICE_KEY,
         clientOptions
     );
 
