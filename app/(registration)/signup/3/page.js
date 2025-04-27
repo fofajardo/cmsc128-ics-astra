@@ -96,7 +96,7 @@ export default function EducationalInfoPage() {
               {/* Degree Program */}
               <div>
                 <label htmlFor="degree-program" className="block text-sm font-medium text-[var(--color-astrablack)] mb-1">
-                  Degree Program
+                  Degree Program <span className="text-[var(--color-astrared)]">*</span>
                 </label>
                 <select
                   id="degree-program"
@@ -116,7 +116,7 @@ export default function EducationalInfoPage() {
               {/* Student ID */}
               <div>
                 <label htmlFor="student-id" className="block text-sm font-medium text-[var(--color-astrablack)] mb-1">
-                  Student ID
+                  Student ID <span className="text-[var(--color-astrared)]">*</span>
                 </label>
                 <input
                   type="text"
@@ -132,7 +132,7 @@ export default function EducationalInfoPage() {
               {/* Graduation Year */}
               <div>
                 <label htmlFor="graduation-year" className="block text-sm font-medium text-[var(--color-astrablack)] mb-1">
-                  Graduation Year
+                  Graduation Year <span className="text-[var(--color-astrared)]">*</span>
                 </label>
                 <input
                   type="text"
@@ -147,7 +147,7 @@ export default function EducationalInfoPage() {
 
               {/* Proof of Graduation */}
               <div>
-                <label className="block text-sm font-medium text-[var(--color-astrablack)] mb-1">Proof of Graduation</label>
+                <label className="block text-sm font-medium text-[var(--color-astrablack)] mb-1">Proof of Graduation <span className="text-[var(--color-astrared)]">*</span></label>
                 <div className="flex">
                   <input
                     type="file"
@@ -183,12 +183,14 @@ export default function EducationalInfoPage() {
                     Back
                   </button>
                 </Link>
-                <button
-                  type="submit"
-                  className="w-full bg-[var(--color-astraprimary)] text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
-                >
-                  Submit
-                </button>
+                <div className="flex-1">
+                  <button
+                    type="button"
+                    className="w-full bg-[var(--color-astraprimary)] text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
+                  >
+                    Next
+                  </button>
+                </div>
               </div>
 
               <div className="flex justify-center mt-6 space-x-2">

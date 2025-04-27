@@ -50,7 +50,7 @@ export default function PersonalInfoPage() {
               <h2 className="text-2xl font-semibold text-black mb-4">Personal Information</h2>
               <div>
                 <label htmlFor="preferred-delegation" className="block text-sm font-medium text-[var(--color-astrablack)] mb-1">
-                  Preferred Delegation
+                  Preferred Delegation <span className="text-[var(--color-astrared)]">*</span>
                 </label>
                 <select
                   id="preferred-delegation"
@@ -69,7 +69,7 @@ export default function PersonalInfoPage() {
 
               <div>
                 <label htmlFor="first-name" className="block text-sm font-medium text-[var(--color-astrablack)] mb-1">
-                  First Name
+                  First Name <span className="text-[var(--color-astrared)]">*</span>
                 </label>
                 <input
                   type="text"
@@ -83,7 +83,7 @@ export default function PersonalInfoPage() {
 
               <div>
                 <label htmlFor="middle-name" className="block text-sm font-medium text-[var(--color-astrablack)] mb-1">
-                  Middle Name
+                  Middle Name <span className="text-[var(--color-astrared)]">*</span>
                 </label>
                 <input
                   type="text"
@@ -98,7 +98,7 @@ export default function PersonalInfoPage() {
               <div className="flex space-x-4">
                 <div className="flex-1">
                   <label htmlFor="last-name" className="block text-sm font-medium text-[var(--color-astrablack)] mb-1">
-                    Last Name
+                    Last Name <span className="text-[var(--color-astrared)]">*</span>
                   </label>
                   <input
                     type="text"
@@ -111,7 +111,7 @@ export default function PersonalInfoPage() {
                 </div>
                 <div className="flex-1">
                   <label htmlFor="suffix" className="block text-sm font-medium text-[var(--color-astrablack)] mb-1">
-                    Suffix <span className="text-[var(--color-astrared)]">*</span>
+                    Suffix
                   </label>
                   <input
                     type="text"
@@ -141,7 +141,7 @@ export default function PersonalInfoPage() {
               <div className="flex space-x-4">
                 <div className="flex-1">
                   <label htmlFor="birthdate" className="block text-sm font-medium text-[var(--color-astrablack)] mb-1">
-                    Birthdate
+                    Birthdate <span className="text-[var(--color-astrared)]">*</span>
                   </label>
                   <input
                     type="date"
@@ -154,7 +154,7 @@ export default function PersonalInfoPage() {
                 </div>
                 <div className="flex-1">
                   <label htmlFor="sex" className="block text-sm font-medium text-[var(--color-astrablack)] mb-1">
-                    Sex
+                    Sex <span className="text-[var(--color-astrared)]">*</span>
                   </label>
                   <select
                     id="sex"
@@ -170,7 +170,7 @@ export default function PersonalInfoPage() {
                 </div>
                 <div className="flex-1">
                   <label htmlFor="civil-status" className="block text-sm font-medium text-[var(--color-astrablack)] mb-1">
-                    Civil Status
+                    Civil Status <span className="text-[var(--color-astrared)]">*</span>
                   </label>
                   <select
                     id="civil-status"
@@ -192,7 +192,7 @@ export default function PersonalInfoPage() {
               <div className="flex space-x-4">
                 <div className="flex-1">
                   <label htmlFor="place-of-birth" className="block text-sm font-medium text-[var(--color-astrablack)] mb-1">
-                    Place of Birth
+                    Place of Birth <span className="text-[var(--color-astrared)]">*</span>
                   </label>
                   <input
                     type="text"
@@ -206,7 +206,7 @@ export default function PersonalInfoPage() {
                 </div>
                 <div className="flex-1">
                   <label htmlFor="country-of-citizenship" className="block text-sm font-medium text-[var(--color-astrablack)] mb-1">
-                    Country of Citizenship
+                    Country of Citizenship <span className="text-[var(--color-astrared)]">*</span>
                   </label>
                   <select
                     id="country-of-citizenship"
@@ -223,8 +223,8 @@ export default function PersonalInfoPage() {
               </div>
 
               {showError && (
-                <div className="mb-2 text-sm text-red-600 font-medium">
-                  All fields except those with * are required.
+                <div className="mb-2 text-sm text-red-600 font-medium ">
+                  Please fill in all required fields.
                 </div>
               )}
 

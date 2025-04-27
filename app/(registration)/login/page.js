@@ -6,26 +6,15 @@ import { User } from "lucide-react";
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-
-  // Email validation regex
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const [errors, setErrors] = useState([]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setError(""); // Reset error message
-
-    if (!email || !password) {
-      setError("All fields are required.");
-      return;
-    }
-
-    if (!emailRegex.test(email)) {
-      setError("Please enter a valid email address.");
-      return;
-    }
-
-    console.log("Form submitted");
+    const newErrors = []
+    if (!email.includes("@")) newErrors.push("Invalid email format.")
+    if (password.length < 8) newErrors.push("Password must be at least 8 characters.")
+    setErrors(newErrors)
+    return newErrors.length === 0
   };
 
   return (
@@ -61,9 +50,11 @@ export default function LoginPage() {
                 />
               </div>
 
-              {error && (
-                <div className="text-[var(--color-astrared)] text-sm mt-2">
-                  {error}
+              {errors.length > 0 && (
+                <div className="bg-red-100 text-[var(--color-astrared)] text-sm px-3 py-2 rounded">
+                  {errors.map((err, idx) => (
+                    <p key={idx}>• {err}</p>
+                  ))}
                 </div>
               )}
 

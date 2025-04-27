@@ -12,13 +12,19 @@ export default function SignupPage() {
 
   const validateForm = () => {
     const newErrors = []
-
-    if (!email.includes("@")) newErrors.push("Invalid email format.")
-    if (password.length < 8) newErrors.push("Password must be at least 8 characters.")
+  
+    // Check if all fields are filled
+    if (!email || !password || !confirmPassword) {
+      newErrors.push("Please fill in all fields.")
+    }
+  
+    // Additional validations
+    if (email && !email.includes("@")) newErrors.push("Invalid email format.")
+    if (password && password.length < 8) newErrors.push("Password must be at least 8 characters.")
     if (password !== confirmPassword) newErrors.push("Passwords do not match.")
-
-    setErrors(newErrors)
-    return newErrors.length === 0
+  
+    setErrors(newErrors)  // Store the error messages
+    return newErrors.length === 0  // Return true if no errors
   }
 
   const handleSubmit = (e) => {
@@ -69,9 +75,9 @@ export default function SignupPage() {
               </div>
 
               {errors.length > 0 && (
-                <div className="bg-red-100 text-[var(--color-astrared)] text-sm p-2 rounded">
+                <div className="bg-red-100 text-[var(--color-astrared)] text-sm px-3 py-2 rounded">
                   {errors.map((err, idx) => (
-                    <p key={idx}>• {err}</p>
+                    <p key={idx}>{err}</p>
                   ))}
                 </div>
               )}
