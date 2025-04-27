@@ -28,9 +28,9 @@ const dummyMyJobs = [
     
         Why Join? Work on the forefront of cloud innovation, shape the future of enterprise tech, and grow with a global leader in  cloud computing.
     
-        Interested? Explore openings at careers.google.com. 🚀` },
-    { job_id: 1, salary: 270000, job_title: "Google Cloud Engineer", company_name: "Google Philippines", location: "Taguig City, Philippines", expires_at: new Date(), employment_type: "Full-Time", location_type: "Onsite" },
-    { job_id: 2, salary: 270000, job_title: "Google Cloud Engineer", company_name: "Google Philippines", location: "Taguig City, Philippines", expires_at: new Date(), employment_type: "Full-Time", location_type: "Onsite" }
+        Interested? Explore openings at careers.google.com. 🚀`,  created_at: new Date(new Date().setDate(new Date().getDate() - 29)) },
+    { job_id: 1, salary: 270000, job_title: "Google Cloud Engineer", company_name: "Google Philippines", location: "Taguig City, Philippines", expires_at: new Date(), employment_type: "Full-Time", location_type: "Onsite",  created_at: new Date(new Date().setDate(new Date().getDate() - 15)) },
+    { job_id: 2, salary: 270000, job_title: "Project Manager", company_name: "Google Philippines", location: "Taguig City, Philippines", expires_at: new Date(), employment_type: "Full-Time", location_type: "Onsite", created_at: new Date(new Date().setMonth(new Date().getMonth() - 2)) },
 ];
 
 const job = {
