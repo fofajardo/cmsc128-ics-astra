@@ -198,7 +198,7 @@ export default function AlumniProfilePage() {
       {/* Technical Skills */}
       <section className="bg-white rounded-lg p-8 mb-6">
         <h2 className="text-2xl font-bold text-[var(--color-astrablack)] mb-6">Technical Skills</h2>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap">
           {technicalSkills.map((skill, index) => (
             <SkillTag 
               key={index} 
@@ -218,7 +218,7 @@ export default function AlumniProfilePage() {
       {/* Fields of Interest */}
       <section className="bg-white rounded-lg p-8 mb-6">
         <h2 className="text-2xl font-bold text-[var(--color-astrablack)] mb-6">Fields of Interest</h2>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap">
           {fieldOfInterests.map((interest, index) => (
             <SkillTag 
               key={index} 
@@ -320,7 +320,8 @@ export default function AlumniProfilePage() {
 
       {/* Modal Forms */}
       {isShowPersonalForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-200 bg-opacity-30">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+
           <div className="p-10 bg-white rounded-lg shadow-lg relative">
             <EditPersonal profileData={profileData} hidePersonalForm={() => setIsShowPersonalForm(false)} />
           </div>
@@ -328,7 +329,7 @@ export default function AlumniProfilePage() {
       )}
 
       {isShowTechnicalForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-200 bg-opacity-30">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="p-10 bg-white rounded-lg shadow-lg relative">
             <EditTechnical technicalSkills={technicalSkills} hideTechnicalForm={() => setIsShowTechnicalForm(false)} />
           </div>
@@ -336,7 +337,7 @@ export default function AlumniProfilePage() {
       )}
 
       {isShowInterestForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-200 bg-opacity-30">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="p-10 bg-white rounded-lg shadow-lg relative">
             <EditInterest fieldOfInterests={fieldOfInterests} hideInterestForm={() => setIsShowInterestForm(false)} />
           </div>
@@ -344,7 +345,7 @@ export default function AlumniProfilePage() {
       )}
 
       {isShowExperienceForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-200 bg-opacity-30">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="p-10 bg-white rounded-lg shadow-lg relative">
             <EditExperience experiences={experiences} hideExperienceForm={() => setIsShowExperienceForm(false)} />
           </div>
@@ -352,7 +353,7 @@ export default function AlumniProfilePage() {
       )}
 
       {isShowAffiliationForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-200 bg-opacity-30">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="p-10 bg-white rounded-lg shadow-lg relative">
             <EditAffiliation affiliations={affiliations} hideAffiliationForm={() => setIsShowAffiliationForm(false)} />
           </div>
@@ -360,7 +361,7 @@ export default function AlumniProfilePage() {
       )}
 
       {isShowAddExperienceForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-200 bg-opacity-30">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="p-10 bg-white rounded-lg shadow-lg relative">
             <AddExperience hideAddExperienceForm={() => setIsShowAddExperienceForm(false)} />
           </div>
@@ -368,7 +369,7 @@ export default function AlumniProfilePage() {
       )}
 
       {isShowAddAffiliationForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-200 bg-opacity-30">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="p-10 bg-white rounded-lg shadow-lg relative">
             <AddAffiliation hideAddAffiliationForm={() => setIsShowAddAffiliationForm(false)} />
           </div>
