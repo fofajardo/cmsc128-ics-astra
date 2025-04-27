@@ -1,11 +1,5 @@
 "use client"
-
-"use client"
-
 import Image from "next/image"
-import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Rocket, Users, Code, Database, Star } from "lucide-react"
 import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Rocket, Users, Code, Database, Star } from "lucide-react"
@@ -174,10 +168,9 @@ export default function AboutPage() {
       {/* Mission section */}
       <section className="py-12 md:py-16 w-full">
         <div className="px-6 sm:px-8 md:px-12 max-w-6xl mx-auto">
-        <div className="px-6 sm:px-8 md:px-12 max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
             <div className="order-2 md:order-1">
-              <h2 className="text-[var(--color-astraprimary)] text-3xl md:text-4xl font-bold mb-6 md:mb-8">Mission</h2>
+              <h2 className="text-[var(--color-astraprimary)] text-3xl md:text-4xl font-bold mb-6 md:mb-8 text-center md:text-left">Mission</h2>
               <div className="space-y-4 md:space-y-8 text-justify">
                 <p className="text-[var(--color-astrablack)] text-sm md:text-base text-justify">
                   To produce the needed quality manpower for the Philippines' software industry and the manpower needed
@@ -209,7 +202,6 @@ export default function AboutPage() {
 
       {/* History Section */}
       <section className="py-12 md:py-16 w-full">
-        <div className="px-6 sm:px-8 md:px-12 max-w-6xl mx-auto">
         <div className="px-6 sm:px-8 md:px-12 max-w-6xl mx-auto">
           <h2 className="text-[var(--color-astraprimary)] text-3xl md:text-4xl font-bold mb-12 md:mb-16 text-center">
             History of ICS
