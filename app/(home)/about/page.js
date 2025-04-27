@@ -1,4 +1,8 @@
+"use client"
 import Image from "next/image"
+import { useState } from "react"
+import { Card, CardContent } from "@/components/ui/card"
+import { Rocket, Users, Code, Database, Star } from "lucide-react"
 
 export default function AboutPage() {
   const timelineItems = [
@@ -74,6 +78,74 @@ export default function AboutPage() {
     },
   ]
 
+  const [activeTab, setActiveTab] = useState("team-leaders")
+
+  const contributors = {
+    "team-leaders": [
+      { name: "Francis Dominic Fajardo", role: "Project Manager", avatar: "/Placeholder.png?height=100&width=100" },
+      { name: "John Paul Minoc", role: "Frontend Team Leader", avatar: "/Placeholder.png?height=100&width=100" },
+      { name: "Jan Neal Isaac Villamin", role: "Backend Team Leader", avatar: "/Placeholder.png?height=100&width=100" },
+      { name: "Franc Roger Glason Aguitez", role: "Database Team Leader", avatar: "/Placeholder.png?height=100&width=100" }
+    ],
+    "frontend-members": [
+      { name: "John Paul Minoc", role: "Frontend Team Leader", avatar: "/Placeholder.png?height=100&width=100" },
+      { name: "Mark Neil Autriz", role: "Frontend Developer", avatar: "/Placeholder.png?height=100&width=100" },
+      { name: "Axel Balitaan", role: "Frontend Developer", avatar: "/Placeholder.png?height=100&width=100" },
+      { name: "Armie Casasola", role: "Frontend Developer", avatar: "/Placeholder.png?height=100&width=100" },
+      { name: "Bryan Kyle Delfino", role: "Frontend Developer", avatar: "/Placeholder.png?height=100&width=100" },
+      { name: "Jon Alem San Gregorio", role: "Frontend Developer", avatar: "/Placeholder.png?height=100&width=100" },
+      { name: "Ashton Stephonie Matias", role: "Frontend Developer", avatar: "/Placeholder.png?height=100&width=100" },
+      { name: "Julius Christian Namata", role: "Frontend Developer", avatar: "/Placeholder.png?height=100&width=100" },
+      { name: "Bernard Jezua Tandang", role: "Frontend Developer", avatar: "/Placeholder.png?height=100&width=100" },
+      { name: "Riggs Mikael Tomas", role: "Frontend Developer", avatar: "/Placeholder.png?height=100&width=100" },
+    ],
+    "backend-members": [
+      { name: "Jan Neal Isaac Villamin", role: "Backend Team Leader", avatar: "/Placeholder.png?height=100&width=100" },
+      { name: "Dominic Abelarde", role: "Backend Developer", avatar: "/Placeholder.png?height=100&width=100" },
+      { name: "Franc Roger Glason Aguitez", role: "Backend Developer", avatar: "/Placeholder.png?height=100&width=100" },
+      { name: "Psymon Sez Arcedera", role: "Backend Developer", avatar: "/Placeholder.png?height=100&width=100" },
+      { name: "Joenzsen Jonner Camara", role: "Backend Developer", avatar: "/Placeholder.png?height=100&width=100" },
+      { name: "John Nico De Castro", role: "Backend Developer", avatar: "/Placeholder.png?height=100&width=100" },
+      { name: "Francis Dominic Fajardo", role: "Backend Developer", avatar: "/Placeholder.png?height=100&width=100" },
+      { name: "Clarence Manzanido", role: "Backend Developer", avatar: "/Placeholder.png?height=100&width=100" },
+      { name: "Jake Laurence Neverida", role: "Backend Developer", avatar: "/Placeholder.png?height=100&width=100" },
+      { name: "Lorenzo Rafael Uichanco", role: "Backend Developer", avatar: "/Placeholder.png?height=100&width=100" },
+    ],
+    "database-members": [
+      { name: "Franc Roger Glason Aguitez", role: "Database Team Leader", avatar: "/Placeholder.png?height=100&width=100" },
+      { name: "Joenzsen Jonner Camara", role: "Database Developer", avatar: "/Placeholder.png?height=100&width=100" },
+      { name: "Ashton Stephonie Matias", role: "Database Developer", avatar: "/Placeholder.png?height=100&width=100" },
+      { name: "Julius Christian Namata", role: "Database Developer", avatar: "/Placeholder.png?height=100&width=100" },
+      { name: "Riggs Mikael Tomas", role: "Database Developer", avatar: "/Placeholder.png?height=100&width=100" },
+    ],
+  }
+
+  // Function to get tab label based on screen size
+  const getTabLabel = (category) => {
+    const labels = {
+      "team-leaders": "Team Leaders",
+      "frontend-members": "Frontend",
+      "backend-members": "Backend",
+      "database-members": "Database",
+    }
+    return labels[category]
+  }
+
+  // Function to get icon for each tab
+  const getTabIcon = (category) => {
+    switch (category) {
+      case "team-leaders":
+        return <Users className="h-4 w-4" />
+      case "frontend-members":
+      case "backend-members":
+        return <Code className="h-4 w-4" />
+      case "database-members":
+        return <Database className="h-4 w-4" />
+      default:
+        return <Users className="h-4 w-4" />
+    }
+  }
+
   return (
     <main className="min-h-screen bg-[var(--color-astrawhite)]">
       {/* Headline section */}
@@ -95,20 +167,20 @@ export default function AboutPage() {
 
       {/* Mission section */}
       <section className="py-12 md:py-16 w-full">
-        <div className="px-4 sm:px-6 md:px-8 max-w-6xl mx-auto">
+        <div className="px-6 sm:px-8 md:px-12 max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
             <div className="order-2 md:order-1">
-              <h2 className="text-[var(--color-astraprimary)] text-3xl md:text-4xl font-bold mb-6 md:mb-8">Mission</h2>
+              <h2 className="text-[var(--color-astraprimary)] text-3xl md:text-4xl font-bold mb-6 md:mb-8 text-center md:text-left">Mission</h2>
               <div className="space-y-4 md:space-y-8 text-justify">
-                <p className="text-[var(--color-astrablack)]">
+                <p className="text-[var(--color-astrablack)] text-sm md:text-base text-justify">
                   To produce the needed quality manpower for the Philippines' software industry and the manpower needed
                   to carry out the information processing functions of private and government institutions.
                 </p>
-                <p className="text-[var(--color-astrablack)]">
+                <p className="text-[var(--color-astrablack)] text-sm md:text-base text-justify">
                   To carry out high-level research and development in computer science and computer hardware so as to
                   enhance locally produced computer products.
                 </p>
-                <p className="text-[var(--color-astrablack)]">
+                <p className="text-[var(--color-astrablack)] text-sm md:text-base text-justify">
                   To continuously upgrade the computing personnel of industry and government through training.
                 </p>
               </div>
@@ -130,7 +202,7 @@ export default function AboutPage() {
 
       {/* History Section */}
       <section className="py-12 md:py-16 w-full">
-        <div className="px-4 sm:px-6 md:px-8 max-w-6xl mx-auto">
+        <div className="px-6 sm:px-8 md:px-12 max-w-6xl mx-auto">
           <h2 className="text-[var(--color-astraprimary)] text-3xl md:text-4xl font-bold mb-12 md:mb-16 text-center">
             History of ICS
           </h2>
@@ -164,7 +236,7 @@ export default function AboutPage() {
               `}
                 >
                   <h3 className="text-[var(--color-astraprimary)] text-2xl md:text-3xl font-bold mb-3">{item.year}</h3>
-                  <div className="text-[var(--color-astrablack)] space-y-3 text-justify">
+                  <div className="text-[var(--color-astrablack)] text-sm md:text-base text-justify">
                     {typeof item.content === "string" ? <p>{item.content}</p> : item.content}
                   </div>
                 </div>
@@ -173,6 +245,79 @@ export default function AboutPage() {
             ))}
           </div>
         </div>
+      </section>
+
+      <section className="w-full py-8 md:py-12 bg-[var(--color-astratintedwhite)]">
+      <div className="px-4 sm:px-6 md:px-8 max-w-7xl mx-auto py-8 md:py-12 text-[var(--color-astrablack)]">
+        <div className="container px-4 md:px-6 mx-auto">
+          <div className="flex flex-col items-center text-center mb-8 md:mb-10 space-y-3 md:space-y-4">
+            <div className="flex items-center space-x-2">
+              <Rocket className="h-6 w-6 md:h-8 md:w-8 text-[var(--color-astraprimary)]" />
+              <h2 className="text-3xl md:text-4xl font-bold text-[var(--color-astrablack)]">
+                ICS-ASTRA
+              </h2>
+            </div>
+            <p className="max-w-[700px] text-[var(--color-astradarkgray)] text-sm md:text-base px-2">
+              ASTRA stands for <b>A</b>lumni <b>S</b>ynced <b>T</b>racking for <b>R</b>elations and <b>A</b>dvancement. Meet the brilliant minds behind our mission to connect with the alumni of the Institute of Computer Science at UPLB.
+            </p>
+            <div className="flex gap-1 md:gap-2">
+              {Array(5)
+                .fill(0)
+                .map((_, i) => (
+                  <Star key={i} className="h-4 w-4 md:h-5 md:w-5 text-[var(--color-astraprimary)]" fill="currentColor" />
+                ))}
+            </div>
+          </div>
+
+          {/* "Tabs" buttons */}
+          <div className="flex justify-center mb-6 md:mb-8 flex-wrap gap-2">
+            {Object.keys(contributors).map((category) => (
+              <button
+                key={category}
+                onClick={() => setActiveTab(category)}
+                className={`
+                  flex items-center gap-1 md:gap-2 text-xs md:text-sm px-3 py-1.5 rounded-full
+                  border border-[var(--color-astralightgray)]
+                  ${activeTab === category ? "bg-[var(--color-astraprimary)] text-white" : "bg-[var(--color-astradirtywhite)] text-[var(--color-astradarkgray)]"}
+                  transition-all duration-200
+                `}
+              >
+                {getTabIcon(category)}
+                <span>{getTabLabel(category)}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Contributors list */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+            {contributors[activeTab].map((contributor, index) => (
+              <Card
+                key={index}
+                className="bg-[var(--color-astrawhite)] border-[var(--color-astradirtywhite)] overflow-hidden transform transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-[var(--color-astraprimary)]/20"
+              >
+                <CardContent className="p-4 md:p-6">
+                  <div className="flex flex-col items-center text-center space-y-3 md:space-y-4">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-[var(--color-astrawhite)] rounded-full blur-sm opacity-70"></div>
+                      <div className="relative w-16 h-16 md:w-24 md:h-24 rounded-full overflow-hidden border-2 border-[var(--color-astraprimary)]">
+                        <img
+                          src={contributor.avatar || "/placeholder.svg"}
+                          alt={contributor.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className="text-base sm:text-lg md:text-xl font-bold text-[var(--color-astrablack)]">{contributor.name}</h3>
+                      <p className="text-sm md:text-base text-[var(--color-astradarkgray)]">{contributor.role}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
       </section>
     </main>
   )

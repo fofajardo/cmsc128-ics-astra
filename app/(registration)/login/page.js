@@ -57,7 +57,7 @@ export default function LoginPage() {
               {errors.length > 0 && (
                 <div className="bg-red-100 text-[var(--color-astrared)] text-sm px-3 py-2 rounded">
                   {errors.map((err, idx) => (
-                    <p key={idx}>• {err}</p>
+                    <p key={idx}>{err}</p>
                   ))}
                 </div>
               )}
