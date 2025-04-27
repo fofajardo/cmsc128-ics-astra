@@ -41,8 +41,25 @@ function Slideshow(){
                 {heroImages.map((image, index) => (
                     <div key = {index}> 
                          <div style = {{  display: 'flex', alignItems: 'center', 
-                            justifyContent: 'center', backgroundSize: 'cover', 
+                            justifyContent: 'cener', backgroundSize: 'cover', 
                             height: '100vh', backgroundImage: `url(${image})`}}>
+                            
+                            <div style = {{width: '100%', position: 'absolute' , 
+                                bottom: 0, left: 0, paddingBottom:'50px', paddingLeft: '50px',
+                                paddingTop: '30px', backdropFilter: `blur(2px)`, 
+                                background:`linear-gradient(transparent,rgba(14, 108, 243, 0.35))`}}>
+
+                                <h3 className ="text-astrawhite" style = {{fontSize: '18px', position: 'absolute', top: 30}}>Be a part of the Komsayverse with</h3>
+                                <div className = "app-title">
+                                    <div className="float-left">
+                                        <h1 className ="text-astrawhite" style = {{fontSize: '130px', fontWeight: 'bold'}}>ICS-</h1>
+                                    </div>
+                                    <div className="float-left">
+                                        <h1 className ="text-astraprimary" style = {{fontSize: '130px', fontWeight: 'bold'}}>ASTRA</h1>
+                                    </div>  
+                                </div>
+                                <h2 className ="text-astrawhite" style = {{fontSize: '40px', fontStyle:'Italic', position: 'absolute', bottom: 25}}>Connecting the Stars</h2>
+                            </div>
                         </div>
                     </div>
                 ))}
