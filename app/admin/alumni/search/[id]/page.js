@@ -16,20 +16,9 @@ export default async function AlumniSearchProfile({ params }) {
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/work-experiences/alum/${id}`)
     ]);
 
-    let degreeProgramRes;
-    try {
-        // FIXME: This is a temporary fix for the degree program API call
-        // I cannot find where the error is coming from
-        degreeProgramRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/degree-programs/alum/${id}`);
-    } catch (error) {
-        console.error("Error fetching degree program:", error);
-        degreeProgramRes = { data: { degree_programs: [] } }; // Fallback to an empty array
-    }
-
     const user = userRes.data.user;
     const profile = profileRes.data.alumniProfile;
     const workExperience = workExperienceRes.data.work_experiences;
-    const degreeProgram = degreeProgramRes.data.degree_programs;
 
     console.log(user);
     console.log(profile);
@@ -38,27 +27,15 @@ export default async function AlumniSearchProfile({ params }) {
         return <div className="text-center mt-20 text-red-500">{error || "Alumnus not found."}</div>;
     }
 
-    if (workExperience.length > 1) {
-        workExperience.map((experience) => {
-            experience.year_started = formatDate(experience.year_started);
-            experience.year_ended = experience.year_ended ? formatDate(experience.year_ended) : "Present";
-        });
-    } else
-        if (typeof workExperience === 'object' && workExperience !== null) {
-            workExperience.year_started = formatDate(workExperience.year_started);
-            workExperience.year_ended = workExperience.year_ended ? formatDate(workExperience.year_ended) : "Present";
-        }
+    // Format the date to a more readable format
+    profile.birthdate = formatDate(profile.birthdate, 'long');
+    profile.graduation_date = formatDate(profile.graduation_date, 'month-year');
 
-    if (degreeProgram.length > 1) {
-        degreeProgram = degreeProgram[0];
-        degreeProgram.year_started = formatDate(degreeProgram.year_started);
-        degreeProgram.year_graduated = degreeProgram.year_graduated ? formatDate(degreeProgram.year_graduated) : "Present";
-    } else
-        if (typeof degreeProgram === 'object' && degreeProgram !== null) {
-            degreeProgram.year_started = formatDate(degreeProgram.year_started);
-            degreeProgram.year_graduated = degreeProgram.year_graduated ? formatDate(degreeProgram.year_graduated) : "Present";
-        }
-
+    workExperience.forEach((experience) => {
+        experience.year_started = formatDate(experience.year_started, 'month-year');
+        experience.year_ended = experience.year_ended ? formatDate(experience.year_ended, 'month-year') : "Present";
+    });
+    
     return (
         <div className="p-4 bg-astradirtywhite min-h-screen">
             <div className="pb-2">
@@ -100,7 +77,7 @@ export default async function AlumniSearchProfile({ params }) {
                         <span className="text-xs bg-astragray text-astradarkgray px-2 py-1 rounded-full flex items-center space-x-1">
                             <GraduationCap className="w-3 h-3" />
                             {/* TODO: FRG ikaw na rito */}
-                            {<span> {degreeProgram.year_graduated} </span>}
+                            {/* <span> {degreeProgram.year_graduated} </span> */}
                             {/* <span>{new Date(profile.year_graduated).getFullYear()}</span> */}
                         </span>
                     </div>
@@ -170,11 +147,13 @@ export default async function AlumniSearchProfile({ params }) {
                                 workExperience.map((experience, idx) => (
                                     <div key={idx} className="border-l-4 border-astralight rounded">
                                         <div className="ml-5">
+                                            <p className="font-semibold text-astrablack">{experience.title}</p>
                                             <p className="font-semibold text-astrablack">{experience.company}</p>
-                                            <p className="italic text-astradarkgray">{experience.location}</p>
                                             <p className="text-astradarkgray">
                                                 {experience.year_started} - {experience.year_ended ? experience.year_ended : "Present"}
                                             </p>
+                                            <p className="italic text-astradarkgray">{experience.location}</p>
+                                            <p className="italic text-astradarkgray">{experience.salary}</p>
                                         </div>
                                     </div>
                                 ))) : (
@@ -218,27 +197,26 @@ export default async function AlumniSearchProfile({ params }) {
                     <div className="bg-white border border-astralightgray rounded-xl p-4 shadow-md">
                         <h4 className="font-rb text-astrablack mb-0">Technical Skills</h4>
                         <hr className="h-2 border-astralightgray"></hr>
-                        <div className="flex gap-2 justify-between flex-wrap text-sm">
-                            {/* <SkillTag text="Frontend" color="bg-blue-100 text-blue-700" />
-                            <SkillTag text="Database" color="bg-pink-100 text-pink-700" />
-                            <SkillTag text="CSS" color="bg-blue-100 text-blue-700" />
-                            <SkillTag text="C" color="bg-gray-200 text-gray-700" />
-                            <SkillTag text="HTML" color="bg-green-100 text-green-700" />
-                            <SkillTag text="Database" color="bg-pink-100 text-pink-700" />
-                            <SkillTag text="HTML" color="bg-green-100 text-green-700" />
-                            <SkillTag text="CSS" color="bg-blue-100 text-blue-700" />
-                            <SkillTag text="C" color="bg-gray-200 text-gray-700" /> */}
+                        <div className="flex gap-3 flex-wrap text-sm">
                             {profile.skills
                                 ?.split(',')
                                 .map(skill => skill.trim())
                                 .filter(skill => skill.length > 0)
-                                .map((skill, idx) => (
-                                    <SkillTag
-                                        key={idx}
-                                        text={skill}
-                                        color="bg-blue-100 text-blue-700"
-                                    />
-                                ))}
+                                .map((skill, idx) => {
+                                    const colors = [
+                                        "bg-blue-100 text-blue-700",
+                                        "bg-pink-100 text-pink-700",
+                                        "bg-green-100 text-green-700",
+                                    ];
+                                    const color = colors[idx % colors.length];
+                                    return (
+                                        <SkillTag
+                                            key={idx}
+                                            text={skill}
+                                            color={color}
+                                        />
+                                    );
+                                })}
                         </div>
                     </div>
 
@@ -246,21 +224,28 @@ export default async function AlumniSearchProfile({ params }) {
                     <div className="bg-white border border-astralightgray rounded-xl p-4 shadow-md">
                         <h4 className="font-rb text-astrablack mb-0">Fields of Interest</h4>
                         <hr className="h-2 border-astralightgray"></hr>
-                        <div className="flex gap-2 justify-between flex-wrap text-sm">
-                            {/* TODO: FRG, pa-connect nung sa fields of interest. */}
-                            <SkillTag text="Frontend" color="bg-blue-100 text-blue-700" />
-                            <SkillTag text="Database" color="bg-pink-100 text-pink-700" />
-                            <SkillTag text="HTML" color="bg-green-100 text-green-700" />
-                            <SkillTag text="Frontend" color="bg-blue-100 text-blue-700" />
-                            <SkillTag text="CSS" color="bg-blue-100 text-blue-700" />
-                            <SkillTag text="C" color="bg-gray-200 text-gray-700" />
-                            <SkillTag text="HTML" color="bg-green-100 text-green-700" />
-                            <SkillTag text="CSS" color="bg-blue-100 text-blue-700" />
-                            <SkillTag text="HTML" color="bg-green-100 text-green-700" />
-                            <SkillTag text="Frontend" color="bg-blue-100 text-blue-700" />
-                            <SkillTag text="CSS" color="bg-blue-100 text-blue-700" />
-                            <SkillTag text="Database" color="bg-pink-100 text-pink-700" />
-                            <SkillTag text="Javascript" color="bg-yellow-100 text-yellow-700" />
+                        <div className="flex gap-3 flex-wrap text-sm">
+                            {workExperience.length > 0 ? (
+                                workExperience.map((experience, idx) => {
+                                    const colors = [
+                                        "bg-blue-100 text-blue-700",
+                                        "bg-pink-100 text-pink-700",
+                                        "bg-green-100 text-green-700",
+                                    ];
+                                    const color = colors[idx % colors.length];
+                                    return (
+                                        <SkillTag 
+                                            key={idx} 
+                                            text={experience.field} 
+                                            color={color} 
+                                        />
+                                    );
+                                })
+                            ) : (
+                                <div className="text-center mt-50 text-astradarkgray">
+                                    {"No particular field of interest"}
+                                </div>
+                            )} 
                         </div>
                     </div>
 

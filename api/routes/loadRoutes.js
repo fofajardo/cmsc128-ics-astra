@@ -26,24 +26,24 @@ import organizationAffiliationsRouter from "./organizationAffiliationsRoutes.js"
 import reportsRouter from "./reportsRoutes.js";
 import requestsRouter from "./requestsRoutes.js";
 
-const registerRoutes = (app, supabase) => {
+const registerRoutes = (app) => {
     ensureDirectoriesExist(); // Ensure the directory exists before using it
 
-    app.use("/v1/users", usersRouter(supabase));
-    app.use("/v1/degree-programs", degreeProgramsRouter(supabase));
-    app.use("/v1/photos", photosRouter(supabase));
-    app.use("/v1/alumni-profiles", alumniProfilesRouter(supabase));
-    app.use("/v1/contents", contentsRouter(supabase));
-    app.use("/v1/work-experiences", workExperiencesRouter(supabase));
-    app.use("/v1/events", eventsRouter(supabase));
-    app.use("/v1/event-interests", eventInterestsRouter(supabase));
+    app.use("/v1/users", usersRouter());
+    app.use("/v1/degree-programs", degreeProgramsRouter());
+    app.use("/v1/photos", photosRouter());
+    app.use("/v1/alumni-profiles", alumniProfilesRouter());
+    app.use("/v1/contents", contentsRouter());
+    app.use("/v1/work-experiences", workExperiencesRouter());
+    app.use("/v1/events", eventsRouter());
+    app.use("/v1/event-interests", eventInterestsRouter());
     app.use('/v1/auth', authRouter());
-    app.use("/v1/projects", projectsRouter(supabase));
-    app.use("/v1/donations", donationsRouter(supabase));
-    app.use("/v1/organizations", organizationsRouter(supabase));
-    app.use("/v1/users", organizationAffiliationsRouter(supabase));
-    app.use("/v1/reports", reportsRouter(supabase));
-    app.use("/v1/requests", requestsRouter(supabase));
+    app.use("/v1/projects", projectsRouter());
+    app.use("/v1/donations", donationsRouter());
+    app.use("/v1/organizations", organizationsRouter());
+    app.use("/v1/organization-affiliations", organizationAffiliationsRouter());
+    app.use("/v1/reports", reportsRouter());
+    app.use("/v1/requests", requestsRouter());
 }
 
 export default registerRoutes;

@@ -2,9 +2,9 @@ import httpStatus from "http-status-codes";
 import { v4 as uuidv4 } from 'uuid';
 import degreeProgramService from "../services/degreeProgramService.js";
 
-const getAllDegreePrograms = (supabase) => async (req, res) => {
+const getAllDegreePrograms = async (req, res) => {
   try {
-    const { data, error } = await degreeProgramService.fetchAllDegreePrograms(supabase);
+    const { data, error } = await degreeProgramService.fetchAllDegreePrograms(req.supabase);
 
     if (error) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -32,7 +32,7 @@ const getAllDegreePrograms = (supabase) => async (req, res) => {
   }
 };
 
-const getDegreeProgramById = (supabase) => async (req, res) => {
+const getDegreeProgramById = async (req, res) => {
   try {
       const { id } = req.params;
 
@@ -61,43 +61,7 @@ const getDegreeProgramById = (supabase) => async (req, res) => {
   }
 };
 
-const getDegreeProgramsByUserId = (supabase) => async (req, res) => {
-  try {
-
-      const filters = req.query;
-
-      const { userId } = req.params;
-
-      const { data, error } = await degreeProgramService.fetchDegreeProgramsByUserId(supabase, userId, filters);
-
-      if (error) {
-          return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-              status: "FAILED",
-              message: error.message,
-          });
-      }
-
-      if (!data || data.length === 0) {
-          return res.status(httpStatus.NOT_FOUND).json({
-              status: "FAILED",
-              message: "No degree programs found for this user",
-          });
-      }
-
-      return res.status(httpStatus.OK).json({
-          status: "OK",
-          degreePrograms: data,
-      });
-  }
-  catch (error) {
-      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-          status: "FAILED",
-          message: error.message,
-      });
-  }
-};
-
-const createDegreeProgram = (supabase) => async (req, res) => {
+const createDegreeProgram = async (req, res) => {
   try {
     const { name, level, user_id, institution, year_started, year_graduated } = req.body;
 
@@ -118,7 +82,7 @@ const createDegreeProgram = (supabase) => async (req, res) => {
       year_graduated,
     };
 
-    const { data, error } = await degreeProgramService.insertDegreeProgram(supabase, degreeProgramData);
+    const { data, error } = await degreeProgramService.insertDegreeProgram(req.supabase, degreeProgramData);
 
     if (error) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -140,7 +104,7 @@ const createDegreeProgram = (supabase) => async (req, res) => {
   }
 };
 
-const updateDegreeProgram = (supabase) => async (req, res) => {
+const updateDegreeProgram = async (req, res) => {
   const { id } = req.params;
   const { name, level, user_id, institution, year_started, year_graduated } = req.body;
 
@@ -181,7 +145,7 @@ const updateDegreeProgram = (supabase) => async (req, res) => {
   }
 };
 
-const deleteDegreeProgram = (supabase) => async (req, res) => {
+const deleteDegreeProgram = async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -217,10 +181,9 @@ const deleteDegreeProgram = (supabase) => async (req, res) => {
 const degreeProgramController = {
   getAllDegreePrograms,
   getDegreeProgramById,
-  getDegreeProgramsByUserId,
   createDegreeProgram,
   updateDegreeProgram,
-  deleteDegreeProgram,
+  deleteDegreeProgram
 };
 
 export default degreeProgramController;

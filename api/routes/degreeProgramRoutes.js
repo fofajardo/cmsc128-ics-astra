@@ -7,12 +7,11 @@ const degreeProgramsRouter = (supabase) => {
 
     router.use(RequireAuthenticated);
     
-    router.get("/", degreeProgramController.getAllDegreePrograms(supabase));
-    router.get("/:id", degreeProgramController.getDegreeProgramById(supabase));
-    router.get("/alum/:userId", degreeProgramController.getDegreeProgramsByUserId(supabase));
-    router.post("/", degreeProgramController.createDegreeProgram(supabase));
-    router.put("/:id", degreeProgramController.updateDegreeProgram(supabase));
-    router.delete("/:id", degreeProgramController.deleteDegreeProgram(supabase));
+    router.get("/", degreeProgramController.getAllDegreePrograms);
+    router.get("/:id", degreeProgramController.getDegreeProgramById);
+    router.post("/", degreeProgramController.createDegreeProgram);
+    router.put("/:id", degreeProgramController.updateDegreeProgram);
+    router.delete("/:id", degreeProgramController.deleteDegreeProgram);
 
     return router;
 };

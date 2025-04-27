@@ -1,13 +1,13 @@
 import express from "express";
 import alumniProfilesController from "../controllers/alumniProfilesController.js";
 
-const alumniProfilesRouter = (supabase) => {
+const alumniProfilesRouter = () => {
     const router = express.Router();
 
-    router.get("/", alumniProfilesController.getAlumniProfiles(supabase));
-    router.get("/:userId", alumniProfilesController.getAlumniProfileById(supabase));
-    router.post("/:userId", alumniProfilesController.createAlumniProfile(supabase));
-    router.put("/:userId", alumniProfilesController.updateAlumniProfile(supabase));
+    router.get("/", alumniProfilesController.getAlumniProfiles);
+    router.get("/:userId", alumniProfilesController.getAlumniProfileById);
+    router.post("/:userId", alumniProfilesController.createAlumniProfile);
+    router.put("/:userId", alumniProfilesController.updateAlumniProfile);
 
     return router;
 };
