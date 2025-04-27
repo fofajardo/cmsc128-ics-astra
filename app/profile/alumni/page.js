@@ -33,6 +33,12 @@ export default function AlumniProfilePage() {
     { text: "Database", color: "bg-green-100 text-green-800 border-green-300" },
     { text: "Figma", color: "bg-pink-100 text-pink-800 border-pink-300" },
     { text: "Python", color: "bg-yellow-100 text-yellow-800 border-yellow-300" },
+    { text: "Java", color: "bg-red-100 text-red-800 border-red-300" },
+    { text: "HTML", color: "bg-purple-100 text-purple-800 border-purple-300" },
+    { text: "CSS", color: "bg-teal-100 text-teal-800 border-teal-300" },
+    { text: "JavaScript", color: "bg-orange-100 text-orange-800 border-orange-300" },
+    { text: "React", color: "bg-gray-100 text-gray-800 border-gray-300" },
+    { text: "Node.js", color: "bg-indigo-100 text-indigo-800 border-indigo-300" },
   ];
   
   const fieldOfInterests = [
@@ -159,7 +165,7 @@ export default function AlumniProfilePage() {
           {/* Profile Info Column */}
           <div className="flex-1">
             <div className="flex justify-left gap-4 items-center mb-6">
-              <h2 className="text-2xl font-bold text-[var(--color-astrablack)]">Profile Information</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-[var(--color-astrablack)]">Profile Information</h2>
               <button
                 className="text-sm md:text-base px-3 py-2 md:px-4 md:py-2 bg-[var(--color-astraprimary)] text-white hover:bg-[var(--color-astradark)] rounded-md"
                 onClick={() => setIsShowPersonalForm(true)}
@@ -185,7 +191,7 @@ export default function AlumniProfilePage() {
 
                   return (
                     <div key={key} className="min-w-[150px]">
-                      <p className="text-sm text-gray-500 mb-1">{label}:</p>
+                      <p className="text-sm text-[var(--color-astrablack)] mb-1">{label}:</p>
                       <p className="font-medium">{value}</p>
                     </div>
                   );
@@ -198,7 +204,7 @@ export default function AlumniProfilePage() {
       {/* Technical Skills */}
       <section className="bg-white rounded-lg p-8 mb-6">
         <h2 className="text-2xl font-bold text-[var(--color-astrablack)] mb-6">Technical Skills</h2>
-        <div className="flex flex-wrap">
+        <div className="flex flex-wrap gap-2">
           {technicalSkills.map((skill, index) => (
             <SkillTag 
               key={index} 
@@ -218,7 +224,7 @@ export default function AlumniProfilePage() {
       {/* Fields of Interest */}
       <section className="bg-white rounded-lg p-8 mb-6">
         <h2 className="text-2xl font-bold text-[var(--color-astrablack)] mb-6">Fields of Interest</h2>
-        <div className="flex flex-wrap">
+        <div className="flex flex-wrap gap-2">
           {fieldOfInterests.map((interest, index) => (
             <SkillTag 
               key={index} 
@@ -255,6 +261,7 @@ export default function AlumniProfilePage() {
           </div>
         </div>
 
+
         <div className="space-y-6">
           {experiences.map((exp, index) => (
             <div key={index} className="flex">
@@ -262,13 +269,13 @@ export default function AlumniProfilePage() {
                 <div className={`w-2 h-full ${index === 0 ? "bg-[var(--color-astraprimary)]" : "bg-[var(--color-astradark)]"} rounded-full`}></div>
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-bold">{exp.company}</h3>
-                <p className="text-gray-600">{exp.title} • {exp.type}</p>
-                <p className="text-gray-500">
+                <h3 className="text-lg font-bold text-[var(--color-astrablack)]">{exp.company}</h3>
+                <p className="text-base text-[var(--color-astrablack)]">{exp.title} • {exp.type}</p>
+                <p className="text-sm text-[var(--color-astrablack)]">
                   {exp.startDate} {exp.isCurrentlyWorking ? "- Present" : `- ${exp.endDate}`}
                 </p>
-                <p className="text-gray-500">{exp.location}</p>
-                <p className="text-gray-600 mt-2">{exp.description}</p>
+                <p className="text-sm text-[var(--color-astrablack)]">{exp.location}</p>
+                <p className="text-base text-[var(--color-astrablack)] mt-2">{exp.description}</p>
               </div>
             </div>
           ))}
@@ -302,15 +309,15 @@ export default function AlumniProfilePage() {
                 <div className={`w-2 h-full ${index === 0 ? "bg-[var(--color-astraprimary)]" : "bg-[var(--color-astradark)]"} rounded-full`}></div>
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-bold">{aff.organization}</h3>
-                <p className="text-gray-600">{aff.title}</p>
-                <p className="text-gray-500">
+                <h3 className="text-lg font-bold text-[var(--color-astrablack)]">{aff.organization}</h3>
+                <p className="text-base text-[var(--color-astrablack)]">{aff.title}</p>
+                <p className="text-sm text-[var(--color-astrablack)]">
                   {aff.startDate} {aff.isCurrentlyAffiliated ? "- Present" : `- ${aff.endDate}`}
                 </p>
-                <p className="text-gray-500">
+                <p className="text-sm text-[var(--color-astrablack)]">
                   {aff.location} • {aff.isCurrentlyAffiliated ? "Currently Affiliated" : "Not Affiliated"}
                 </p>
-                <p className="text-gray-600 mt-2">{aff.description}</p>
+                <p className="text-base text-[var(--color-astrablack)] mt-2">{aff.description}</p>
               </div>
             </div>
           ))}
@@ -321,7 +328,6 @@ export default function AlumniProfilePage() {
       {/* Modal Forms */}
       {isShowPersonalForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-
           <div className="p-10 bg-white rounded-lg shadow-lg relative">
             <EditPersonal profileData={profileData} hidePersonalForm={() => setIsShowPersonalForm(false)} />
           </div>
@@ -329,7 +335,7 @@ export default function AlumniProfilePage() {
       )}
 
       {isShowTechnicalForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="p-10 bg-white rounded-lg shadow-lg relative">
             <EditTechnical technicalSkills={technicalSkills} hideTechnicalForm={() => setIsShowTechnicalForm(false)} />
           </div>
@@ -337,7 +343,7 @@ export default function AlumniProfilePage() {
       )}
 
       {isShowInterestForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="p-10 bg-white rounded-lg shadow-lg relative">
             <EditInterest fieldOfInterests={fieldOfInterests} hideInterestForm={() => setIsShowInterestForm(false)} />
           </div>
@@ -345,7 +351,7 @@ export default function AlumniProfilePage() {
       )}
 
       {isShowExperienceForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="p-10 bg-white rounded-lg shadow-lg relative">
             <EditExperience experiences={experiences} hideExperienceForm={() => setIsShowExperienceForm(false)} />
           </div>
@@ -353,7 +359,7 @@ export default function AlumniProfilePage() {
       )}
 
       {isShowAffiliationForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="p-10 bg-white rounded-lg shadow-lg relative">
             <EditAffiliation affiliations={affiliations} hideAffiliationForm={() => setIsShowAffiliationForm(false)} />
           </div>
@@ -361,7 +367,7 @@ export default function AlumniProfilePage() {
       )}
 
       {isShowAddExperienceForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="p-10 bg-white rounded-lg shadow-lg relative">
             <AddExperience hideAddExperienceForm={() => setIsShowAddExperienceForm(false)} />
           </div>
@@ -369,7 +375,7 @@ export default function AlumniProfilePage() {
       )}
 
       {isShowAddAffiliationForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="p-10 bg-white rounded-lg shadow-lg relative">
             <AddAffiliation hideAddAffiliationForm={() => setIsShowAddAffiliationForm(false)} />
           </div>
