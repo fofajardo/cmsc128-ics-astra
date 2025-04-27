@@ -44,21 +44,21 @@ export default async function AlumniSearchProfile({ params }) {
             experience.year_ended = experience.year_ended ? formatDate(experience.year_ended) : "Present";
         });
     } else
-    if (typeof workExperience === 'object' && workExperience !== null) {
-        workExperience.year_started = formatDate(workExperience.year_started);
-        workExperience.year_ended = workExperience.year_ended ? formatDate(workExperience.year_ended) : "Present";
-    }
+        if (typeof workExperience === 'object' && workExperience !== null) {
+            workExperience.year_started = formatDate(workExperience.year_started);
+            workExperience.year_ended = workExperience.year_ended ? formatDate(workExperience.year_ended) : "Present";
+        }
 
     if (degreeProgram.length > 1) {
         degreeProgram = degreeProgram[0];
         degreeProgram.year_started = formatDate(degreeProgram.year_started);
         degreeProgram.year_graduated = degreeProgram.year_graduated ? formatDate(degreeProgram.year_graduated) : "Present";
-    } else 
-    if (typeof degreeProgram === 'object' && degreeProgram !== null) {
-        degreeProgram.year_started = formatDate(degreeProgram.year_started);
-        degreeProgram.year_graduated = degreeProgram.year_graduated ? formatDate(degreeProgram.year_graduated) : "Present";
-    }
-    
+    } else
+        if (typeof degreeProgram === 'object' && degreeProgram !== null) {
+            degreeProgram.year_started = formatDate(degreeProgram.year_started);
+            degreeProgram.year_graduated = degreeProgram.year_graduated ? formatDate(degreeProgram.year_graduated) : "Present";
+        }
+
     return (
         <div className="p-4 bg-astradirtywhite min-h-screen">
             <div className="pb-2">
@@ -69,7 +69,11 @@ export default async function AlumniSearchProfile({ params }) {
                 {/* left section */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 w-full md:w-auto">
                     {/* avatar placeholder */}
-                    <img src={user.image} alt={profile.first_name} className="w-18 h-18 rounded-full bg-gray-200 mx-auto sm:mx-4" />
+                    <img
+                        src={user.image || "https://cdn-icons-png.flaticon.com/512/145/145974.png"}
+                        alt={profile.first_name}
+                        className="w-18 h-18 rounded-full bg-gray-200 mx-auto sm:mx-4"
+                    />
 
                     {/* text info */}
                     <div className="mt-2 sm:mt-0 text-center sm:text-left">
@@ -173,7 +177,7 @@ export default async function AlumniSearchProfile({ params }) {
                                             </p>
                                         </div>
                                     </div>
-                            ))) : (
+                                ))) : (
                                 {/* 
                                     TODO: FIX DISPLAY, text div is not centered and does not flex  
                                 */},
@@ -182,7 +186,7 @@ export default async function AlumniSearchProfile({ params }) {
                                         {"No work experience"}
                                     </div>
                                 </div>
-                            )} 
+                            )}
                         </div>
                     </div>
                     <div className="mt-6">
