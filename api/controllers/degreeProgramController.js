@@ -2,9 +2,9 @@ import httpStatus from "http-status-codes";
 import { v4 as uuidv4 } from 'uuid';
 import degreeProgramService from "../services/degreeProgramService.js";
 
-const getAllDegreePrograms = (supabase) => async (req, res) => {
+const getAllDegreePrograms = async (req, res) => {
   try {
-    const { data, error } = await degreeProgramService.fetchAllDegreePrograms(supabase);
+    const { data, error } = await degreeProgramService.fetchAllDegreePrograms(req.supabase);
 
     if (error) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -32,7 +32,7 @@ const getAllDegreePrograms = (supabase) => async (req, res) => {
   }
 };
 
-const getDegreeProgramById = (supabase) => async (req, res) => {
+const getDegreeProgramById = async (req, res) => {
   try {
       const { id } = req.params;
 
@@ -61,14 +61,14 @@ const getDegreeProgramById = (supabase) => async (req, res) => {
   }
 };
 
-const createDegreeProgram = (supabase) => async (req, res) => {
+const createDegreeProgram = async (req, res) => {
   try {
-    const { name, level } = req.body;
+    const { name, level, user_id, institution, year_started, year_graduated } = req.body;
 
-    if (!name || !level) {
+    if (!name || !level || !user_id || !institution || !year_started || !year_graduated) {
       return res.status(httpStatus.BAD_REQUEST).json({
         status: "FAILED",
-        message: "Name and level are required",
+        message: "All fields are required",
       });
     }
 
@@ -76,9 +76,13 @@ const createDegreeProgram = (supabase) => async (req, res) => {
       id: uuidv4(),
       name,
       level,
+      user_id,
+      institution,
+      year_started,
+      year_graduated,
     };
 
-    const { data, error } = await degreeProgramService.insertDegreeProgram(supabase, degreeProgramData);
+    const { data, error } = await degreeProgramService.insertDegreeProgram(req.supabase, degreeProgramData);
 
     if (error) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -100,44 +104,48 @@ const createDegreeProgram = (supabase) => async (req, res) => {
   }
 };
 
-const updateDegreeProgram = (supabase) => async (req, res) => {
+const updateDegreeProgram = async (req, res) => {
   const { id } = req.params;
-  const { name, level } = req.body;
+  const { name, level, user_id, institution, year_started, year_graduated } = req.body;
 
   try {
-      if (!id) {
-          return res.status(400).json({ status: "FAILED", message: "Degree program ID is required" });
+    if (!id) {
+      return res.status(400).json({ status: "FAILED", message: "Degree program ID is required" });
+    }
+
+    const updates = {};
+    if (name) updates.name = name;
+    if (level) updates.level = level;
+    if (user_id) updates.user_id = user_id;
+    if (institution) updates.institution = institution;
+    if (year_started) updates.year_started = year_started;
+    if (year_graduated) updates.year_graduated = year_graduated;
+
+    const { data, error } = await supabase
+      .from("degree_programs")
+      .update(updates)
+      .eq("id", id)
+      .select();
+
+    if (error) {
+      if (error.details && error.details.includes("not found")) {
+        return res.status(404).json({ status: "FAILED", message: "Degree program not found" });
       }
+      throw error;
+    }
 
-      const updates = {};
-      if (name) updates.name = name;
-      if (level) updates.level = level;
+    if (!data || data.length === 0) {
+      return res.status(404).json({ status: "FAILED", message: "Degree program not found" });
+    }
 
-      const { data, error } = await supabase
-          .from("degree_programs")
-          .update(updates)
-          .eq("id", id)
-          .select();
-
-      if (error) {
-          if (error.details && error.details.includes("not found")) {
-              return res.status(404).json({ status: "FAILED", message: "Degree program not found" });
-          }
-          throw error;
-      }
-
-      if (!data || data.length === 0) {
-          return res.status(404).json({ status: "FAILED", message: "Degree program not found" });
-      }
-
-      return res.status(200).json({ status: "UPDATED", message: "Degree program successfully updated", degreeProgram: data[0] });
+    return res.status(200).json({ status: "UPDATED", message: "Degree program successfully updated", degreeProgram: data[0] });
   } catch (err) {
-      console.error("Error updating degree program:", err.message);
-      return res.status(500).json({ status: "FAILED", message: err.message });
+    console.error("Error updating degree program:", err.message);
+    return res.status(500).json({ status: "FAILED", message: err.message });
   }
 };
 
-const deleteDegreeProgram = (supabase) => async (req, res) => {
+const deleteDegreeProgram = async (req, res) => {
   const { id } = req.params;
 
   try {

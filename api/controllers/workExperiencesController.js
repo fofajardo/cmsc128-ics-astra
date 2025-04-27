@@ -5,7 +5,7 @@ import alumniService from '../services/alumniProfilesService.js';
 import { isValidUUID, isValidDate } from '../utils/validators.js';
 import { Actions, Subjects } from '../../common/scopes.js';
 
-const getWorkExperiences = (supabase) => async (req, res) => {
+const getWorkExperiences = async (req, res) => {
     if (req.you.cannot(Actions.READ, Subjects.WORK_EXPERIENCES)) {
         return res.status(httpStatus.FORBIDDEN).json({
             status: 'FORBIDDEN',
@@ -15,7 +15,7 @@ const getWorkExperiences = (supabase) => async (req, res) => {
 
     try {
         const filters = req.query;
-        const { data, error } = await workExperiencesService.fetchWorkExperiences(supabase, filters);
+        const { data, error } = await workExperiencesService.fetchWorkExperiences(req.supabase, filters);
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -36,7 +36,7 @@ const getWorkExperiences = (supabase) => async (req, res) => {
     }
 };
 
-const getWorkExperienceById = (supabase) => async (req, res) => {
+const getWorkExperienceById = async (req, res) => {
     if (req.you.cannot(Actions.READ, Subjects.WORK_EXPERIENCES)) {
         return res.status(httpStatus.FORBIDDEN).json({
             status: 'FORBIDDEN',
@@ -54,7 +54,7 @@ const getWorkExperienceById = (supabase) => async (req, res) => {
             });
         }
 
-        const { data, error } = await workExperiencesService.fetchWorkExperienceById(supabase, workExperienceId);
+        const { data, error } = await workExperiencesService.fetchWorkExperienceById(req.supabase, workExperienceId);
 
         if (error) {
             return res.status(httpStatus.NOT_FOUND).json({
@@ -75,7 +75,7 @@ const getWorkExperienceById = (supabase) => async (req, res) => {
     }
 };
 
-const getWorkExperiencesByUserId = (supabase) => async (req, res) => {
+const getWorkExperiencesByUserId = async (req, res) => {
     if (req.you.cannot(Actions.READ, Subjects.WORK_EXPERIENCES)) {
         return res.status(httpStatus.FORBIDDEN).json({
             status: 'FORBIDDEN',
@@ -93,7 +93,7 @@ const getWorkExperiencesByUserId = (supabase) => async (req, res) => {
             });
         }
 
-        const { data, error } = await workExperiencesService.fetchWorkExperiencesByAlumId(supabase, userId);
+        const { data, error } = await workExperiencesService.fetchWorkExperiencesByAlumId(req.supabase, userId);
 
         if (error) {
             return res.status(httpStatus.NOT_FOUND).json({
@@ -114,7 +114,7 @@ const getWorkExperiencesByUserId = (supabase) => async (req, res) => {
     }
 };
 
-const createWorkExperience = (supabase) => async (req, res) => {
+const createWorkExperience = async (req, res) => {
     if (req.you.cannot(Actions.CREATE, Subjects.WORK_EXPERIENCES)) {
         return res.status(httpStatus.FORBIDDEN).json({
             status: 'FORBIDDEN',
@@ -132,7 +132,7 @@ const createWorkExperience = (supabase) => async (req, res) => {
         }
 
         // check if userId exists in alumni_profiles table
-        const { data: alumData, error: alumError } = await alumniService.fetchAlumniProfileById(supabase, userId);
+        const { data: alumData, error: alumError } = await alumniService.fetchAlumniProfileById(req.supabase, userId);
         
         if (alumError || !alumData) {
             return res.status(httpStatus.NOT_FOUND).json({
@@ -146,7 +146,7 @@ const createWorkExperience = (supabase) => async (req, res) => {
         if (workExperienceId != undefined) {
             // check if the work experience already exists in the database
             if (!isValidUUID(workExperienceId)) {
-                const { data: workExperienceData, error: workExperienceError } = await workExperiencesService.fetchWorkExperienceById(supabase, workExperienceId);
+                const { data: workExperienceData, error: workExperienceError } = await workExperiencesService.fetchWorkExperienceById(req.supabase, workExperienceId);
                 if (workExperienceData) {
                     return res.status(httpStatus.BAD_REQUEST).json({
                         status: 'FAILED',
@@ -212,7 +212,7 @@ const createWorkExperience = (supabase) => async (req, res) => {
             });
         }
         
-        const { data, error } = await workExperiencesService.insertWorkExperience(supabase, {
+        const { data, error } = await workExperiencesService.insertWorkExperience(req.supabase, {
             user_id,
             title,
             field,
@@ -244,7 +244,7 @@ const createWorkExperience = (supabase) => async (req, res) => {
     };
 };
 
-const updateWorkExperience = (supabase) => async (req, res) => {
+const updateWorkExperience = async (req, res) => {
     if (req.you.cannot(Actions.MANAGE, Subjects.WORK_EXPERIENCES)) {
         return res.status(httpStatus.FORBIDDEN).json({
             status: 'FORBIDDEN',
@@ -262,7 +262,7 @@ const updateWorkExperience = (supabase) => async (req, res) => {
             });
         }
 
-        const { data: existingWorkExperience, error: workExperienceError } = await workExperiencesService.fetchWorkExperienceById(supabase, workExperienceId);
+        const { data: existingWorkExperience, error: workExperienceError } = await workExperiencesService.fetchWorkExperienceById(req.supabase, workExperienceId);
         
         if (workExperienceError || !existingWorkExperience) {
             return res.status(httpStatus.NOT_FOUND).json({
@@ -338,7 +338,7 @@ const updateWorkExperience = (supabase) => async (req, res) => {
             };
         });
 
-        const { error: updateError } = await workExperiencesService.updateWorkExperience(supabase, workExperienceId, updateData);
+        const { error: updateError } = await workExperiencesService.updateWorkExperience(req.supabase, workExperienceId, updateData);
 
         if (updateError) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -360,7 +360,7 @@ const updateWorkExperience = (supabase) => async (req, res) => {
     }
 };
 
-const deleteWorkExperience = (supabase) => async (req, res) => {
+const deleteWorkExperience = async (req, res) => {
     if (req.you.cannot(Actions.MANAGE, Subjects.WORK_EXPERIENCES)) {
         return res.status(httpStatus.FORBIDDEN).json({
             status: 'FORBIDDEN',
@@ -385,7 +385,7 @@ const deleteWorkExperience = (supabase) => async (req, res) => {
             });
         }
 
-        const { data: existingWorkExperience, error: workExperienceError } = await workExperiencesService.fetchWorkExperienceById(supabase, workExperienceId);
+        const { data: existingWorkExperience, error: workExperienceError } = await workExperiencesService.fetchWorkExperienceById(req.supabase, workExperienceId);
         
         if (workExperienceError || !existingWorkExperience) {
             return res.status(httpStatus.NOT_FOUND).json({
@@ -394,7 +394,7 @@ const deleteWorkExperience = (supabase) => async (req, res) => {
             });
         }
 
-        const { error } = await workExperiencesService.deleteWorkExperience(supabase, workExperienceId);
+        const { error } = await workExperiencesService.deleteWorkExperience(req.supabase, workExperienceId);
 
         if (error) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
