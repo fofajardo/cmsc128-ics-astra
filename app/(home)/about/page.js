@@ -1,6 +1,11 @@
 "use client"
 
+"use client"
+
 import Image from "next/image"
+import { useState } from "react"
+import { Card, CardContent } from "@/components/ui/card"
+import { Rocket, Users, Code, Database, Star } from "lucide-react"
 import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Rocket, Users, Code, Database, Star } from "lucide-react"
