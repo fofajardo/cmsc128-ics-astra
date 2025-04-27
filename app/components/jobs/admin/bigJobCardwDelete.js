@@ -26,7 +26,7 @@ export default function BigJobCardwDelete(job) {
         </div>
         
         <p className="mt-5 text-black text-justify">{`${job.details}`}</p>
-        {showPrompt ? <ConfirmationPrompt isEdit={false} close={()=>setPrompt(false)} object={id} handleConfirm={handleDelete}/> : <></>} 
+        {showPrompt ? <ConfirmationPrompt prompt={"Are you sure you want to delete this job posting?"} close={()=>setPrompt(false)} object={id} handleConfirm={handleDelete}/> : <></>} 
     </div>
   )}
   

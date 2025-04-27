@@ -2,16 +2,18 @@
 
 import { Clock, OctagonAlert } from "lucide-react";
 import Image from "next/image";
+import ConfirmationPrompt from "./edit/confirmation";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function JobEditCard({job}) {
+    const [showPrompt, setPrompt] = useState(false);
     const router = useRouter();
 
     const isExpired = () => {
         const dateToday = new Date()
         var thirtyDays = new Date(job.created_at)
         thirtyDays.setDate(thirtyDays.getDate() + 30)
-        console.log(`Today:${dateToday} Created:${job.created_at} Thirty Days:${thirtyDays} ${dateToday < thirtyDays}`)
         return dateToday > thirtyDays 
     }
     
@@ -35,7 +37,13 @@ export default function JobEditCard({job}) {
         })
     }
 
-    return (
+    const handleRenew = () => {
+        // add renew logic here
+        
+        setPrompt(false);
+    }
+
+    return (<>
     <div className="relative bg-astrawhite w-[351px] h-[308px] rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] p-6 hover:-translate-y-0.5 transition-all duration-100ms ease-in">
         
         <h1 className="text-astrablack text-2xl font-bold">{formatSalary(job.salary)}<span className="text-xl font-normal">/month</span></h1>
@@ -68,10 +76,12 @@ export default function JobEditCard({job}) {
                 <div className="flex flex-col items-center h-full w-full">
                     <OctagonAlert size={50} className="text-astrared mt-15" strokeWidth={2.5}/>
                     <h1 className="text-center mt-3">This post has expired!<br/>Would you like to renew this job posting?</h1>
-                    <button className="mt-3 hover:scale-none hover:translate-y-1 !cursor-pointer bg-astrawhite text-astraprimary  font-semibold w-[75px] py-2 rounded-3xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] hover:shadow-[0_2px_2px_rgba(0,0,0,0.25)]">Yes</button>
+                    <button onClick={()=>{setPrompt(true)}} className="mt-3 hover:scale-none hover:translate-y-1 !cursor-pointer bg-astrawhite text-astraprimary  font-semibold w-[75px] py-2 rounded-3xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] hover:shadow-[0_2px_2px_rgba(0,0,0,0.25)]">Yes</button>
                 </div>
             </div> : <></>
         }
     </div>
+    {showPrompt ? <ConfirmationPrompt prompt={`Are you sure you want to renew this job posting for a ${job.job_title} position?`} close={()=>setPrompt(false)} handleConfirm={handleRenew}/> : <></>}
+    </>
   )}
   

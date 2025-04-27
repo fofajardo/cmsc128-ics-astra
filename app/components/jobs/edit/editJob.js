@@ -242,7 +242,7 @@ export default function JobForm({isEdit, close, job}){
 
         </div>
 
-        {showPrompt ? <ConfirmationPrompt isEdit={true} close={()=>setPrompt(false)} handleConfirm={handleEdit}/> : <></>} 
+        {showPrompt ? <ConfirmationPrompt prompt={"Are you sure you want to edit this job posting?"} close={()=>setPrompt(false)} handleConfirm={handleEdit}/> : <></>} 
     </div>
   )}
   
