@@ -1,4 +1,5 @@
 import BigJobCardwEdit from "../../../../components/jobs/edit/bigJobCardwEdit";
+import SideJobCard from "@/components/jobs/view/sideJobCard";
 import SmallJobCard from "../../../../components/jobs/view/smallJobCard";
 import Back from "../../../../components/jobs/view/back";
 import {job} from "../../dummy";
@@ -10,7 +11,9 @@ export default function JobsPage() {
         
         <Back/>
 
-        <BigJobCardwEdit {...job}/>
+        <div className="flex justify-center gap-2 flex-wrap">
+            <BigJobCardwEdit {...job}/> <SideJobCard {...job}/>
+        </div>
 
         <div className="h-11"/>
        

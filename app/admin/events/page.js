@@ -14,7 +14,7 @@ export default function Events() {
   const [toast, setToast] = useState(null);
   const [eventList, setEventList] = useState(eventListDummy);
   const [formData, setFormData] = useState({
-    event_name: "",
+    title: "",
     type: "",
     location: "",
     max_slots: "",
@@ -25,9 +25,19 @@ export default function Events() {
   });
   const [editingId, setEditingId] = useState(null);
 
+  const cols = [
+    { label: "Event", justify: "center", visible: "all" },
+    { label: "Location", justify: "center", visible: "sm" },
+    { label: "Type", justify: "center", visible: "md" },
+    { label: "Date", justify: "center", visible: "lg" },
+    { label: "Going", justify: "center", visible: "lg" },
+    { label: "Interested", justify: "center", visible: "lg" },
+    { label: "Actions", justify: "center", visible: "all" },
+  ];
+
   const toggleAddModal = () => {
     setFormData({
-      event_name: "",
+      title: "",
       type: "",
       location: "",
       max_slots: "",
@@ -41,7 +51,7 @@ export default function Events() {
 
   const toggleEditModal = (event) => {
     setFormData({
-      event_name: event.event_name,
+      title: event.title,
       type: event.type,
       location: event.location,
       max_slots: event.max_slots || "",
@@ -147,19 +157,10 @@ export default function Events() {
   );
 }
 
-const cols = [
-  { label: "Event", justify: "center", visible: "all" },
-  { label: "Location", justify: "center", visible: "sm" },
-  { label: "Type", justify: "center", visible: "md" },
-  { label: "Date", justify: "center", visible: "lg" },
-  { label: "Going", justify: "center", visible: "lg" },
-  { label: "Interested", justify: "center", visible: "lg" },
-  { label: "Actions", justify: "center", visible: "all" },
-];
 
 function createRows(events, handleDelete, toggleEditModal) {
   return events.map((event) => ({
-    Event: renderTitle(event.event_name),
+    Event: renderTitle(event.title),
     Location: renderText(event.location),
     Type: renderText(event.type),
     Date: renderText(event.date),
@@ -178,12 +179,12 @@ function renderText(text) {
 }
 
 function renderActions(event, handleDelete, toggleEditModal) {
-  const { id, event_name } = event;
+  const { id, title } = event;
   return (
     <div className="flex justify-center items-center gap-3 py-4">
       <div className="hidden md:flex gap-2">
         <a
-          href={`/admin/events/${id}/view`}
+          href={`/admin/events/${id}`}
           className="bg-[#e6f0ff] text-[#007bff] px-4 py-2 rounded-md text-sm font-semibold hover:bg-[#d0e3ff]"
         >
           View
@@ -195,7 +196,7 @@ function renderActions(event, handleDelete, toggleEditModal) {
           Edit
         </button>
         <button
-          onClick={() => handleDelete(id, event_name)}
+          onClick={() => handleDelete(id, title)}
           className="bg-astrared text-astrawhite px-4 py-2 rounded-md text-sm font-semibold hover:bg-[#c82333]"
         >
           Delete
@@ -215,7 +216,7 @@ function renderActions(event, handleDelete, toggleEditModal) {
           <Pencil size={20} />
         </button>
         <button
-          onClick={() => handleDelete(id, event_name)}
+          onClick={() => handleDelete(id, title)}
           className="bg-astrared text-astrawhite p-2 rounded-md"
         >
           <Trash2 size={20} />

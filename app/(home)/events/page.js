@@ -11,7 +11,6 @@ import DateFilter from "@/components/events/GroupedEvents/DateFilter";
 import Pagination from "@/components/events/GroupedEvents/Pagination";
 import EventCarousel from "@/components/events/GroupedEvents/CardCarousel/EventCarousel";
 
-
 import events from "../../data/events";
 import eventsVector from "../../assets/events-vector.png";
 

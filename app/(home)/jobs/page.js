@@ -54,19 +54,22 @@ export default function JobsPage() {
         <span className="relative z-10">See More</span>
       </button>}
       
-      {myJobs.length == 0 ? <></> : <>
-      <div className="grid grid-cols-[351px] lg:grid-cols-[351px_351px_351px] md:grid-cols-[351px_351px] gap-5 justify-items-center justify-center mx-30">
-      <h1 className="text-astrablack font-bold text-2xl ml-2 lg:col-span-3 md:col-span-2 justify-self-start">Manage My Job Postings</h1>
-         {myJobs.slice(0, myJobCards).map((job) => {
-          return (
-            <JobEditCard key={job.job_id} job={job}/>
-        )})}
-      </div>
-      
+      {myJobs.length == 0 ? <></> 
+      : 
+      <>
+        <div className="grid grid-cols-[351px] lg:grid-cols-[351px_351px_351px] md:grid-cols-[351px_351px] gap-5 justify-items-center justify-center mx-30">
+          <h1 className="text-astrablack font-bold text-2xl ml-2 lg:col-span-3 md:col-span-2 justify-self-start">Manage My Job Postings</h1>
+              {myJobs.slice(0, myJobCards).map((job) => {
+              return (
+                <JobEditCard key={job.job_id} job={job}/>
+            )})}
+        </div>
+        
 
-      <button onClick={()=>setMyJobCards((prev) => prev + CARDS_PER_CLICK)} className="my-10 hover:scale-none hover:text-astrawhite border-1 border-astraprimary text-lg rounded-lg relative flex h-[50px] w-33 items-center justify-center overflow-hidden bg-astrawhite text-astraprimary transition-all before:absolute before:h-0 before:w-0 before:rounded-full before:bg-astraprimary before:text-astraprimary before:duration-500 before:ease-out hover:before:h-56 hover:before:w-56">
-        <span className="relative z-10">See More</span>
-      </button></>
+        <button onClick={()=>setMyJobCards((prev) => prev + CARDS_PER_CLICK)} className="my-10 hover:scale-none hover:text-astrawhite border-1 border-astraprimary text-lg rounded-lg relative flex h-[50px] w-33 items-center justify-center overflow-hidden bg-astrawhite text-astraprimary transition-all before:absolute before:h-0 before:w-0 before:rounded-full before:bg-astraprimary before:text-astraprimary before:duration-500 before:ease-out hover:before:h-56 hover:before:w-56">
+          <span className="relative z-10">See More</span>
+        </button>
+      </>
       }
     </div>
   )}

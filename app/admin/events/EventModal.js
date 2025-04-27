@@ -53,7 +53,7 @@ export default function EventModal({
             <label className="block font-medium mb-1">Event Name</label>
             <input
               type="text"
-              name="event_name"
+              name="title"
               value={formData.event_name}
               onChange={handleChange}
               placeholder="Ex: User Experience Researcher"

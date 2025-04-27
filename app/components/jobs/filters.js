@@ -82,9 +82,9 @@ export default function Filter() {
         </div>
 
         {/* Most Recent */}
-        <button onClick={(e) => {e.preventDefault(); setFormData({...formData, recent: !formData.recent})}} value={formData.recent} name={"recent"} className="!cursor-pointer flex items-center justify-between text-astrablack bg-astrawhite outline outline-transparent border-1 border-astraprimary font-normal px-4 h-[45px] w-40 rounded-lg placeholder:text-astradarkgray -translate-y-0 hover:-translate-y-1 focus:-translate-y-1 hover:shadow-[0_2px_4px_rgba(0,0,0,0.25)] focus:shadow-[0_2px_6px_rgba(0,0,0,0.25)] hover:scale-none" tabIndex={0}>
+        <button onClick={(e) => {e.preventDefault(); setFormData({...formData, recent: !formData.recent})}} value={formData.recent} name={"recent"} className={`${formData.recent ? 'bg-[var(--color-astraprimary)] text-[var(--color-astrawhite)]' : 'text-[var(--color-astrablack)] bg-[var(--color-astrawhite)]'} !cursor-pointer flex items-center justify-between outline outline-transparent border-1 border-astraprimary font-normal px-4 h-[45px] w-40 rounded-lg placeholder:text-astradarkgray -translate-y-0 hover:-translate-y-1 hover:shadow-[0_2px_4px_rgba(0,0,0,0.25)] hover:scale-none`} tabIndex={0}>
             <p>Most Recent</p>
-            <ListFilter className="text-[var(--color-astraprimary)]" size={29}/>
+            <ListFilter className={`${formData.recent ? 'text-[var(--color-astrawhite)]' : 'text-[var(--color-astraprimary)]'}`} size={29}/>
         </button>
 
     </form>
