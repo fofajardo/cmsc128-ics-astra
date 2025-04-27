@@ -18,6 +18,7 @@ const RequestFundraiserDetails = () => {
   // Retrieve previous page data
   const amount = searchParams.get('amount');
   const zipCode = searchParams.get('zipCode');
+  const targetDate = searchParams.get('targetDate');
 
   // Load data from URL parameters on component mount
   useEffect(() => {

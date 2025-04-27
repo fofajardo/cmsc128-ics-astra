@@ -12,12 +12,13 @@ const FundraiserConfirmPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [photoUrl, setPhotoUrl] = useState(null);
 
-  // DUMMY DATA - for preview purposes
+  //dummy data for the fundraiser preview
   const dummyData = {
     title: "Help Build a New Community Library",
     description: "Our neighborhood has been without a library for over 5 years after the old one was damaged in a storm. We're raising funds to build a new community library that will serve as an educational hub for children and adults alike.\n\nThe funds will go toward purchasing books, computers, and essential furniture. Any additional funds will be used for educational programs and workshops.\n\nYour support means everything to our community. Together, we can create a space where learning thrives!",
     zipCode: "12345",
     amount: "150000",
+    targetDate: "2025-12-31",
     photoUrl: "https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
   };
 
@@ -26,9 +27,11 @@ const FundraiserConfirmPage = () => {
   const description = searchParams.get("description") || dummyData.description;
   const zipCode = searchParams.get("zipCode") || dummyData.zipCode;
   const amount = searchParams.get("amount") || dummyData.amount;
+  const targetDate = searchParams.get("targetDate") || dummyData.targetDate;
   
   // Safe sessionStorage access in useEffect to avoid SSR issues
   useEffect(() => {
+    // Only access sessionStorage in the browser environment
     if (typeof window !== 'undefined') {
       const storedPhotoUrl = sessionStorage.getItem("fundraiserPhotoPreview");
       setPhotoUrl(storedPhotoUrl || dummyData.photoUrl);
@@ -41,7 +44,8 @@ const FundraiserConfirmPage = () => {
     setIsSubmitting(true);
     
     try {
-      // Sample code for backend submission (to be implemented by backend developer)
+      //code for backend API call to submit the fundraiser
+     
       
       // Simulate API call with timeout
       await new Promise(resolve => setTimeout(resolve, 1500));
@@ -68,6 +72,17 @@ const FundraiserConfirmPage = () => {
     return new Intl.NumberFormat('en-PH').format(value);
   };
 
+  // Format date to be more user-friendly
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
   return (
     <div className="min-h-screen w-full flex flex-col bg-astrawhite">
       {/* Header */}
@@ -80,9 +95,10 @@ const FundraiserConfirmPage = () => {
         </p>
       </div>
       
-      {/* Main content */}
+      {/*Main content*/}
       <div className="flex-grow p-6 md:p-12">
         <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
+          {/* Preview header that mimics how the fundraiser will look */}
           <div className="bg-gradient-to-r from-astraprimary to-astrablue h-16"></div>
           
           <div className="p-6 md:p-8">
@@ -121,6 +137,12 @@ const FundraiserConfirmPage = () => {
                   <div>
                     <h2 className="text-lg font-semibold text-astrablack">Location</h2>
                     <p className="text-astradarkgray">ZIP Code: {zipCode}</p>
+                  </div>
+                  
+                  {/* Added Target Date section */}
+                  <div>
+                    <h2 className="text-lg font-semibold text-astrablack">Target Date</h2>
+                    <p className="text-astradarkgray">{formatDate(targetDate)}</p>
                   </div>
                 </div>
               </div>

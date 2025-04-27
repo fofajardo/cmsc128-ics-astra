@@ -12,16 +12,20 @@ const RequestFundraiserGoal = () => {
   // Initialize states with URL parameters if they exist
   const [amount, setAmount] = useState("");
   const [zipCode, setZipCode] = useState("");
+  const [targetDate, setTargetDate] = useState("");
   const [amountError, setAmountError] = useState("");
   const [zipCodeError, setZipCodeError] = useState("");
+  const [targetDateError, setTargetDateError] = useState("");
 
   // Load data from URL parameters on component mount
   useEffect(() => {
     const urlAmount = searchParams.get('amount');
     const urlZipCode = searchParams.get('zipCode');
+    const urlTargetDate = searchParams.get('targetDate');
     
     if (urlAmount) setAmount(urlAmount);
     if (urlZipCode) setZipCode(urlZipCode);
+    if (urlTargetDate) setTargetDate(urlTargetDate);
   }, [searchParams]);
 
   // Update URL without navigation whenever values change
@@ -65,15 +69,30 @@ const RequestFundraiserGoal = () => {
     }
   };
 
-  // Check if both fields are valid and filled
-  const isFormValid = amount && zipCode && !amountError && !zipCodeError;
+  // Handle target date input change
+  const handleTargetDateChange = (e) => {
+    const value = e.target.value;
+    setTargetDate(value);
+    updateUrlParams('targetDate', value);
+    
+    // Validate date is in the future
+    if (value) {
+      const selectedDate = new Date(value);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Reset time portion for accurate date comparison
+      
+      if (selectedDate < today) {
+        setTargetDateError("Please select a future date");
+      } else {
+        setTargetDateError("");
+      }
+    } else {
+      setTargetDateError("");
+    }
+  };
 
-
-  /* Build the next page link with current form data
-  const nextPageLink = isFormValid 
-    ? `/projects/request/details?amount=${amount}&zipCode=${zipCode}` 
-    : '/projects/request/details';
-    */
+  // Check if all fields are valid and filled
+  const isFormValid = amount && zipCode && targetDate && !amountError && !zipCodeError && !targetDateError;
 
   return ( 
     <div className="min-h-screen w-full flex flex-col md:flex-row"> 
@@ -86,7 +105,7 @@ const RequestFundraiserGoal = () => {
           </h2> 
           <p className="font-r text-astrablack text-left tracking-wide"> 
             Give a rough estimate of your <br />  
-            fundraising needs. 
+            fundraising needs and timeline. 
           </p> 
         </div> 
       </div> 
@@ -118,6 +137,25 @@ const RequestFundraiserGoal = () => {
                 />
                 {amountError && (
                   <p className="text-red-500 text-sm mt-1">{amountError}</p>
+                )}
+              </div>
+
+              {/* Target Date field */}
+              <div className="w-full">
+                <label className="block text-astrablack font-r mb-2">
+                  When do you need to reach your goal?
+                </label>
+                <input
+                  type="date"
+                  value={targetDate}
+                  onChange={handleTargetDateChange}
+                  min={new Date().toISOString().split('T')[0]} // Set minimum date to today
+                  className={`w-full p-3 border rounded-md ${
+                    targetDateError ? 'border-red-500' : 'border-astradarkgray'
+                  } focus:outline-none focus:ring-2 focus:ring-astraprimary`}
+                />
+                {targetDateError && (
+                  <p className="text-red-500 text-sm mt-1">{targetDateError}</p>
                 )}
               </div>
 
