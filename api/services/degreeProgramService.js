@@ -14,15 +14,6 @@ const fetchDegreeProgramById = async (supabase, id) => {
     .single();
 };
 
-// const fetchDegreeProgramsByUserId = async (supabase, userId, filters) => {
-//     // TODO: Add filters
-//     return await supabase
-//         .from("degree_programs")
-//         .select("*")
-//         .sort("year_graduated", { ascending: false })
-//         .eq("user_id", userId)
-// };
-
 const insertDegreeProgram = async (supabase, degreeProgramData) => {
   return await supabase
     .from("degree_programs")
@@ -48,7 +39,6 @@ const deleteDegreeProgramById = async (supabase, id) => {
 const degreeProgramService = {
   fetchAllDegreePrograms,
   fetchDegreeProgramById,
-  // fetchDegreeProgramsByUserId,
   insertDegreeProgram,
   updateDegreeProgramById,
   deleteDegreeProgramById,
