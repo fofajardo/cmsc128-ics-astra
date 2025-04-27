@@ -1,55 +1,48 @@
 import { InView } from 'react-intersection-observer';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 const TransitionGrow = ({
   children,
   className = '',
-  threshold = 0.10,
-  delay = 0,
+  threshold = 0,
+  delay = 0.1,
+  navbarHeight = 100,
 }) => {
   const [isVisible, setIsVisible] = useState(false);
-  const [scrollDirection, setScrollDirection] = useState('down');
-  const [lastY, setLastY] = useState(0);
-
-  // Track scroll direction more reliably
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentY = window.scrollY;
-      setScrollDirection(currentY > lastY ? 'down' : 'up');
-      setLastY(currentY);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastY]);
 
   return (
     <InView
       as="div"
-      onChange={(inView, entry) => {
+      onChange={(inView) => {
         setIsVisible(inView);
-        // Only update scroll direction when element is out of view
-        if (!inView) {
-          setScrollDirection(entry.boundingClientRect.y > 0 ? 'up' : 'down');
-        }
       }}
-      threshold={scrollDirection === 'up' ? 0 : threshold}
-      className={`
-        size-full
-        transition-[opacity,transform]
-        duration-250
-        ease-out
-        ${className}
-        ${isVisible
-          ? 'opacity-100 blur-none translate-y-0'
-          : scrollDirection === 'up'
-          ? 'opacity-0 blur-sm -translate-y-12'
-          : 'opacity-0 blur-sm translate-y-12'
-        }
-      `}
-      style={{ transitionDelay: `${delay}s` }}
+      threshold={threshold}
+      rootMargin={`-${navbarHeight}px 0px 0px 0px`}
     >
-      {children}
+      {({ ref }) => (
+        <div
+          ref={ref}
+          className={`
+            size-full
+            transition-all
+            duration-500
+            ease-in-out
+            ${className}
+            ${
+              isVisible
+                ? 'opacity-100 translate-y-0'   // Fade in and move to normal position
+                : 'opacity-0 -translate-y-5'    // Fade out and move up when hiding
+            }
+          `}
+          style={{
+            transitionDelay: `${delay}s`,
+            position: 'relative',
+            transformOrigin: 'bottom', // Ensures upward movement feels natural
+          }}
+        >
+          {children}
+        </div>
+      )}
     </InView>
   );
 };
