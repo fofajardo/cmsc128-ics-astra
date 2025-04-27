@@ -1,23 +1,20 @@
 import { InView } from 'react-intersection-observer';
 import { useState } from 'react';
 
-const TransitionGrow = ({
+const TransitionSlide = ({
   children,
   className = '',
   threshold = 0,
   delay = 0.1,
   navbarHeight = 100,
-  onClick = () => {},
 }) => {
-  const [hasBeenVisible, setHasBeenVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
 
   return (
     <InView
       as="div"
       onChange={(inView) => {
-        if (inView && !hasBeenVisible) {
-          setHasBeenVisible(true); // Lock animation after first view
-        }
+        setIsVisible(inView);
       }}
       threshold={threshold}
       rootMargin={`-${navbarHeight}px 0px 0px 0px`}
@@ -25,7 +22,6 @@ const TransitionGrow = ({
       {({ ref }) => (
         <div
           ref={ref}
-          onClick={onClick}
           className={`
             size-full
             transition-all
@@ -33,16 +29,15 @@ const TransitionGrow = ({
             ease-in-out
             ${className}
             ${
-              hasBeenVisible
-                ? 'opacity-100 scale-100'
-                : 'opacity-0 scale-85'
+              isVisible
+                ? 'opacity-100 translate-y-0'   // Fade in and move to normal position
+                : 'opacity-0 -translate-y-5'    // Fade out and move up when hiding
             }
           `}
           style={{
             transitionDelay: `${delay}s`,
             position: 'relative',
-            transformOrigin: 'bottom',
-            willChange: 'opacity, transform',
+            transformOrigin: 'bottom', // Ensures upward movement feels natural
           }}
         >
           {children}
@@ -52,4 +47,4 @@ const TransitionGrow = ({
   );
 };
 
-export default TransitionGrow;
+export default TransitionSlide;

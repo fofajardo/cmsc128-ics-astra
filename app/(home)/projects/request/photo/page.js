@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react"; 
 import { useRouter, useSearchParams } from "next/navigation"; 
 import Link from "next/link"; 
+import BackButton from "@/components/events/IndividualEvent/BackButton";
  
 const RequestFundraiserPhoto = () => { 
   const router = useRouter();
@@ -44,11 +45,6 @@ const RequestFundraiserPhoto = () => {
 
   // Check if a photo has been uploaded
   const isFormValid = photoPreview && !photoError;
-
-  // Handle back button
-  const handleBack = () => {
-    router.back();
-  };
 
   // Handle click on the upload area
   const handleUploadAreaClick = () => {
@@ -142,12 +138,7 @@ const RequestFundraiserPhoto = () => {
  
         {/* Bottom navigation */} 
         <div className="flex justify-between px-6 md:px-12 py-5 border-astralightgray border-t-1"> 
-          <button 
-            onClick={handleBack}
-            className="flex items-center text-astradarkgray hover:text-astraprimary transition-colors font-r transition cursor-pointer"
-          > 
-            <i className="fas fa-arrow-left mr-2"></i> 
-          </button> 
+          <BackButton />
           {isFormValid ? (
             <Link href="/projects/request/preview" passHref> 
               <button className="blue-button font-semibold transition cursor-pointer w-[150px] h-[55px]"> 

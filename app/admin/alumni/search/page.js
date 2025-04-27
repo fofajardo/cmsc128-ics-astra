@@ -158,7 +158,7 @@ function renderSkills(skills) {
     <div className="relative group flex justify-center items-center cursor-default">
         <div className="flex flex-wrap justify-center items-center">
             {visibleSkills.map((skill, index) => (
-            <SkillTag key={index} text={skill} />
+            <SkillTag key={index} text={skill} margin={'m-1'}/>
             ))}
             {remainingCount > 0 && (
             <div className="size-8 flex justify-center items-center rounded-full text-xs font-medium border border-dashed text-astradarkgray bg-astratintedwhite cursor-default">

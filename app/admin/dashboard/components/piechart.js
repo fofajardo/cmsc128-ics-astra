@@ -1,5 +1,6 @@
 "use client"
 
+import { useRouter } from 'next/navigation';
 import * as React from "react"
 import { TrendingUp } from "lucide-react"
 import { Label, Pie, PieChart } from "recharts"
@@ -76,6 +77,7 @@ function FundDisplay({ color, title, funds }) {
 
 
 export function Donut() {
+  const router = useRouter();
   const totalFunds = React.useMemo(() => {
     return chartData.reduce((acc, curr) => acc + curr.funds, 0)
   }, [])
@@ -83,8 +85,18 @@ export function Donut() {
   return (
     <Card className="flex flex-col h-full">
       <CardHeader className="items-center pb-0">
-        <CardTitle>Highest Funded Categories</CardTitle>
-        <CardDescription>January - April 2025</CardDescription>
+        <div className="flex justify-between">
+          <div className="flex flex-col">
+            <CardTitle>Highest Funded Categories</CardTitle>
+            <CardDescription>January - April 2025</CardDescription>
+          </div>
+          <a
+              onClick={() => router.push('/admin/projects')}
+              className="text-astraprimary font-rb hover:underline cursor-pointer"
+            >
+              See All
+          </a>
+        </div>
         <hr className="h-2 border-astrablack"></hr>
       </CardHeader>
       <CardContent className="flex-1 pb-0">

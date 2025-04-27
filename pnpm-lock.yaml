@@ -14,6 +14,11 @@ importers:
       '@iconify/react':
         specifier: ^5.2.1
         version: 5.2.1(react@19.1.0)
+<<<<<<< HEAD
+      classnames:
+        specifier: ^2.5.1
+        version: 2.5.1
+=======
       '@radix-ui/react-select':
         specifier: ^2.2.2
         version: 2.2.2(@types/react@19.1.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -26,6 +31,7 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+>>>>>>> master
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
@@ -37,7 +43,11 @@ importers:
         version: 1.18.1
       framer-motion:
         specifier: ^12.7.4
+<<<<<<< HEAD
+        version: 12.7.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+=======
         version: 12.8.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+>>>>>>> master
       lucide-react:
         specifier: ^0.484.0
         version: 0.484.0(react@19.1.0)
@@ -56,12 +66,15 @@ importers:
       react-select:
         specifier: ^5.10.1
         version: 5.10.1(@types/react@19.1.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+<<<<<<< HEAD
+=======
       recharts:
         specifier: ^2.15.3
         version: 2.15.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       tailwind-merge:
         specifier: ^3.2.0
         version: 3.2.0
+>>>>>>> master
     devDependencies:
       '@tailwindcss/postcss':
         specifier: ^4.0.17
@@ -238,8 +251,13 @@ packages:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
 
+<<<<<<< HEAD
+  '@floating-ui/react@0.27.7':
+    resolution: {integrity: sha512-5V9pwFeiv+95Jlowq/7oiGISSrdXMTs2jfoSy8k+WM6oI/Skm1WWjPdJWeporN2O4UGcsaCJdirKffKayMoPgw==}
+=======
   '@floating-ui/react@0.27.8':
     resolution: {integrity: sha512-EQJ4Th328y2wyHR3KzOUOoTW2UKjFk53fmyahfwExnFQ8vnsMYqKc+fFPOkeYtj5tcp1DUMiNJ7BFhed7e9ONw==}
+>>>>>>> master
     peerDependencies:
       react: '>=17.0.0'
       react-dom: '>=17.0.0'
@@ -1190,9 +1208,12 @@ packages:
     resolution: {integrity: sha512-7VT13fmjotKpGipCW9JEQAusEPE+Ei8nl6/g4FBAmIm0GOOLMua9NDDo/DWp0ZAxCr3cPq5ZpBqmPAQgDda2Pw==}
     engines: {node: '>= 8.10.0'}
 
+<<<<<<< HEAD
+=======
   class-variance-authority@0.7.1:
     resolution: {integrity: sha512-Ka+9Trutv7G8M6WT6SeiRWz792K5qEqIGEGzXKhAE6xOWAY6pPH8U+9IY3oCMv6kqTmLsv7Xh/2w2RigkePMsg==}
 
+>>>>>>> master
   classnames@2.5.1:
     resolution: {integrity: sha512-saHYOzhIQs6wy2sVxTM6bUDsQO4F50V9RQ22qBpEdCW+I+/Wmke2HOl6lS6dTpdxVhb88/I6+Hs+438c3lfUow==}
 
@@ -1670,8 +1691,13 @@ packages:
     resolution: {integrity: sha512-buRG0fpBtRHSTCOASe6hD258tEubFoRLb4ZNA6NxMVHNw2gOcwHo9wyablzMzOA5z9xA9L1KNjk/Nt6MT9aYow==}
     engines: {node: '>= 0.6'}
 
+<<<<<<< HEAD
+  framer-motion@12.7.4:
+    resolution: {integrity: sha512-jX0bPsTmU0oPZTYz/dVyD0dmOyEOEJvdn0TaZBE5I8g2GvVnnQnW9f65cJnoVfUkY3WZWNXGXnPbVA9YnaIfVA==}
+=======
   framer-motion@12.8.0:
     resolution: {integrity: sha512-EarL75miCDcKLEAQLJ+6Zfwdj+KQsVlbHGGlygZ/TigKBj7NLPkyDKk4WLFUScjAs2xNpfMRLBM6VsCJq9Roxg==}
+>>>>>>> master
     peerDependencies:
       '@emotion/is-prop-valid': '*'
       react: ^18.0.0 || ^19.0.0
@@ -2176,11 +2202,19 @@ packages:
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
     hasBin: true
 
+<<<<<<< HEAD
+  motion-dom@12.7.4:
+    resolution: {integrity: sha512-1ZUHAoSUMMxP6jPqyxlk9XUfb6NxMsnWPnH2YGhrOhTURLcXWbETi6eemoKb60Pe32NVJYduL4B62VQSO5Jq8Q==}
+
+  motion-utils@12.7.2:
+    resolution: {integrity: sha512-XhZwqctxyJs89oX00zn3OGCuIIpVevbTa+u82usWBC6pSHUd2AoNWiYa7Du8tJxJy9TFbZ82pcn5t7NOm1PHAw==}
+=======
   motion-dom@12.8.0:
     resolution: {integrity: sha512-YsfUE1F8Ycv9th1V0YJ6LOx9U2EMe/8P3RXK1o6NZhRbdFiWvzBLvxqp2X6Fn3rbJbwWkSEfnpe14ZU9Oz1d1Q==}
 
   motion-utils@12.7.5:
     resolution: {integrity: sha512-JIgrmEq7Vw1x0AUrjvkRp7oMMQkGqSUMT50O/Ag6RRCQWG3gRRTkOI+BirBAJT6m+GIPoiyxkJ1u98GgF/a6TQ==}
+>>>>>>> master
 
   ms@2.0.0:
     resolution: {integrity: sha512-Tpp60P6IUJDTuOq/5Z8cdskzJujfwqfOTkrwIwj7IRISpnkJnT6SyJ4PCPnGMoFjC9ddhal5KVIYtAt97ix05A==}
@@ -2700,9 +2734,12 @@ packages:
   tabbable@6.2.0:
     resolution: {integrity: sha512-Cat63mxsVJlzYvN51JmVXIgNoUokrIaT2zLclCXjRd8boZ0004U4KCs/sToJ75C6sdlByWxpYnb5Boif1VSFew==}
 
+<<<<<<< HEAD
+=======
   tailwind-merge@3.2.0:
     resolution: {integrity: sha512-FQT/OVqCD+7edmmJpsgCsY820RTD5AkBryuG5IUqR5YQZSdj5xlH5nLgH7YPths7WsLPSpSBNneJdM8aS8aeFA==}
 
+>>>>>>> master
   tailwindcss@4.1.4:
     resolution: {integrity: sha512-1ZIUqtPITFbv/DxRmDr5/agPqJwF69d24m9qmM1939TJehgY539CtzeZRjbLt5G6fSy/7YqqYsfvoTEw9xUI2A==}
 
@@ -2710,9 +2747,12 @@ packages:
     resolution: {integrity: sha512-GNzQvQTOIP6RyTfE2Qxb8ZVlNmw0n88vp1szwWRimP02mnTsx3Wtn5qRdqY9w2XduFNUgvOwhNnQsjwCp+kqaQ==}
     engines: {node: '>=6'}
 
+<<<<<<< HEAD
+=======
   tiny-invariant@1.3.3:
     resolution: {integrity: sha512-+FbBPE1o9QAYvviau/qC5SE3caw21q3xkvWKBtja5vgqOWIHHJ3ioaq1VPfn/Szqctz2bU/oYeKd9/z5BL+PVg==}
 
+>>>>>>> master
   tinyglobby@0.2.13:
     resolution: {integrity: sha512-mEwzpUgrLySlveBwEVDMKk5B57bhLPYovRfPAXD5gA/98Opn0rCDj3GtLwFvCvH5RK9uPCExUROW5NjDwvqkxw==}
     engines: {node: '>=12.0.0'}
@@ -3086,7 +3126,11 @@ snapshots:
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
 
+<<<<<<< HEAD
+  '@floating-ui/react@0.27.7(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+=======
   '@floating-ui/react@0.27.8(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+>>>>>>> master
     dependencies:
       '@floating-ui/react-dom': 2.1.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@floating-ui/utils': 0.2.9
@@ -3943,10 +3987,13 @@ snapshots:
     optionalDependencies:
       fsevents: 2.3.3
 
+<<<<<<< HEAD
+=======
   class-variance-authority@0.7.1:
     dependencies:
       clsx: 2.1.1
 
+>>>>>>> master
   classnames@2.5.1: {}
 
   client-only@0.0.1: {}
@@ -4108,8 +4155,11 @@ snapshots:
   destroy@1.2.0: {}
 
   detect-libc@2.0.4: {}
+<<<<<<< HEAD
+=======
 
   detect-node-es@1.1.0: {}
+>>>>>>> master
 
   diff@5.2.0: {}
 
@@ -4582,10 +4632,17 @@ snapshots:
 
   forwarded@0.2.0: {}
 
+<<<<<<< HEAD
+  framer-motion@12.7.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+    dependencies:
+      motion-dom: 12.7.4
+      motion-utils: 12.7.2
+=======
   framer-motion@12.8.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
     dependencies:
       motion-dom: 12.8.0
       motion-utils: 12.7.5
+>>>>>>> master
       tslib: 2.8.1
     optionalDependencies:
       react: 19.1.0
@@ -5061,11 +5118,19 @@ snapshots:
       yargs-parser: 21.1.1
       yargs-unparser: 2.0.0
 
+<<<<<<< HEAD
+  motion-dom@12.7.4:
+    dependencies:
+      motion-utils: 12.7.2
+
+  motion-utils@12.7.2: {}
+=======
   motion-dom@12.8.0:
     dependencies:
       motion-utils: 12.7.5
 
   motion-utils@12.7.5: {}
+>>>>>>> master
 
   ms@2.0.0: {}
 
@@ -5270,7 +5335,11 @@ snapshots:
 
   react-datepicker@8.3.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
     dependencies:
+<<<<<<< HEAD
+      '@floating-ui/react': 0.27.7(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+=======
       '@floating-ui/react': 0.27.8(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+>>>>>>> master
       clsx: 2.1.1
       date-fns: 4.1.0
       react: 19.1.0
@@ -5283,6 +5352,8 @@ snapshots:
 
   react-is@16.13.1: {}
 
+<<<<<<< HEAD
+=======
   react-is@18.3.1: {}
 
   react-remove-scroll-bar@2.3.8(@types/react@19.1.2)(react@19.1.0):
@@ -5304,6 +5375,7 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.1.2
 
+>>>>>>> master
   react-select@5.10.1(@types/react@19.1.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
     dependencies:
       '@babel/runtime': 7.27.0
@@ -5321,6 +5393,8 @@ snapshots:
       - '@types/react'
       - supports-color
 
+<<<<<<< HEAD
+=======
   react-smooth@4.0.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
     dependencies:
       fast-equals: 5.2.2
@@ -5337,6 +5411,7 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.1.2
 
+>>>>>>> master
   react-transition-group@4.4.5(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
     dependencies:
       '@babel/runtime': 7.27.0
@@ -5673,14 +5748,20 @@ snapshots:
 
   tabbable@6.2.0: {}
 
+<<<<<<< HEAD
+=======
   tailwind-merge@3.2.0: {}
 
+>>>>>>> master
   tailwindcss@4.1.4: {}
 
   tapable@2.2.1: {}
 
+<<<<<<< HEAD
+=======
   tiny-invariant@1.3.3: {}
 
+>>>>>>> master
   tinyglobby@0.2.13:
     dependencies:
       fdir: 6.4.4(picomatch@4.0.2)
@@ -5789,6 +5870,11 @@ snapshots:
     dependencies:
       punycode: 2.3.1
 
+<<<<<<< HEAD
+  use-isomorphic-layout-effect@1.2.0(@types/react@19.1.2)(react@19.1.0):
+    dependencies:
+      react: 19.1.0
+=======
   use-callback-ref@1.3.3(@types/react@19.1.2)(react@19.1.0):
     dependencies:
       react: 19.1.0
@@ -5807,6 +5893,7 @@ snapshots:
       detect-node-es: 1.1.0
       react: 19.1.0
       tslib: 2.8.1
+>>>>>>> master
     optionalDependencies:
       '@types/react': 19.1.2
 
