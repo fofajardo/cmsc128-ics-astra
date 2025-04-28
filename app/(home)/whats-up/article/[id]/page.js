@@ -9,7 +9,6 @@ const ArticleView = () => {
 
   return (
     <div role="main" className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
-      <div className="h-[100px]" /> {/* Navbar spacing */}
       <motion.article 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

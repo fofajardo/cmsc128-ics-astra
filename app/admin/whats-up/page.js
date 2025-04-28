@@ -248,12 +248,6 @@ export default function CommunicationPage() {
                                     </Link>
                                 ))}
                             </div>
-                            <PageTool 
-                                pagination={pagination}
-                                setPagination={(newPagination) => {
-                                    setCurrentPage(newPagination.currPage);
-                                }}
-                            />
                         </div>
                     )}
 

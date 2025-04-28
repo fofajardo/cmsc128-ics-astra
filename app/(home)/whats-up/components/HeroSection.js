@@ -42,7 +42,7 @@ export function HeroSection() {
 
   return (
     <div className="w-full bg-astradirtywhite">
-      <div className="h-[100px]" />
+      
       <div
         className="relative w-full bg-cover bg-center overflow-hidden"
         style={{ backgroundImage: "url('/blue-bg.png')" }}
