@@ -4,8 +4,14 @@ const fetchAffiliations = async (supabase, page, limit, alumId) => {
 
     return await supabase
         .from("organization_affiliations")
-        .select()
-        .eq("alum_id", alumId)
+        .select(`
+            role,
+            joined_date,
+            organizations (
+                name
+            )
+        `)
+        .eq("user_id", alumId)
         .range(startIndex, endIndex);
 }
 

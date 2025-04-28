@@ -15,8 +15,6 @@ const getAffiliatedOrganizations = async (req, res) => {
             });
         }
 
-        console.log(data);
-
         return res.status(httpStatus.OK).json({
             status: "OK",
             affiliated_organizations: data || [],

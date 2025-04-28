@@ -10,18 +10,22 @@ import { capitalizeName, formatDate } from "../../../../utils/format.js";
 export default async function AlumniSearchProfile({ params }) {
     const { id } = await params
 
-    const [userRes, profileRes, workExperienceRes] = await Promise.all([
+    const [userRes, profileRes, workExperienceRes, organizationAffiliationsRes] = await Promise.all([
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/users/${id}`),
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/${id}`),
-        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/work-experiences/alum/${id}`)
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/work-experiences/alum/${id}`),
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/organization-affiliations/${id}/organizations`)
     ]);
 
     const user = userRes.data.user;
     const profile = profileRes.data.alumniProfile;
     const workExperience = workExperienceRes.data.work_experiences;
+    const organizationAffilliations = organizationAffiliationsRes.data.affiliated_organizations
+
 
     console.log(user);
     console.log(profile);
+    console.log(organizationAffilliations)
 
     if (!user || !profile) {
         return <div className="text-center mt-20 text-red-500">{error || "Alumnus not found."}</div>;
@@ -173,20 +177,25 @@ export default async function AlumniSearchProfile({ params }) {
                             Affiliations
                         </h4>
                         <div className="space-y-4 p-4 bg-astratintedwhite rounded-b-md text-sm">
-                            <div className="border-l-4 border-astralight rounded">
-                                <div className="ml-5">
-                                    <p className="font-semibold text-astrablack">ICS-ASTRA Development Team</p>
-                                    <p className="italic text-astradarkgray">Frontend Developer</p>
-                                    <p className="text-astradarkgray">August 2021 - Present<br />UPLB</p>
+                        {organizationAffilliations.length > 0 ? (
+                            organizationAffilliations.map((affiliation, idx) => (
+                                <div key={idx} className="border-l-4 border-astralight rounded">
+                                    <div className="ml-5">
+                                        <p className="font-semibold text-astrablack">{affiliation.organizations.name}</p>
+                                        <p className="italic text-astradarkgray">{affiliation.role}</p>
+                                        <p className="text-astradarkgray">
+                                            {formatDate(affiliation.joined_date, 'month-year')}
+                                            <br />
+                                            {affiliation.location}
+                                        </p>
+                                    </div>
                                 </div>
+                            ))
+                        ) : (
+                            <div className="text-center mt-50 text-astradarkgray">
+                                {"No affiliations found."}
                             </div>
-                            <div className="border-l-4 border-astralight rounded">
-                                <div className="ml-5">
-                                    <p className="font-semibold text-astrablack">UPLB User Experience Society</p>
-                                    <p className="italic text-astradarkgray">Member</p>
-                                    <p className="text-astradarkgray">August 2021 - Present<br />UPLB</p>
-                                </div>
-                            </div>
+                        )}
                         </div>
                     </div>
                 </div>
