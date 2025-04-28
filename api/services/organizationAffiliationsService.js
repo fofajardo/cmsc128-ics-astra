@@ -19,7 +19,7 @@ const checkAffiliationIfExisting = async (supabase, orgId, alumId) => {
     return await supabase
         .from("organization_affiliations")
         .select()
-        .match({ org_id: orgId, alum_id: alumId });
+        .match({ org_id: orgId, user_id: alumId });
 }
 
 const createAffiliation = async (supabase, affiliationData) => {
@@ -32,14 +32,14 @@ const updateAffiliation = async (supabase, orgId, alumId, updateData) => {
     return await supabase
         .from("organization_affiliations")
         .update(updateData)
-        .match({ org_id: orgId, alum_id: alumId });
+        .match({ org_id: orgId, user_id: alumId });
 }
 
 const deleteAffiliation = async (supabase, orgId, alumId) => {
     return await supabase
         .from("organization_affiliations")
         .delete()
-        .match({ org_id: orgId, alum_id: alumId });
+        .match({ org_id: orgId, user_id: alumId });
 }
 
 
