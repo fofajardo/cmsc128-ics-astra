@@ -107,6 +107,16 @@ export default function AlumniProfilePage() {
       endDate: "December 2021",
       description:
         "Organized and managed volunteer programs for community outreach initiatives focused on digital literacy education.",
+    },
+    {
+      organization: "Philippine Association of Computing Professionals",
+      title: "Active Member",
+      location: "Makati, Philippines",
+      isCurrentlyAffiliated: true,
+      startDate: "January 2022",
+      endDate: null,
+      description:
+        "Participated in collaborative projects and conferences to advocate for technological advancements and computing research across the country.",
     }
   ];
 
@@ -151,7 +161,7 @@ export default function AlumniProfilePage() {
   return (
     <div className="min-h-screen bg-[var(--color-astratintedwhite)]">
       <main className="container mx-auto py-8 px-4 max-w-7xl">
-      <section className="bg-white rounded-lg px-10 py-12 mb-6 max-w-7xl mx-auto mt-18">
+      <section className="bg-white rounded-lg px-10 py-12 mb-6 max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row gap-10">
           {/* Profile Picture Column */}
           <div className="flex justify-center items-center md:min-w-[200px]">
@@ -164,7 +174,7 @@ export default function AlumniProfilePage() {
 
           {/* Profile Info Column */}
           <div className="flex-1">
-            <div className="flex justify-left gap-4 items-center mb-6">
+            <div className="flex justify-left gap-4 items-center mb-4">
               <h2 className="text-xl md:text-2xl font-bold text-[var(--color-astrablack)]">Profile Information</h2>
               <button
                 className="text-sm md:text-base px-3 py-2 md:px-4 md:py-2 bg-[var(--color-astraprimary)] text-white hover:bg-[var(--color-astradark)] rounded-md"
@@ -190,9 +200,9 @@ export default function AlumniProfilePage() {
                       : key.replace(/([A-Z])/g, " $1");
 
                   return (
-                    <div key={key} className="min-w-[150px]">
-                      <p className="text-sm text-[var(--color-astrablack)] mb-1">{label}:</p>
-                      <p className="font-medium">{value}</p>
+                    <div key={key} className="flex flex-col py-2">
+                      <p className="text-sm font-semibold text-[var(--color-astrablack)] mb-1">{label}:</p>
+                      <p className="text-sm text-[var(--color-astrablack)] text-left">{value}</p>
                     </div>
                   );
                 })}
@@ -203,7 +213,7 @@ export default function AlumniProfilePage() {
 
       {/* Technical Skills */}
       <section className="bg-white rounded-lg p-8 mb-6">
-        <h2 className="text-2xl font-bold text-[var(--color-astrablack)] mb-6">Technical Skills</h2>
+        <h2 className="text-xl md:text-2xl font-bold text-[var(--color-astrablack)] mb-6">Technical Skills</h2>
         <div className="flex flex-wrap gap-2">
           {technicalSkills.map((skill, index) => (
             <SkillTag 
@@ -223,7 +233,7 @@ export default function AlumniProfilePage() {
 
       {/* Fields of Interest */}
       <section className="bg-white rounded-lg p-8 mb-6">
-        <h2 className="text-2xl font-bold text-[var(--color-astrablack)] mb-6">Fields of Interest</h2>
+        <h2 className="text-xl md:text-2xl font-bold text-[var(--color-astrablack)] mb-6">Fields of Interest</h2>
         <div className="flex flex-wrap gap-2">
           {fieldOfInterests.map((interest, index) => (
             <SkillTag 
@@ -244,7 +254,7 @@ export default function AlumniProfilePage() {
       {/* Experience */}
       <section className="bg-white rounded-lg p-8 mb-6">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-[var(--color-astrablack)]">Experience</h2>
+          <h2 className="text-xl md:text-2xl font-bold text-[var(--color-astrablack)]">Experience</h2>
           <div className="flex gap-2">
             <button 
               className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[var(--color-astradirtywhite)] rounded-md"
@@ -269,13 +279,13 @@ export default function AlumniProfilePage() {
                 <div className={`w-2 h-full ${index === 0 ? "bg-[var(--color-astraprimary)]" : "bg-[var(--color-astradark)]"} rounded-full`}></div>
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-bold text-[var(--color-astrablack)]">{exp.company}</h3>
-                <p className="text-base text-[var(--color-astrablack)]">{exp.title} • {exp.type}</p>
+                <h3 className="text-lg md:text-xl font-bold text-[var(--color-astrablack)]">{exp.company}</h3>
+                <p className="text-sm text-[var(--color-astrablack)]">{exp.title} • {exp.type}</p>
                 <p className="text-sm text-[var(--color-astrablack)]">
                   {exp.startDate} {exp.isCurrentlyWorking ? "- Present" : `- ${exp.endDate}`}
                 </p>
-                <p className="text-sm text-[var(--color-astrablack)]">{exp.location}</p>
-                <p className="text-base text-[var(--color-astrablack)] mt-2">{exp.description}</p>
+                <p className="text-[var(--color-astrablack)] text-sm md:text-md text-justify">{exp.location}</p>
+                <p className="text-[var(--color-astrablack)] text-sm md:text-md text-justify mt-2">{exp.description}</p>
               </div>
             </div>
           ))}
@@ -285,7 +295,7 @@ export default function AlumniProfilePage() {
       {/* Organization Affiliations */}
       <section className="bg-white rounded-lg p-8 mb-6">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-[var(--color-astrablack)]">Affiliations</h2>
+          <h2 className="text-xl md:text-2xl font-bold text-[var(--color-astrablack)]">Affiliations</h2>
           <div className="flex gap-2">
             <button 
               className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[var(--color-astradirtywhite)] rounded-md"
@@ -309,15 +319,15 @@ export default function AlumniProfilePage() {
                 <div className={`w-2 h-full ${index === 0 ? "bg-[var(--color-astraprimary)]" : "bg-[var(--color-astradark)]"} rounded-full`}></div>
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-bold text-[var(--color-astrablack)]">{aff.organization}</h3>
-                <p className="text-base text-[var(--color-astrablack)]">{aff.title}</p>
+                <h3 className="text-lg md:text-xl font-bold text-[var(--color-astrablack)]">{aff.organization}</h3>
+                <p className="text-sm text-[var(--color-astrablack)]">{aff.title}</p>
                 <p className="text-sm text-[var(--color-astrablack)]">
                   {aff.startDate} {aff.isCurrentlyAffiliated ? "- Present" : `- ${aff.endDate}`}
                 </p>
-                <p className="text-sm text-[var(--color-astrablack)]">
+                <p className="text-[var(--color-astrablack)] text-sm md:text-md text-justify">
                   {aff.location} • {aff.isCurrentlyAffiliated ? "Currently Affiliated" : "Not Affiliated"}
                 </p>
-                <p className="text-base text-[var(--color-astrablack)] mt-2">{aff.description}</p>
+                <p className="text-[var(--color-astrablack)] text-sm md:text-md text-justify mt-2">{aff.description}</p>
               </div>
             </div>
           ))}

@@ -34,14 +34,14 @@ export default function EditTechnical({ technicalSkills, hideTechnicalForm }) {
   return (
     <div className="w-full max-w-full sm:max-w-2xl px-4 sm:px-6 md:px-8">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Edit Skills</h2>
+        <h2 className="text-xl md:text-2xl font-bold">Edit Skills</h2>
         <button onClick={hideTechnicalForm} className="text-gray-500 hover:text-gray-700">
-          <i className="fa-solid fa-times text-xl"></i>
+          <i className="fa-solid fa-times text-xl md:text-2xl"></i>
         </button>
       </div>
 
       <div className="mb-6">
-        <div className="border border-gray-300 bg-white rounded-lg p-3 min-h-[64px] w-full flex flex-wrap gap-x-2 gap-y-2">
+        <div className="border border-gray-300 bg-white rounded-lg p-3 min-h-[64px] max-h-[200px] w-full flex flex-wrap gap-x-2 gap-y-2 overflow-y-auto">
           {skills.map((skill, index) => (
             <div key={index} className="relative group flex items-center">
               <SkillTag text={skill.text} color={skill.color} />
@@ -58,7 +58,7 @@ export default function EditTechnical({ technicalSkills, hideTechnicalForm }) {
             value={newSkill}
             onChange={(e) => setNewSkill(e.target.value)}
             onKeyDown={handleAddSkill}
-            placeholder="Add skill and press Enter"
+            placeholder="Add Skill and Press Enter"
             className="text-sm bg-white border border-gray-300 rounded-full px-4 py-2 min-w-[140px] h-[36px] outline-none"
           />
         </div>

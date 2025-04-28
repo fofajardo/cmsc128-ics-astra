@@ -89,7 +89,7 @@ export default function AddAffiliation({ hideAddAffiliationForm }) {
   return (
     <div className="w-full max-w-5xl mx-auto p-4 bg-[var(--color-astrawhite)] rounded-lg flex flex-col">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Add Affiliation</h2>
+        <h2 className="text-xl md:text-2xl font-bold">Add Affiliation</h2>
         <button onClick={hideAddAffiliationForm} className="text-gray-500 hover:text-gray-700">
           <i className="fa-solid fa-times text-xl"></i>
         </button>
@@ -100,14 +100,14 @@ export default function AddAffiliation({ hideAddAffiliationForm }) {
         <div className="space-y-6">
           {/* Organization */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Organization <span className="text-[var(--color-astrared)]">*</span></label>
+            <label className="block text-sm md:text-base font-medium text-gray-700 mb-1">Organization <span className="text-[var(--color-astrared)]">*</span></label>
             <input
               type="text"
               name="organization"
               value={formData.organization}
               onChange={handleChange}
               placeholder="Ex: ICS-ASTRA Development Team"
-              className="w-full px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="text-sm md:text-base w-full px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
@@ -115,26 +115,26 @@ export default function AddAffiliation({ hideAddAffiliationForm }) {
           {/* Title and Location */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Title <span className="text-[var(--color-astrared)]">*</span></label>
+              <label className="block text-sm md:text-base font-medium text-gray-700 mb-1">Title <span className="text-[var(--color-astrared)]">*</span></label>
               <input
                 type="text"
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
                 placeholder="Ex: Frontend Developer"
-                className="w-full px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="text-sm md:text-base w-full px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Location <span className="text-[var(--color-astrared)]">*</span></label>
+              <label className="block text-sm md:text-base font-medium text-gray-700 mb-1">Location <span className="text-[var(--color-astrared)]">*</span></label>
               <input
                 type="text"
                 name="location"
                 value={formData.location}
                 onChange={handleChange}
                 placeholder="Ex: Los Baños, Laguna"
-                className="w-full px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="text-sm md:text-base w-full px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
@@ -148,9 +148,9 @@ export default function AddAffiliation({ hideAddAffiliationForm }) {
               name="isCurrentlyAffiliated"
               checked={formData.isCurrentlyAffiliated}
               onChange={handleChange}
-              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              className="text-sm md:text-base h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             />
-            <label htmlFor="isCurrentlyAffiliated" className="ml-2 block text-sm text-gray-700">
+            <label htmlFor="isCurrentlyAffiliated" className="ml-2 block text-sm md:text-base text-gray-700">
               I am currently affiliated with this organization
             </label>
           </div>
@@ -159,13 +159,13 @@ export default function AddAffiliation({ hideAddAffiliationForm }) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {/* Start */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Start Date <span className="text-[var(--color-astrared)]">*</span></label>
+              <label className="block text-sm md:text-base font-medium text-gray-700 mb-1">Start Date <span className="text-[var(--color-astrared)]">*</span></label>
               <div className="grid grid-cols-2 gap-4">
-                <select name="startDate.month" value={formData.startDate.month} onChange={handleChange} className="px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                <select name="startDate.month" value={formData.startDate.month} onChange={handleChange} className="text-sm md:text-base px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
                   <option value="">Month</option>
                   {months.map((month) => <option key={month} value={month}>{month}</option>)}
                 </select>
-                <select name="startDate.year" value={formData.startDate.year} onChange={handleChange} className="px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                <select name="startDate.year" value={formData.startDate.year} onChange={handleChange} className="text-sm md:text-base px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
                   <option value="">Year</option>
                   {years.map((year) => <option key={year} value={year}>{year}</option>)}
                 </select>
@@ -175,13 +175,13 @@ export default function AddAffiliation({ hideAddAffiliationForm }) {
             {/* End */}
             {!formData.isCurrentlyAffiliated && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">End Date <span className="text-[var(--color-astrared)]">*</span></label>
+                <label className="block text-sm md:text-base font-medium text-gray-700 mb-1">End Date <span className="text-[var(--color-astrared)]">*</span></label>
                 <div className="grid grid-cols-2 gap-4">
-                  <select name="endDate.month" value={formData.endDate.month} onChange={handleChange} className="px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                  <select name="endDate.month" value={formData.endDate.month} onChange={handleChange} className="text-sm md:text-base px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
                     <option value="">Month</option>
                     {months.map((month) => <option key={month} value={month}>{month}</option>)}
                   </select>
-                  <select name="endDate.year" value={formData.endDate.year} onChange={handleChange} className="px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                  <select name="endDate.year" value={formData.endDate.year} onChange={handleChange} className="text-sm md:text-base px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
                     <option value="">Year</option>
                     {years.map((year) => <option key={year} value={year}>{year}</option>)}
                   </select>
@@ -192,13 +192,13 @@ export default function AddAffiliation({ hideAddAffiliationForm }) {
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Description (Optional)</label>
+            <label className="block text-sm md:text-base font-medium text-gray-700 mb-1">Description (Optional)</label>
             <textarea
               name="description"
               value={formData.description}
               onChange={handleChange}
               placeholder="Describe your role and responsibilities"
-              className="w-full px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 h-32"
+              className="text-sm md:text-base w-full px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 h-32"
             ></textarea>
           </div>
         </div>

@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import EditForm from "@/profile/alumni/EditPersonal/page";
+import EditForm from "@/profile/[id]/EditPersonal/page";
 
 export default function InformationChanged() {
   const [showEditModal, setShowEditModal] = useState(false);
