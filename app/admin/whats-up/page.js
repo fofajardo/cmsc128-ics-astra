@@ -49,6 +49,13 @@ export default function CommunicationPage() {
         setToast({ type: "success", message: "Newsletter deleted successfully" });
     };
 
+    const handleAddNew = () => {
+        const path = currTab === 'Newsletters' 
+            ? '/admin/whats-up/create/newsletter'
+            : '/admin/whats-up/create/announcement';
+        router.push(path);
+    };
+
     return (
         <div>
             {/* Filter Modal */}
@@ -147,7 +154,7 @@ export default function CommunicationPage() {
                                 Filter
                             </button>
                             <button
-                                onClick={() => router.push('/admin/whats-up/create')}
+                                onClick={handleAddNew}
                                 className="flex items-center gap-2 px-4 py-2 text-white bg-astraprimary rounded-lg"
                             >
                                 <Plus className="w-4 h-4" />
@@ -202,15 +209,15 @@ export default function CommunicationPage() {
                     )}
 
                     {currTab === 'Newsletters' && (
-                        <div className="bg-astrawhite p-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
+                        <div className="bg-astrawhite p-8">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-8 max-w-[90%] mx-auto">
                                 {Array(12).fill().map((_, index) => (
                                     <Link 
                                         href="https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
                                         key={index}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="group relative"
+                                        className="group relative max-w-[280px] mx-auto w-full"
                                     >
                                         <div className="aspect-[3/4] relative bg-black rounded-lg overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
                                             <img
