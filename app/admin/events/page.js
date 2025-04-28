@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { TableHeader, Table, PageTool } from "@/components/TableBuilder";
 import { useTab } from "../../components/TabContext";
 import ToastNotification from "@/components/ToastNotification";
-import { isValidDate } from "../../../api/utils/validators";
+import { isValidDate,isValidUUID } from "../../../api/utils/validators";
 import { Trash2, Eye, Pencil } from "lucide-react";
 import axios from "axios";
 
@@ -15,7 +15,9 @@ export default function Events() {
   const [toast, setToast] = useState(null);
   const [eventList, setEvents] = useState([]);
   const [contentList, setContents] = useState([]);
-  const [selectedContentId, setSelectedContentId] = useState("")
+  const [selectedContentId, setSelectedContentId] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
   const [pagination, setPagination] = useState({
     display: [1, 10],
     currPage: 1,
@@ -32,7 +34,8 @@ export default function Events() {
     event_date: "",
     max_slots: "",
     status: "open",
-    link: "",
+    external_link: "",
+    access_link: "",
     description: ""
   });
 
@@ -48,7 +51,8 @@ export default function Events() {
       event_date: "",
       max_slots: "",
       status: "",
-      link: "",
+      external_link: "",
+      access_link: "",
       description: ""
     });
     setSelectedContentId("");
@@ -58,16 +62,10 @@ export default function Events() {
   useEffect(() => {
     fetchEvents();
     fetchContents();
-  }, [pagination]);
+  }, [pagination.currPage,pagination.numToShow]);
 
   const toggleAddModal = () => {
     setShowAddModal((prev) => !prev);
-  };
-
-  const toggleEditModal = (eventData) => {
-    if(eventData){
-
-    }
   };
 
   const handleInputChange = (e) => {
@@ -86,33 +84,41 @@ export default function Events() {
 
       console.log(response);
       if (response.data.status === "OK") {
+
             const selectEventName = response.data.content.title
             // setEventName(selectEventName);
             // console.log('event name: ', eventName);
             console.log('select event name:',selectEventName);
+            return selectEventName;
       } else {
             console.error('Unexpected response:', response.data);
       }
     }catch(error){
       console.error('Failed to get content:', error);
     }
+    return -1;
   };
 
-  const handleContentChange = (e) => {
-    const selectId = e.target.value;
-    setSelectedContentId(selectId);
-    console.log('contentId: ', selectId);
-    console.log('selectedcontentId: ', selectedContentId);
-    fetchContentName(selectId);
+  // const fetchEventName = (id) =>{
+  //   const name = fetchContentName(id);
+  //   console.log("event name", name);
+  //   return name;
+  // };
+  // const handleContentChange = (e) => {
+  //   const selectId = e.target.value;
+  //   setSelectedContentId(selectId);
+  //   console.log('contentId: ', selectId);
+  //   console.log('selectedcontentId: ', selectedContentId);
+  //   const name = fetchContentName(selectId);
 
-  };
+  // };
 
 
   const fetchEvents = async () => {
     try {
       if (!process.env.NEXT_PUBLIC_API_URL) {
         console.error('API URL is not defined in environment variables');
-        setEvents([]); // Set empty array as fallback
+        setEvents([]);
         return;
       }
         const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events`, {
@@ -127,7 +133,7 @@ export default function Events() {
             setEvents(
                 response.data.list.map(event => ({
                     id: event.event_id,
-                    event_name: event.title?? "unknown",    //TODO: fetch event title from contents
+                    event_name: fetchContentName(event.event_id),    //TODO: fetch event title from contents
                     location: event.venue,
                     type: event.online === true ? 'Online' : 'In-Person',
                     date: event.event_date,
@@ -158,14 +164,13 @@ export default function Events() {
       }
       setEvents([]);
     }
-
   };
 
   const fetchContents= async () =>{
     try{
       if (!process.env.NEXT_PUBLIC_API_URL) {
         console.error('API URL is not defined in environment variables');
-        setEvents([]); // Set empty array as fallback
+        setEvents([]);
         return;
       }
         const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents`, {
@@ -231,29 +236,72 @@ export default function Events() {
     fetchEvents();
   };
 
-  const handleAdd = async () => {
+  const handleDeleteContent = async (id) => {
     try{
+        const response = await axios
+           .delete(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`);
+    }catch(error){
+      console.error('Failed to delete events:', error);
+      setToast({ type: "error", message: "Failed to delete event!" });
+    }
+    fetchEvents();
+  };
+
+
+  const handleAdd = async () => {   // add content -> get the newly created content_id -> add event
+    try{
+      let user_id = "19a54ed6-5a0e-4850-8193-e013140d6111";  //manually added; TODO: change after user auth implemented
       console.log('event_id: ',selectedContentId);
       if(!isValidDate(addFormData.event_date)){
         console.log('invalid date format');
       }
       const isOnline = addFormData.online === "Online";
-      const eventToAdd = {
-        event_id: selectedContentId, //fetch from the contents
-        event_date: new Date(addFormData.event_date).toISOString(),
-        venue: addFormData.venue,
-        external_link:addFormData.link,
-        access_link: addFormData.link,  //add another link
-        online:isOnline
-      };
+      if (!isValidUUID(user_id)){
+        console.log("invalid user id: ", user_id);
+        setToast({ type: "error", message: "Failed to create event." });
+        return -1;
+      }
 
-      console.log(eventToAdd);
-      const response = await axios
-           .post(`${process.env.NEXT_PUBLIC_API_URL}/v1/events`, eventToAdd);
+      const contentToAdd = {
+        user_id: user_id,
+        title: addFormData.title,
+        details:addFormData.description,
+        created_at: new Date().toISOString(),  // Default to current date if not provided
+        updated_at: new Date().toISOString(),  // Default to current date if not provided
+        views: 0,
+      }
 
-      console.log(response);
-      if (response.data.status === "CREATED") {
-        setToast({ type: "success", message: "Event published successfully!" });
+      const contentResponse = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/contents`,
+        contentToAdd
+      );
+
+      if (contentResponse.data.status === "CREATED" && contentResponse.data.id) {
+        const contentId = contentResponse.data.id;
+
+        const eventToAdd = {
+          event_id: contentId,
+          event_date: new Date(addFormData.event_date).toISOString(),
+          venue: addFormData.venue,
+          external_link: addFormData.external_link || "",
+          access_link: addFormData.access_link || "",
+          online: isOnline,
+        };
+
+        const eventResponse = await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/v1/events`,
+          eventToAdd
+        );
+
+        if (eventResponse.data.status === "CREATED") {
+          setToast({ type: "success", message: "Event published successfully!" });
+          toggleAddModal();
+          resetForm();
+          fetchEvents();
+        }
+        else {
+          handleDeleteContent(contentId); //
+        }
       }
     }catch(error){
       console.error('Failed to create events:', error);
@@ -282,17 +330,14 @@ export default function Events() {
             <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block font-medium mb-1">Event Name</label>
-                <select
+                <input
+                  type="text"
+                  name="title"
+                  value={addFormData.title}
+                  onChange={handleInputChange}
+                  placeholder="Ex: User Experience Researcher"
                   className="border rounded px-3 py-2 w-full"
-                  value={selectedContentId}
-                  onChange={handleContentChange}>
-                  <option value="">Please Select</option>
-                  {contentList.map(content => (
-                    <option key={content.id} value={content.id}>
-                      {content.title}
-                    </option>
-                  ))}
-                </select>
+                />
               </div>
               <div>
                 <label className="block font-medium mb-1">Event Type</label>
@@ -355,16 +400,28 @@ export default function Events() {
                 </select>
               </div>
               <div className="col-span-2">
-                <label className="block font-medium mb-1">Link</label>
+                <label className="block font-medium mb-1">External Link</label>
                 <input
                   type="text"
-                  name="link"
-                  value={addFormData.link}
+                  name="external_link"
+                  value={addFormData.external_link}
                   onChange={handleInputChange}
                   placeholder="Ex: https://hiring.com/apply"
                   className="border rounded px-3 py-2 w-full"
                 />
               </div>
+              <div className="col-span-2">
+                <label className="block font-medium mb-1">Access Link</label>
+                <input
+                  type="text"
+                  name="access_link"
+                  value={addFormData.access_link}
+                  onChange={handleInputChange}
+                  placeholder="Ex: https://hiring.com/apply"
+                  className="border rounded px-3 py-2 w-full"
+                />
+              </div>
+              {/* Add field for access_link*/}
               <div className="col-span-2">
                 <label className="block font-medium mb-1">
                   Event Description
