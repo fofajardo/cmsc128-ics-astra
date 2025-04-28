@@ -81,7 +81,7 @@ export default function AboutPage() {
     {
       year: "2015",
       content:
-        "The Institute of Computer Science (ICS) at the University of the Philippines Los Baños (UPLB) was recognized as a Center of Excellence in Information Technology by the Commission on Higher Education (CHED).",
+        "The Institute of Computer Science was recognized as a Center of Excellence in Information Technology by the Commission on Higher Education (CHED).",
       position: "right",
     },
   ];
@@ -302,37 +302,40 @@ export default function AboutPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-[var(--color-astrawhite)] to-[var(--color-astratintedwhite)]">
       {/* Hero section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative h-[95vh] flex items-center justify-center overflow-hidden isolate">
         <div
-          className="absolute inset-0 bg-cover bg-center transform scale-110"
+          className="absolute inset-0 bg-cover bg-center will-change-transform"
           style={{
             backgroundImage: 'url("/about-bg.png")',
             filter: "brightness(0.7)",
-            transform: "translateZ(-10px) scale(2)",
+            transform: "scale(1.2)", // Smoother parallax
+            backgroundAttachment: "fixed",
           }}
         ></div>
-        <div className="absolute inset-0"></div>
+        <div className="absolute inset-0 bg-black/20"></div>
+
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="relative z-20 text-center max-w-4xl px-4"
+          className="relative z-20 text-center px-6 md:px-8 max-w-4xl"
         >
-          <h1 className="text-white text-4xl md:text-6xl font-bold mb-6 md:mb-8 leading-tight">
+          <h1 className="text-white text-4xl sm:text-5xl md:text-6xl font-bold mb-6 md:mb-8 leading-tight">
             Building the Future:
             <br />
             <span className="text-[var(--color-astraprimary)]">
               Our Mission and Story
             </span>
           </h1>
-          <p className="text-white/90 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed mb-8">
+          <p className="text-white/90 text-base md:text-lg leading-relaxed mb-8">
             The Institute of Computer Science at UPLB is recognized for its
             commitment to excellence in computer science education and research,
             producing skilled graduates and contributing to the advancement of
             the field in the Philippines.
           </p>
         </motion.div>
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+
+        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 animate-bounce">
           <ChevronDown className="h-8 w-8 text-white/70" />
         </div>
       </section>
@@ -360,7 +363,7 @@ export default function AboutPage() {
                   alt="Institute of Computer Science Logo"
                   width={350}
                   height={350}
-                  className="relative z-10 transform transition-all duration-500 hover:scale-105"
+                  className="relative z-10 transform transition-all duration-500 hover:scale-105 w-48 md:w-72"
                 />
               </motion.div>
             </div>
@@ -371,7 +374,7 @@ export default function AboutPage() {
               viewport={{ once: true }}
               className="order-2 md:order-2"
             >
-              <h2 className="text-[var(--color-astraprimary)] text-4xl md:text-5xl font-bold mb-8 md:mb-10">
+              <h2 className="text-[var(--color-astraprimary)] text-4xl md:text-5xl font-bold mb-8 md:mb-10 text-center md:text-left">
                 Our Mission
               </h2>
               <div className="space-y-6 md:space-y-8">
@@ -453,34 +456,34 @@ export default function AboutPage() {
                 animate={hasMounted && isInView ? { opacity: 1, x: 0 } : {}}
                 transition={{ duration: 0.6, delay: index * 0.2 }}
                 className={`
-      relative mb-16 last:mb-0
-      ${item.position === "right" ? "md:pl-8 md:pr-0" : "md:pr-8 md:pl-0"}
-    `}
+                  relative mb-8 md:mb-12
+                  flex flex-col
+                  items-start
+                  pl-0 sm:pl-4
+                  ${item.position === "right" ? "md:items-end md:pl-12 md:pr-0" : "md:items-start md:pr-12 md:pl-0"}
+                `}                                           
               >
+                {/* Timeline circle */}
                 <div
-                  className="absolute top-0 left-1/2 w-6 h-6 md:w-8 md:h-8 rounded-full
-                            bg-gradient-to-br from-[var(--color-astraprimary)] to-[var(--color-astraprimary)]/70
-                            shadow-lg shadow-[var(--color-astraprimary)]/30
-                            transform -translate-x-1/2"
+                  className="hidden md:block absolute top-0 left-1/2 w-5 h-5 md:w-7 md:h-7 rounded-full
+                    bg-[var(--color-astraprimary)] shadow-lg shadow-[var(--color-astraprimary)]/30
+                    transform -translate-x-1/2"
                 ></div>
 
                 {/* Content container */}
                 <div
                   className={`
-                    ml-8 md:ml-0 bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-[var(--color-astralightgray)]/30
+                  bg-white/80 backdrop-blur-sm rounded-2xl p-6 md:p-8 shadow-lg
+                    border border-[var(--color-astralightgray)]/30 w-full md:w-1/2
                     transform transition-all duration-300 hover:shadow-xl hover:bg-white
-                    ${
-                      item.position === "right"
-                        ? "md:pl-12 md:w-1/2 md:float-right"
-                        : "md:pr-12 md:w-1/2 md:float-left"
-                    }
+                    ${item.position === "right" ? "md:ml-8 md:mr-0" : "md:mr-8 md:ml-0"}
                   `}
                 >
-                  <h3 className="text-[var(--color-astraprimary)] text-2xl md:text-3xl font-bold mb-4 inline-flex items-center gap-2">
+                  <h3 className="text-[var(--color-astraprimary)] text-xl md:text-2xl font-bold mb-4 inline-flex items-center gap-3">
                     {item.year}
-                    <div className="h-1 w-12 bg-[var(--color-astraprimary)]/30 rounded-full"></div>
+                    <div className="h-1 w-10 bg-[var(--color-astraprimary)]/30 rounded-full"></div>
                   </h3>
-                  <div className="text-[var(--color-astrablack)] text-base md:text-lg">
+                  <div className="text-[var(--color-astrablack)] text-base md:text-lg text-justify leading-relaxed">
                     {typeof item.content === "string" ? (
                       <p>{item.content}</p>
                     ) : (
@@ -488,6 +491,8 @@ export default function AboutPage() {
                     )}
                   </div>
                 </div>
+
+                {/* Clear floats on desktop */}
                 <div className="clear-both"></div>
               </motion.div>
             ))}
@@ -514,7 +519,7 @@ export default function AboutPage() {
                   ICS-ASTRA
                 </h2>
               </div>
-              <p className="max-w-[700px] text-[var(--color-astradarkgray)] text-lg px-2">
+              <p className="text-[var(--color-astradarkgray)] max-w-2xl mx-auto px-2">
                 ASTRA stands for <b>A</b>lumni <b>S</b>ynced <b>T</b>racking for{" "}
                 <b>R</b>elations and <b>A</b>dvancement. Meet the brilliant
                 minds behind our mission to connect with the alumni of the
@@ -545,36 +550,27 @@ export default function AboutPage() {
             </motion.div>
 
             {/* Tabs */}
-            <div className="flex justify-center mb-10 md:mb-16 overflow-x-auto pb-2 scrollbar-hide">
-              <div className="flex space-x-2 md:space-x-4">
-                {Object.keys(contributors).map((category) => (
-                  <motion.button
-                    key={category}
-                    onClick={() => setActiveTab(category)}
-                    className={`
-                      relative flex items-center gap-2 px-4 py-2 rounded-full
-                      ${
-                        activeTab === category
-                          ? "text-[var(--color-astraprimary)]"
-                          : "text-[var(--color-astradarkgray)]"
-                      }
-                      transition-all duration-200
-                    `}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    {getTabIcon(category)}
-                    <span className="text-sm md:text-base font-medium">
-                      {getTabLabel(category)}
-                    </span>
-                    {activeTab === category && (
-                      <motion.div
-                        layoutId="activeTabIndicator"
-                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--color-astraprimary)]"
-                      />
-                    )}
-                  </motion.button>
-                ))}
+            <div className="flex justify-center overflow-x-auto pb-2 scrollbar-hide">
+              <div className="flex justify-center mb-6 md:mb-8 flex-wrap gap-2">
+              {Object.keys(contributors).map((category) => (
+                <motion.button
+                  key={category}
+                  onClick={() => setActiveTab(category)}
+                  className={`
+                    flex items-center gap-1 md:gap-2 text-xs md:text-sm px-3 py-1.5 rounded-full
+                    border border-[var(--color-astralightgray)]
+                    ${activeTab === category ? "bg-[var(--color-astraprimary)] text-white" : "bg-[var(--color-astradirtywhite)] text-[var(--color-astradarkgray)]"}
+                    transition-all duration-200
+                    hover:scale-105 hover:bg-[var(--color-astraprimary)] hover:text-white
+                  `}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {getTabIcon(category)}
+                  <span className="font-medium">
+                    {getTabLabel(category)}
+                  </span>
+                </motion.button>
+              ))}
               </div>
             </div>
             {/* Contributors grid */}
@@ -599,34 +595,34 @@ export default function AboutPage() {
                         "0 10px 25px -5px rgba(var(--color-astraprimary-rgb), 0.3)",
                     }}
                   >
-                    <Card className="h-full bg-white border-[var(--color-astradirtywhite)] overflow-hidden rounded-xl transition-all duration-300">
-                      <CardContent className="p-5 md:p-6">
-                        <div className="flex flex-col items-center text-center space-y-4">
-                          <div className="relative w-full">
-                            <div className="absolute inset-0"></div>
-                            <div className="relative w-20 h-20 md:w-28 md:h-28 mx-auto rounded-full overflow-hidden border-2 border-[var(--color-astraprimary)] shadow-lg shadow-[var(--color-astraprimary)]/20">
-                              <img
-                                src={contributor.avatar || "/placeholder.svg"}
-                                alt={contributor.name}
-                                className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
-                              />
-                            </div>
-                          </div>
-                          <div className="space-y-2 pt-2">
-                            <h3 className="text-lg md:text-xl font-bold text-[var(--color-astrablack)]">
-                              {contributor.name}
-                            </h3>
-                            <div className="flex items-center justify-center">
-                              <div className="h-0.5 w-6 bg-[var(--color-astraprimary)]/30 rounded-full mr-2"></div>
-                              <p className="text-sm md:text-base text-[var(--color-astradarkgray)]">
-                                {contributor.role}
-                              </p>
-                              <div className="h-0.5 w-6 bg-[var(--color-astraprimary)]/30 rounded-full ml-2"></div>
-                            </div>
+                  <Card className="h-full bg-white border-[var(--color-astradirtywhite)] overflow-hidden rounded-xl transition-all duration-300">
+                    <CardContent className="p-5 md:p-6">
+                      <div className="flex flex-col items-center text-center space-y-4">
+                        <div className="relative w-full">
+                          <div className="absolute inset-0"></div>
+                          <div className="relative w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 mx-auto rounded-full overflow-hidden border-2 border-[var(--color-astraprimary)] shadow-lg shadow-[var(--color-astraprimary)]/20">
+                            <img
+                              src={contributor.avatar || "/placeholder.svg"}
+                              alt={contributor.name}
+                              className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
+                            />
                           </div>
                         </div>
-                      </CardContent>
-                    </Card>
+                        <div className="space-y-2 pt-2">
+                          <h3 className="text-base md:text-lg font-bold text-[var(--color-astrablack)]">
+                            {contributor.name}
+                          </h3>
+                          <div className="flex items-center justify-center">
+                            <div className="h-0.5 w-6 bg-[var(--color-astraprimary)]/30 rounded-full mr-2"></div>
+                            <p className="text-sm md:text-base text-[var(--color-astradarkgray)]">
+                              {contributor.role}
+                            </p>
+                            <div className="h-0.5 w-6 bg-[var(--color-astraprimary)]/30 rounded-full ml-2"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                   </motion.div>
                 ))}
               </motion.div>
