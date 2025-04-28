@@ -5,6 +5,7 @@ import { Filter, Plus } from "lucide-react";
 import { useTab } from '@/components/TabContext';
 import ToastNotification from "@/components/ToastNotification";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function CommunicationPage() {
     const router = useRouter();
@@ -182,9 +183,38 @@ export default function CommunicationPage() {
                     )}
 
                     {currTab === 'Newsletters' && (
-                        <h1 className="font-h2 bg-astrawhite p-6 justify-center flex">
-                            Put your Newsletters content here
-                        </h1>
+                        <div className="bg-astrawhite p-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
+                                {Array(12).fill().map((_, index) => (
+                                    <Link 
+                                        href="https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+                                        key={index}
+                                        target="_blank"
+                                        className="block group"
+                                    >
+                                        <div className="aspect-[3/4] relative bg-black rounded-lg overflow-hidden transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg">
+                                            <img
+                                                src="https://marketplace.canva.com/EAGWT7FdhOk/1/0/1131w/canva-black-and-grey-modern-business-company-email-newsletter-R_dH5ll-SAs.jpg"
+                                                alt={`Newsletter ${index + 1}`}
+                                                className="w-full h-full object-cover opacity-80 group-hover:opacity-60 transition-opacity"
+                                            />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                                            <div className="absolute bottom-0 left-0 right-0 p-4">
+                                                <p className="text-white font-medium text-lg">
+                                                    Volume {index + 1} - Newsletter.pdf
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+                            <PageTool 
+                                pagination={pagination}
+                                setPagination={(newPagination) => {
+                                    setCurrentPage(newPagination.currPage);
+                                }}
+                            />
+                        </div>
                     )}
 
                     {/* Pagination */}
