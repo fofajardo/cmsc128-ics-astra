@@ -21,9 +21,7 @@ export default function SetPassword() {
 
     // Clear any errors
     setError("")
-
-    // In a real app, you would submit the new password to your API
-    // For now, we'll just navigate to the next step
+    
     window.location.href = "/recover/4"
   }
 
@@ -46,7 +44,7 @@ export default function SetPassword() {
 
             <div className="mb-4 text-left">
             <label className="block text-sm font-medium mb-1 text-[var(--color-astrablack)]">
-                Password
+                New Password
             </label>
             <input
                 type="password"
