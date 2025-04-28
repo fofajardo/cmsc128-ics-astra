@@ -15,7 +15,7 @@ export default function BigJobCardwDelete(job) {
     };
 
     return (
-        <div className="bg-astrawhite max-w-[1250px] w-19/20 lg:w-12/20 min-h-[308px] h-auto rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] lg:p-10 pb-7 pt-10 px-7">
+        <div className="bg-astrawhite max-w-[1250px] w-full lg:w-27/40 min-h-[308px] h-auto rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] lg:p-10 pb-7 pt-10 px-7">
         
         <div className="flex items-start gap-2">
             <div className="mr-2">
@@ -25,7 +25,7 @@ export default function BigJobCardwDelete(job) {
             <button onClick={()=>{setPrompt(true)}} className="hover:scale-none hover:bg-astrared/85 bg-astrared !cursor-pointer text-astrawhite font-bold w-16 py-2 rounded-md text-xs">Delete</button>
         </div>
         
-        <p className="mt-5 text-black text-justify">{`${job.details}`}</p>
+        <p className="mt-5 text-black text-justify whitespace-pre-wrap">{`${job.details}`}</p>
         {showPrompt ? <ConfirmationPrompt prompt={"Are you sure you want to delete this job posting?"} close={()=>setPrompt(false)} object={id} handleConfirm={handleDelete}/> : <></>} 
     </div>
   )}

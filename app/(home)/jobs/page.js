@@ -24,7 +24,7 @@ export default function JobsPage() {
     }, [jobCards, myJobCards])
 
     return (
-    <div className="overflow-hidden py-10 bg-astratintedwhite w-full flex flex-col items-center">
+    <div className="overflow-hidden pb-10 bg-astratintedwhite w-full flex flex-col items-center">
 
       <header className="mb-8 bg-[url(/blue-bg.png)] bg-cover bg-center h-[60lvh] w-full flex flex-col items-center justify-center text-center">
         <h1 className="text-[32px] md:text-[55px] text-astrawhite">Take off to new careers at ICS-ASTRA!</h1>
