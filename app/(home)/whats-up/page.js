@@ -6,7 +6,6 @@ import { NewsItem } from "./components/NewsItem";
 import { PaginationControls } from "./components/PaginationControls";
 import { YearFilter } from "./components/YearFilter";
 import { NewsletterArchive } from "./components/NewsletterArchive";
-import { EventInvitations } from "./components/EventInvitations";
 import animations from "./styles/animations.module.css";
 import { FileText } from "lucide-react";
 import Link from "next/link";
@@ -73,7 +72,6 @@ export default function WhatsUpPage() {
         </div>
 
         <section className="flex flex-col self-center mt-16 mb-0 w-full max-w-[1200px] max-md:mt-8 max-md:mb-2 max-md:max-w-full px-4">
-          <EventInvitations />
 
           <h2 className="self-start text-3xl font-bold text-slate-900 max-md:max-w-full max-md:text-2xl">
             Latest News and Announcements

@@ -19,6 +19,17 @@
   50% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.8); }
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .floatAnimation {
   animation: float 3s ease-in-out infinite;
 }
@@ -34,4 +45,9 @@
 .staggered {
   opacity: 0;
   animation: fadeSlideUp 0.6s ease-out forwards;
+}
+
+.newsletterCard {
+  animation: fadeIn 0.5s ease-out forwards;
+  animation-delay: calc(var(--delay) * 0.1s);
 }
