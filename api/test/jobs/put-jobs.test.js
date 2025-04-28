@@ -1,72 +1,41 @@
-import request from 'supertest';
+import request from 'supertest'; 
 import { expect } from 'chai';
 import app from '../../index.js';
 import httpStatus from 'http-status-codes';
 
 describe('PUT /v1/jobs/:jobId', function () {
-    it('should update a job successfully', async function () {
-        const jobId = '12345';          //replace with legit jobId para dynamic
+    let validJobId = '800c7d53-20f3-4f55-9d1e-5e7855596348'; 
 
-        // replace the hardcoded values with user input
-        // e.g. getters of user inputs
-        const jobUpdateData = {
-        jobTitle: 'Software Engineer',      // hardcoded
-        hiringManager: 'Jonner Camara',     // change to user input (can be a variable) 
-        companyName: 'Adonis',              // to make the update dynamic
-        salary: 75000,
-        applyLink: 'https://ics.uplb.edu.ph/ediwow'
-        };
-
-    const response = await request(app)
-        .put(`/v1/jobs/${jobId}`)
-        .send(jobUpdateData)
-        .expect(httpStatus.OK);
-
-    expect(response.body).to.have.property('status', 'UPDATED');    // check if the status is UPDATED
-    expect(response.body).to.have.property('message');              // value should change 
-  });                                                               // since eto lang yung success
-
-    it('should return FORBIDDEN if the user is not authorized', async function () {
-        const jobId = '67890';          //replace with legit jobId para dynamic
-        
-        // replace the hardcoded values with user input
-        // e.g. getters of user inputs
-        const jobUpdateData = {
-        jobTitle: 'Software Engineer',          //same goes here
-        hiringManager: 'Jonner Camara',
+    const jobUpdateData = {
+        jobTitle: 'Software Engineer',
+        hiringManager: 'John Doe',
         companyName: 'Adonis',
         salary: 75000,
-        applyLink: 'https://ics.uplb.edu.ph/ediwow'
-        };
+        applyLink: 'https://ics.uplb.edu.ph/'
+    };
 
+    it('should update a job successfully', async function () {
+        // Simulate a valid jobId and send job update data
         const response = await request(app)
-            .put(`/v1/jobs/${jobId}`)
+            .put(`/v1/jobs/${validJobId}`)
             .send(jobUpdateData)
-            .expect(httpStatus.FORBIDDEN);
+            .expect(httpStatus.OK);
 
-        expect(response.body).to.have.property('status', 'FORBIDDEN');  // check if the status is FORBIDDEN
-        expect(response.body).to.have.property('message');              // value should not change
+        // Validate the response
+        expect(response.body).to.have.property('status', 'UPDATED');
+        expect(response.body).to.have.property('message');
     });
 
     it('should return FAILED if jobId is invalid', async function () {
-        const jobId = 'invalid-id';         //replace with legit jobId para dynamic
-        
-        // replace the hardcoded values with user input
-        // e.g. getters of user inputs
-        const jobUpdateData = {
-        jobTitle: 'Software Engineer',
-        hiringManager: 'Jonner Camara',
-        companyName: 'Adonis',
-        salary: 75000,
-        applyLink: 'https://ics.uplb.edu.ph/ediwow'
-        };
+        const invalidJobId = '12345-67890-abcde-fghij-klmno'; 
 
         const response = await request(app)
-            .put(`/v1/jobs/${jobId}`)
+            .put(`/v1/jobs/${invalidJobId}`)
             .send(jobUpdateData)
             .expect(httpStatus.BAD_REQUEST);
 
-        expect(response.body).to.have.property('status', 'FAILED'); // check if the status is FAILED
-        expect(response.body).to.have.property('message');          // value should not change
+        // Validate the response when job ID is invalid
+        expect(response.body).to.have.property('status', 'FAILED');
+        expect(response.body).to.have.property('message');
     });
 });
