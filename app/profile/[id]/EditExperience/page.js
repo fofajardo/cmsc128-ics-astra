@@ -1,10 +1,12 @@
 "use client"
 import { useState } from "react"
 import EditExperienceModal from "./2/page"
+import ToastNotification from "@/components/ToastNotification"
 
 export default function EditExperience({ experiences, hideExperienceForm }) {
   const [editedExperiences, setEditedExperiences] = useState([...experiences])
   const [selectedExperienceIndex, setSelectedExperienceIndex] = useState(null)
+  const [showToast, setShowToast] = useState(false)
 
   const handleEdit = (index) => {
     setSelectedExperienceIndex(index)
@@ -23,9 +25,9 @@ export default function EditExperience({ experiences, hideExperienceForm }) {
     setSelectedExperienceIndex(null)
   }
 
-  const handleModalSave = (updatedAffiliation) => {
+  const handleModalSave = (updatedExperience) => {
     const updated = [...editedExperiences]
-    updated[selectedAffiliationIndex] = updatedAffiliation
+    updated[selectedExperienceIndex] = updatedExperience
     setEditedExperiences(updated)
     setSelectedExperienceIndex(null) // close modal
   }
@@ -35,14 +37,14 @@ export default function EditExperience({ experiences, hideExperienceForm }) {
   }
 
   const handleSave = () => {
-    console.log("Saving affiliations:", editedExperiences)
-    hideExperienceForm()
+    console.log("Saving experiences:", editedExperiences)
+    setShowToast({ type: "success", message: "Experiences saved successfully!" })
   }
 
   return (
     <div className="w-full max-w-4xl">
       <div className="flex justify-between items-center mb-6 px-1">
-        <h2 className="text-2xl font-bold">Edit Experiences</h2>
+        <h2 className="text-xl md:text-2xl font-bold">Edit Experiences</h2>
         <button
           onClick={hideExperienceForm}
           className="ml-4 p-2 text-gray-500 hover:text-gray-700"
@@ -51,19 +53,17 @@ export default function EditExperience({ experiences, hideExperienceForm }) {
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto pr-2 space-y-6">
+      <div className="flex-1 overflow-y-auto pr-2 space-y-6 max-h-[70vh]">
         {editedExperiences.map((experience, index) => (
           <div key={index} className="border rounded-lg p-4 bg-white shadow-sm">
               <div className="flex justify-between items-start gap-4">
                 <div>
-                  <h3 className="text-lg font-semibold">{experience.company}</h3>
-                  <div className="flex items-center space-x-2 text-gray-600">
-                    <p>{experience.title}</p>
-                    <span>•</span>
-                    <p>{experience.type}</p>
+                  <h3 className="text-md md:text-lg font-semibold">{experience.company}</h3>
+                  <div className="text-sm md:text-base flex items-center space-x-2 text-gray-600">
+                    <p>{experience.title} <span>•</span> {experience.type}</p>
                   </div>
-                  <p className="text-sm text-gray-500">
-                    {experience.startDate} {experience.isCurrentlyAffiliated ? "- Present" : `- ${experience.endDate}`}
+                  <p className="text-sm md:text-base  text-gray-500">
+                    {experience.startDate} {experience.isCurrentlyWorking ? "- Present" : `- ${experience.endDate}`}
                   </p>
                 </div>
                 <div className="flex space-x-2">
@@ -96,13 +96,21 @@ export default function EditExperience({ experiences, hideExperienceForm }) {
 
 
       {selectedExperienceIndex !== null && (
-        <div className="fixed inset-0 bg-gray-200 bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <EditExperienceModal
             existingExperience={editedExperiences[selectedExperienceIndex]}
             onSave={handleModalSave}
             onCancel={handleModalCancel}
           />
         </div>
+      )}
+
+      {showToast && (
+        <ToastNotification
+          type={showToast.type}
+          message={showToast.message}
+          onClose={() => setShowToast(false)}
+        />
       )}
     </div>
   )

@@ -71,10 +71,10 @@ export default function AdminAlumniLayout({ children }) {
           </div>
           <div className="pt-6 pb-4 overflow-y-scroll w-full scrollbar-hide">
             <div className="flex flex-row gap-3 min-w-max px-4 justify-center"> 
-                  <AdminStatCard title='Announcements' value = {255} icon={<Megaphone className='size-13 text-astrawhite/>' strokeWidth={1.5} />} route = {false} onClick={() => dynamicTabClick('Announcements')}/>
-                  <AdminStatCard title='Newsletters' value = {59} icon={<Newspaper className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={false} onClick={() => dynamicTabClick('Newsletters')}/>
-                  <AdminStatCard title='Active Requests' value = {15} icon={<FilePlus2 className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={false} onClick={() => dynamicTabClick('Requests')}/>
-                  <AdminStatCard title='Active Events' value = {179} icon={<CalendarDays className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={'/admin/events'}/>
+                  <AdminStatCard delay={0.0} title='Announcements' value = {255} icon={<Megaphone className='size-13 text-astrawhite/>' strokeWidth={1.5} />} route = {false} onClick={() => dynamicTabClick('Announcements')}/>
+                  <AdminStatCard delay={0.1} title='Newsletters' value = {59} icon={<Newspaper className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={false} onClick={() => dynamicTabClick('Newsletters')}/>
+                  <AdminStatCard delay={0.2} title='Active Requests' value = {15} icon={<FilePlus2 className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={false} onClick={() => dynamicTabClick('Requests')}/>
+                  <AdminStatCard delay={0.3} title='Active Events' value = {179} icon={<CalendarDays className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={'/admin/events'}/>
             </div>
           </div>
         </div>

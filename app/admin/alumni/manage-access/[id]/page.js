@@ -5,7 +5,7 @@ import SkillTag from '@/components/SkillTag'
 import { users, alumniProfiles } from '@/components/DummyData'
 import { Mail, MapPin, GraduationCap, Image } from "lucide-react";
 import { ActionButton } from "@/components/Buttons";
-import TransitionGrow from '@/components/transitions/TransitionGrow';
+import TransitionSlide from '@/components/transitions/TransitionSlide';
 
 
 const getStatusBadge = (status) => {
@@ -44,7 +44,7 @@ export default function AlumniSearchProfile({ params }) {
         <GoBackButton />
       </div>
       {/* PROFILE SECTION */}
-      <TransitionGrow className="max-w-6xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between bg-white border border-astralightgray rounded-xl px-6 py-4 shadow-sm gap-4">
+      <TransitionSlide className="max-w-6xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between bg-white border border-astralightgray rounded-xl px-6 py-4 shadow-sm gap-4">
         {/* left section */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 w-full md:w-auto">
           {/* avatar placeholder */}
@@ -86,12 +86,12 @@ export default function AlumniSearchProfile({ params }) {
           Contact
         </button>
         </div>
-      </TransitionGrow >
+      </TransitionSlide >
 
 
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
       {/* Left Column: Personal Info */}
-      <TransitionGrow className="md:col-span-2 bg-white rounded-xl border border-astralightgray p-6 shadow-md">
+      <TransitionSlide className="md:col-span-2 bg-white rounded-xl border border-astralightgray p-6 shadow-md">
         {/* Personal Info */}
         <div className="grid grid-cols-3 gap-y-8 text-center text-sm text-astrablack py-10">
           <div>
@@ -179,7 +179,7 @@ export default function AlumniSearchProfile({ params }) {
             </div>
           </div>
         </div>
-      </TransitionGrow >
+      </TransitionSlide >
 
       {/* Right Column */}
       <div  className="space-y-4">

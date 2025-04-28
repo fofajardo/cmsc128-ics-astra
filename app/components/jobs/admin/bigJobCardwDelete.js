@@ -15,7 +15,7 @@ export default function BigJobCardwDelete(job) {
     };
 
     return (
-    <div className="bg-astrawhite max-w-[1250px] w-19/20 min-h-[308px] h-auto rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] p-10 pb-7">
+        <div className="bg-astrawhite max-w-[1250px] w-19/20 lg:w-12/20 min-h-[308px] h-auto rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] lg:p-10 pb-7 pt-10 px-7">
         
         <div className="flex items-start gap-2">
             <div className="mr-2">
@@ -26,7 +26,7 @@ export default function BigJobCardwDelete(job) {
         </div>
         
         <p className="mt-5 text-black text-justify">{`${job.details}`}</p>
-        {showPrompt ? <ConfirmationPrompt isEdit={false} close={()=>setPrompt(false)} object={id} handleConfirm={handleDelete}/> : <></>} 
+        {showPrompt ? <ConfirmationPrompt prompt={"Are you sure you want to delete this job posting?"} close={()=>setPrompt(false)} object={id} handleConfirm={handleDelete}/> : <></>} 
     </div>
   )}
   

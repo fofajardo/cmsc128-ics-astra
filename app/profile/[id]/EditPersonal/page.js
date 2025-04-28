@@ -1,12 +1,16 @@
 "use client";
 import React, { useState } from 'react';
 import { Camera } from 'lucide-react';
+import ToastNotification from '@/components/ToastNotification';
+import { set } from 'date-fns';
 
 export default function EditForm({ profileData, hidePersonalForm }) {
   const [formData, setFormData] = useState(profileData || {});
   const [isMaidenNameChecked, setIsMaidenNameChecked] = useState(
     profileData?.Title === "Ms." || profileData?.Title === "Mrs." ? profileData?.IsMaidenName : false
   );
+
+  const [showToast, setShowToast] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -28,9 +32,48 @@ export default function EditForm({ profileData, hidePersonalForm }) {
     }
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+  
+    const requiredFields = {
+      Title: formData.Title,
+      FirstName: formData.FirstName,
+      MiddleName: formData.MiddleName,
+      LastName: formData.LastName,
+      Degree: formData.Degree,
+      GraduationYear: formData.GraduationYear,
+      CivilStatus: formData.CivilStatus,
+      BirthDate: formData.BirthDate,
+      BirthPlace: formData.BirthPlace,
+      Citizenship: formData.Citizenship,
+    };
+  
+    const isEmpty = (value) =>
+      value === undefined ||
+      value === null ||
+      (typeof value === "string" && value.trim() === "");
+  
+    const missingFields = Object.entries(requiredFields).filter(([_, value]) =>
+      isEmpty(value)
+    );
+  
+    if (missingFields.length > 0) {
+      setShowToast({
+        type: "fail",
+        message: "Please fill in the missing fields.",
+      });
+      return;
+    }
+
+    setShowToast({
+      type: "success",
+      message: "Your profile has been saved!",
+    });
+  };  
+
   return (
   <div className="max-h-[90vh] overflow-y-auto">
-    <form className="space-y-4 p-8">
+    <form className="space-y-4 p-8" onSubmit={handleSubmit} noValidate>
       {/* Profile Picture */}
       <div className="flex justify-center w-full mb-6 relative">
         <div className="relative">
@@ -58,7 +101,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
       {/* Preferred Title & Maiden Name */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Title</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Title <span className="text-[var(--color-astrared)]">*</span></label>
           <div className="flex gap-4">
             {["Mr.", "Ms.", "Mrs.", "Mx."].map((title) => (
               <label key={title} className="inline-flex items-center">
@@ -94,7 +137,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
       {/* Name Fields */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">First Name <span className="text-[var(--color-astrared)]">*</span></label>
           <input
             type="text"
             name="FirstName"
@@ -105,7 +148,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Middle Name</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Middle Name <span className="text-[var(--color-astrared)]">*</span></label>
           <input
             type="text"
             name="MiddleName"
@@ -116,7 +159,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Last Name <span className="text-[var(--color-astrared)]">*</span></label>
           <input
             type="text"
             name="LastName"
@@ -142,7 +185,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
       {/* Degree & Graduation Year */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">UPLB Degree</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">UPLB Degree <span className="text-[var(--color-astrared)]">*</span></label>
           <select
             name="Degree"
             value={formData?.Degree || ""}
@@ -157,7 +200,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Graduation Year</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Graduation Year <span className="text-[var(--color-astrared)]">*</span></label>
           <input
             type="number"
             name="GraduationYear"
@@ -174,7 +217,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
       {/* Civil Status & Student ID */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Civil Status</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Civil Status <span className="text-[var(--color-astrared)]">*</span></label>
           <select
             name="CivilStatus"
             value={formData?.CivilStatus || ""}
@@ -206,7 +249,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
       {/* Birth Info */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Birthdate</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Birthdate <span className="text-[var(--color-astrared)]">*</span></label>
           <input
             type="date"
             name="BirthDate"
@@ -216,10 +259,10 @@ export default function EditForm({ profileData, hidePersonalForm }) {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Place of Birth</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Place of Birth <span className="text-[var(--color-astrared)]">*</span></label>
           <input
             type="text"
-            name="PlaceOfBirth"
+            name="BirthPlace"
             value={formData?.BirthPlace || ""}
             onChange={handleChange}
             className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
@@ -231,7 +274,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
       {/* Citizenship & Gender */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Country of Citizenship</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Country of Citizenship <span className="text-[var(--color-astrared)]">*</span></label>
           <input
             type="text"
             name="Citizenship"
@@ -242,7 +285,7 @@ export default function EditForm({ profileData, hidePersonalForm }) {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Gender</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Gender <span className="text-[var(--color-astrared)]">*</span></label>
           <select
             name="Gender"
             value={formData?.Gender || ""}
@@ -274,6 +317,15 @@ export default function EditForm({ profileData, hidePersonalForm }) {
         </button>
       </div>
     </form>
+
+    {/* Show Toast Notification */}
+    {showToast && (
+      <ToastNotification
+        type={showToast.type}
+        message={showToast.message}
+        onClose={() => setShowToast(null)} // Close the toast when it disappears
+      />
+    )}
   </div>
   );
 }

@@ -6,13 +6,25 @@ export default function SmallJobCard({job, showApply}) {
 
     const isOpen = true;
 
+    const formatSalary = (num) => {
+        return `₱${num.toLocaleString('en-US')}`
+    }
+
+    const formatDate = (date) => {
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        })
+    }
+
     return (
     <div className="flex flex-col items-center md:flex-row gap-5 bg-astrawhite max-w-[1250px] w-19/20 min-h-[308px] h-auto rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] p-10 pb-7">
         {/* Details */}
         <div className="md:w-1/3">
             <h1 className="text-astrablack text-2xl font-bold">Job Details</h1>
             
-            <h1 className="text-astrablack text-xl font-bold mt-5">₱{job.salary}<span className="text-xl font-normal">/month</span></h1>
+            <h1 className="text-astrablack text-xl font-bold mt-5">{formatSalary(job.salary)}<span className="text-xl font-normal">/month</span></h1>
             
             <div className="flex gap-2 items-start pt-3 pb-2">
                 <Image src="/icons/marker.svg" width={20} height={28.5} alt='loc' className="shrink-0"></Image>
@@ -21,11 +33,7 @@ export default function SmallJobCard({job, showApply}) {
             
             <div className="flex gap-2 items-center">
                 <Clock size="20" className="shrink-0"/>
-                <p className="text-black text-sm">{job.expires_at.toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                })}</p>
+                <p className="text-black text-sm">{formatDate(job.expires_at)}</p>
             </div>
             {/* Tags */}
             <div className="flex flex-wrap gap-2 my-3">

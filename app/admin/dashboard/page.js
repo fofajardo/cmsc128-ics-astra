@@ -7,7 +7,7 @@ import { Donut } from "./components/piechart";
 import UpcomingEvents from "./components/UpcomingEvents";
 import ActivityOverview from "./components/ActivityOverview"
 import RecentActivity from "./components/RecentActivity";
-import TransitionGrow from "@/components/transitions/TransitionGrow";
+import TransitionSlide from "@/components/transitions/TransitionSlide";
 
 
 
@@ -28,10 +28,10 @@ export default function Dashboard() {
                 </div>
                 <div className="pt-6 pb-4 overflow-y-scroll w-full scrollbar-hide">
                     <div className="flex flex-row gap-3 min-w-max px-4 justify-center"> 
-                        <AdminStatCard title='Active Alumni' value = {"999,999"} icon={<GraduationCap className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={'/admin/alumni/search'}/>
-                        <AdminStatCard title='Active Job Posts' value = {27} icon={<Briefcase className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={'/admin/jobs'}/>
-                        <AdminStatCard title='Active Events' value = {15} icon={<Calendar className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={'/admin/events'}/>
-                        <AdminStatCard title='Funds Raised' value = {"999,999"} icon={<HandHeart className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={'/admin/projects'}/>
+                        <AdminStatCard delay={0.0} title='Active Alumni' value = {"999,999"} icon={<GraduationCap className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={'/admin/alumni/search'}/>
+                        <AdminStatCard delay={0.2} title='Active Job Posts' value = {27} icon={<Briefcase className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={'/admin/jobs'}/>
+                        <AdminStatCard delay={0.3} title='Active Events' value = {15} icon={<Calendar className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={'/admin/events'}/>
+                        <AdminStatCard delay={0.4} title='Funds Raised' value = {"999,999"} icon={<HandHeart className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={'/admin/projects'}/>
                     </div>
                 </div>
                 </div>
@@ -52,33 +52,33 @@ export default function Dashboard() {
 }
 
 function ActivityBreakdown(){
-    return <TransitionGrow className="flex-2 md:flex-3 h-auto w-auto">
+    return <TransitionSlide className="flex-2 md:flex-3 h-auto w-auto">
         <BarGraph/>        
-    </TransitionGrow>
+    </TransitionSlide>
 }
 
 function Activity(){
-    return <TransitionGrow className="flex-2 h-auto w-auto">
+    return <TransitionSlide className="flex-2 h-auto w-auto">
         <RecentActivity/>
-    </TransitionGrow>
+    </TransitionSlide>
 }
 
 function AlumAct_Events(){
     return <div className="flex-grow flex flex-col gap-4">
-        <TransitionGrow className="flex-2 flex-grow h-auto w-auto">
+        <TransitionSlide className="flex-2 flex-grow h-auto w-auto">
             <ActivityOverview/>
-        </TransitionGrow>
-        <TransitionGrow className="flex-2 flex-grow h-auto w-auto">
+        </TransitionSlide>
+        <TransitionSlide className="flex-2 flex-grow h-auto w-auto">
             <UpcomingEvents/>
-        </TransitionGrow>
+        </TransitionSlide>
     </div>
 }
 
 function FundsDonut(){
-    return <TransitionGrow className="flex-1 h-auto w-auto md:row-start-1 md:row-span-8 md:col-start-3">
+    return <TransitionSlide className="flex-1 h-auto w-auto md:row-start-1 md:row-span-8 md:col-start-3">
                 <div className="size-full">
                     <Donut />
                 </div>
-            </TransitionGrow>
+            </TransitionSlide>
 }
 
