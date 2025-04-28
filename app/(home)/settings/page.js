@@ -89,9 +89,9 @@ export default function AccountSettings() {
   }
 
   return (
-    <div className="min-h-screen bg-[#eff2fa] flex flex-col py-10 px-4 mt-16">
+    <div className="min-h-[600px] bg-[#eff2fa] flex flex-col py-8 px-4">
       <div className="w-full max-w-5xl mx-auto p-6">
-        <h1 className="text-[var(--color-astrablack)] text-3xl font-bold mb-6 ml-4">Account Settings</h1>
+        <h1 className="text-[var(--color-astrablack)] text-xl md:text-2xl font-bold mb-4">Account Settings</h1>
         <div className="bg-white rounded-lg shadow-sm w-full flex flex-col md:flex-row">
           {/* Sidebar */}
           <div className="w-full md:w-64 border-r border-gray-200">
@@ -100,7 +100,7 @@ export default function AccountSettings() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center justify-between p-3 rounded-md text-left ${
+                  className={`text-sm w-full flex items-center justify-between p-3 rounded-md text-left ${
                     activeTab === tab.id ? "bg-blue-50 text-[var(--color-astraprimary)]" : "text-gray-700 hover:bg-gray-100"
                   }`}
                 >
@@ -115,20 +115,20 @@ export default function AccountSettings() {
           <div className="flex-1 p-8">
             {activeTab === "email" && (
               <div>
-                <h2 className="text-[var(--color-astrablack)] text-xl font-semibold mb-4">Change Email Address</h2>
+                <h2 className="text-[var(--color-astrablack)] text-md md:text-xl font-semibold mb-4">Change Email Address</h2>
                 <div className="space-y-4">
                   <div>
-                    <label htmlFor="current-email" className="block text-sm font-medium text-[var(--color-astrablack)]">Current Email</label>
+                    <label htmlFor="current-email" className="block text-sm md:text-base font-medium text-[var(--color-astrablack)]">Current Email</label>
                     <input
                       id="current-email"
                       type="email"
                       value="jmdelacruz@up.edu.ph"
                       readOnly
-                      className="bg-[#f1f3f6] text-gray-500 w-full py-2 px-3 border border-gray-300 rounded-md"
+                      className="text-sm md:text-base bg-[#f1f3f6] text-gray-500 w-full py-2 px-3 border border-gray-300 rounded-md"
                     />
                   </div>
                   <div>
-                    <label htmlFor="new-email" className="block text-sm font-medium text-[var(--color-astrablack)]">
+                    <label htmlFor="new-email" className="block text-sm md:text-base font-medium text-[var(--color-astrablack)]">
                       New Email Address <span className="text-red-500">*</span>
                     </label>
                     <div className="flex items-center gap-2">
@@ -138,22 +138,22 @@ export default function AccountSettings() {
                         placeholder="Enter your new email"
                         value={newEmail}
                         onChange={(e) => setNewEmail(e.target.value)}
-                        className="w-full py-2 px-3 border border-gray-300 rounded-md"
+                        className="text-sm md:text-base w-full py-2 px-3 border border-gray-300 rounded-md"
                       />
                       <button
-                        className={`px-4 py-2 text-white rounded-md ${isValidEmail(newEmail) ? "bg-[var(--color-astraprimary)] hover:bg-[var(--color-astradark)]" : "bg-gray-400 cursor-not-allowed"}`}
+                        className={`text-sm md:text-base px-4 py-2 text-white rounded-md ${isValidEmail(newEmail) ? "bg-[var(--color-astraprimary)] hover:bg-[var(--color-astradark)]" : "bg-gray-400 cursor-not-allowed"}`}
                         onClick={handleUpdateEmail}
                         disabled={!isValidEmail(newEmail)}
                       >
                         Update
                       </button>
                     </div>
-                    {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
+                    {emailError && <p className="text-red-500 text-sm md:text-base mt-1">{emailError}</p>}
                   </div>
 
                   {isVerificationVisible && (
                     <div className="space-y-2">
-                      <label htmlFor="verification-code" className="block text-sm font-medium text-[var(--color-astrablack)]">
+                      <label htmlFor="verification-code" className="block text-sm md:text-base font-medium text-[var(--color-astrablack)]">
                         Verification Code <span className="text-red-500">*</span>
                       </label>
                       <div className="flex gap-2">
@@ -169,7 +169,7 @@ export default function AccountSettings() {
                           Resend
                         </button>
                       </div>
-                      {codeError && <p className="text-red-500 text-sm">{codeError}</p>}
+                      {codeError && <p className="text-red-500 text-sm md:text-base">{codeError}</p>}
                       <button
                         onClick={handleVerifyCode}
                         className="w-full bg-[var(--color-astraprimary)] hover:bg-[var(--color-astradark)] text-white mt-2 p-2 rounded-md"
@@ -184,10 +184,10 @@ export default function AccountSettings() {
 
             {activeTab === "password" && (
               <div>
-                <h2 className="text-[var(--color-astrablack)] text-xl font-semibold mb-4">Change Password</h2>
+                <h2 className="text-[var(--color-astrablack)] text-md md:text-xl font-semibold mb-4">Change Password</h2>
                 <div className="space-y-4">
                   <div>
-                    <label htmlFor="current-password" className="block text-sm font-medium text-[var(--color-astrablack)]">Current Password <span className="text-[var(--color-astrared)]">*</span></label>
+                    <label htmlFor="current-password" className="block text-sm md:text-base font-medium text-[var(--color-astrablack)]">Current Password <span className="text-[var(--color-astrared)]">*</span></label>
                     <div className="relative">
                       <input
                         id="current-password"
@@ -202,7 +202,7 @@ export default function AccountSettings() {
                     </div>
                   </div>
                   <div>
-                    <label htmlFor="new-password" className="block text-sm font-medium text-[var(--color-astrablack)]">New Password <span className="text-[var(--color-astrared)]">*</span></label>
+                    <label htmlFor="new-password" className="block text-sm md:text-base font-medium text-[var(--color-astrablack)]">New Password <span className="text-[var(--color-astrared)]">*</span></label>
                     <div className="relative">
                       <input
                         id="new-password"
@@ -217,7 +217,7 @@ export default function AccountSettings() {
                     </div>
                   </div>
                   <div>
-                    <label htmlFor="confirm-password" className="block text-sm font-medium text-[var(--color-astrablack)]">Confirm Password <span className="text-[var(--color-astrared)]">*</span></label>
+                    <label htmlFor="confirm-password" className="block text-sm md:text-base font-medium text-[var(--color-astrablack)]">Confirm Password <span className="text-[var(--color-astrared)]">*</span></label>
                     <div className="relative">
                       <input
                         id="confirm-password"
@@ -231,7 +231,7 @@ export default function AccountSettings() {
                       </button>
                     </div>
                   </div>
-                  {passwordError && <p className="text-red-500 text-sm">{passwordError}</p>}
+                  {passwordError && <p className="text-red-500 text-sm md:text-base">{passwordError}</p>}
                   <button
                     onClick={handleSavePassword}
                     className="w-full bg-[var(--color-astraprimary)] hover:bg-[var(--color-astradark)] text-white py-2 px-4 rounded-md"
@@ -244,10 +244,10 @@ export default function AccountSettings() {
 
             {activeTab === "newsletter" && (
               <div>
-                <h2 className="text-[var(--color-astrablack)] text-xl font-semibold mb-4">
+                <h2 className="text-[var(--color-astrablack)] text-md md:text-xl font-semibold mb-4">
                   {isSubscribed ? "Unsubscribe from newsletter" : "Subscribe to newsletter"}
                 </h2>
-                <p className="text-gray-600 mb-4">
+                <p className="text-gray-600 mb-4 text-sm md:text-base">
                   {isSubscribed ? "Stop receiving our newsletter emails" : "Receive our latest newsletter and updates."}
                 </p>
                 <button

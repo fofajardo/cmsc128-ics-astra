@@ -74,10 +74,10 @@ export default function EducationalInfoPage() {
   return (
     <div className="min-h-screen flex flex-col bg-[var(--color-astratintedwhite)]">
       <div className="flex flex-1">
-        <div className="w-full md:w-1/2 p-4 md:p-8 pt-12 md:pt-20 px-4 md:px-0 flex items-center justify-center">
+        <div className="w-full md:w-1/2 p-4 md:p-8 px-4 md:px-0 flex items-center justify-center">
           <div className="max-w-md w-full mx-auto">
             {/* Mobile View for Notice */}
-            <div className="mt-12 mb-6 text-xs text-[var(--color-astrablack)] bg-white border border-gray-200 rounded-md p-4 md:hidden">
+            <div className="mb-6 text-xs text-[var(--color-astrablack)] bg-white border border-gray-200 rounded-md p-4 md:hidden">
               <h2 className="font-semibold text-lg mb-3">Notice and Consent to Privacy</h2>
               <p className="mt-2">
                 When uploading your proof of graduation for the University of the Philippines Los Baños (UPLB), please ensure the document is clear, legible, and in the required format (PDF, JPEG, or PNG).
@@ -91,7 +91,7 @@ export default function EducationalInfoPage() {
             </div>
 
             <form className="space-y-4 px-4 sm:px-6 md:px-8" onSubmit={handleSubmit}>
-              <h2 className="text-2xl font-semibold text-black mb-4">Educational Information</h2>
+              <h2 className="text-lg md:text-2xl font-semibold text-black mb-4">Educational Information</h2>
               
               {/* Degree Program */}
               <div>
@@ -103,7 +103,7 @@ export default function EducationalInfoPage() {
                   name="degree-program"
                   value={degreeProgram}
                   onChange={(e) => setDegreeProgram(e.target.value)}
-                  className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-[var(--color-astrablack)]"
+                  className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-[var(--color-astrablack)] text-sm md:text-base"
                 >
                   <option value="">Select a degree program</option>
                   <option value="BS Computer Science">BS Computer Science</option>
@@ -125,7 +125,7 @@ export default function EducationalInfoPage() {
                   value={studentId}
                   onChange={handleStudentIdChange}
                   placeholder="XXXX-XXXXX"
-                  className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-[var(--color-astrablack)]"
+                  className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-[var(--color-astrablack)] text-sm md:text-base"
                 />
               </div>
 
@@ -141,7 +141,7 @@ export default function EducationalInfoPage() {
                   value={graduationYear}
                   onChange={handleGraduationYearChange}
                   placeholder="XXXX"
-                  className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-[var(--color-astrablack)]"
+                  className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-[var(--color-astrablack)] text-sm md:text-base"
                 />
               </div>
 
@@ -153,7 +153,7 @@ export default function EducationalInfoPage() {
                     type="file"
                     ref={fileInputRef}
                     onChange={handleFileChange}
-                    className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-l-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-[var(--color-astrablack)] flex-1"
+                    className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-l-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-[var(--color-astrablack)] text-sm md:text-base flex-1"
                   />
                   <button
                     type="button"
@@ -205,7 +205,7 @@ export default function EducationalInfoPage() {
         <div className="hidden md:block md:w-1/2 bg-[var(--color-astraprimary)]">
           <div className="relative h-full">
             <img src="/blue-bg.png" alt="Background" className="h-full w-full object-cover" />
-            <div className="absolute top-0 left-0 h-full w-full flex flex-col items-center justify-center p-4 md:p-8 pt-12 md:pt-20">
+            <div className="absolute top-0 left-0 h-full w-full flex flex-col items-center justify-center p-4 md:p-8">
               <h1 className="text-2xl font-bold text-white mb-4 text-justify">Notice and Consent to Privacy</h1>
               <p className="text-white text-sm mb-4 text-justify">
                 When uploading your proof of graduation file for the University of the Philippines Los Baños (UPLB),

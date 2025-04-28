@@ -44,10 +44,10 @@ export default function PersonalInfoPage() {
   return (
     <div className="min-h-screen flex flex-col bg-[var(--color-astratintedwhite)]">
       <div className="flex flex-1">
-        <div className="w-full md:w-1/2 p-4 md:p-8 pt-12 md:pt-20 px-4 md:px-0 flex items-center justify-center">
+        <div className="w-full md:w-1/2 p-4 md:p-8 px-4 md:px-0 flex items-center justify-center">
           <div className="max-w-md w-full mx-auto">
             <form className="space-y-4 px-4 sm:px-6 md:px-8">
-              <h2 className="text-2xl font-semibold text-black mb-4">Personal Information</h2>
+              <h2 className="text-lg md:text-2xl font-semibold text-black mb-4">Personal Information</h2>
               <div>
                 <label htmlFor="preferred-delegation" className="block text-sm font-medium text-[var(--color-astrablack)] mb-1">
                   Preferred Delegation <span className="text-[var(--color-astrared)]">*</span>
@@ -57,7 +57,7 @@ export default function PersonalInfoPage() {
                   name="delegation"
                   value={delegation}
                   onChange={(e) => setDelegation(e.target.value)}
-                  className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
+                  className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md bg-white text-gray-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
                 >
                   <option value="">Select</option>
                   <option value="Mr.">Mr.</option>
@@ -77,7 +77,7 @@ export default function PersonalInfoPage() {
                   name="firstName"
                   value={formValues.firstName}
                   onChange={handleChange}
-                  className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
+                  className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md bg-white text-gray-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
                 />
               </div>
 
@@ -91,7 +91,7 @@ export default function PersonalInfoPage() {
                   name="middleName"
                   value={formValues.middleName}
                   onChange={handleChange}
-                  className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
+                  className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md bg-white text-gray-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
                 />
               </div>
 
@@ -106,7 +106,7 @@ export default function PersonalInfoPage() {
                     name="lastName"
                     value={formValues.lastName}
                     onChange={handleChange}
-                    className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
+                    className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md bg-white text-gray-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
                   />
                 </div>
                 <div className="flex-1">
@@ -120,7 +120,7 @@ export default function PersonalInfoPage() {
                     value={formValues.suffix}
                     onChange={handleChange}
                     placeholder="Jr., Sr., III..."
-                    className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
+                    className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md bg-white text-gray-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
                   />
                 </div>
               </div>
@@ -132,13 +132,13 @@ export default function PersonalInfoPage() {
                     type="checkbox"
                     className="w-4 h-4 text-[var(--color-astraprimary)] border-gray-300 rounded-sm focus:ring-[var(--color-astraprimary)] focus:ring-2"
                   />
-                  <label htmlFor="maiden-name-checkbox" className="ms-2 text-sm font-medium text-black">
+                  <label htmlFor="maiden-name-checkbox" className="ms-2 text-sm md:text-base font-medium text-black">
                     My last name is the same as my maiden name
                   </label>
                 </div>
               )}
 
-              <div className="flex space-x-4">
+              <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
                 <div className="flex-1">
                   <label htmlFor="birthdate" className="block text-sm font-medium text-[var(--color-astrablack)] mb-1">
                     Birthdate <span className="text-[var(--color-astrared)]">*</span>
@@ -149,9 +149,10 @@ export default function PersonalInfoPage() {
                     name="birthdate"
                     value={formValues.birthdate}
                     onChange={handleChange}
-                    className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
+                    className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md bg-white text-gray-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
                   />
                 </div>
+                
                 <div className="flex-1">
                   <label htmlFor="sex" className="block text-sm font-medium text-[var(--color-astrablack)] mb-1">
                     Sex <span className="text-[var(--color-astrared)]">*</span>
@@ -161,13 +162,14 @@ export default function PersonalInfoPage() {
                     name="sex"
                     value={formValues.sex}
                     onChange={handleChange}
-                    className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
+                    className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md bg-white text-gray-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
                   >
                     <option value="">Select</option>
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
                   </select>
                 </div>
+
                 <div className="flex-1">
                   <label htmlFor="civil-status" className="block text-sm font-medium text-[var(--color-astrablack)] mb-1">
                     Civil Status <span className="text-[var(--color-astrared)]">*</span>
@@ -177,7 +179,7 @@ export default function PersonalInfoPage() {
                     name="civilStatus"
                     value={formValues.civilStatus}
                     onChange={handleChange}
-                    className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
+                    className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md bg-white text-gray-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
                   >
                     <option value="">Select</option>
                     <option value="Single">Single</option>
@@ -201,19 +203,19 @@ export default function PersonalInfoPage() {
                     value={formValues.placeOfBirth}
                     onChange={handleChange}
                     placeholder="e.g. Manila"
-                    className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
+                    className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md bg-white text-gray-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
                   />
                 </div>
                 <div className="flex-1">
                   <label htmlFor="country-of-citizenship" className="block text-sm font-medium text-[var(--color-astrablack)] mb-1">
-                    Country of Citizenship <span className="text-[var(--color-astrared)]">*</span>
+                    Citizenship <span className="text-[var(--color-astrared)]">*</span>
                   </label>
                   <select
                     id="country-of-citizenship"
                     name="citizenship"
                     value={formValues.citizenship}
                     onChange={handleChange}
-                    className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
+                    className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md bg-white text-gray-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
                   >
                     <option value="">Select</option>
                     <option value="Philippines">Philippines</option>
@@ -248,7 +250,7 @@ export default function PersonalInfoPage() {
                 </div>
               </div>
 
-              <div className="flex justify-center mt-6 space-x-2">
+              <div className="flex justify-center space-x-2">
                 <div className="w-2 h-2 rounded-full bg-gray-300"></div>
                 <div className="w-2 h-2 rounded-full bg-[var(--color-astraprimary)]"></div>
                 <div className="w-2 h-2 rounded-full bg-gray-300"></div>
