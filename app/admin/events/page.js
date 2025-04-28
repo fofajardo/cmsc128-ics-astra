@@ -1,14 +1,17 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { TableHeader, Table, PageTool } from "@/components/TableBuilder";
+import { TabContext } from "@/components/TabContext";
 import { useTab } from "../../components/TabContext";
 import ToastNotification from "@/components/ToastNotification";
 import { isValidDate,isValidUUID } from "../../../api/utils/validators";
 import { Trash2, Eye, Pencil } from "lucide-react";
 import axios from "axios";
+import Fuse from 'fuse.js';
 
 
 export default function Events() {
+  const { setEventCounts } = useContext(TabContext);
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
   const { currTab, info } = useTab();
@@ -23,7 +26,7 @@ export default function Events() {
     currPage: 1,
     lastPage: 10,
     numToShow: 10,
-    total: eventList.length,
+    total: 0,
   });
 
   const [addFormData, setAddFormData] = useState({
@@ -38,9 +41,13 @@ export default function Events() {
     access_link: "",
     description: ""
   });
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredEvents, setFilteredEvents] = useState([]);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [eventToDelete, setEventToDelete] = useState(null);
+  const [filters, setFilters] = useState(null);
+
 
   const resetForm = () => {
     setAddFormData({
@@ -62,7 +69,68 @@ export default function Events() {
   useEffect(() => {
     fetchEvents();
     fetchContents();
+    console.log(eventList);
   }, [pagination.currPage,pagination.numToShow]);
+
+  useEffect(() => {
+    if (!eventList || !Array.isArray(eventList)) {
+      console.log("eventList not ready yet:", eventList);
+      return;
+    }
+    const fuse = new Fuse(contentList, {
+      keys: ['title'],
+      threshold: 0.3,
+    });
+
+    if (searchQuery) {
+      const result = fuse.search(searchQuery);
+      const matchingContentIds = result.map(r => r.item.id);
+
+      console.log("matchingContentIds:", matchingContentIds);
+      console.log("eventList:", eventList.map(e => ({ event_id: e.event_id, content_id: e.content_id })));
+
+      const filtered = eventList.filter(event =>
+        matchingContentIds.includes(event.event_id)
+      );
+
+      console.log("Filtered Events:", filtered);
+      setFilteredEvents(filtered);
+    } else {
+      setFilteredEvents(eventList);
+    }
+  }, [searchQuery, eventList, contentList]);
+
+
+  useEffect(() => {
+    const total = eventList.length;
+    const numToShow = pagination.numToShow;
+    const lastPage = Math.max(1, Math.ceil(total / numToShow));
+
+    setPagination((prev) => ({
+      ...prev,
+      total: total,
+      lastPage: lastPage,
+      display: [
+        (prev.currPage - 1) * numToShow + 1,
+        Math.min(prev.currPage * numToShow, total),
+      ],
+    }));
+  }, [eventList]);
+
+  // const filteredEvents = eventList.filter((event) => {
+  //   const content = contentList.find(c => c.content_id === event.event_id);
+  //   console.log("Content for Event ID", event.event_id, ":", content);
+
+  //   if (content) {
+  //     console.log("Checking Title:", content.title);
+  //     return content.title.toLowerCase().includes(searchQuery.toLowerCase());
+  //   }
+  //   return false;
+  // });
+
+
+
+
 
   const toggleAddModal = () => {
     setShowAddModal((prev) => !prev);
@@ -130,9 +198,13 @@ export default function Events() {
         console.log('Fetched events:', response.data);
 
         if (response.data.status === "OK") {
+          console.log("First event object:", response.data.list[0]);
+
             setEvents(
                 response.data.list.map(event => ({
                     id: event.event_id,
+                    event_id: event.event_id,
+                    content_id: event.event_id,
                     event_name: fetchContentName(event.event_id),    //TODO: fetch event title from contents
                     location: event.venue,
                     type: event.online === true ? 'Online' : 'In-Person',
@@ -141,6 +213,11 @@ export default function Events() {
                     interested: event.interested //TODO: fetch number of going by total number of event interest
                 }))
             );
+            setEventCounts({total:response.data.list.length});
+
+
+            console.log("list: ", response.data.list.length);
+
         } else {
             console.error('Unexpected response:', response.data);
         }
@@ -224,7 +301,10 @@ export default function Events() {
            .delete(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/${id}`);
 
         if (response.data.status === "DELETED") {
+          handleDeleteContent(id);
           setToast({ type: "success", message: `${name} deleted successfully!` });
+
+
         }
 
     }catch(error){
@@ -500,8 +580,11 @@ export default function Events() {
             info={info}
             pagination={pagination}
             toggleFilter={toggleAddModal}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
           />
-          <Table cols={cols} data={createRows(eventList,confirmDelete)} />
+
+          <Table cols={cols} data={createRows(filteredEvents,confirmDelete)} />
           <PageTool pagination={pagination} setPagination={setPagination} />
         </div>
       </div>
@@ -519,8 +602,8 @@ const cols = [
   { label: "Actions", justify: "center", visible: "all" },
 ];
 
-function createRows(eventList,confirmDelete) {
-  return eventList.map((event) => ({
+function createRows(filteredEvents,confirmDelete) {
+  return filteredEvents.map((event) => ({
     Event: renderTitle(event.event_name),
     Location: renderText(event.location),
     Type: renderText(event.type),

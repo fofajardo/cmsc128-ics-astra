@@ -14,6 +14,13 @@ export default function AdminEventsLayout({ children }) {
     search: "Search for an event",
   });
 
+  const [eventCounts, setEventCounts] = useState({
+    active: 0,
+    past: 0,
+    total: 0
+  });
+
+
   const handleTabChange = (newTab) => {
     setCurrTab(newTab);
     setInfo((prev) => ({
@@ -58,7 +65,7 @@ export default function AdminEventsLayout({ children }) {
               />
               <AdminStatCard
                 title="Total Events"
-                value={59}
+                value={eventCounts.total}
                 icon={<CalendarClock className="size-13 text-astrawhite" strokeWidth={3} />}
                 route={false}
                 onClick={() => {}}
@@ -69,7 +76,7 @@ export default function AdminEventsLayout({ children }) {
       </div>
 
       {/* Pass context values down to children */}
-      <TabContext.Provider value={{ info, setInfo }}>
+      <TabContext.Provider value={{ info, setInfo,setEventCounts }}>
         {children}
       </TabContext.Provider>
     </>
