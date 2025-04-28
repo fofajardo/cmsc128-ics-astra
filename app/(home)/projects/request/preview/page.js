@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import ToastNotification from "@/components/ToastNotification";
 import BackButton from "@/components/events/IndividualEvent/BackButton";
+import { set } from "date-fns";
 
 const FundraiserConfirmPage = () => {
   const searchParams = useSearchParams();
@@ -61,7 +62,10 @@ const FundraiserConfirmPage = () => {
     } catch (error) {
       console.error("Error submitting fundraiser:", error);
       // Handle error state here
-      alert("Failed to submit fundraiser. Please try again.");
+      setShowToast({
+        type: "fail",
+        message: "Failed to submit fundraiser. Please try again.",
+      });
     } finally {
       setIsSubmitting(false);
     }
