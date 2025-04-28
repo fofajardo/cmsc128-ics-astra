@@ -2,7 +2,7 @@
 import * as React from 'react';
 import { GoBackButton } from '@/components/Buttons';
 import SkillTag from '@/components/SkillTag';
-import { alumniData } from '@/components/DummyDataSearch'; // Import your alumni data
+import { alumniData } from '@/components/DummyDataSearch'; 
 import { Mail, MapPin, GraduationCap, Image as LucideImage } from "lucide-react";
 import TransitionSlide from '@/components/transitions/TransitionSlide';
 
@@ -10,14 +10,12 @@ export default function AlumniSearchProfile({ params }) {
   const unwrappedParams = React.use(params);
   const { id } = unwrappedParams;
 
-  // Find the alumnus based on the ID from the route params
   const alumnus = alumniData.find((alum) => alum.id === id);
 
   if (!alumnus) {
     return <div className="text-center mt-20 text-red-500">Alumnus not found.</div>;
   }
 
-  // Split the skills string into an array if it exists
   const skillsArray = alumnus.skills ? alumnus.skills.split(', ').map(skill => skill.trim()) : [];
   const interestsArray = alumnus.interests ? alumnus.interests.split(', ').map(interest => interest.trim()) : [];
 
@@ -26,6 +24,7 @@ export default function AlumniSearchProfile({ params }) {
       <div className="max-w-6xl mx-auto my-1">
         <GoBackButton />
       </div>
+
       {/* PROFILE SECTION */}
       <TransitionSlide className="max-w-6xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between bg-white border border-astralightgray rounded-xl px-6 py-4 shadow-sm gap-4">
         {/* left section */}
@@ -162,7 +161,7 @@ export default function AlumniSearchProfile({ params }) {
           <div className="bg-white border border-astralightgray rounded-xl p-4 shadow-md">
             <h4 className="font-rb text-astrablack mb-0">Technical Skills</h4>
             <hr className="h-2 border-astralightgray"></hr>
-            <div className="flex gap-2 justify-between flex-wrap text-sm">
+            <div className="flex gap-2 flex-wrap text-sm">
               {skillsArray.map((skill, index) => (
                 <SkillTag key={index} text={skill} color="bg-blue-100 text-blue-700" />
               ))}
@@ -174,7 +173,7 @@ export default function AlumniSearchProfile({ params }) {
           <div className="bg-white border border-astralightgray rounded-xl p-4 shadow-md">
             <h4 className="font-rb text-astrablack mb-0">Fields of Interest</h4>
             <hr className="h-2 border-astralightgray"></hr>
-            <div className="flex gap-2 justify-between flex-wrap text-sm">
+            <div className="flex gap-2 flex-wrap text-sm">
               {interestsArray.map((interest, index) => (
                 <SkillTag key={index} text={interest} color="bg-green-100 text-green-700" />
               ))}

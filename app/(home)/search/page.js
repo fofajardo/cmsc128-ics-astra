@@ -6,15 +6,14 @@ import eventsVector from '../../assets/search.gif';
 import { Table } from '@/components/TableBuilder';
 import SkillTag from '@/components/SkillTag';
 import { ActionButton } from '@/components/Buttons';
+import { alumniData } from '@/components/DummyDataSearch'; 
+import Pagination from '@/components/search/GroupedEvents/Pagination';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { alumniData } from '@/components/DummyDataSearch'; // Import the data
-import Pagination from '@/components/search/GroupedEvents/Pagination';
 
-const ITEMS_PER_PAGE = 10; // Adjusted to 4 items per page for demonstration
+const ITEMS_PER_PAGE = 10; 
 
 export default function Page() {
-  // Use alumniData directly
   const initialAlumniList = useMemo(() => alumniData, []);
 
   const [alumList, setAlumList] = useState(initialAlumniList);
@@ -37,6 +36,7 @@ export default function Page() {
     skills: false,
   });
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState(''); // State for the search input
 
   const toggleFilter = (filterName) => {
     setShowFilters((prevShowFilters) => ({
@@ -58,7 +58,13 @@ export default function Page() {
     setAppliedFilters(filters);
   };
 
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1); // Reset page on search
+  };
+
   const filteredAlumList = useMemo(() => {
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
     return alumList.filter((alum) => {
       const withinMinYear =
         !appliedFilters.minGradYear ||
@@ -77,14 +83,23 @@ export default function Page() {
       const skillsMatch =
         !appliedFilters.skills ||
         (alum.skills && alum.skills.toLowerCase().includes(appliedFilters.skills.toLowerCase()));
-      return withinMinYear && withinMaxYear && matchesLocation && skillsMatch;
+      const nameMatch =
+        !lowerCaseSearchTerm ||
+        alum.first_name.toLowerCase().includes(lowerCaseSearchTerm) ||
+        alum.last_name.toLowerCase().includes(lowerCaseSearchTerm) ||
+        `${alum.first_name.toLowerCase()} ${alum.last_name.toLowerCase()}`.includes(lowerCaseSearchTerm);
+
+      return withinMinYear && withinMaxYear && matchesLocation && skillsMatch && nameMatch;
     });
-  }, [alumList, appliedFilters]);
+  }, [alumList, appliedFilters, searchTerm]);
 
   const sortedAlumList = useMemo(() => {
     let sortedList = [...filteredAlumList];
-    if (sortBy === 'name') {
-      sortedList.sort((a, b) => `${a.first_name} ${a.last_name}`.localeCompare(`${b.first_name} ${b.last_name}`));
+    if (sortBy === 'firstName') {
+      sortedList.sort((a, b) => a.first_name.localeCompare(b.first_name));
+    }
+    if (sortBy === 'lastName') {
+      sortedList.sort((a, b) => a.last_name.localeCompare(b.last_name));
     }
     if (sortBy === 'graduationYear' && sortedList[0]?.year_graduated) {
       sortedList.sort(
@@ -109,11 +124,18 @@ export default function Page() {
   const cols = [
     { label: 'Image:label-hidden', justify: 'center', visible: 'all' },
     {
-      label: 'Name',
+      label: 'First Name',
       justify: 'start',
-      visible: 'all',
+      visible: 'md',
       sortable: true,
-      onSort: () => handleSort('name'),
+      onSort: () => handleSort('firstName'),
+    },
+    {
+      label: 'Last Name',
+      justify: 'start',
+      visible: 'md',
+      sortable: true,
+      onSort: () => handleSort('lastName'),
     },
     {
       label: 'Graduation Year',
@@ -135,7 +157,8 @@ export default function Page() {
   function createRows(alumList) {
     return alumList.map((alum) => ({
       'Image:label-hidden': renderAvatar(alum.image, `${alum.first_name} ${alum.last_name}`),
-      Name: renderName(`${alum.first_name} ${alum.last_name}`, alum.email),
+      'First Name': renderText(alum.first_name),
+      'Last Name': renderText(alum.last_name),
       'Graduation Year': renderText(alum.year_graduated ? alum.year_graduated.substring(0, 4) : 'N/A'),
       Location: renderText(alum.location || 'N/A'),
       Skills: renderSkills(alum.skills ? alum.skills.split(', ') : []),
@@ -150,17 +173,9 @@ export default function Page() {
           <img
             src={image}
             className="w-full h-full object-cover rounded-xl"
+            alt={name}
           />
         </div>
-      </div>
-    );
-  }
-
-  function renderName(name, email) {
-    return (
-      <div>
-        <div className="font-rb p-2">{name}</div>
-        <div className="font-s text-astradarkgray">{email}</div>
       </div>
     );
   }
@@ -196,13 +211,6 @@ export default function Page() {
     );
   }
 
-  // --- ADD THESE CONSOLE LOGS FOR DEBUGGING ---
-  console.log('sortedAlumList length:', sortedAlumList.length);
-  console.log('ITEMS_PER_PAGE:', ITEMS_PER_PAGE);
-  console.log('totalPages:', totalPages);
-  console.log('currentPage:', currentPage);
-  // --- END OF CONSOLE LOGS ---
-
   return (
     <div className="w-full bg-astradirtywhite">
       <div className="h-auto" />
@@ -234,7 +242,6 @@ export default function Page() {
             </div>
           </div>
         </div>
-        {/* Other content of your page can go here */}
         <section className="py-24 relative">
           <div className="w-full max-w-7xl mx-auto px-4 md:px-8">
             <div className="flex flex-col lg:flex-row lg:items-center max-lg:gap-4 justify-between w-full">
@@ -259,7 +266,9 @@ export default function Page() {
                     type="text"
                     id="Offer"
                     placeholder="Search..."
-                    className="border border-astragray p-2 pl-4 w-full h-12 flex-grow"
+                    className="px-6 bg-astrawhite border border-astragray"
+                    value={searchTerm}
+                    onChange={handleSearchChange}
                   />
                   <select
                     className="border border-astragray p-2 w-32 h-12 bg-white"
@@ -269,7 +278,8 @@ export default function Page() {
                     <option value="" hidden>
                       Sort by...
                     </option>
-                    <option value="name">Name</option>
+                    <option value="firstName">First Name</option>
+                    <option value="lastName">Last Name</option>
                     <option value="graduationYear">Graduation Year</option>
                   </select>
                 </div>
@@ -303,17 +313,19 @@ export default function Page() {
             <div className="grid grid-cols-12">
               <div className="col-span-12 md:col-span-3 w-full max-md:max-w-md max-md:mx-auto">
                 <div className="rounded-xl border border-astragray bg-astrawhite p-6 w-full md:max-w-sm space-y-5">
+                  
                   {/* Filter Buttons */}
                   <div className="space-y-2">
                     <div className="pb-2 border-b border-astragray">
                       <button
-                        className="w-full py-2 rounded-md text-astrablack font-medium text-left focus:outline-none focus:ring-2 focus:ring-astraprimary"
+                        className="w-full py-2 rounded-md text-astrablack font-medium text-left focus:outline-none focus:ring-2 focus:ring-astraprimary flex items-center justify-between"
                         onClick={() => toggleFilter('graduationYear')}
                       >
-                        <FontAwesomeIcon icon={faPlus} className="mr-2" /> Graduation Year
+                        Graduation Year
+                        <FontAwesomeIcon icon={faPlus} className="h-4 w-4" />
                       </button>
                       {showFilters.graduationYear && (
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1 mt-2">
                           <div className="relative w-full">
                             <input
                               type="text"
@@ -344,13 +356,14 @@ export default function Page() {
                   <div className="space-y-2">
                     <div className="pb-2 border-b border-astragray">
                       <button
-                        className="w-full py-2 rounded-md text-astrablack font-medium text-left focus:outline-none focus:ring-2 focus:ring-astraprimary"
+                        className="w-full py-2 rounded-md text-astrablack font-medium text-left focus:outline-none focus:ring-2 focus:ring-astraprimary flex items-center justify-between"
                         onClick={() => toggleFilter('location')}
                       >
-                        <FontAwesomeIcon icon={faPlus} className="mr-2" /> Location
+                        Location
+                        <FontAwesomeIcon icon={faPlus} className="h-4 w-4" />
                       </button>
                       {showFilters.location && (
-                        <div className="relative w-full">
+                        <div className="relative w-full mt-2">
                           <input
                             type="text"
                             id="location"
@@ -368,13 +381,14 @@ export default function Page() {
                   <div className="space-y-2">
                     <div className="pb-2 border-b border-astragray">
                       <button
-                        className="w-full py-2 rounded-md text-astrablack font-medium text-left focus:outline-none focus:ring-2 focus:ring-astraprimary"
+                        className="w-full py-2 rounded-md text-astrablack font-medium text-left focus:outline-none focus:ring-2 focus:ring-astraprimary flex items-center justify-between"
                         onClick={() => toggleFilter('skills')}
                       >
-                        <FontAwesomeIcon icon={faPlus} className="mr-2" /> Skills
+                        Skills
+                        <FontAwesomeIcon icon={faPlus} className="h-4 w-4" />
                       </button>
                       {showFilters.skills && (
-                        <div className="relative w-full">
+                        <div className="relative w-full mt-2">
                           <input
                             type="text"
                             id="skills"
@@ -398,10 +412,10 @@ export default function Page() {
                 </div>
               </div>
               <div className="col-span-12 md:col-span-9">
-                {/* Table will be rendered here */}
+              
                 <div className="pl-4">
                   <Table cols={cols} data={createRows(paginatedAlumList)} />
-                  {/* Pagination component */}
+                
                   {totalPages > 1 && (
                     <Pagination
                       currentPage={currentPage}
