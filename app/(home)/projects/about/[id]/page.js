@@ -19,7 +19,7 @@ import {
 import ToastNotification from "@/components/ToastNotification";
 
 export default function ProjectDetails({ params }) {
-  const id = params.id;
+  const id = use(params).id;
   const router = useRouter();
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
@@ -44,7 +44,7 @@ export default function ProjectDetails({ params }) {
     longDescription:
       "This scholarship aims to address the gender gap in technology fields by providing financial support to female students who demonstrate academic excellence and passion for computer science and IT. Recipients will receive funding for tuition, books, and mentorship opportunities. By supporting this initiative, we contribute to a more inclusive tech workforce.",
     goal: "₱300,000",
-    raised: "₱220,000",
+    raised: "₱200,000",
     donors: 87,
     endDate: "2025-09-30",
     organizer: {
@@ -66,7 +66,6 @@ export default function ProjectDetails({ params }) {
   );
 
   const handleSendMessage = () => {
-    // In a real app, you would send this message to the backend
     setToast({
       type: "success",
       message: "Message sent successfully!",
@@ -89,16 +88,20 @@ export default function ProjectDetails({ params }) {
       <div>
         <div className="max-w-6xl mx-auto">
           <div className="p-6 text-astrawhite w-full">
-          <div className="bg-astrawhite rounded-lg px-3 py-2 inline-block shadow border border-gray-200">
-  <div className="flex flex-wrap items-center gap-3">
-    <h1 className="text-3xl font-bold text-astraprimary">
-      {project.title}
-    </h1>
-    <span className={`${project.status === 0 ? "bg-green-500" : "bg-red-500"} text-astrawhite px-3 py-1 rounded-lg font-semibold`}>
-      {project.status === 0 ? "Active" : "Inactive"}
-    </span>
-  </div>
-</div>
+            <div className="bg-astrawhite rounded-lg px-3 py-2 inline-block shadow border border-gray-200">
+              <div className="flex flex-wrap items-center gap-3">
+                <h1 className="text-3xl font-bold text-astraprimary">
+                  {project.title}
+                </h1>
+                <span
+                  className={`${
+                    project.status === 0 ? "bg-green-500" : "bg-red-500"
+                  } text-astrawhite px-3 py-1 rounded-lg font-semibold`}
+                >
+                  {project.status === 0 ? "Active" : "Inactive"}
+                </span>
+              </div>
+            </div>
 
             <div className="flex flex-wrap items-center mt-2 gap-4">
               <div className="bg-astrawhite text-astraprimary px-3 py-1 rounded-lg text-sm flex items-center gap-1 shadow border border-gray-200">
@@ -218,23 +221,25 @@ export default function ProjectDetails({ params }) {
 
             {/* Buttons */}
             <div className="flex gap-4 mt-6">
-  <button
-    onClick={() => setIsShareModalOpen(true)}
-    className={`flex items-center justify-center gap-2 ${project.status === 1 ? "w-full" : "w-full"} py-3 px-4 bg-astragray text-astradark rounded-lg hover:bg-astragray/80 transition-colors font-medium`}
-  >
-    <Share2 className="w-5 h-5" />
-    Share
-  </button>
-  {project.status === 0 && (
-    <button
-      onClick={() => router.push("/projects/donate")}
-      className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-astraprimary text-white rounded-lg hover:bg-astraprimary/90 transition-colors font-medium"
-    >
-      <HeartHandshake className="w-5 h-5" />
-      Donate
-    </button>
-  )}
-</div>
+              <button
+                onClick={() => setIsShareModalOpen(true)}
+                className={`flex items-center justify-center gap-2 ${
+                  project.status === 1 ? "w-full" : "w-full"
+                } py-3 px-4 bg-astragray text-astradark rounded-lg hover:bg-astragray/80 transition-colors font-medium`}
+              >
+                <Share2 className="w-5 h-5" />
+                Share
+              </button>
+              {project.status === 0 && (
+                <button
+                  onClick={() => router.push("/projects/donate")}
+                  className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-astraprimary text-white rounded-lg hover:bg-astraprimary/90 transition-colors font-medium"
+                >
+                  <HeartHandshake className="w-5 h-5" />
+                  Donate
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Donators */}
