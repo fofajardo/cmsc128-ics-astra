@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import invitations from "../../../data/invitations.js";
+import { invitations } from '../../../data/invitations.js';
 import Image from "next/image";
 import { Calendar, Clock, MapPin, Users } from "lucide-react";
 import styles from "../styles/animations.module.css";
