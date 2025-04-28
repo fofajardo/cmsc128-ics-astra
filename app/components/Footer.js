@@ -6,7 +6,8 @@ export default function Footer() {
   const services = [
     { text: "Home", link: "/home" },
     { text: "About", link: "/about" },
-    { text: "Events", link: "/events" }
+    { text: "Events", link: "/events" },
+    {text:"Request Alumni Info", link:"/whats-up/request-info"}
   ];
   const helpers = [
     { text: "UPLB", link: "http://uplb.edu.ph/" },
