@@ -32,19 +32,7 @@ export default function ProjectsPage({ projects }) {
     setShowFilter((prev) => !prev);
   };
 
-  // Sample completed projects data
-  const completedProjects =
-    projects ||
-    Array(6).fill({
-      image: "/projects/assets/Donation.jpg",
-      title: "tapos na",
-      description:
-        "This project aims to provide snacks to students to encourage attendance and enhance focus.",
-      amountRaised: "₱10,000",
-      goalAmount: "₱30,000",
-      donors: "32",
-      buttonText: "Read story",
-    });
+
 
   // Navigate Left for completed projects carousel
   const handlePrev = () => {
@@ -71,7 +59,10 @@ export default function ProjectsPage({ projects }) {
     donors: "30",
     type: i % 2 === 0 ? "Scholarship" : "Fundraiser",
     endDate: "2025-06-30",
+    statud: i % 3 === 0 ? "Completed" : "Ongoing"
   }));
+    //completed projects data
+    const completedProjects = allProjects.filter(project => project.status === "Completed");
 
   // Filter projects based on type and search term
   const filteredProjects = allProjects.filter((project) => {

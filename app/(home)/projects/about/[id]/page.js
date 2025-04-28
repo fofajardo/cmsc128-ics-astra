@@ -17,10 +17,16 @@ import {
   MessageSquare,
 } from "lucide-react";
 import ToastNotification from "@/components/ToastNotification";
+'use client';
+import { useState } from 'react';
+import Image from 'next/image';
+import { useParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
 export default function ProjectDetails({ params }) {
   const id = use(params).id;
   const router = useRouter();
+  const { id } = useParams();
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [formData, setFormData] = useState({

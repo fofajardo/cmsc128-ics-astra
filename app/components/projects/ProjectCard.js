@@ -130,6 +130,7 @@ export default function ProjectCard({
         {/* Action Button */}
         {showDonate && (
           <button 
+            onClick={() => router.push(`/projects/donate/${id}`)}
             className="mt-3 w-full blue-button font-s py-1"
           >
             Donate
