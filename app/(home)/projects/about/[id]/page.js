@@ -233,7 +233,7 @@ export default function ProjectDetails({ params }) {
               </button>
               {project.status === 0 && (
                 <button
-                  onClick={() => router.push("/projects/donate")}
+                  onClick={() => router.push(`/projects/donate/${id}`)}
                   className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-astraprimary text-white rounded-lg hover:bg-astraprimary/90 transition-colors font-medium"
                 >
                   <HeartHandshake className="w-5 h-5" />
