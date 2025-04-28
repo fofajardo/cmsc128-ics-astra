@@ -1,8 +1,8 @@
-"use client";
+'use client';
 import * as React from 'react';
 import { GoBackButton } from '@/components/Buttons';
 import SkillTag from '@/components/SkillTag';
-import { alumniData } from '@/components/DummyDataSearch'; 
+import { alumniData } from '@/components/DummyDataSearch';
 import { Mail, MapPin, GraduationCap, Image as LucideImage } from "lucide-react";
 import TransitionSlide from '@/components/transitions/TransitionSlide';
 
