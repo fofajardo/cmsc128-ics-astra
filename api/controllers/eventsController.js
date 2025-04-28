@@ -131,17 +131,17 @@ const createEvent = async (req, res) => {
         }
         const { data: existingEvents, error: checkError } = await eventsService.checkExistingEvent(req.supabase, datetime, venue);
 
-        if (checkError) {
-            return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-                status: 'FAILED',
-                message: checkError
-            });
-        }
-
-        if (existingEvents.length > 0) {
+        if (checkError && existingEvents.length > 0) {
             return res.status(httpStatus.CONFLICT).json({
                 status: 'FAILED',
                 message: 'Event date and venue already exists'
+            });
+        }
+
+        if (checkError ) {
+            return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+                status: 'FAILED',
+                message: checkError
             });
         }
 
