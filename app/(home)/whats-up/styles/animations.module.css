@@ -56,6 +56,17 @@
   50% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.8); }
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .floatAnimation {
   animation: float 3s ease-in-out infinite;
 }

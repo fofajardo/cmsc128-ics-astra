@@ -1,11 +1,14 @@
 "use client";
 import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import styles from "./HeroSection.module.css";
 import animations from "../styles/animations.module.css";
 import heroImage from "../../../assets/whats-up-vector.png"; // Example image path
 
 export function HeroSection() {
+  const router = useRouter();
+
   useEffect(() => {
     const particlesContainer = document.getElementById("particles");
     const particleCount = 30;
@@ -32,6 +35,10 @@ export function HeroSection() {
       particlesContainer.appendChild(particle);
     }
   }, []);
+
+  const handleLearnMore = () => {
+    router.push('/whats-up/about'); // Replace with your desired route
+  };
 
   return (
     <div className="w-full bg-astradirtywhite">
@@ -64,7 +71,10 @@ export function HeroSection() {
               Stay connected and informed with the latest updates and stories.
             </p>
             <div className="flex justify-center lg:justify-end">
-              <button className={`mt-4 px-8 py-3 border-2 border-white text-white hover:bg-white hover:text-astraprimary rounded-xl transition-all duration-300 ${animations.glowEffect}`}>
+              <button 
+                onClick={handleLearnMore}
+                className={`mt-4 px-8 py-3 border-2 border-white text-white hover:bg-white hover:text-astraprimary rounded-xl transition-all duration-300 ${animations.glowEffect}`}
+              >
                 Learn More
               </button>
             </div>

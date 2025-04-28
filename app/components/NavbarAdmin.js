@@ -35,7 +35,7 @@ const menuItems = [
   { icon: <Calendar size={18} />, label: "Events", path: "/admin/events" },
   { icon: <Briefcase size={18} />, label: "Jobs", path: "/admin/jobs" },
   { icon: <Gift size={18} />, label: "Projects", path: "/admin/projects" },
-  { icon: <MessageCircle size={18} />, label: "Communications", path: "/admin/communications" },
+  { icon: <MessageCircle size={18} />, label: "What's up?", path: "/admin/whats-up" },
 ];
 
 function Navbar({ toggleSidebar, isSidebarOpen, isScrolled }) {

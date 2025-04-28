@@ -448,7 +448,7 @@ export default function ProjectsPage({ projects }) {
 
       {/* Donation Process*/}
       <section className="bg-astrawhite pt-20 pb-40 px-4">
-        <h2 className="font-h2 mb-2 text-astrablack text-center mb-12">
+        <h2 className="font-h2 mb-2 text-astrablack text-center">
           Donation Process
         </h2>
         <div className="px-4 sm:px-6 md:px-8 max-w-6xl mx-auto">
