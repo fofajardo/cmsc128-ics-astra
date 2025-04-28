@@ -89,8 +89,6 @@ export default function ProjectsPage({ projects }) {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <NavbarUser />
-
       {/* Filter Modal */}
       {showFilter && (
         <div
