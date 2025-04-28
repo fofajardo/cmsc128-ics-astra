@@ -3,7 +3,7 @@ import { GoBackButton } from "@/components/Buttons";
 
 export default function AboutWhatsUp() {
   return (
-    <div className="min-h-screen bg-astradirtywhite py-8">
+    <div className="min-h-screen bg-astradirtywhite pt-40 pb-8">
       <div className="max-w-4xl mx-auto px-4">
         <GoBackButton />
         
