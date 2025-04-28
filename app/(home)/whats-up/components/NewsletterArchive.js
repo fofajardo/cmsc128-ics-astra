@@ -24,19 +24,18 @@ export function NewsletterArchive() {
           href={newsletter.pdfLink}
           key={index}
           target="_blank"
-          className="newsletter-card group relative overflow-hidden rounded-lg shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-white"
+          className="block group"
         >
-          <div className="aspect-[3/4] relative">
+          <div className="aspect-[3/4] relative bg-black rounded-lg overflow-hidden transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg">
             <img
               src={newsletter.image}
+              alt={`Newsletter ${index + 1}`}
+              className="w-full h-full object-cover opacity-80 group-hover:opacity-60 transition-opacity"
               onError={handleImageError}
-              alt={`Volume ${index + 1} - Newsletter`}
-              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-              loading="lazy"
             />
-            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300" />
-            <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
-              <p className="text-white font-medium">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 p-4">
+              <p className="text-white font-medium text-lg">
                 Volume {index + 1} - Newsletter.pdf
               </p>
             </div>
