@@ -15,8 +15,9 @@ export default function CommunicationPage() {
     const [selectedType, setSelectedType] = useState("All");
     const [tempSelectedType, setTempSelectedType] = useState(selectedType);
 
-    // Pagination state
-    const itemsPerPage = 6;
+    // Pagination state with limit
+    const paginationOptions = [9, 12, 15, 18, 21];
+    const [itemsPerPage, setItemsPerPage] = useState(9);
     const [currentPage, setCurrentPage] = useState(1);
 
     // Filter announcements
@@ -30,7 +31,7 @@ export default function CommunicationPage() {
     const totalItems = filteredAnnouncements.length;
     const totalPages = Math.ceil(totalItems / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
+    const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
     const currentItems = filteredAnnouncements.slice(startIndex, endIndex);
 
     const pagination = {
@@ -94,8 +95,8 @@ export default function CommunicationPage() {
                 />
             )}
 
-            <div className="bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24 flex flex-col">
-                <div className='flex flex-col py-4 px-1 md:px-4 lg:px-8'>
+            <div className="bg-astradirtywhite w-full px-2 py-4 md:px-6 lg:px-12 flex flex-col">
+                <div className='flex flex-col py-2 px-1 md:px-2 lg:px-4'>
                     {/* Search and Controls */}
                     <div className="flex justify-between items-center mb-6">
                         <div className="flex items-center">
@@ -116,6 +117,21 @@ export default function CommunicationPage() {
                                     <path fill="none" stroke="currentColor" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
                             </div>
+                            <select
+                                value={itemsPerPage}
+                                onChange={(e) => {
+                                    const newValue = parseInt(e.target.value);
+                                    setItemsPerPage(newValue);
+                                    setCurrentPage(1); // Reset to first page when changing items per page
+                                }}
+                                className="px-3 py-2 border border-astragray rounded-lg bg-white text-astradarkgray"
+                            >
+                                {paginationOptions.map(option => (
+                                    <option key={option} value={option}>
+                                       {option}
+                                    </option>
+                                ))}
+                            </select>
                             <button
                                 onClick={() => setShowFilter(true)}
                                 className="flex items-center gap-2 px-4 py-2 border border-astragray rounded-lg"
@@ -135,24 +151,30 @@ export default function CommunicationPage() {
 
                     {/* Content */}
                     {currTab === 'Announcements' && (
-                        <div className="bg-astrawhite p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="bg-astrawhite p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 auto-rows-fr">
                             {currentItems.map((announcement) => (
-                                <div key={announcement.id} className="relative h-100 w-120 rounded-lg overflow-hidden shadow-lg">
-                                    {/* Background Image */}
+                                <div 
+                                    key={announcement.id} 
+                                    className="relative aspect-[4/3] rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
+                                >
                                     <img
                                         src={announcement.image}
                                         className="w-full h-full object-cover"
+                                        alt={announcement.title}
                                     />
-
-                                    {/* Overlay Container: Slightly Below Image */}
-                                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-astraprimary to-astrasecondary text-astrawhite p-6 rounded-t-lg min-h-64 flex flex-col justify-end">
-                                        <h1 className="text-base font-extrabold text-astrawhite">{announcement.title}</h1>
-                                        <div className="flex items-center gap-2">
-                                            {/* Font Awesome Calendar Icon */}
+                                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-astraprimary to-transparent/0 text-astrawhite p-4">
+                                        <h1 className="text-lg font-bold text-astrawhite line-clamp-1">
+                                            {announcement.title}
+                                        </h1>
+                                        <div className="flex items-center gap-2 mt-1">
                                             <i className="fas fa-calendar-alt text-astrawhite text-sm"></i>
-                                            <span className="text-sm text-astrawhite">{announcement.datePublished}</span>
+                                            <span className="text-sm text-astrawhite/90">
+                                                {announcement.datePublished}
+                                            </span>
                                         </div>
-                                        <p className="text-sm text-astragray-300">{announcement.description}</p>
+                                        <p className="text-sm text-astrawhite/80 mt-2 line-clamp-2">
+                                            {announcement.description}
+                                        </p>
                                     </div>
                                 </div>
                             ))}
@@ -184,69 +206,199 @@ const announcements = [
         image: "/whats-up/assets/Announcement.jpg",
         title: "Upcoming Hackathon 2025",
         datePublished: "2025-04-25",
-        description: "Join us for the annual coding competition! Register now and showcase your skills in software development."
+        description: "Join us for the annual coding competition! Register now and showcase your skills in software development.",
+        type: "Event"
     },
     {
         id: 2,
         image: "/whats-up/assets/Announcement.jpg",
         title: "Alumni Networking Event",
         datePublished: "2025-05-10",
-        description: "Reconnect with fellow alumni and industry leaders at our exclusive networking event. Reserve your spot today!"
+        description: "Reconnect with fellow alumni and industry leaders at our exclusive networking event. Reserve your spot today!",
+        type: "Event"
     },
     {
         id: 3,
         image: "/whats-up/assets/Announcement.jpg",
         title: "AI & Machine Learning Course",
         datePublished: "2025-06-01",
-        description: "Our university is launching a new course on AI & Machine Learning! Enroll to stay ahead in the tech industry."
+        description: "Our university is launching a new course on AI & Machine Learning! Enroll to stay ahead in the tech industry.",
+        type: "Update"
     },
     {
         id: 4,
         image: "/whats-up/assets/Announcement.jpg",
         title: "Graduation Ceremony 2025",
         datePublished: "2025-07-15",
-        description: "Celebrate the achievements of our graduates! The commencement ceremony will be held at the university auditorium."
+        description: "Celebrate the achievements of our graduates! The commencement ceremony will be held at the university auditorium.",
+        type: "Event"
     },
     {
         id: 5,
         image: "/whats-up/assets/Announcement.jpg",
         title: "Scholarship Applications Open",
         datePublished: "2025-08-05",
-        description: "Apply now for merit-based scholarships and financial aid opportunities available to eligible students."
+        description: "Apply now for merit-based scholarships and financial aid opportunities available to eligible students.",
+        type: "Update"
     },
     {
-      id: 6,
-      image: "/whats-up/assets/Announcement.jpg",
-      title: "Scholarship Applications Open",
-      datePublished: "2025-08-05",
-      description: "Apply now for merit-based scholarships and financial aid opportunities available to eligible students."
-  },
-  {
-    id: 7,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Scholarship Applications Open",
-    datePublished: "2025-08-05",
-    description: "Apply now for merit-based scholarships and financial aid opportunities available to eligible students."
-},
-{
-  id: 8,
-  image: "/whats-up/assets/Announcement.jpg",
-  title: "Scholarship Applications Open",
-  datePublished: "2025-08-05",
-  description: "Apply now for merit-based scholarships and financial aid opportunities available to eligible students."
-},
-{
-  id: 9,
-  image: "/whats-up/assets/Announcement.jpg",
-  title: "Scholarship Applications Open",
-  datePublished: "2025-08-05",
-  description: "Apply now for merit-based scholarships and financial aid opportunities available to eligible students."
-},
-{
-  id: 10,
-  image: "/whats-up/assets/Announcement.jpg",
-  title: "Scholarship Applications Open",
-  datePublished: "2025-08-05",
-  description: "Apply now for merit-based scholarships and financial aid opportunities available to eligible students."
-},
+        id: 6,
+        image: "/whats-up/assets/Announcement.jpg",
+        title: "Scholarship Applications Open",
+        datePublished: "2025-08-05",
+        description: "Apply now for merit-based scholarships and financial aid opportunities available to eligible students.",
+        type: "Update"
+    },
+    {
+        id: 7,
+        image: "/whats-up/assets/Announcement.jpg",
+        title: "Scholarship Applications Open",
+        datePublished: "2025-08-05",
+        description: "Apply now for merit-based scholarships and financial aid opportunities available to eligible students.",
+        type: "Update"
+    },
+    {
+        id: 8,
+        image: "/whats-up/assets/Announcement.jpg",
+        title: "Scholarship Applications Open",
+        datePublished: "2025-08-05",
+        description: "Apply now for merit-based scholarships and financial aid opportunities available to eligible students.",
+        type: "Update"
+    },
+    {
+        id: 9,
+        image: "/whats-up/assets/Announcement.jpg",
+        title: "Scholarship Applications Open",
+        datePublished: "2025-08-05",
+        description: "Apply now for merit-based scholarships and financial aid opportunities available to eligible students.",
+        type: "Update"
+    },
+    {
+        id: 10,
+        image: "/whats-up/assets/Announcement.jpg",
+        title: "Scholarship Applications Open",
+        datePublished: "2025-08-05",
+        description: "Apply now for merit-based scholarships and financial aid opportunities available to eligible students.",
+        type: "Update"
+    },
+    {
+        id: 11,
+        image: "/whats-up/assets/Announcement.jpg",
+        title: "Research Symposium 2025",
+        datePublished: "2025-09-01",
+        description: "Present your research at our annual symposium. Open for submissions in various computer science domains.",
+        type: "Event"
+    },
+    {
+        id: 12,
+        image: "/whats-up/assets/Announcement.jpg",
+        title: "New Computer Lab Opening",
+        datePublished: "2025-09-15",
+        description: "State-of-the-art facilities featuring the latest hardware and software for students.",
+        type: "News"
+    },
+    {
+        id: 13,
+        image: "/whats-up/assets/Announcement.jpg",
+        title: "Industry Partnership Program",
+        datePublished: "2025-09-20",
+        description: "New collaborations with leading tech companies offering internship opportunities.",
+        type: "Update"
+    },
+    {
+        id: 14,
+        image: "/whats-up/assets/Announcement.jpg",
+        title: "Alumni Mentorship Program",
+        datePublished: "2025-10-01",
+        description: "Connect with experienced alumni mentors in your field of interest.",
+        type: "Event"
+    },
+    {
+        id: 15,
+        image: "/whats-up/assets/Announcement.jpg",
+        title: "Programming Competition",
+        datePublished: "2025-10-15",
+        description: "Test your coding skills against fellow students. Attractive prizes to be won!",
+        type: "Event"
+    },
+    {
+        id: 16,
+        image: "/whats-up/assets/Announcement.jpg",
+        title: "Software Engineering Workshop",
+        datePublished: "2025-10-30",
+        description: "Learn industry-standard practices and tools from experienced professionals.",
+        type: "Event"
+    },
+    {
+        id: 17,
+        image: "/whats-up/assets/Announcement.jpg",
+        title: "Department Recognition Day",
+        datePublished: "2025-11-05",
+        description: "Celebrating outstanding achievements of students and faculty members.",
+        type: "News"
+    },
+    {
+        id: 18,
+        image: "/whats-up/assets/Announcement.jpg",
+        title: "Curriculum Updates 2026",
+        datePublished: "2025-11-15",
+        description: "Important changes to course offerings and program requirements.",
+        type: "Update"
+    },
+    {
+        id: 19,
+        image: "/whats-up/assets/Announcement.jpg",
+        title: "Tech Start-up Fair",
+        datePublished: "2025-11-30",
+        description: "Meet innovative start-ups and explore career opportunities.",
+        type: "Event"
+    },
+    {
+        id: 20,
+        image: "/whats-up/assets/Announcement.jpg",
+        title: "Holiday Coding Camp",
+        datePublished: "2025-12-10",
+        description: "Join our winter break programming bootcamp for students.",
+        type: "Event"
+    },
+    {
+        id: 21,
+        image: "/whats-up/assets/Announcement.jpg",
+        title: "Faculty Research Grants",
+        datePublished: "2025-12-15",
+        description: "New funding opportunities for research projects in computer science.",
+        type: "News"
+    },
+    {
+        id: 22,
+        image: "/whats-up/assets/Announcement.jpg",
+        title: "Library System Upgrade",
+        datePublished: "2025-12-20",
+        description: "Enhanced digital resources and improved search functionality.",
+        type: "Update"
+    },
+    {
+        id: 23,
+        image: "/whats-up/assets/Announcement.jpg",
+        title: "New Year Tech Conference",
+        datePublished: "2026-01-05",
+        description: "Annual technology conference featuring keynote speakers from leading tech companies.",
+        type: "Event"
+    },
+    {
+        id: 24,
+        image: "/whats-up/assets/Announcement.jpg",
+        title: "Student Excellence Awards",
+        datePublished: "2026-01-15",
+        description: "Recognizing outstanding academic and extracurricular achievements.",
+        type: "News"
+    },
+    {
+        id: 25,
+        image: "/whats-up/assets/Announcement.jpg",
+        title: "Spring Semester Updates",
+        datePublished: "2026-01-20",
+        description: "Important information about upcoming semester changes and events.",
+        type: "Update"
+    }
 ];
