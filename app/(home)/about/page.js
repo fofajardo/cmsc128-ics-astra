@@ -1,8 +1,9 @@
-"use client"
-import Image from "next/image"
-import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Rocket, Users, Code, Database, Star } from "lucide-react"
+"use client";
+import Image from "next/image";
+import { useState, useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Rocket, Users, Code, Database, Star } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function AboutPage() {
   const timelineItems = [
@@ -17,14 +18,16 @@ export default function AboutPage() {
       content: (
         <>
           <p className="mb-4">
-            The Bachelor of Science in Computer Science (BSCS) program at UPLB was established concurrently with the
-            Division of Computer Science. The program was officially instituted in 1982, the first students were
-            accepted in 1983.
+            The Bachelor of Science in Computer Science (BSCS) program at UPLB
+            was established concurrently with the Division of Computer Science.
+            The program was officially instituted in 1982, the first students
+            were accepted in 1983.
           </p>
           <p>
-            When the BSCS program first started, the computer science courses were taught by three professors and
-            statistics instructors. They were Dr. Manuel M. Manuel, Dr. Eliezer A. Albacea (then instructor), and Prof.
-            Wilfredo E. Cabezon.
+            When the BSCS program first started, the computer science courses
+            were taught by three professors and statistics instructors. They
+            were Dr. Manuel M. Manuel, Dr. Eliezer A. Albacea (then instructor),
+            and Prof. Wilfredo E. Cabezon.
           </p>
         </>
       ),
@@ -47,22 +50,27 @@ export default function AboutPage() {
       content: (
         <>
           <p className="mb-4">
-            The institute was designated by the Board of Regents as a pilot institute to implement the concept of a
-            System Academic Program.
+            The institute was designated by the Board of Regents as a pilot
+            institute to implement the concept of a System Academic Program.
           </p>
           <p className="mb-4">
-            Dr. Eliezer A. Albacea was designated System Director for the UP System Computer Science Program. ICS is
-            instrumental in the institution of BSCS programs in UP Manila, UP in the Visayas (Cebu, Tacloban, and
-            Iloilo), UP College Baguio, and UP Mindanao.
+            Dr. Eliezer A. Albacea was designated System Director for the UP
+            System Computer Science Program. ICS is instrumental in the
+            institution of BSCS programs in UP Manila, UP in the Visayas (Cebu,
+            Tacloban, and Iloilo), UP College Baguio, and UP Mindanao.
           </p>
-          <p>ICS also instituted the Diploma in Computer Science (now discontinued).</p>
+          <p>
+            ICS also instituted the Diploma in Computer Science (now
+            discontinued).
+          </p>
         </>
       ),
       position: "left",
     },
     {
       year: "1998",
-      content: "The Doctor of Philosophy (PhD) in Computer Science was instituted.",
+      content:
+        "The Doctor of Philosophy (PhD) in Computer Science was instituted.",
       position: "right",
     },
     {
@@ -76,49 +84,193 @@ export default function AboutPage() {
         "The Institute of Computer Science (ICS) at the University of the Philippines Los Baños (UPLB) was recognized as a Center of Excellence in Information Technology by the Commission on Higher Education (CHED).",
       position: "right",
     },
-  ]
+  ];
 
-  const [activeTab, setActiveTab] = useState("team-leaders")
+  const [activeTab, setActiveTab] = useState("team-leaders");
+  const [isInView, setIsInView] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setIsInView(true);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const timelineElement = document.getElementById("timeline");
+    if (timelineElement) {
+      observer.observe(timelineElement);
+    }
+
+    return () => {
+      if (timelineElement) {
+        observer.unobserve(timelineElement);
+      }
+    };
+  }, []);
 
   const contributors = {
     "team-leaders": [
-      { name: "Francis Dominic Fajardo", role: "Project Manager", avatar: "/Placeholder.png?height=100&width=100" },
-      { name: "John Paul Minoc", role: "Frontend Team Leader", avatar: "/Placeholder.png?height=100&width=100" },
-      { name: "Jan Neal Isaac Villamin", role: "Backend Team Leader", avatar: "/Placeholder.png?height=100&width=100" },
-      { name: "Franc Roger Glason Aguitez", role: "Database Team Leader", avatar: "/Placeholder.png?height=100&width=100" }
+      {
+        name: "Francis Dominic Fajardo",
+        role: "Project Manager",
+        avatar: "/Placeholder.png?height=100&width=100",
+      },
+      {
+        name: "John Paul Minoc",
+        role: "Frontend Team Leader",
+        avatar: "/Placeholder.png?height=100&width=100",
+      },
+      {
+        name: "Jan Neal Isaac Villamin",
+        role: "Backend Team Leader",
+        avatar: "/Placeholder.png?height=100&width=100",
+      },
+      {
+        name: "Franc Roger Glason Aguitez",
+        role: "Database Team Leader",
+        avatar: "/Placeholder.png?height=100&width=100",
+      },
     ],
     "frontend-members": [
-      { name: "John Paul Minoc", role: "Frontend Team Leader", avatar: "/Placeholder.png?height=100&width=100" },
-      { name: "Mark Neil Autriz", role: "Frontend Developer", avatar: "/Placeholder.png?height=100&width=100" },
-      { name: "Axel Balitaan", role: "Frontend Developer", avatar: "/Placeholder.png?height=100&width=100" },
-      { name: "Armie Casasola", role: "Frontend Developer", avatar: "/Placeholder.png?height=100&width=100" },
-      { name: "Bryan Kyle Delfino", role: "Frontend Developer", avatar: "/Placeholder.png?height=100&width=100" },
-      { name: "Jon Alem San Gregorio", role: "Frontend Developer", avatar: "/Placeholder.png?height=100&width=100" },
-      { name: "Ashton Stephonie Matias", role: "Frontend Developer", avatar: "/Placeholder.png?height=100&width=100" },
-      { name: "Julius Christian Namata", role: "Frontend Developer", avatar: "/Placeholder.png?height=100&width=100" },
-      { name: "Bernard Jezua Tandang", role: "Frontend Developer", avatar: "/Placeholder.png?height=100&width=100" },
-      { name: "Riggs Mikael Tomas", role: "Frontend Developer", avatar: "/Placeholder.png?height=100&width=100" },
+      {
+        name: "John Paul Minoc",
+        role: "Frontend Team Leader",
+        avatar: "/Placeholder.png?height=100&width=100",
+      },
+      {
+        name: "Mark Neil Autriz",
+        role: "Frontend Developer",
+        avatar: "/Placeholder.png?height=100&width=100",
+      },
+      {
+        name: "Axel Balitaan",
+        role: "Frontend Developer",
+        avatar: "/Placeholder.png?height=100&width=100",
+      },
+      {
+        name: "Armie Casasola",
+        role: "Frontend Developer",
+        avatar: "/Placeholder.png?height=100&width=100",
+      },
+      {
+        name: "Bryan Kyle Delfino",
+        role: "Frontend Developer",
+        avatar: "/Placeholder.png?height=100&width=100",
+      },
+      {
+        name: "Jon Alem San Gregorio",
+        role: "Frontend Developer",
+        avatar: "/Placeholder.png?height=100&width=100",
+      },
+      {
+        name: "Ashton Stephonie Matias",
+        role: "Frontend Developer",
+        avatar: "/Placeholder.png?height=100&width=100",
+      },
+      {
+        name: "Julius Christian Namata",
+        role: "Frontend Developer",
+        avatar: "/Placeholder.png?height=100&width=100",
+      },
+      {
+        name: "Bernard Jezua Tandang",
+        role: "Frontend Developer",
+        avatar: "/Placeholder.png?height=100&width=100",
+      },
+      {
+        name: "Riggs Mikael Tomas",
+        role: "Frontend Developer",
+        avatar: "/Placeholder.png?height=100&width=100",
+      },
     ],
     "backend-members": [
-      { name: "Jan Neal Isaac Villamin", role: "Backend Team Leader", avatar: "/Placeholder.png?height=100&width=100" },
-      { name: "Dominic Abelarde", role: "Backend Developer", avatar: "/Placeholder.png?height=100&width=100" },
-      { name: "Franc Roger Glason Aguitez", role: "Backend Developer", avatar: "/Placeholder.png?height=100&width=100" },
-      { name: "Psymon Sez Arcedera", role: "Backend Developer", avatar: "/Placeholder.png?height=100&width=100" },
-      { name: "Joenzsen Jonner Camara", role: "Backend Developer", avatar: "/Placeholder.png?height=100&width=100" },
-      { name: "John Nico De Castro", role: "Backend Developer", avatar: "/Placeholder.png?height=100&width=100" },
-      { name: "Francis Dominic Fajardo", role: "Backend Developer", avatar: "/Placeholder.png?height=100&width=100" },
-      { name: "Clarence Manzanido", role: "Backend Developer", avatar: "/Placeholder.png?height=100&width=100" },
-      { name: "Jake Laurence Neverida", role: "Backend Developer", avatar: "/Placeholder.png?height=100&width=100" },
-      { name: "Lorenzo Rafael Uichanco", role: "Backend Developer", avatar: "/Placeholder.png?height=100&width=100" },
+      {
+        name: "Jan Neal Isaac Villamin",
+        role: "Backend Team Leader",
+        avatar: "/Placeholder.png?height=100&width=100",
+      },
+      {
+        name: "Dominic Abelarde",
+        role: "Backend Developer",
+        avatar: "/Placeholder.png?height=100&width=100",
+      },
+      {
+        name: "Franc Roger Glason Aguitez",
+        role: "Backend Developer",
+        avatar: "/Placeholder.png?height=100&width=100",
+      },
+      {
+        name: "Psymon Sez Arcedera",
+        role: "Backend Developer",
+        avatar: "/Placeholder.png?height=100&width=100",
+      },
+      {
+        name: "Joenzsen Jonner Camara",
+        role: "Backend Developer",
+        avatar: "/Placeholder.png?height=100&width=100",
+      },
+      {
+        name: "John Nico De Castro",
+        role: "Backend Developer",
+        avatar: "/Placeholder.png?height=100&width=100",
+      },
+      {
+        name: "Francis Dominic Fajardo",
+        role: "Backend Developer",
+        avatar: "/Placeholder.png?height=100&width=100",
+      },
+      {
+        name: "Clarence Manzanido",
+        role: "Backend Developer",
+        avatar: "/Placeholder.png?height=100&width=100",
+      },
+      {
+        name: "Jake Laurence Neverida",
+        role: "Backend Developer",
+        avatar: "/Placeholder.png?height=100&width=100",
+      },
+      {
+        name: "Lorenzo Rafael Uichanco",
+        role: "Backend Developer",
+        avatar: "/Placeholder.png?height=100&width=100",
+      },
     ],
     "database-members": [
-      { name: "Franc Roger Glason Aguitez", role: "Database Team Leader", avatar: "/Placeholder.png?height=100&width=100" },
-      { name: "Joenzsen Jonner Camara", role: "Database Developer", avatar: "/Placeholder.png?height=100&width=100" },
-      { name: "Ashton Stephonie Matias", role: "Database Developer", avatar: "/Placeholder.png?height=100&width=100" },
-      { name: "Julius Christian Namata", role: "Database Developer", avatar: "/Placeholder.png?height=100&width=100" },
-      { name: "Riggs Mikael Tomas", role: "Database Developer", avatar: "/Placeholder.png?height=100&width=100" },
+      {
+        name: "Franc Roger Glason Aguitez",
+        role: "Database Team Leader",
+        avatar: "/Placeholder.png?height=100&width=100",
+      },
+      {
+        name: "Joenzsen Jonner Camara",
+        role: "Database Developer",
+        avatar: "/Placeholder.png?height=100&width=100",
+      },
+      {
+        name: "Ashton Stephonie Matias",
+        role: "Database Developer",
+        avatar: "/Placeholder.png?height=100&width=100",
+      },
+      {
+        name: "Julius Christian Namata",
+        role: "Database Developer",
+        avatar: "/Placeholder.png?height=100&width=100",
+      },
+      {
+        name: "Riggs Mikael Tomas",
+        role: "Database Developer",
+        avatar: "/Placeholder.png?height=100&width=100",
+      },
     ],
-  }
+  };
 
   // Function to get tab label based on screen size
   const getTabLabel = (category) => {
@@ -127,198 +279,395 @@ export default function AboutPage() {
       "frontend-members": "Frontend",
       "backend-members": "Backend",
       "database-members": "Database",
-    }
-    return labels[category]
-  }
+    };
+    return labels[category];
+  };
 
   // Function to get icon for each tab
   const getTabIcon = (category) => {
     switch (category) {
       case "team-leaders":
-        return <Users className="h-4 w-4" />
+        return <Users className="h-4 w-4" />;
       case "frontend-members":
+        return <Code className="h-4 w-4" />;
       case "backend-members":
-        return <Code className="h-4 w-4" />
+        return <Code className="h-4 w-4" />;
       case "database-members":
-        return <Database className="h-4 w-4" />
+        return <Database className="h-4 w-4" />;
       default:
-        return <Users className="h-4 w-4" />
+        return <Users className="h-4 w-4" />;
     }
-  }
+  };
 
   return (
-    <main className="min-h-screen bg-[var(--color-astrawhite)]">
-      {/* Headline section */}
-      <section className="relative h-[600px] md:h-[600px] flex items-center justify-center pt-12 w-full">
-        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: 'url("/about-bg.png")' }}></div>
-        <div className="relative z-20 text-center max-w-4xl px-4">
-          <h1 className="text-[var(--color-astrawhite)] text-3xl md:text-5xl font-bold mb-4 md:mb-6">
+    <main className="min-h-screen bg-gradient-to-b from-[var(--color-astrawhite)] to-[var(--color-astratintedwhite)]">
+      {/* Hero section */}
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        <div
+          className="absolute inset-0 bg-cover bg-center transform scale-110"
+          style={{
+            backgroundImage: 'url("/about-bg.png")',
+            filter: "brightness(0.7)",
+            transform: "translateZ(-10px) scale(2)",
+          }}
+        ></div>
+        <div className="absolute inset-0"></div>
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="relative z-20 text-center max-w-4xl px-4"
+        >
+          <h1 className="text-white text-4xl md:text-6xl font-bold mb-6 md:mb-8 leading-tight">
             Building the Future:
             <br />
-            Our Mission and Story
+            <span className="text-[var(--color-astraprimary)]">
+              Our Mission and Story
+            </span>
           </h1>
-          <p className="text-[var(--color-astrawhite)] text-base md:text-lg max-w-3xl mx-auto leading-relaxed">
-            The Institute of Computer Science at UPLB is recognized for its commitment to excellence in computer science
-            education and research, producing skilled graduates and contributing to the advancement of the field in the
-            Philippines.
+          <p className="text-white/90 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed mb-8">
+            The Institute of Computer Science at UPLB is recognized for its
+            commitment to excellence in computer science education and research,
+            producing skilled graduates and contributing to the advancement of
+            the field in the Philippines.
           </p>
+        </motion.div>
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+          <ChevronDown className="h-8 w-8 text-white/70" />
         </div>
       </section>
 
       {/* Mission section */}
-      <section className="py-12 md:py-16 w-full">
-        <div className="px-6 sm:px-8 md:px-12 max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
-            <div className="order-2 md:order-1">
-              <h2 className="text-[var(--color-astraprimary)] text-3xl md:text-4xl font-bold mb-6 md:mb-8 text-center md:text-left">Mission</h2>
-              <div className="space-y-4 md:space-y-8 text-justify">
-                <p className="text-[var(--color-astrablack)] text-sm md:text-base text-justify">
-                  To produce the needed quality manpower for the Philippines' software industry and the manpower needed
-                  to carry out the information processing functions of private and government institutions.
-                </p>
-                <p className="text-[var(--color-astrablack)] text-sm md:text-base text-justify">
-                  To carry out high-level research and development in computer science and computer hardware so as to
-                  enhance locally produced computer products.
-                </p>
-                <p className="text-[var(--color-astrablack)] text-sm md:text-base text-justify">
-                  To continuously upgrade the computing personnel of industry and government through training.
-                </p>
+      <section
+        id="mission"
+        className="py-24 md:py-32 w-full relative overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-gradient-to-b from-[var(--color-astrawhite)] to-[var(--color-astratintedwhite)]"></div>
+        <div className="absolute top-0 left-1/2 w-full h-64 bg-[var(--color-astraprimary)]/10 blur-3xl -translate-x-1/2 rounded-full"></div>
+        <div className="px-6 sm:px-8 md:px-12 max-w-6xl mx-auto relative z-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center">
+            <div className="flex justify-center order-1 md:order-1">
+              <motion.div
+                initial={{ opacity: 0, rotateY: -30 }}
+                whileInView={{ opacity: 1, rotateY: 0 }}
+                transition={{ duration: 1 }}
+                viewport={{ once: true }}
+                className="relative"
+              >
+                <div className="absolute -inset-4 bg-gradient-to-br from-[var(--color-astraprimary)] to-[var(--color-astraprimary)]/30 rounded-full blur-xl opacity-30 animate-pulse"></div>
+                <Image
+                  src="/ics-logo.png"
+                  alt="Institute of Computer Science Logo"
+                  width={350}
+                  height={350}
+                  className="relative z-10 transform transition-all duration-500 hover:scale-105"
+                />
+              </motion.div>
+            </div>
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="order-2 md:order-2"
+            >
+              <h2 className="text-[var(--color-astraprimary)] text-4xl md:text-5xl font-bold mb-8 md:mb-10">
+                Our Mission
+              </h2>
+              <div className="space-y-6 md:space-y-8">
+                <div className="flex items-start gap-4">
+                  <div className="mt-1 bg-[var(--color-astraprimary)]/20 p-2 rounded-full">
+                    <Star
+                      className="h-5 w-5 text-[var(--color-astraprimary)]"
+                      fill="currentColor"
+                    />
+                  </div>
+                  <p className="text-[var(--color-astrablack)] text-base md:text-lg">
+                    To produce the needed quality manpower for the Philippines'
+                    software industry and the manpower needed to carry out the
+                    information processing functions of private and government
+                    institutions.
+                  </p>
+                </div>
+                <div className="flex items-start gap-4">
+                  <div className="mt-1 bg-[var(--color-astraprimary)]/20 p-2 rounded-full">
+                    <Star
+                      className="h-5 w-5 text-[var(--color-astraprimary)]"
+                      fill="currentColor"
+                    />
+                  </div>
+                  <p className="text-[var(--color-astrablack)] text-base md:text-lg">
+                    To carry out high-level research and development in computer
+                    science and computer hardware so as to enhance locally
+                    produced computer products.
+                  </p>
+                </div>
+                <div className="flex items-start gap-4">
+                  <div className="mt-1 bg-[var(--color-astraprimary)]/20 p-2 rounded-full">
+                    <Star
+                      className="h-5 w-5 text-[var(--color-astraprimary)]"
+                      fill="currentColor"
+                    />
+                  </div>
+                  <p className="text-[var(--color-astrablack)] text-base md:text-lg">
+                    To continuously upgrade the computing personnel of industry
+                    and government through training.
+                  </p>
+                </div>
               </div>
-            </div>
-            <div className="flex justify-center order-1 md:order-2">
-              <Image
-                src="/ics-logo.png"
-                alt="Institute of Computer Science Logo"
-                width={300}
-                height={300}
-                className="max-w-[200px] md:max-w-[250px]"
-              />
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
-      <div className="max-w-md mx-auto border-t border-gray-300 my-8 px-4"></div>
-
       {/* History Section */}
-      <section className="py-12 md:py-16 w-full">
+      <section id="timeline" className="py-24 md:py-32 w-full bg-astrawhite">
         <div className="px-6 sm:px-8 md:px-12 max-w-6xl mx-auto">
-          <h2 className="text-[var(--color-astraprimary)] text-3xl md:text-4xl font-bold mb-12 md:mb-16 text-center">
-            History of ICS
-          </h2>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-[var(--color-astraprimary)] text-4xl md:text-5xl font-bold mb-6">
+              Our Journey Through Time
+            </h2>
+            <p className="text-[var(--color-astrablack)]/80 max-w-2xl mx-auto">
+              From humble beginnings to becoming a Center of Excellence, explore
+              the rich history of the Institute of Computer Science at UPLB.
+            </p>
+          </motion.div>
           <div className="relative pl-4 md:pl-0">
-            <div className="absolute left-0 md:hidden w-1 h-full bg-[var(--color-astraprimary)]"></div>{" "}
-            {/* Mobile size */}
-            <div className="absolute left-1/2 hidden md:block transform -translate-x-1/2 w-1 h-full bg-[var(--color-astraprimary)]"></div>{" "}
-            {/* Desktop size */}
-            {/* Timeline items; map since it's much easier */}
+            <div className="absolute left-0 md:hidden w-1 h-full bg-gradient-to-b from-[var(--color-astraprimary)] via-[var(--color-astraprimary)]/70 to-[var(--color-astraprimary)]/30"></div>
+            <div className="absolute left-1/2 hidden md:block transform -translate-x-1/2 w-1 h-full bg-gradient-to-b from-[var(--color-astraprimary)] via-[var(--color-astraprimary)]/70 to-[var(--color-astraprimary)]/30"></div>
+
+            {/* Timeline items */}
             {timelineItems.map((item, index) => (
-              <div
+              <motion.div
                 key={index}
+                initial={{
+                  opacity: 0,
+                  x: item.position === "right" ? 50 : -50,
+                }}
+                animate={hasMounted && isInView ? { opacity: 1, x: 0 } : {}}
+                transition={{ duration: 0.6, delay: index * 0.2 }}
                 className={`
-                relative mb-12 last:mb-0
-                ${item.position === "right" ? "md:pl-8 md:pr-0" : "md:pr-8 md:pl-0"}
-              `}
+      relative mb-16 last:mb-0
+      ${item.position === "right" ? "md:pl-8 md:pr-0" : "md:pr-8 md:pl-0"}
+    `}
               >
                 <div
-                  className={`
-                    absolute top-0 left-[22px] w-6 h-6 bg-[var(--color-astraprimary)] rounded-full
-                    transform -translate-x-1/2 hidden md:block
-                    md:left-1/2 md:w-8 md:h-8
-                  `}
+                  className="absolute top-0 left-1/2 w-6 h-6 md:w-8 md:h-8 rounded-full
+                            bg-gradient-to-br from-[var(--color-astraprimary)] to-[var(--color-astraprimary)]/70
+                            shadow-lg shadow-[var(--color-astraprimary)]/30
+                            transform -translate-x-1/2"
                 ></div>
 
                 {/* Content container */}
                 <div
                   className={`
-                md:ml-0
-                ${item.position === "right" ? "md:pl-12 md:w-1/2 md:float-right" : "md:pr-12 md:w-1/2 md:float-left"}
-              `}
+                    ml-8 md:ml-0 bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-[var(--color-astralightgray)]/30
+                    transform transition-all duration-300 hover:shadow-xl hover:bg-white
+                    ${
+                      item.position === "right"
+                        ? "md:pl-12 md:w-1/2 md:float-right"
+                        : "md:pr-12 md:w-1/2 md:float-left"
+                    }
+                  `}
                 >
-                  <h3 className="text-[var(--color-astraprimary)] text-2xl md:text-3xl font-bold mb-3">{item.year}</h3>
-                  <div className="text-[var(--color-astrablack)] text-sm md:text-base text-justify">
-                    {typeof item.content === "string" ? <p>{item.content}</p> : item.content}
+                  <h3 className="text-[var(--color-astraprimary)] text-2xl md:text-3xl font-bold mb-4 inline-flex items-center gap-2">
+                    {item.year}
+                    <div className="h-1 w-12 bg-[var(--color-astraprimary)]/30 rounded-full"></div>
+                  </h3>
+                  <div className="text-[var(--color-astrablack)] text-base md:text-lg">
+                    {typeof item.content === "string" ? (
+                      <p>{item.content}</p>
+                    ) : (
+                      item.content
+                    )}
                   </div>
                 </div>
                 <div className="clear-both"></div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Team section */}
+      <section className="w-full py-24 md:py-32 bg-lightgray">
+        <div className="px-4 sm:px-6 md:px-8 max-w-7xl mx-auto text-[var(--color-astrablack)]">
+          <div className="container px-4 md:px-6 mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="flex flex-col items-center text-center mb-12 md:mb-16 space-y-4"
+            >
+              <div className="flex items-center space-x-3">
+                <div className="p-2 rounded-full bg-[var(--color-astraprimary)]/10">
+                  <Rocket className="h-8 w-8 md:h-10 md:w-10 text-[var(--color-astraprimary)]" />
+                </div>
+                <h2 className="text-4xl md:text-5xl font-bold text-[var(--color-astrablack)]">
+                  ICS-ASTRA
+                </h2>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
+              <p className="max-w-[700px] text-[var(--color-astradarkgray)] text-lg px-2">
+                ASTRA stands for <b>A</b>lumni <b>S</b>ynced <b>T</b>racking for{" "}
+                <b>R</b>elations and <b>A</b>dvancement. Meet the brilliant
+                minds behind our mission to connect with the alumni of the
+                Institute of Computer Science at UPLB.
+              </p>
+              <div className="flex gap-1">
+                {Array(5)
+                  .fill(0)
+                  .map((_, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ rotate: 0 }}
+                      animate={{ rotate: [0, 10, -10, 0] }}
+                      transition={{
+                        duration: 2,
+                        delay: i * 0.1,
+                        repeat: Infinity,
+                        repeatDelay: 2,
+                      }}
+                    >
+                      <Star
+                        className="h-6 w-6 text-[var(--color-astraprimary)]"
+                        fill="currentColor"
+                      />
+                    </motion.div>
+                  ))}
+              </div>
+            </motion.div>
 
-      <section className="w-full py-8 md:py-12 bg-[var(--color-astratintedwhite)]">
-      <div className="px-4 sm:px-6 md:px-8 max-w-7xl mx-auto py-8 md:py-12 text-[var(--color-astrablack)]">
-        <div className="container px-4 md:px-6 mx-auto">
-          <div className="flex flex-col items-center text-center mb-8 md:mb-10 space-y-3 md:space-y-4">
-            <div className="flex items-center space-x-2">
-              <Rocket className="h-6 w-6 md:h-8 md:w-8 text-[var(--color-astraprimary)]" />
-              <h2 className="text-3xl md:text-4xl font-bold text-[var(--color-astrablack)]">
-                ICS-ASTRA
-              </h2>
-            </div>
-            <p className="max-w-[700px] text-[var(--color-astradarkgray)] text-sm md:text-base px-2">
-              ASTRA stands for <b>A</b>lumni <b>S</b>ynced <b>T</b>racking for <b>R</b>elations and <b>A</b>dvancement. Meet the brilliant minds behind our mission to connect with the alumni of the Institute of Computer Science at UPLB.
-            </p>
-            <div className="flex gap-1 md:gap-2">
-              {Array(5)
-                .fill(0)
-                .map((_, i) => (
-                  <Star key={i} className="h-4 w-4 md:h-5 md:w-5 text-[var(--color-astraprimary)]" fill="currentColor" />
+            {/* Tabs */}
+            <div className="flex justify-center mb-10 md:mb-16 overflow-x-auto pb-2 scrollbar-hide">
+              <div className="flex space-x-2 md:space-x-4">
+                {Object.keys(contributors).map((category) => (
+                  <motion.button
+                    key={category}
+                    onClick={() => setActiveTab(category)}
+                    className={`
+                      relative flex items-center gap-2 px-4 py-2 rounded-full
+                      ${
+                        activeTab === category
+                          ? "text-[var(--color-astraprimary)]"
+                          : "text-[var(--color-astradarkgray)]"
+                      }
+                      transition-all duration-200
+                    `}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    {getTabIcon(category)}
+                    <span className="text-sm md:text-base font-medium">
+                      {getTabLabel(category)}
+                    </span>
+                    {activeTab === category && (
+                      <motion.div
+                        layoutId="activeTabIndicator"
+                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--color-astraprimary)]"
+                      />
+                    )}
+                  </motion.button>
                 ))}
+              </div>
             </div>
-          </div>
-
-          {/* "Tabs" buttons */}
-          <div className="flex justify-center mb-6 md:mb-8 flex-wrap gap-2">
-            {Object.keys(contributors).map((category) => (
-              <button
-                key={category}
-                onClick={() => setActiveTab(category)}
-                className={`
-                  flex items-center gap-1 md:gap-2 text-xs md:text-sm px-3 py-1.5 rounded-full
-                  border border-[var(--color-astralightgray)]
-                  ${activeTab === category ? "bg-[var(--color-astraprimary)] text-white" : "bg-[var(--color-astradirtywhite)] text-[var(--color-astradarkgray)]"}
-                  transition-all duration-200
-                `}
+            {/* Contributors grid */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5 }}
+                className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 md:gap-6"
               >
-                {getTabIcon(category)}
-                <span>{getTabLabel(category)}</span>
-              </button>
-            ))}
-          </div>
-
-          {/* Contributors list */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-            {contributors[activeTab].map((contributor, index) => (
-              <Card
-                key={index}
-                className="bg-[var(--color-astrawhite)] border-[var(--color-astradirtywhite)] overflow-hidden transform transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-[var(--color-astraprimary)]/20"
-              >
-                <CardContent className="p-4 md:p-6">
-                  <div className="flex flex-col items-center text-center space-y-3 md:space-y-4">
-                    <div className="relative">
-                      <div className="absolute inset-0 bg-[var(--color-astrawhite)] rounded-full blur-sm opacity-70"></div>
-                      <div className="relative w-16 h-16 md:w-24 md:h-24 rounded-full overflow-hidden border-2 border-[var(--color-astraprimary)]">
-                        <img
-                          src={contributor.avatar || "/placeholder.svg"}
-                          alt={contributor.name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-1">
-                      <h3 className="text-base sm:text-lg md:text-xl font-bold text-[var(--color-astrablack)]">{contributor.name}</h3>
-                      <p className="text-sm md:text-base text-[var(--color-astradarkgray)]">{contributor.role}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                {contributors[activeTab].map((contributor, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.4, delay: index * 0.05 }}
+                    whileHover={{
+                      y: -5,
+                      boxShadow:
+                        "0 10px 25px -5px rgba(var(--color-astraprimary-rgb), 0.3)",
+                    }}
+                  >
+                    <Card className="h-full bg-white border-[var(--color-astradirtywhite)] overflow-hidden rounded-xl transition-all duration-300">
+                      <CardContent className="p-5 md:p-6">
+                        <div className="flex flex-col items-center text-center space-y-4">
+                          <div className="relative w-full">
+                            <div className="absolute inset-0"></div>
+                            <div className="relative w-20 h-20 md:w-28 md:h-28 mx-auto rounded-full overflow-hidden border-2 border-[var(--color-astraprimary)] shadow-lg shadow-[var(--color-astraprimary)]/20">
+                              <img
+                                src={contributor.avatar || "/placeholder.svg"}
+                                alt={contributor.name}
+                                className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
+                              />
+                            </div>
+                          </div>
+                          <div className="space-y-2 pt-2">
+                            <h3 className="text-lg md:text-xl font-bold text-[var(--color-astrablack)]">
+                              {contributor.name}
+                            </h3>
+                            <div className="flex items-center justify-center">
+                              <div className="h-0.5 w-6 bg-[var(--color-astraprimary)]/30 rounded-full mr-2"></div>
+                              <p className="text-sm md:text-base text-[var(--color-astradarkgray)]">
+                                {contributor.role}
+                              </p>
+                              <div className="h-0.5 w-6 bg-[var(--color-astraprimary)]/30 rounded-full ml-2"></div>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
+              </motion.div>
+            </AnimatePresence>
           </div>
         </div>
-      </div>
       </section>
+
+      {/* Scroll to top button */}
+      <motion.button
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        className="fixed bottom-6 right-6 p-3 rounded-full bg-[var(--color-astraprimary)] text-white shadow-lg shadow-[var(--color-astraprimary)]/20 z-50"
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+      >
+        <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path
+            fillRule="evenodd"
+            d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+            clipRule="evenodd"
+          />
+        </svg>
+      </motion.button>
     </main>
-  )
+  );
 }
+
+//helper function for chevron down icon
+const ChevronDown = ({ className }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="M6 9l6 6 6-6" />
+  </svg>
+);
