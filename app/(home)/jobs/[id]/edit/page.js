@@ -7,11 +7,11 @@ import {job} from "../../dummy";
 export default function JobsPage() {
 
     return (
-    <div className="mt-[80px] py-8 bg-astratintedwhite w-full flex flex-col items-center">
+    <div className="py-8 bg-astratintedwhite w-full flex flex-col items-center">
         
         <Back/>
 
-        <div className="flex justify-center gap-2 flex-wrap">
+        <div className="flex justify-between gap-y-2 flex-wrap max-w-[1250px] w-19/20">
             <BigJobCardwEdit {...job}/> <SideJobCard {...job}/>
         </div>
 

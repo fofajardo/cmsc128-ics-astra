@@ -10,7 +10,7 @@ export default function JobsAdminPage() {
 
         <Back/>
 
-        <div className="flex justify-center gap-2 flex-wrap">
+        <div className="flex justify-between gap-y-2 flex-wrap max-w-[1250px] w-19/20">
             <BigJobCardwDelete {...job}/> <SideJobCard {...job}/>
         </div>
 

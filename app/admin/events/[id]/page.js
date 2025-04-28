@@ -88,7 +88,7 @@ export default function EventAdminDetailPage() {
   }
 
   return (
-    <div className="bg-astradirtyastrawhite min-h-screen pt-[100px] px-6 sm:px-12 py-6 max-w-screen-xl mx-auto relative">
+    <div className="bg-astradirtyastrawhite min-h-screen px-6 sm:px-12 py-6 max-w-screen-xl mx-auto relative">
       <BackButton />
 
       {toastData && (

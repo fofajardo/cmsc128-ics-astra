@@ -62,7 +62,20 @@ export default function ProjectsPage({ projects }) {
     statud: i % 3 === 0 ? "Completed" : "Ongoing"
   }));
     //completed projects data
-    const completedProjects = allProjects.filter(project => project.status === "Completed");
+    //const completedProjects = allProjects.filter(project => project.status === "Completed");
+
+    // Sample completed projects data
+  const completedProjects =
+  projects ||
+  Array(6).fill({
+  image: "/projects/assets/Donation.jpg",
+  title: "tapos na",
+  description: "This project aims to provide snacks to students to encourage attendance and enhance focus.",
+  amountRaised: "₱10,000",
+  goalAmount: "₱30,000",
+  donors: "32",
+  buttonText: "Read story",
+});
 
   // Filter projects based on type and search term
   const filteredProjects = allProjects.filter((project) => {
