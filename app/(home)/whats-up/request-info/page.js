@@ -3,6 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Mail, FileText, Clock, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
+import { GoBackButton } from "@/components/Buttons";
 
 export default function RequestInstructionsPage() {
   const steps = [
@@ -35,6 +36,8 @@ export default function RequestInstructionsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 pt-24 pb-16">
       <div className="container mx-auto px-4 max-w-4xl">
+        <GoBackButton />
+        
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

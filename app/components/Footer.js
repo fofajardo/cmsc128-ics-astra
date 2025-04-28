@@ -3,7 +3,13 @@ import Image from "next/image";
 import { MapPin, Mail } from "lucide-react";
 
 export default function Footer() {
-  const websiteLinks = [{text:"Home", link:"/home"},{text:"About", link:"/about"},{text:"Get in touch", link:"#"},{text:"FAQs", link:"#"}]
+  const websiteLinks = [
+    {text:"Home", link:"/home"},
+    {text:"About", link:"/about"},
+    {text:"Get in touch", link:"#"},
+    {text:"FAQs", link:"#"},
+    {text:"Request Alumni Info", link:"/whats-up/request-info"} // Added new link
+  ];
   const services = [{text:"Alumni Search", link:"/home"},{text:"Event Management", link:"/events"},{text:"Job Posting", link:"/jobs"},{text:"Reports Summary", link:"/reports"}]
   const helpers = [{text:"UPLB", link:"http://uplb.edu.ph/"},{text:"OVCAA UPLB", link:"https://ovcaa.uplb.edu.ph/"},{text:"Graduate School", link:"https://uplb.edu.ph/college/graduate-school/"}]
   const contacts = [{key: 1, icon: "lucide:map-pin", text:"Physical Sciences Building, Harold Cuzner Royal Palm Ave, Los Baños"},
