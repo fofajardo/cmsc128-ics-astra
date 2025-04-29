@@ -7,7 +7,7 @@ import EditExperience from "./EditExperience/page";
 import EditAffiliation from "./EditAffiliation/page";
 import AddAffiliation from "./AddAffiliation/page";
 import AddExperience from "./AddExperience/page";
-import { PlusCircle } from "lucide-react";
+import { Info, PlusCircle } from "lucide-react";
 import SkillTag from "@/components/SkillTag";
 
 export default function AlumniProfilePage() {
@@ -27,6 +27,8 @@ export default function AlumniProfilePage() {
     Degree: "BS Computer Science",
     GraduationYear: "2021",
   };
+
+  const isVerified = false;
 
   const technicalSkills = [
     { text: "Frontend", color: "bg-blue-100 text-blue-800 border-blue-300" },
@@ -161,6 +163,14 @@ export default function AlumniProfilePage() {
   return (
     <div className="min-h-screen bg-[var(--color-astratintedwhite)]">
       <main className="container mx-auto py-8 px-4 max-w-7xl">
+        {!isVerified && (
+          <div className="bg-[var(--color-astratintedwhite)] border border-[var(--color-astralight)] rounded-md mb-6 flex items-center">
+            <Info className="h-5 w-5 text-[var(--color-astrablack)] mr-2 flex-shrink-0" />
+            <p className="text-sm text-[var(--color-astrablack)]">
+              Your profile is still being verified. Kindly wait for an administrator to approve your account.
+            </p>
+          </div>
+        )}
         <section className="bg-white rounded-lg px-10 py-12 mb-6 max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row gap-10">
             {/* Profile Picture Column */}
@@ -176,12 +186,14 @@ export default function AlumniProfilePage() {
             <div className="flex-1">
               <div className="flex justify-left gap-4 items-center mb-4">
                 <h2 className="text-xl md:text-2xl font-bold text-[var(--color-astrablack)]">Profile Information</h2>
-                <button
-                  className="text-sm md:text-base px-3 py-2 md:px-4 md:py-2 bg-[var(--color-astraprimary)] text-white hover:bg-[var(--color-astradark)] rounded-md"
-                  onClick={() => setIsShowPersonalForm(true)}
-                >
-                  Edit Profile
-                </button>
+                {isVerified && (
+                  <button
+                    className="text-sm md:text-base px-3 py-2 md:px-4 md:py-2 bg-[var(--color-astraprimary)] text-white hover:bg-[var(--color-astradark)] rounded-md"
+                    onClick={() => setIsShowPersonalForm(true)}
+                  >
+                    Edit Profile
+                  </button>
+                )}
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-5 gap-7">
@@ -211,128 +223,132 @@ export default function AlumniProfilePage() {
           </div>
         </section>
 
-        {/* Technical Skills */}
-        <section className="bg-white rounded-lg p-8 mb-6">
-          <h2 className="text-xl md:text-2xl font-bold text-[var(--color-astrablack)] mb-6">Technical Skills</h2>
-          <div className="flex flex-wrap gap-2">
-            {technicalSkills.map((skill, index) => (
-              <SkillTag
-                key={index}
-                text={skill.text}
-                color={skill.color}
-              />
-            ))}
-            <button
-              className="p-2 bg-[(var(--color-astradirtywhite)] text-[var(--color-astraprimary)] rounded-full"
-              onClick={() => setIsShowTechnicalForm(true)}
-            >
-              <PlusCircle size={20} />
-            </button>
-          </div>
-        </section>
+        {isVerified && (
+          <>
+            {/* Technical Skills */}
+            <section className="bg-white rounded-lg p-8 mb-6">
+              <h2 className="text-xl md:text-2xl font-bold text-[var(--color-astrablack)] mb-6">Technical Skills</h2>
+              <div className="flex flex-wrap gap-2">
+                {technicalSkills.map((skill, index) => (
+                  <SkillTag
+                    key={index}
+                    text={skill.text}
+                    color={skill.color}
+                  />
+                ))}
+                <button
+                  className="p-2 bg-[(var(--color-astradirtywhite)] text-[var(--color-astraprimary)] rounded-full"
+                  onClick={() => setIsShowTechnicalForm(true)}
+                >
+                  <PlusCircle size={20} />
+                </button>
+              </div>
+            </section>
 
-        {/* Fields of Interest */}
-        <section className="bg-white rounded-lg p-8 mb-6">
-          <h2 className="text-xl md:text-2xl font-bold text-[var(--color-astrablack)] mb-6">Fields of Interest</h2>
-          <div className="flex flex-wrap gap-2">
-            {fieldOfInterests.map((interest, index) => (
-              <SkillTag
-                key={index}
-                text={interest.text}
-                color={interest.color}
-              />
-            ))}
-            <button
-              className="p-2 bg-[(var(--color-astradirtywhite)] text-[var(--color-astraprimary)] rounded-full"
-              onClick={() => setIsShowInterestForm(true)}
-            >
-              <PlusCircle size={20} />
-            </button>
-          </div>
-        </section>
+            {/* Fields of Interest */}
+            <section className="bg-white rounded-lg p-8 mb-6">
+              <h2 className="text-xl md:text-2xl font-bold text-[var(--color-astrablack)] mb-6">Fields of Interest</h2>
+              <div className="flex flex-wrap gap-2">
+                {fieldOfInterests.map((interest, index) => (
+                  <SkillTag
+                    key={index}
+                    text={interest.text}
+                    color={interest.color}
+                  />
+                ))}
+                <button
+                  className="p-2 bg-[(var(--color-astradirtywhite)] text-[var(--color-astraprimary)] rounded-full"
+                  onClick={() => setIsShowInterestForm(true)}
+                >
+                  <PlusCircle size={20} />
+                </button>
+              </div>
+            </section>
 
-        {/* Experience */}
-        <section className="bg-white rounded-lg p-8 mb-6">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl md:text-2xl font-bold text-[var(--color-astrablack)]">Experience</h2>
-            <div className="flex gap-2">
-              <button
-                className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[var(--color-astradirtywhite)] rounded-md"
-                onClick={() => setIsShowAddExperienceForm(true)}
-              >
-                Add
-              </button>
-              <button
-                className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[var(--color-astradirtywhite)] rounded-md"
-                onClick={() => setIsShowExperienceForm(true)}
-              >
-                Edit
-              </button>
-            </div>
-          </div>
-
-
-          <div className="space-y-6">
-            {experiences.map((exp, index) => (
-              <div key={index} className="flex">
-                <div className="mr-4">
-                  <div className={`w-2 h-full ${index === 0 ? "bg-[var(--color-astraprimary)]" : "bg-[var(--color-astradark)]"} rounded-full`}></div>
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-lg md:text-xl font-bold text-[var(--color-astrablack)]">{exp.company}</h3>
-                  <p className="text-sm text-[var(--color-astrablack)]">{exp.title} • {exp.type}</p>
-                  <p className="text-sm text-[var(--color-astrablack)]">
-                    {exp.startDate} {exp.isCurrentlyWorking ? "- Present" : `- ${exp.endDate}`}
-                  </p>
-                  <p className="text-[var(--color-astrablack)] text-sm md:text-md text-justify">{exp.location}</p>
-                  <p className="text-[var(--color-astrablack)] text-sm md:text-md text-justify mt-2">{exp.description}</p>
+            {/* Experience */}
+            <section className="bg-white rounded-lg p-8 mb-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl md:text-2xl font-bold text-[var(--color-astrablack)]">Experience</h2>
+                <div className="flex gap-2">
+                  <button
+                    className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[var(--color-astradirtywhite)] rounded-md"
+                    onClick={() => setIsShowAddExperienceForm(true)}
+                  >
+                    Add
+                  </button>
+                  <button
+                    className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[var(--color-astradirtywhite)] rounded-md"
+                    onClick={() => setIsShowExperienceForm(true)}
+                  >
+                    Edit
+                  </button>
                 </div>
               </div>
-            ))}
-          </div>
-        </section>
 
-        {/* Organization Affiliations */}
-        <section className="bg-white rounded-lg p-8 mb-6">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl md:text-2xl font-bold text-[var(--color-astrablack)]">Affiliations</h2>
-            <div className="flex gap-2">
-              <button
-                className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[var(--color-astradirtywhite)] rounded-md"
-                onClick={() => setIsShowAddAffiliationForm(true)}
-              >
-                Add
-              </button>
-              <button
-                className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[var(--color-astradirtywhite)] rounded-md"
-                onClick={() => setIsShowAffiliationForm(true)}
-              >
-                Edit
-              </button>
-            </div>
-          </div>
 
-          <div className="space-y-6">
-            {affiliations.map((aff, index) => (
-              <div key={index} className="flex">
-                <div className="mr-4">
-                  <div className={`w-2 h-full ${index === 0 ? "bg-[var(--color-astraprimary)]" : "bg-[var(--color-astradark)]"} rounded-full`}></div>
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-lg md:text-xl font-bold text-[var(--color-astrablack)]">{aff.organization}</h3>
-                  <p className="text-sm text-[var(--color-astrablack)]">{aff.title}</p>
-                  <p className="text-sm text-[var(--color-astrablack)]">
-                    {aff.startDate} {aff.isCurrentlyAffiliated ? "- Present" : `- ${aff.endDate}`}
-                  </p>
-                  <p className="text-[var(--color-astrablack)] text-sm md:text-md text-justify">
-                    {aff.location} • {aff.isCurrentlyAffiliated ? "Currently Affiliated" : "Not Affiliated"}
-                  </p>
-                  <p className="text-[var(--color-astrablack)] text-sm md:text-md text-justify mt-2">{aff.description}</p>
+              <div className="space-y-6">
+                {experiences.map((exp, index) => (
+                  <div key={index} className="flex">
+                    <div className="mr-4">
+                      <div className={`w-2 h-full ${index === 0 ? "bg-[var(--color-astraprimary)]" : "bg-[var(--color-astradark)]"} rounded-full`}></div>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg md:text-xl font-bold text-[var(--color-astrablack)]">{exp.company}</h3>
+                      <p className="text-sm text-[var(--color-astrablack)]">{exp.title} • {exp.type}</p>
+                      <p className="text-sm text-[var(--color-astrablack)]">
+                        {exp.startDate} {exp.isCurrentlyWorking ? "- Present" : `- ${exp.endDate}`}
+                      </p>
+                      <p className="text-[var(--color-astrablack)] text-sm md:text-md text-justify">{exp.location}</p>
+                      <p className="text-[var(--color-astrablack)] text-sm md:text-md text-justify mt-2">{exp.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Organization Affiliations */}
+            <section className="bg-white rounded-lg p-8 mb-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl md:text-2xl font-bold text-[var(--color-astrablack)]">Affiliations</h2>
+                <div className="flex gap-2">
+                  <button
+                    className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[var(--color-astradirtywhite)] rounded-md"
+                    onClick={() => setIsShowAddAffiliationForm(true)}
+                  >
+                    Add
+                  </button>
+                  <button
+                    className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[var(--color-astradirtywhite)] rounded-md"
+                    onClick={() => setIsShowAffiliationForm(true)}
+                  >
+                    Edit
+                  </button>
                 </div>
               </div>
-            ))}
-          </div>
-        </section>
+
+              <div className="space-y-6">
+                {affiliations.map((aff, index) => (
+                  <div key={index} className="flex">
+                    <div className="mr-4">
+                      <div className={`w-2 h-full ${index === 0 ? "bg-[var(--color-astraprimary)]" : "bg-[var(--color-astradark)]"} rounded-full`}></div>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg md:text-xl font-bold text-[var(--color-astrablack)]">{aff.organization}</h3>
+                      <p className="text-sm text-[var(--color-astrablack)]">{aff.title}</p>
+                      <p className="text-sm text-[var(--color-astrablack)]">
+                        {aff.startDate} {aff.isCurrentlyAffiliated ? "- Present" : `- ${aff.endDate}`}
+                      </p>
+                      <p className="text-[var(--color-astrablack)] text-sm md:text-md text-justify">
+                        {aff.location} • {aff.isCurrentlyAffiliated ? "Currently Affiliated" : "Not Affiliated"}
+                      </p>
+                      <p className="text-[var(--color-astrablack)] text-sm md:text-md text-justify mt-2">{aff.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </>
+        )}
       </main>
 
       {/* Modal Forms */}
