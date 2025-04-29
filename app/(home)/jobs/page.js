@@ -8,13 +8,31 @@ import Filter from "../../components/jobs/filters";
 import Image from "next/image";
 import {dummyJobs, dummyMyJobs, filters} from './dummy'
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 export default function JobsPage() {
-    const [jobs, setJobs] = useState(dummyJobs);
+    const [jobs, setJobs] = useState([]);
     const [myJobs, setMyJobs] = useState(dummyMyJobs);
     const [jobCards, setJobCards] = useState(6); // limit / no. of cards to show
     const [myJobCards, setMyJobCards] = useState(6); // limit / no. of cards owned to show
     const CARDS_PER_CLICK = 6;
+
+  //UseEffect for Jobs
+  useEffect(() => {
+      const fetchJobs = async () => {
+        try {
+          const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs`);
+          if (response.data.status === 'OK') {
+            setJobs(response.data.list || []);
+          } else {
+            console.error('Unexpected response from server.');
+          }
+        } catch (error) {
+          console.error('Failed to fetch jobs. Please try again later.');
+        } 
+      };
+      fetchJobs();
+  }, []);
 
     useEffect(() => {
     // fetch jobs logic here whenever See More component is clicked

@@ -25,9 +25,18 @@ const isValidDate = (dateStr) => {
     return !isNaN(date.getTime());
 };
 
+
+const validateField = (field, fieldName) => {
+    if (field !== undefined && String(field).trim() === '') {
+        return `${fieldName} cannot be empty`;
+    }
+    return null;
+};
+
 export {
     isValidAlpha3Citizenship,
     isValidUUID,
     isValidStudentNumber,
-    isValidDate
+    isValidDate, 
+    validateField
 };

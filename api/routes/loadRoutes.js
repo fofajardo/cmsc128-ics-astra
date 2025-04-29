@@ -25,6 +25,7 @@ import organizationsRouter from "./organizationsRoutes.js";
 import organizationAffiliationsRouter from "./organizationAffiliationsRoutes.js";
 import reportsRouter from "./reportsRoutes.js";
 import requestsRouter from "./requestsRoutes.js";
+import jobsRouter from "./jobsRoutes.js";
 
 const registerRoutes = (app) => {
     ensureDirectoriesExist(); // Ensure the directory exists before using it
@@ -44,6 +45,7 @@ const registerRoutes = (app) => {
     app.use("/v1/organization-affiliations", organizationAffiliationsRouter());
     app.use("/v1/reports", reportsRouter());
     app.use("/v1/requests", requestsRouter());
+    app.use("/v1/jobs", jobsRouter());
 }
 
 export default registerRoutes;

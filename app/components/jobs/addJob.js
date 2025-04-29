@@ -4,6 +4,8 @@ import {X} from 'lucide-react';
 import Select from 'react-select';
 import { useState } from 'react';
 import ConfirmationPrompt from './edit/confirmation';
+import axios from 'axios';
+import { v4 as uuvidv4 } from 'uuid';
 
 export default function JobForm({isEdit, close}){
     const [showPrompt, setPrompt] = useState(false);
@@ -36,43 +38,40 @@ export default function JobForm({isEdit, close}){
       }
 
 
-    const handleAdd = () => {
-        const requiredFields = [
-            "company_name",
-            "job_title",
-            "job_type",
-            "location",
-            "location_type",
-            "salary",
-            "status",
-            "expires_at",
-            "apply_link",
-            "details"
-        ];
-
-        const requiredErrors = requiredFields.filter((key) => !formData[key]);
-        const missingFields = requiredErrors.reduce((obj, value) => {
-            obj[value] = true
-            return obj;
-        }, {})
-
-        if (employmentType) delete missingFields.job_type
-        if (locationType) delete missingFields.location_type
-        if (status) delete missingFields.status
-
-        if (Object.keys(missingFields).length > 0){ 
-            setErrors(missingFields);
-            setPrompt(false)
-            console.log(missingFields)
-            return
+      const handleAdd = async () => {
+        const payload = {
+            company_name: formData.company_name,
+            job_title: formData.job_title,
+            location: formData.location,
+            location_type: locationType?.value,
+            hiring_manager: formData.company_name,
+            employment_type: 1,
+            salary: formData.salary,
+            expires_at: formData.expires_at,
+            apply_link: formData.apply_link,
+            details: formData.details,
+            user_id: '05a4762d-29ef-4543-824b-9d16f77c6946',
+        };
+    
+        try {
+            console.log('Sending payload:', payload);
+    
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs`, payload);
+    
+            if (response.data.status === 'CREATED') {
+                close();
+            }
+            
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                console.error('Axios error:', error.response?.data || error.message);
+            } else {
+                console.error('Unexpected error:', error);
+            }
         }
-
-        // handle add job logic here
-
-        setPrompt(false);
-        close();
-    } 
-
+    };
+    
+    
     const selectStyle = {
         control: () =>
         '!cursor-text outline-none border-1 border-[#C4C4C4] rounded-sm w-full min-h-[30px] min-h-[unset] h-[30px] mt-1.5 px-3 text-sm',

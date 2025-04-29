@@ -9,6 +9,7 @@ export default function JobCard({job}) {
     const router = useRouter();
 
     const viewPost = () => {
+        console.log(job.job_id);
         router.push(`/jobs/${job.job_id}/view`);
     };
 
@@ -27,11 +28,11 @@ export default function JobCard({job}) {
        
         <div className="flex gap-2 items-center">
             <Clock size="20"/>
-            <p className="text-black text-sm">{job.expires_at.toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-            })}</p>
+            <p className="text-black text-sm">
+    {job.expires_at 
+      ? new Date(job.expires_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) 
+      : 'N/A'}
+  </p>
         </div>
        
         <div className="flex gap-2 items-center py-3">

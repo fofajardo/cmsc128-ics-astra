@@ -21,11 +21,15 @@ export default function SmallJobCard({job, showApply}) {
             
             <div className="flex gap-2 items-center">
                 <Clock size="20" className="shrink-0"/>
-                <p className="text-black text-sm">{job.expires_at.toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                })}</p>
+                    <p className="text-black text-sm">
+                    {job.expires_at 
+                        ? new Date(job.expires_at).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        })
+                        : 'No Expiration'}
+                </p>
             </div>
             {/* Tags */}
             <div className="flex flex-wrap gap-2 my-3">
