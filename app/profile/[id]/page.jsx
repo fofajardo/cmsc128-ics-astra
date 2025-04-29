@@ -164,10 +164,10 @@ export default function AlumniProfilePage() {
     <div className="min-h-screen bg-[var(--color-astratintedwhite)]">
       <main className="container mx-auto py-8 px-4 max-w-7xl">
         {!isVerified && (
-          <div className="bg-[var(--color-astratintedwhite)] border border-[var(--color-astralight)] rounded-md mb-6 flex items-center">
+          <div className="bg-[#E2F0FD] border-2 border-[var(--color-astralight)] p-4 rounded-md mb-6 flex items-center">
             <Info className="h-5 w-5 text-[var(--color-astrablack)] mr-2 flex-shrink-0" />
             <p className="text-sm text-[var(--color-astrablack)]">
-              Your profile is still being verified. Kindly wait for an administrator to approve your account.
+              Your profile is being verified. Kindly wait for an administrator to approve your account.
             </p>
           </div>
         )}
