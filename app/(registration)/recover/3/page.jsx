@@ -74,6 +74,12 @@ export default function SetPassword() {
           >
             Reset Password
           </button>
+          <div
+            className="text-sm cursor-pointer text-[var(--color-astraprimary)]"
+            onClick={() => (window.location.href = "/login")}
+          >
+            Back to Sign In
+          </div>
         </div>
       </div>
     </div>
