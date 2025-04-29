@@ -34,12 +34,20 @@ const deletePhotoById = async (supabase, id) => {
         .eq("id", id);
 };
 
+const fetchAllProfilePics = async (supabase) => {
+  return await supabase
+    .from("photos")
+    .select("*")
+    .eq("type", 0); // 0 for profile pictures
+};
+
 const photosService = {
     fetchAllPhotos,
     fetchPhotoById,
     insertPhoto,
     updatePhotoById,
     deletePhotoById,
+    fetchAllProfilePics
 };
 
 export default photosService;

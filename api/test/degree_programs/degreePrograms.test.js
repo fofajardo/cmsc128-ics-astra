@@ -10,19 +10,23 @@ describe("Degree Programs API Tests", function () {
     let degreeProgramId;
     
     const nonExistentId = uuidv4();
-    const sampleUserid = '6e16d569-627b-4c41-837f-c24653579b46';
+    // const sampleUserid = '6e16d569-627b-4c41-837f-c24653579b46';
+
+    let sampleUserid;
 
     before(async function () {
-        console.log("Signing in...");
+        sampleUserid = "19a54ed6-5a0e-4850-8193-e013140d6111";
+
+        console.log("Sample User ID:", sampleUserid);
+
         await TestSignIn(gAgent, TestUsers.admin);
-        console.log("Signed in successfully.");
 
         // Create a dummy degree program for testing
         const res = await gAgent
             .post(`/v1/degree-programs`)
             .send({
                 name: "Testing lang degree program",
-                level: 69,
+                level: "MS",
                 user_id: sampleUserid,
                 institution: "Test University",
                 year_started: "2022-01-01",
@@ -64,8 +68,8 @@ describe("Degree Programs API Tests", function () {
                 const res = await request(app)
                     .put(`/v1/degree-programs/${degreeProgramId}`)
                     .send({
-                        name: "Master of Science in Computer Science",
-                        level: 2,
+                        name: "Testing lang degree program",
+                        level: "MS",
                         institution: "Updated University",
                         year_started: "2022-01-01",
                         year_graduated: "2025-06-30",

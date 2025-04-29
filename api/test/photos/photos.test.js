@@ -3,22 +3,29 @@ import { expect } from "chai";
 import app from "../../index.js";
 import httpStatus from "http-status-codes";
 import { TestSignIn, TestSignOut, TestUsers } from "../auth/auth.common.js";
+import path from "path";
 const gAgent = request.agent(app);
 
 describe("Photos API Tests", function () {
     let photoId;
 
-    before(() => TestSignIn(gAgent, TestUsers.admin));
-
     // Create a dummy photo for testing
     before(async function () {
+
+        await TestSignIn(gAgent, TestUsers.admin);
+        console.log("Signed in successfully.");
+
+        const filePath = path.resolve("./assets/photos/sample1.png")
+
+        
+
         const res = await request(app)
             .post(`/v1/photos`)
             .field("user_id", "6e16d569-627b-4c41-837f-c24653579b46") // dummy ID
             .field("type", 1)
-            .attach("File", "assets/photos/sample1.png");
+            .attach("File", filePath);
 
-        // console.log("POST /v1/photos response:", res.body);
+        console.log("POST /v1/photos response:", res.status, res.body);
 
         if (res.body.status === "CREATED") {
             photoId = res.body.photo.id;
@@ -73,9 +80,7 @@ describe("Photos API Tests", function () {
     });
     
     after(() => {
-        console.log("Signing out...");
         TestSignOut(gAgent);
-        console.log("Signed out successfully.");
     });
 
     describe("Unauthenticated Scenarios", function () {

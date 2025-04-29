@@ -36,11 +36,7 @@ const getDegreeProgramById = async (req, res) => {
   try {
       const { id } = req.params;
 
-      const { data, error } = await supabase
-          .from("degree_programs")
-          .select("*")
-          .eq("id", id)
-          .single();
+      const { data, error } = await degreeProgramService.fetchDegreeProgramById(req.supabase, id);
 
       if (error || !data) {
           return res.status(httpStatus.NOT_FOUND).json({
@@ -121,7 +117,7 @@ const updateDegreeProgram = async (req, res) => {
     if (year_started) updates.year_started = year_started;
     if (year_graduated) updates.year_graduated = year_graduated;
 
-    const { data, error } = await supabase
+    const { data, error } = await req.supabase
       .from("degree_programs")
       .update(updates)
       .eq("id", id)
@@ -154,21 +150,13 @@ const deleteDegreeProgram = async (req, res) => {
       }
 
       // Perform the delete operation and select the deleted row
-      const { data, error } = await supabase
-          .from("degree_programs")
-          .delete()
-          .eq("id", id)
-          .select(); // Ensure the deleted row is returned
+      const { data, error } = await degreeProgramService.deleteDegreeProgramById(req.supabase, id);
 
       if (error) {
           if (error.details && error.details.includes("not found")) {
               return res.status(404).json({ status: "FAILED", message: "Degree program not found" });
           }
           throw error;
-      }
-
-      if (!data || data.length === 0) {
-          return res.status(404).json({ status: "FAILED", message: "Degree program not found" });
       }
 
       return res.status(200).json({ status: "DELETED", message: "Degree program successfully deleted" });
@@ -178,12 +166,52 @@ const deleteDegreeProgram = async (req, res) => {
   }
 };
 
+const getAlumniByYearGraduated = async (req, res) => {
+  try {
+    const { year_graduated } = req.params;
+
+    if (!year_graduated) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "Year graduated is required",
+      });
+    }
+
+    const { data, error } = await degreeProgramService.fetchAlumniByYearGraduated(req.supabase, year_graduated);
+
+    if (error) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error.message,
+      });
+    }
+
+    if (!data || data.length === 0) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: "FAILED",
+        message: `No alumni found for the year ${year_graduated}`,
+      });
+    }
+
+    return res.status(httpStatus.OK).json({
+      status: "OK",
+      alumni: data,
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message,
+    });
+  }
+};
+
 const degreeProgramController = {
   getAllDegreePrograms,
   getDegreeProgramById,
   createDegreeProgram,
   updateDegreeProgram,
-  deleteDegreeProgram
+  deleteDegreeProgram,
+  getAlumniByYearGraduated,
 };
 
 export default degreeProgramController;
