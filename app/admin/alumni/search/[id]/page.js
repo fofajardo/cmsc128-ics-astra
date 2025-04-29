@@ -16,9 +16,13 @@ export default function AlumniSearchProfile({ params }) {
     const [userRes, setUserRes] = useState(null);
     const [profileRes, setProfileRes] = useState(null);
     const [workExperienceRes, setWorkExperienceRes] = useState(null);
+    const [organizationAffiliationsRes, setOrganizationAffiliationsRes] = useState(null);
+
     const [user, setUser] = useState(null);
     const [profile, setProfile] = useState(null);
     const [workExperience, setWorkExperience] = useState(null);
+    const [organizationAffiliations, setOrganizationAffiliations] = useState(null);
+    
     const [missing, setMissing] = useState(false);
 
     useEffect(() => {
@@ -28,13 +32,22 @@ export default function AlumniSearchProfile({ params }) {
                 setProfileRes(value);
                 axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/work-experiences/alum/${id}`).then((value) => {
                     setWorkExperienceRes(value);
+                    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/organization-affiliations/${id}/organizations`).then((value) => {
+                        setOrganizationAffiliationsRes(value);
+                    }).catch(() => {
+                        console.log("No org affiliation");
+                        setMissing(true);
+                    });    
                 }).catch(() => {
+                    console.log("No work experience");
                     setMissing(true);
                 });
             }).catch(() => {
+                console.log("No alumni profile");
                 setMissing(true);
             });
         }).catch(() => {
+            console.log("No user");
             setMissing(true);
         });
     }, []);
@@ -43,12 +56,14 @@ export default function AlumniSearchProfile({ params }) {
         const localUser = userRes?.data?.user;
         const localProfile = profileRes?.data?.alumniProfile;
         const localWorkExperience = workExperienceRes?.data?.work_experiences;
+        const localOrganizationAffiliations = organizationAffiliationsRes?.data?.affiliated_organizations;
 
         setUser(localUser);
         setProfile(localProfile);
         setWorkExperience(localWorkExperience);
+        setOrganizationAffiliations(localOrganizationAffiliations);
 
-        if (localUser == null || localProfile == null || localWorkExperience == null) {
+        if (localUser == null || localProfile == null || localWorkExperience == null || localOrganizationAffiliations == null) {
             return;
         }
 
@@ -206,20 +221,25 @@ export default function AlumniSearchProfile({ params }) {
                             Affiliations
                         </h4>
                         <div className="space-y-4 p-4 bg-astratintedwhite rounded-b-md text-sm">
-                            <div className="border-l-4 border-astralight rounded">
-                                <div className="ml-5">
-                                    <p className="font-semibold text-astrablack">ICS-ASTRA Development Team</p>
-                                    <p className="italic text-astradarkgray">Frontend Developer</p>
-                                    <p className="text-astradarkgray">August 2021 - Present<br />UPLB</p>
+                        {organizationAffiliations?.length > 0 ? (
+                            organizationAffiliations.map((affiliation, idx) => (
+                                <div key={idx} className="border-l-4 border-astralight rounded">
+                                    <div className="ml-5">
+                                        <p className="font-semibold text-astrablack">{affiliation.organizations.name}</p>
+                                        <p className="italic text-astradarkgray">{affiliation.role}</p>
+                                        <p className="text-astradarkgray">
+                                            {formatDate(affiliation.joined_date, 'month-year')}
+                                            <br />
+                                            {affiliation.location}
+                                        </p>
+                                    </div>
                                 </div>
+                            ))
+                        ) : (
+                            <div className="text-center mt-50 text-astradarkgray">
+                                {"No affiliations found."}
                             </div>
-                            <div className="border-l-4 border-astralight rounded">
-                                <div className="ml-5">
-                                    <p className="font-semibold text-astrablack">UPLB User Experience Society</p>
-                                    <p className="italic text-astradarkgray">Member</p>
-                                    <p className="text-astradarkgray">August 2021 - Present<br />UPLB</p>
-                                </div>
-                            </div>
+                        )}
                         </div>
                     </div>
                 </TransitionSlide>

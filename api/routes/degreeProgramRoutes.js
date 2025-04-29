@@ -7,6 +7,7 @@ const degreeProgramsRouter = (supabase) => {
 
     router.use(RequireAuthenticated);
     
+    router.get("/alumni/:year_graduated", degreeProgramController.getAlumniByYearGraduated); // Add this route
     router.get("/", degreeProgramController.getAllDegreePrograms);
     router.get("/:id", degreeProgramController.getDegreeProgramById);
     router.post("/", degreeProgramController.createDegreeProgram);

@@ -19,10 +19,11 @@ const photosRouter = () => {
 
     router.use(RequireAuthenticated);
 
+    router.get("/profile-pics", photosController.getAllProfilePics);
     router.get("/", photosController.getAllPhotos);
     router.get("/:id", photosController.getPhotoById);
     router.post("/", upload.single("File"), photosController.uploadPhoto);
-    router.put("/:id", photosController.updatePhoto);
+    router.put("/:id", upload.single("File"), photosController.updatePhoto);
     router.delete("/:id", photosController.deletePhoto);
 
     return router;

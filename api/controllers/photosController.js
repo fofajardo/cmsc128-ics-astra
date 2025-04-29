@@ -2,6 +2,7 @@ import httpStatus from "http-status-codes";
 import photosService from "../services/photosService.js";
 import fs from "fs";
 import path from "path";
+import { get } from "http";
 
 const getAllPhotos = async (req, res) => {
   try {
@@ -78,7 +79,7 @@ const uploadPhoto = async (req, res) => {
         // Read the file content
         const fileContent = fs.readFileSync(oldPath);
 
-        const { data: storageData, error: storageError } = await supabase.storage
+        const { data: storageData, error: storageError } = await req.supabase.storage
         .from("user-photos-bucket")
         .upload(uniqueFilename, fileContent, {
             contentType: file.mimetype,
@@ -144,7 +145,7 @@ const updatePhoto = async (req, res) => {
         const oldPath = path.join(file.destination, file.filename);
         const fileContent = fs.readFileSync(oldPath);
 
-        const { data: storageData, error: storageError } = await supabase.storage
+        const { data: storageData, error: storageError } = await req.supabase.storage
             .from("user-photos-bucket")
             .upload(uniqueFilename, fileContent, {
                 contentType: file.mimetype,
@@ -202,6 +203,9 @@ const deletePhoto = async (req, res) => {
   
         // Fetch the photo details to get the file path (image_key)
         const { data: photo, error: fetchError } = await photosService.fetchPhotoById(req.supabase, id);
+
+        console.log("Fetched photo:", photo);
+        console.log("Fetch error:", fetchError);
     
         if (fetchError || !photo) {
             return res.status(httpStatus.NOT_FOUND).json({
@@ -211,7 +215,7 @@ const deletePhoto = async (req, res) => {
         }
   
         // Delete the file from Supabase storage
-        const { error: storageError } = await supabase.storage
+        const { error: storageError } = await req.supabase.storage
             .from("user-photos-bucket")
             .remove([photo.image_key]);
   
@@ -244,12 +248,43 @@ const deletePhoto = async (req, res) => {
     }
 };
 
+const getAllProfilePics = async (req, res) => {
+  try {
+    const { data, error } = await photosService.fetchAllProfilePics(req.supabase);
+
+    if (error) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error.message,
+      });
+    }
+
+    if (!data || data.length === 0) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: "FAILED",
+        message: "No profile pictures found",
+      });
+    }
+
+    return res.status(httpStatus.OK).json({
+      status: "OK",
+      profilePics: data,
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message,
+    });
+  }
+};
+
 const photosController = {
   getAllPhotos,
   getPhotoById,
   uploadPhoto,
   updatePhoto,
   deletePhoto,
+  getAllProfilePics,
 };
 
 export default photosController;
