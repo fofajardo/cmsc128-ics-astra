@@ -20,7 +20,7 @@ export default function AdminStatCard({ title, value, icon, route, onClick=null,
     <TransitionGrow
       delay = {delay}
       onClick={handleClick}
-      className="flex flex-row h-32 w-80 bg-gradient-to-tl from-astrawhite/20 to-astrawhite/50 backdrop-blur-md rounded-xl border border-astrawhite/15 shadow-lg transition-all duration-300 hover:shadow-2xl hover:scale-[1.04] hover:border-astrawhite/30 cursor-pointer"
+      className="flex flex-row h-32 w-80 bg-gradient-to-tl from-astrawhite/20 to-astrawhite/50 backdrop-blur-md rounded-xl border border-astrawhite/15 shadow-lg transition-all hover:shadow-2xl hover:scale-[1.04] hover:border-astrawhite/30 cursor-pointer"
     >
       <div className="flex flex-col justify-center px-4">
         <div className="text-astrawhite font-lb">{title}</div>
