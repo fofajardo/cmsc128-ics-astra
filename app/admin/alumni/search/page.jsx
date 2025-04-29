@@ -8,7 +8,7 @@ import { ActionButton } from "@/components/Buttons";
 import SkillTag from "@/components/SkillTag";
 import { Axis3DIcon } from "lucide-react";
 import axios from "axios";
-import { capitalizeName } from "../../../utils/format.js";
+import { capitalizeName } from "../../../utils/format.jsx";
 
 export default function AlumniSearch() {
   const [showFilter, setShowFilter] = useState(false);

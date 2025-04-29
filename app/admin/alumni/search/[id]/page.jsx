@@ -7,7 +7,7 @@ import SkillTag from "@/components/SkillTag";
 import { MapPin, GraduationCap, Image } from "lucide-react";
 import TransitionSlide from "@/components/transitions/TransitionSlide";
 import axios from "axios";
-import { capitalizeName, formatDate } from "../../../../utils/format.js";
+import { capitalizeName, formatDate } from "../../../../utils/format.jsx";
 
 export default function AlumniSearchProfile({ params }) {
   const unwrappedParams = React.use(params);
