@@ -1,5 +1,6 @@
-// import { useState, useEffect } from "react";
-"use client"
+"use client";
+
+import { useState, useEffect } from "react";
 import * as React from 'react'
 import { GoBackButton } from '@/components/Buttons'
 import SkillTag from '@/components/SkillTag'
@@ -8,35 +9,67 @@ import TransitionSlide from '@/components/transitions/TransitionSlide';
 import axios from "axios";
 import { capitalizeName, formatDate } from "../../../../utils/format.js";
 
-export default async function AlumniSearchProfile({ params }) {
-    const { id } = await params
+export default function AlumniSearchProfile({ params }) {
+    const unwrappedParams = React.use(params);
+    const { id } = unwrappedParams;
 
-    const [userRes, profileRes, workExperienceRes] = await Promise.all([
-        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/users/${id}`),
-        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/${id}`),
-        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/work-experiences/alum/${id}`)
-    ]);
+    const [userRes, setUserRes] = useState(null);
+    const [profileRes, setProfileRes] = useState(null);
+    const [workExperienceRes, setWorkExperienceRes] = useState(null);
+    const [user, setUser] = useState(null);
+    const [profile, setProfile] = useState(null);
+    const [workExperience, setWorkExperience] = useState(null);
+    const [missing, setMissing] = useState(false);
 
-    const user = userRes.data.user;
-    const profile = profileRes.data.alumniProfile;
-    const workExperience = workExperienceRes.data.work_experiences;
+    useEffect(() => {
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/users/${id}`).then((value) => {
+            setUserRes(value);
+            axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/${id}`).then((value) => {
+                setProfileRes(value);
+                axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/work-experiences/alum/${id}`).then((value) => {
+                    setWorkExperienceRes(value);
+                }).catch(() => {
+                    setMissing(true);
+                });
+            }).catch(() => {
+                setMissing(true);
+            });
+        }).catch(() => {
+            setMissing(true);
+        });
+    }, []);
 
-    console.log(user);
-    console.log(profile);
+    useEffect(() => {
+        const localUser = userRes?.data?.user;
+        const localProfile = profileRes?.data?.alumniProfile;
+        const localWorkExperience = workExperienceRes?.data?.work_experiences;
+
+        setUser(localUser);
+        setProfile(localProfile);
+        setWorkExperience(localWorkExperience);
+
+        if (localUser == null || localProfile == null || localWorkExperience == null) {
+            return;
+        }
+
+        localProfile.birthdate = formatDate(localProfile.birthdate, 'long');
+        localProfile.graduation_date = formatDate(localProfile.graduation_date, 'month-year');
+
+        localWorkExperience.forEach((experience) => {
+            experience.year_started = formatDate(experience.year_started, 'month-year');
+            experience.year_ended = experience.year_ended ? formatDate(experience.year_ended, 'month-year') : "Present";
+        });
+    }, [userRes, profileRes, workExperienceRes]);
+
+    if (missing) {
+        return <div className="text-center mt-20 text-red-500">{"Alumnus not found."}</div>;
+    }
 
     if (!user || !profile) {
-        return <div className="text-center mt-20 text-red-500">{error || "Alumnus not found."}</div>;
+        return <div>Loading...</div>
     }
 
     // Format the date to a more readable format
-    profile.birthdate = formatDate(profile.birthdate, 'long');
-    profile.graduation_date = formatDate(profile.graduation_date, 'month-year');
-
-    workExperience.forEach((experience) => {
-        experience.year_started = formatDate(experience.year_started, 'month-year');
-        experience.year_ended = experience.year_ended ? formatDate(experience.year_ended, 'month-year') : "Present";
-    });
-
     return (
         <div className="p-4 bg-astradirtywhite min-h-screen">
             <div className="max-w-6xl mx-auto my-1">
@@ -48,7 +81,7 @@ export default async function AlumniSearchProfile({ params }) {
                 <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 w-full md:w-auto">
                     {/* avatar placeholder */}
                     <img
-                        src={user.image || "https://cdn-icons-png.flaticon.com/512/145/145974.png"}
+                        src={user?.image || "https://cdn-icons-png.flaticon.com/512/145/145974.png"}
                         alt={profile.first_name}
                         className="w-18 h-18 rounded-full bg-gray-200 mx-auto sm:mx-4"
                     />
@@ -143,7 +176,7 @@ export default async function AlumniSearchProfile({ params }) {
                             Experience
                         </h4>
                         <div className="space-y-4 p-4 bg-astratintedwhite rounded-b-md text-sm">
-                            {workExperience.length > 0 ? (
+                            {workExperience?.length > 0 ? (
                                 workExperience.map((experience, idx) => (
                                     <div key={idx} className="border-l-4 border-astralight rounded">
                                         <div className="ml-5">
@@ -225,7 +258,7 @@ export default async function AlumniSearchProfile({ params }) {
                         <h4 className="font-rb text-astrablack mb-0">Fields of Interest</h4>
                         <hr className="h-2 border-astralightgray"></hr>
                         <div className="flex gap-3 flex-wrap text-sm">
-                            {workExperience.length > 0 ? (
+                            {workExperience?.length > 0 ? (
                                 workExperience.map((experience, idx) => {
                                     const colors = [
                                         "bg-blue-100 text-blue-700",
