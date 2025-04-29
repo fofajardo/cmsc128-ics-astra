@@ -1,11 +1,11 @@
-'use client';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import EditEventModal from './EditEventModal/EditEventModal';
-import HeaderImage from './HeaderImage';
-import HeaderTitleBar from './HeaderTitleBar';
-import HeaderDescription from './HeaderDescription';
-import DeleteConfirmationModal from './DeleteEventModal/DeleteEventModal';
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import EditEventModal from "./EditEventModal/EditEventModal";
+import HeaderImage from "./HeaderImage";
+import HeaderTitleBar from "./HeaderTitleBar";
+import HeaderDescription from "./HeaderDescription";
+import DeleteConfirmationModal from "./DeleteEventModal/DeleteEventModal";
 
 export default function HeaderEvent({ event, onSave, onDelete }) {
   const [isEditMode, setIsEditMode] = useState(false);
@@ -34,7 +34,7 @@ export default function HeaderEvent({ event, onSave, onDelete }) {
 
   const confirmDelete = () => {
     if (onDelete) onDelete(eventData);
-    router.push('/events');
+    router.push("/events");
   };
 
   const cancelDelete = () => {

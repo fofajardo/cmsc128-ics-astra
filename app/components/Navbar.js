@@ -30,7 +30,7 @@ export default function NavbarUser() {
 
   return (
     <nav
-      className={`sticky top-0 z-50 w-full transition-all duration-300 bg-astrawhite shadow-md`}
+      className={"sticky top-0 z-50 w-full transition-all duration-300 bg-astrawhite shadow-md"}
       style={{ height: "80px" }}
     >
       <div className="flex items-center justify-between max-w-screen-xl mx-auto h-full px-4 sm:px-12 w-full">
@@ -67,10 +67,10 @@ export default function NavbarUser() {
               <span
                 className={`absolute left-1/2 -translate-x-1/2 bottom-[-16px] h-[8px] w-[100px] rounded-tl-[10px] rounded-tr-[10px] transition-all duration-300
                 ${
-                  activeLink === link.href
-                    ? "bg-astraprimary opacity-100"
-                    : "opacity-0"
-                }`}
+            activeLink === link.href
+              ? "bg-astraprimary opacity-100"
+              : "opacity-0"
+            }`}
               />
             </Link>
           ))}

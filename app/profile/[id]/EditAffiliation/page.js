@@ -1,38 +1,38 @@
-"use client"
-import { useState } from "react"
-import EditAffiliationModal from "./2/page" // Adjust path as needed
-import ToastNotification from "@/components/ToastNotification"
+"use client";
+import { useState } from "react";
+import EditAffiliationModal from "./2/page"; // Adjust path as needed
+import ToastNotification from "@/components/ToastNotification";
 
 export default function EditAffiliation({ affiliations, hideAffiliationForm }) {
-  const [editedAffiliations, setEditedAffiliations] = useState([...affiliations])
-  const [selectedAffiliationIndex, setSelectedAffiliationIndex] = useState(null)
-  const [showToast, setShowToast] = useState(false)
+  const [editedAffiliations, setEditedAffiliations] = useState([...affiliations]);
+  const [selectedAffiliationIndex, setSelectedAffiliationIndex] = useState(null);
+  const [showToast, setShowToast] = useState(false);
 
   const handleEdit = (index) => {
-    setSelectedAffiliationIndex(index)
-  }
+    setSelectedAffiliationIndex(index);
+  };
 
   const handleDelete = (index) => {
-    const updated = [...editedAffiliations]
-    updated.splice(index, 1)
-    setEditedAffiliations(updated)
-  }
+    const updated = [...editedAffiliations];
+    updated.splice(index, 1);
+    setEditedAffiliations(updated);
+  };
 
   const handleModalSave = (updatedAffiliation) => {
-    const updated = [...editedAffiliations]
-    updated[selectedAffiliationIndex] = updatedAffiliation
-    setEditedAffiliations(updated)
-    setSelectedAffiliationIndex(null) // close modal
-  }
+    const updated = [...editedAffiliations];
+    updated[selectedAffiliationIndex] = updatedAffiliation;
+    setEditedAffiliations(updated);
+    setSelectedAffiliationIndex(null); // close modal
+  };
 
   const handleModalCancel = () => {
-    setSelectedAffiliationIndex(null)
-  }
+    setSelectedAffiliationIndex(null);
+  };
 
   const handleSave = () => {
-    console.log("Saving affiliations:", editedAffiliations)
-    setShowToast({ type: "success", message: "Affiliations saved successfully!" })
-  }
+    console.log("Saving affiliations:", editedAffiliations);
+    setShowToast({ type: "success", message: "Affiliations saved successfully!" });
+  };
 
   return (
     <div className="w-full max-w-5xl mx-auto p-4 bg-[var(--color-astrawhite)] rounded-lg flex flex-col">
@@ -46,7 +46,7 @@ export default function EditAffiliation({ affiliations, hideAffiliationForm }) {
           <i className="fa-solid fa-times text-xl"></i>
         </button>
       </div>
-  
+
       <div className="flex-1 overflow-y-auto pr-2 space-y-6 max-h-[70vh]">
         {editedAffiliations.map((affiliation, index) => (
           <div key={index} className="border rounded-lg p-4 bg-[var(--color-astrawhite)] shadow-sm">
@@ -71,7 +71,7 @@ export default function EditAffiliation({ affiliations, hideAffiliationForm }) {
           </div>
         ))}
       </div>
-  
+
       {/* Buttons at the bottom */}
       <div className="mt-6 flex justify-end space-x-4">
         <button
@@ -87,7 +87,7 @@ export default function EditAffiliation({ affiliations, hideAffiliationForm }) {
           Save
         </button>
       </div>
-  
+
       {/* Modal */}
       {selectedAffiliationIndex !== null && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -98,7 +98,7 @@ export default function EditAffiliation({ affiliations, hideAffiliationForm }) {
           />
         </div>
       )}
-  
+
       {/* Toast */}
       {showToast && (
         <ToastNotification
@@ -108,5 +108,5 @@ export default function EditAffiliation({ affiliations, hideAffiliationForm }) {
         />
       )}
     </div>
-  )  
+  );
 }

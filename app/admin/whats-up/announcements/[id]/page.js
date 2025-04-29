@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { GoBackButton } from "@/components/Buttons";
@@ -44,14 +44,14 @@ export default function AnnouncementDetail() {
   const handleDelete = () => {
     setShowDeleteModal(false);
     setToast({ type: "success", message: "Announcement deleted successfully" });
-    setTimeout(() => router.push('/admin/whats-up'), 2000);
+    setTimeout(() => router.push("/admin/whats-up"), 2000);
   };
 
   return (
     <div className="min-h-screen bg-astradirtywhite p-6">
       <div className="max-w-5xl mx-auto">
         <GoBackButton />
-        
+
         {toast && (
           <ToastNotification
             type={toast.type}

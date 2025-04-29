@@ -286,16 +286,16 @@ export default function AboutPage() {
   // Function to get icon for each tab
   const getTabIcon = (category) => {
     switch (category) {
-      case "team-leaders":
-        return <Users className="h-4 w-4" />;
-      case "frontend-members":
-        return <Code className="h-4 w-4" />;
-      case "backend-members":
-        return <Code className="h-4 w-4" />;
-      case "database-members":
-        return <Database className="h-4 w-4" />;
-      default:
-        return <Users className="h-4 w-4" />;
+    case "team-leaders":
+      return <Users className="h-4 w-4" />;
+    case "frontend-members":
+      return <Code className="h-4 w-4" />;
+    case "backend-members":
+      return <Code className="h-4 w-4" />;
+    case "database-members":
+      return <Database className="h-4 w-4" />;
+    default:
+      return <Users className="h-4 w-4" />;
     }
   };
 
@@ -306,7 +306,7 @@ export default function AboutPage() {
         <div
           className="absolute inset-0 bg-cover bg-center will-change-transform"
           style={{
-            backgroundImage: 'url("/about-bg.png")',
+            backgroundImage: "url(\"/about-bg.png\")",
             filter: "brightness(0.7)",
             transform: "scale(1.2)", // Smoother parallax
             backgroundAttachment: "fixed",
@@ -461,7 +461,7 @@ export default function AboutPage() {
                   items-start
                   pl-0 sm:pl-4
                   ${item.position === "right" ? "md:items-end md:pl-12 md:pr-0" : "md:items-start md:pr-12 md:pl-0"}
-                `}                                           
+                `}
               >
                 {/* Timeline circle */}
                 <div
@@ -552,25 +552,25 @@ export default function AboutPage() {
             {/* Tabs */}
             <div className="flex justify-center overflow-x-auto pb-2 scrollbar-hide">
               <div className="flex justify-center mb-6 md:mb-8 flex-wrap gap-2">
-              {Object.keys(contributors).map((category) => (
-                <motion.button
-                  key={category}
-                  onClick={() => setActiveTab(category)}
-                  className={`
+                {Object.keys(contributors).map((category) => (
+                  <motion.button
+                    key={category}
+                    onClick={() => setActiveTab(category)}
+                    className={`
                     flex items-center gap-1 md:gap-2 text-xs md:text-sm px-3 py-1.5 rounded-full
                     border border-[var(--color-astralightgray)]
                     ${activeTab === category ? "bg-[var(--color-astraprimary)] text-white" : "bg-[var(--color-astradirtywhite)] text-[var(--color-astradarkgray)]"}
                     transition-all duration-200
                     hover:scale-105 hover:bg-[var(--color-astraprimary)] hover:text-white
                   `}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  {getTabIcon(category)}
-                  <span className="font-medium">
-                    {getTabLabel(category)}
-                  </span>
-                </motion.button>
-              ))}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    {getTabIcon(category)}
+                    <span className="font-medium">
+                      {getTabLabel(category)}
+                    </span>
+                  </motion.button>
+                ))}
               </div>
             </div>
             {/* Contributors grid */}
@@ -595,34 +595,34 @@ export default function AboutPage() {
                         "0 10px 25px -5px rgba(var(--color-astraprimary-rgb), 0.3)",
                     }}
                   >
-                  <Card className="h-full bg-white border-[var(--color-astradirtywhite)] overflow-hidden rounded-xl transition-all duration-300">
-                    <CardContent className="p-5 md:p-6">
-                      <div className="flex flex-col items-center text-center space-y-4">
-                        <div className="relative w-full">
-                          <div className="absolute inset-0"></div>
-                          <div className="relative w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 mx-auto rounded-full overflow-hidden border-2 border-[var(--color-astraprimary)] shadow-lg shadow-[var(--color-astraprimary)]/20">
-                            <img
-                              src={contributor.avatar || "/placeholder.svg"}
-                              alt={contributor.name}
-                              className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
-                            />
+                    <Card className="h-full bg-white border-[var(--color-astradirtywhite)] overflow-hidden rounded-xl transition-all duration-300">
+                      <CardContent className="p-5 md:p-6">
+                        <div className="flex flex-col items-center text-center space-y-4">
+                          <div className="relative w-full">
+                            <div className="absolute inset-0"></div>
+                            <div className="relative w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 mx-auto rounded-full overflow-hidden border-2 border-[var(--color-astraprimary)] shadow-lg shadow-[var(--color-astraprimary)]/20">
+                              <img
+                                src={contributor.avatar || "/placeholder.svg"}
+                                alt={contributor.name}
+                                className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
+                              />
+                            </div>
+                          </div>
+                          <div className="space-y-2 pt-2">
+                            <h3 className="text-base md:text-lg font-bold text-[var(--color-astrablack)]">
+                              {contributor.name}
+                            </h3>
+                            <div className="flex items-center justify-center">
+                              <div className="h-0.5 w-6 bg-[var(--color-astraprimary)]/30 rounded-full mr-2"></div>
+                              <p className="text-sm md:text-base text-[var(--color-astradarkgray)]">
+                                {contributor.role}
+                              </p>
+                              <div className="h-0.5 w-6 bg-[var(--color-astraprimary)]/30 rounded-full ml-2"></div>
+                            </div>
                           </div>
                         </div>
-                        <div className="space-y-2 pt-2">
-                          <h3 className="text-base md:text-lg font-bold text-[var(--color-astrablack)]">
-                            {contributor.name}
-                          </h3>
-                          <div className="flex items-center justify-center">
-                            <div className="h-0.5 w-6 bg-[var(--color-astraprimary)]/30 rounded-full mr-2"></div>
-                            <p className="text-sm md:text-base text-[var(--color-astradarkgray)]">
-                              {contributor.role}
-                            </p>
-                            <div className="h-0.5 w-6 bg-[var(--color-astraprimary)]/30 rounded-full ml-2"></div>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                      </CardContent>
+                    </Card>
                   </motion.div>
                 ))}
               </motion.div>

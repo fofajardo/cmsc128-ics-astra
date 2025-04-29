@@ -1,39 +1,39 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { User } from "lucide-react"
+import { useState } from "react";
+import Link from "next/link";
+import { User } from "lucide-react";
 
 export default function SignupPage() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
-  const [errors, setErrors] = useState([])
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [errors, setErrors] = useState([]);
 
   const validateForm = () => {
-    const newErrors = []
-  
+    const newErrors = [];
+
     // Check if all fields are filled
     if (!email || !password || !confirmPassword) {
-      newErrors.push("Please fill in all fields.")
+      newErrors.push("Please fill in all fields.");
     }
-  
+
     // Additional validations
-    if (email && !email.includes("@")) newErrors.push("Invalid email format.")
-    if (password && password.length < 8) newErrors.push("Password must be at least 8 characters.")
-    if (password !== confirmPassword) newErrors.push("Passwords do not match.")
-  
-    setErrors(newErrors)  // Store the error messages
-    return newErrors.length === 0  // Return true if no errors
-  }
+    if (email && !email.includes("@")) newErrors.push("Invalid email format.");
+    if (password && password.length < 8) newErrors.push("Password must be at least 8 characters.");
+    if (password !== confirmPassword) newErrors.push("Passwords do not match.");
+
+    setErrors(newErrors);  // Store the error messages
+    return newErrors.length === 0;  // Return true if no errors
+  };
 
   const handleSubmit = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     if (validateForm()) {
       // Proceed to next page or perform any action
-      window.location.href = "/signup/2"
+      window.location.href = "/signup/2";
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-[var(--color-astratintedwhite)]">
@@ -114,5 +114,5 @@ export default function SignupPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

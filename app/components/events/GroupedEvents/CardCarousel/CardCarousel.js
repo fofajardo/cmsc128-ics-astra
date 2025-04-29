@@ -7,25 +7,25 @@ export default function CardCarousel({ event }) {
   return (
     <div
       className="
-        bg-astrawhite 
-        rounded-2xl 
-        overflow-hidden 
-        border 
-        border-astralightgray 
-        shadow-md 
-        transform 
-        transition-all 
-        duration-500 
-        ease-in-out 
-        hover:scale-[1.03] 
-        hover:shadow-xl 
-        hover:border-transparent 
-        hover:ring-2 
-        hover:ring-offset-2 
-        hover:ring-astraprimary 
-        hover:ring-opacity-70 
-        active:scale-[0.98] 
-        active:shadow-inner 
+        bg-astrawhite
+        rounded-2xl
+        overflow-hidden
+        border
+        border-astralightgray
+        shadow-md
+        transform
+        transition-all
+        duration-500
+        ease-in-out
+        hover:scale-[1.03]
+        hover:shadow-xl
+        hover:border-transparent
+        hover:ring-2
+        hover:ring-offset-2
+        hover:ring-astraprimary
+        hover:ring-opacity-70
+        active:scale-[0.98]
+        active:shadow-inner
         cursor-pointer
       "
     >

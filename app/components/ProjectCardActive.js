@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { GraduationCap, HeartHandshake, Users, Calendar } from "lucide-react";
 import Link from "next/link";
 
@@ -15,28 +15,28 @@ export default function ProjectCardActive({
 }) {
 
   //calculating progress percentage
-  const goalAmount = parseInt(goal.replace(/[^0-9]/g, ''));
-  const raisedAmount = parseInt(raised.replace(/[^0-9]/g, ''));
+  const goalAmount = parseInt(goal.replace(/[^0-9]/g, ""));
+  const raisedAmount = parseInt(raised.replace(/[^0-9]/g, ""));
   const progressPercent = Math.min(Math.round((raisedAmount / goalAmount) * 100), 100);
-  
+
   //end date
-  const formattedDate = new Date(endDate).toLocaleDateString('en-PH', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
+  const formattedDate = new Date(endDate).toLocaleDateString("en-PH", {
+    year: "numeric",
+    month: "short",
+    day: "numeric"
   });
 
   //determine progress bar color based on percentage
   const getProgressColor = () => {
-    if (progressPercent < 25) return 'bg-red-500';
-    if (progressPercent < 50) return 'bg-orange-500';
-    if (progressPercent < 75) return 'bg-yellow-500';
-    return 'bg-green-500';
+    if (progressPercent < 25) return "bg-red-500";
+    if (progressPercent < 50) return "bg-orange-500";
+    if (progressPercent < 75) return "bg-yellow-500";
+    return "bg-green-500";
   };
 
   return (
-    <Link href={`/admin/projects/${isActive ? 'active' : 'inactive'}/${id}`}>
-      <div className={`group bg-astrawhite rounded-2xl shadow hover:shadow-lg transition-all duration-300 cursor-pointer border-2 border-transparent hover:border-astraprimary overflow-hidden ${!isActive ? 'opacity-60' : ''}`}>
+    <Link href={`/admin/projects/${isActive ? "active" : "inactive"}/${id}`}>
+      <div className={`group bg-astrawhite rounded-2xl shadow hover:shadow-lg transition-all duration-300 cursor-pointer border-2 border-transparent hover:border-astraprimary overflow-hidden ${!isActive ? "opacity-60" : ""}`}>
         {/* Project Image */}
         <div className="relative h-40 w-full overflow-hidden">
           <img
@@ -53,11 +53,11 @@ export default function ProjectCardActive({
             {type}
           </div>
         </div>
-        
+
         {/* Content */}
         <div className="p-4">
           <h3 className="font-lb text-lg line-clamp-1">{title}</h3>
-          
+
           {/* Progress bar */}
           <div className="mt-3">
             <div className="flex justify-between text-xs font-s mb-1 line-clamp-1">
@@ -65,8 +65,8 @@ export default function ProjectCardActive({
               <span>Goal: {goal}</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
-                className={`${getProgressColor()} h-2 rounded-full transition-all duration-500`} 
+              <div
+                className={`${getProgressColor()} h-2 rounded-full transition-all duration-500`}
                 style={{ width: `${progressPercent}%` }}
               ></div>
             </div>
@@ -81,9 +81,9 @@ export default function ProjectCardActive({
               </div>
             </div>
           </div>
-          
+
           {/* Action Button */}
-          <button 
+          <button
             className="mt-3 w-full blue-button font-s py-1"
             onClick={(e) => e.stopPropagation()}
           >

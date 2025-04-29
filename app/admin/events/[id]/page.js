@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -45,7 +45,7 @@ export default function EventAdminDetailPage() {
     console.log("Deleted Event:", event.title);
     setShowDeleteModal(false);
     setToastData({ type: "success", message: "Event deleted successfully!" });
-    router.push('/events');
+    router.push("/events");
   };
 
   const handleSend = () => {

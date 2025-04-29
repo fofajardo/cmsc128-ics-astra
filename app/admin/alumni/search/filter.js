@@ -27,7 +27,7 @@ export default function SearchFilter({ onClose, initialFilters, updateFilters })
       skills: [],
       sortCategory: "",
       sortOrder: "asc",
-  });
+    });
     setSkillInput("");
     updateFilters({
       yearFrom: "",
@@ -48,7 +48,7 @@ export default function SearchFilter({ onClose, initialFilters, updateFilters })
 
   const closeModal = () => {
     setFilters(initialFilters);
-    onClose()
+    onClose();
   };
 
   return (
@@ -159,7 +159,7 @@ export default function SearchFilter({ onClose, initialFilters, updateFilters })
             <span
               key={idx}
               onClick={() => removeSkill(skill)}
-              className={`px-3 py-1 rounded-full border text-sm cursor-pointer transition`}
+              className={"px-3 py-1 rounded-full border text-sm cursor-pointer transition"}
             >
               {skill}
             </span>

@@ -1,14 +1,14 @@
 "use client";
-import { useState } from 'react';
+import { useState } from "react";
 import { X, Upload, Plus } from "lucide-react";
 
 export default function AddAnnouncementModal({ isOpen, onClose }) {
   const [formData, setFormData] = useState({
-    title: '',
-    content: '',
+    title: "",
+    content: "",
     image: null
   });
-  
+
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -29,7 +29,7 @@ export default function AddAnnouncementModal({ isOpen, onClose }) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-xl w-full max-w-2xl mx-4 relative">
-        <button 
+        <button
           onClick={onClose}
           className="absolute right-4 top-4 text-astradarkgray hover:text-astrablack"
         >
@@ -38,15 +38,15 @@ export default function AddAnnouncementModal({ isOpen, onClose }) {
 
         <form onSubmit={handleSubmit} className="p-6">
           <h2 className="text-2xl font-bold text-astrablack mb-6">Add New Announcement</h2>
-          
+
           {/* Image Upload */}
           <div className="mb-6">
             <div className="relative">
               {formData.image ? (
                 <div className="relative w-full h-48">
-                  <img 
-                    src={formData.image} 
-                    alt="Preview" 
+                  <img
+                    src={formData.image}
+                    alt="Preview"
                     className="w-full h-48 object-cover rounded-lg"
                   />
                   <button

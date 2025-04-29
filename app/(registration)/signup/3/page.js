@@ -1,7 +1,7 @@
-"use client"
-import { useRef, useState } from "react"
-import Link from "next/link"
-import React from "react"
+"use client";
+import { useRef, useState } from "react";
+import Link from "next/link";
+import React from "react";
 
 export default function EducationalInfoPage() {
   const [studentId, setStudentId] = useState("");
@@ -9,7 +9,7 @@ export default function EducationalInfoPage() {
   const [degreeProgram, setDegreeProgram] = useState("");
   const [file, setFile] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
-  
+
   const fileInputRef = useRef(null);
 
   const handleButtonClick = () => {
@@ -25,20 +25,20 @@ export default function EducationalInfoPage() {
 
   // Handles student ID; only allows numbers and formats as XXXX-XXXXX
   const handleStudentIdChange = (e) => {
-    let value = e.target.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+    let value = e.target.value.replace(/[^0-9]/g, ""); // Remove non-numeric characters
     // Limit to 9 characters
     if (value.length > 9) {
       value = value.slice(0, 9);
     }
     if (value.length > 4 && value.length <= 9) {
-      value = value.slice(0, 4) + '-' + value.slice(4);
+      value = value.slice(0, 4) + "-" + value.slice(4);
     }
     setStudentId(value);
   };
 
   // Handles graduation year; only allows numbers
   const handleGraduationYearChange = (e) => {
-    let value = e.target.value.replace(/[^0-9]/g, '');
+    let value = e.target.value.replace(/[^0-9]/g, "");
     // Limit to 4 characters
     if (value.length > 4) {
       value = value.slice(0, 4);
@@ -48,7 +48,7 @@ export default function EducationalInfoPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     // Validate all fields
     if (!degreeProgram || !studentId || !graduationYear || !file) {
       setErrorMessage("All fields are required.");
@@ -92,7 +92,7 @@ export default function EducationalInfoPage() {
 
             <form className="space-y-4 px-4 sm:px-6 md:px-8" onSubmit={handleSubmit}>
               <h2 className="text-lg md:text-2xl font-semibold text-black mb-4">Educational Information</h2>
-              
+
               {/* Degree Program */}
               <div>
                 <label htmlFor="degree-program" className="block text-sm font-medium text-[var(--color-astrablack)] mb-1">
@@ -224,5 +224,5 @@ export default function EducationalInfoPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

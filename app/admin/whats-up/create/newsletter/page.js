@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { GoBackButton } from "@/components/Buttons";
@@ -9,9 +9,9 @@ export default function UploadNewsletter() {
   const router = useRouter();
   const [toast, setToast] = useState(null);
   const [formData, setFormData] = useState({
-    title: '',
+    title: "",
     file: null,
-    preview: 'https://marketplace.canva.com/EAGWT7FdhOk/1/0/1131w/canva-black-and-grey-modern-business-company-email-newsletter-R_dH5ll-SAs.jpg'
+    preview: "https://marketplace.canva.com/EAGWT7FdhOk/1/0/1131w/canva-black-and-grey-modern-business-company-email-newsletter-R_dH5ll-SAs.jpg"
   });
 
   const handleFileUpload = (e) => {
@@ -23,14 +23,14 @@ export default function UploadNewsletter() {
 
   const handleSubmit = () => {
     setToast({ type: "success", message: "Newsletter uploaded successfully" });
-    setTimeout(() => router.push('/admin/whats-up'), 2000);
+    setTimeout(() => router.push("/admin/whats-up"), 2000);
   };
 
   return (
     <div className="min-h-screen bg-astradirtywhite p-6">
       <div className="max-w-md mx-auto">
         <GoBackButton />
-        
+
         {toast && (
           <ToastNotification
             type={toast.type}
@@ -42,7 +42,7 @@ export default function UploadNewsletter() {
         <div className="mt-6">
           <div className="bg-astrawhite rounded-xl p-6 shadow-md">
             <h1 className="font-h2 text-astrablack mb-6">Upload Newsletter</h1>
-            
+
             <div className="relative aspect-[3/4] mb-6 group">
               <div className="relative w-full h-full rounded-lg overflow-hidden">
                 <img
@@ -82,7 +82,7 @@ export default function UploadNewsletter() {
               <button onClick={() => router.back()} className="gray-button">
                 Cancel
               </button>
-              <button 
+              <button
                 onClick={handleSubmit}
                 disabled={!formData.file || !formData.title}
                 className="blue-button flex items-center gap-2 disabled:opacity-50"

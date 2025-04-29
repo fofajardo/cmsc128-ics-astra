@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Throbber from '../../../../components/projects/Throbber';
-import DonationSuccess from '../../../../components/projects/DonationSuccess';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Throbber from "../../../../components/projects/Throbber";
+import DonationSuccess from "../../../../components/projects/DonationSuccess";
 
 export default function DonatePage() {
   const [amount, setAmount] = useState(1000);
-  const [paymentMethod, setPaymentMethod] = useState('paypal');
+  const [paymentMethod, setPaymentMethod] = useState("paypal");
   const [receipt, setReceipt] = useState(null);
-  const [status, setStatus] = useState('idle');
+  const [status, setStatus] = useState("idle");
   const router = useRouter();
   const [showError, setShowError] = useState(false);
 
@@ -24,39 +24,39 @@ export default function DonatePage() {
   };
 
   const handleDonate = () => {
-    if (paymentMethod === 'paypal') {
+    if (paymentMethod === "paypal") {
       window.location.href = "https://www.paypal.com/signin";
       return;
     }
 
-    if (paymentMethod === 'bank' && !receipt) {
+    if (paymentMethod === "bank" && !receipt) {
       setShowError(true);
-      setTimeout(() => setShowError(false), 3000)
+      setTimeout(() => setShowError(false), 3000);
       return;
     }
 
-    setStatus('loading');
+    setStatus("loading");
     setTimeout(() => {
-      setStatus('success');
+      setStatus("success");
     }, 2000);
   };
 
-  if (status === 'loading') return <Throbber />;
-  if (status === 'success') return <DonationSuccess />;
+  if (status === "loading") return <Throbber />;
+  if (status === "success") return <DonationSuccess />;
 
   return (
     <div className="min-h-screen bg-[#f4f7fe] text-astralightgray-800 px-4 py-20">
       {/* Alert  */}
       {showError && (
-  <div className="fixed top-6 left-1/2 transform -translate-x-1/2 bg-astrawhite text-astrablack border border-astraprimary-300 px-6 py-3 rounded-md shadow-lg z-50 animate-fade-in">
-    <div className="flex items-center gap-2">
-      <svg className="w-5 h-5 text-astraprimary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01M12 3a9 9 0 11-6.219 15.219A9 9 0 0112 3z" />
-      </svg>
-      <span className="text-sm font-medium">Please upload a receipt before donating.</span>
-    </div>
-  </div>
-)}
+        <div className="fixed top-6 left-1/2 transform -translate-x-1/2 bg-astrawhite text-astrablack border border-astraprimary-300 px-6 py-3 rounded-md shadow-lg z-50 animate-fade-in">
+          <div className="flex items-center gap-2">
+            <svg className="w-5 h-5 text-astraprimary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01M12 3a9 9 0 11-6.219 15.219A9 9 0 0112 3z" />
+            </svg>
+            <span className="text-sm font-medium">Please upload a receipt before donating.</span>
+          </div>
+        </div>
+      )}
       {/* Back Button */}
       <div className="max-w-xl mx-auto mb-4">
         <button
@@ -81,8 +81,8 @@ export default function DonatePage() {
                 onClick={() => handleAmountChange(preset)}
                 className={`text-sm py-2 rounded-md border font-medium transition ${
                   amount === preset
-                    ? 'bg-[var(--color-astraprimary)] text-astrawhite border-[var(--color-astraprimary)]'
-                    : 'bg-astrawhite text-astralightgray-700 border-astralightgray-300 hover:bg-[var(--color-astraprimary)] hover:text-astrawhite'
+                    ? "bg-[var(--color-astraprimary)] text-astrawhite border-[var(--color-astraprimary)]"
+                    : "bg-astrawhite text-astralightgray-700 border-astralightgray-300 hover:bg-[var(--color-astraprimary)] hover:text-astrawhite"
                 }`}
               >
                 ₱{preset}
@@ -113,7 +113,7 @@ export default function DonatePage() {
                 type="radio"
                 name="payment"
                 value="paypal"
-                checked={paymentMethod === 'paypal'}
+                checked={paymentMethod === "paypal"}
                 onChange={handlePaymentMethodChange}
               />
               <img src="/icons/paypal.svg" alt="PayPal" className="w-16 h-auto" />
@@ -123,7 +123,7 @@ export default function DonatePage() {
                 type="radio"
                 name="payment"
                 value="credit"
-                checked={paymentMethod === 'credit'}
+                checked={paymentMethod === "credit"}
                 onChange={handlePaymentMethodChange}
               />
               Credit/Debit Card
@@ -133,7 +133,7 @@ export default function DonatePage() {
                 type="radio"
                 name="payment"
                 value="bank"
-                checked={paymentMethod === 'bank'}
+                checked={paymentMethod === "bank"}
                 onChange={handlePaymentMethodChange}
               />
               Bank Transfer
@@ -142,7 +142,7 @@ export default function DonatePage() {
         </div>
 
         {/* Conditional Payment Details */}
-        {paymentMethod === 'credit' && (
+        {paymentMethod === "credit" && (
           <div className="border-b border-astralightgray-200 pb-6 mb-6">
             <h3 className="text-sm font-medium mb-4">Enter Credit/Debit Card Details</h3>
             <input
@@ -170,7 +170,7 @@ export default function DonatePage() {
           </div>
         )}
 
-        {paymentMethod === 'bank' && (
+        {paymentMethod === "bank" && (
           <div className="border-b border-astralightgray-200 pb-6 mb-6">
             <h3 className="text-sm font-medium mb-4">Upload Bank Transfer Receipt</h3>
             <div className="w-full flex flex-col items-center justify-center p-4 border-2 border-dashed border-astragray rounded-lg cursor-pointer hover:border-[var(--color-astraprimary)] transition">

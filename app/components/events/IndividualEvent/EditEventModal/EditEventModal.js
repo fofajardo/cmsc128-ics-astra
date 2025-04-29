@@ -1,16 +1,16 @@
-'use client';
-import { useState } from 'react';
-import ImageUploadSection from './ImageUploadSection';
-import EventFormFields from './EventFormFields';
-import FormActionButtons from './FormActionButtons';
+"use client";
+import { useState } from "react";
+import ImageUploadSection from "./ImageUploadSection";
+import EventFormFields from "./EventFormFields";
+import FormActionButtons from "./FormActionButtons";
 
 export default function EditEventModal({ event, onClose, onSave }) {
   const [title, setTitle] = useState(event.title);
   const [eventDetail, setEventDetail] = useState(event.eventDetail);
   const [date, setDate] = useState(event.date ? new Date(event.date) : null);
-  const [location, setLocation] = useState(event.location || '');
-  const [status, setStatus] = useState(event.status || 'Open');
-  const [image, setImage] = useState(event.image || '');
+  const [location, setLocation] = useState(event.location || "");
+  const [status, setStatus] = useState(event.status || "Open");
+  const [image, setImage] = useState(event.image || "");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -18,7 +18,7 @@ export default function EditEventModal({ event, onClose, onSave }) {
       ...event,
       title,
       eventDetail,
-      date: date?.toISOString() || '',
+      date: date?.toISOString() || "",
       location,
       status,
       image,

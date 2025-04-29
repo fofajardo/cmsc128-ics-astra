@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { GoBackButton } from "@/components/Buttons";
@@ -9,11 +9,11 @@ export default function CreateAnnouncement() {
   const router = useRouter();
   const [toast, setToast] = useState(null);
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    content: '',
+    title: "",
+    description: "",
+    content: "",
     image: null,
-    type: 'Event'
+    type: "Event"
   });
 
   const handleImageUpload = (e) => {
@@ -26,14 +26,14 @@ export default function CreateAnnouncement() {
 
   const handleSubmit = () => {
     setToast({ type: "success", message: "Announcement created successfully" });
-    setTimeout(() => router.push('/admin/whats-up'), 2000);
+    setTimeout(() => router.push("/admin/whats-up"), 2000);
   };
 
   return (
     <div className="min-h-screen bg-astradirtywhite p-6">
       <div className="max-w-5xl mx-auto">
         <GoBackButton />
-        
+
         {toast && (
           <ToastNotification
             type={toast.type}
@@ -44,7 +44,7 @@ export default function CreateAnnouncement() {
 
         <div className="mt-6">
           <div className="relative w-full h-[400px] mb-6 group">
-            <div className={`relative w-full h-full rounded-xl ${!formData.image ? 'bg-astradarkgray/90' : ''}`}>
+            <div className={`relative w-full h-full rounded-xl ${!formData.image ? "bg-astradarkgray/90" : ""}`}>
               {formData.image && (
                 <img
                   src={formData.image}
@@ -52,7 +52,7 @@ export default function CreateAnnouncement() {
                   className="w-full h-full object-cover rounded-xl"
                 />
               )}
-              <div className={`absolute inset-0 ${formData.image ? 'bg-astradarkgray/50 group-hover:bg-astradarkgray/70' : ''} rounded-xl transition-colors`}>
+              <div className={`absolute inset-0 ${formData.image ? "bg-astradarkgray/50 group-hover:bg-astradarkgray/70" : ""} rounded-xl transition-colors`}>
                 <label className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer">
                   <Image className="w-12 h-12 text-astrawhite mb-3" />
                   <span className="text-astrawhite text-lg font-rb">Click to upload image</span>

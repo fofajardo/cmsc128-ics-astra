@@ -1,5 +1,5 @@
 import httpStatus from "http-status-codes";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import degreeProgramService from "../services/degreeProgramService.js";
 
 const getAllDegreePrograms = async (req, res) => {
@@ -34,26 +34,26 @@ const getAllDegreePrograms = async (req, res) => {
 
 const getDegreeProgramById = async (req, res) => {
   try {
-      const { id } = req.params;
+    const { id } = req.params;
 
-      const { data, error } = await degreeProgramService.fetchDegreeProgramById(req.supabase, id);
+    const { data, error } = await degreeProgramService.fetchDegreeProgramById(req.supabase, id);
 
-      if (error || !data) {
-          return res.status(httpStatus.NOT_FOUND).json({
-              status: "FAILED",
-              message: "Degree program not found",
-          });
-      }
-
-      return res.status(httpStatus.OK).json({
-          status: "OK",
-          degreeProgram: data,
+    if (error || !data) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: "FAILED",
+        message: "Degree program not found",
       });
+    }
+
+    return res.status(httpStatus.OK).json({
+      status: "OK",
+      degreeProgram: data,
+    });
   } catch (error) {
-      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-          status: "FAILED",
-          message: error.message,
-      });
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message,
+    });
   }
 };
 
@@ -145,24 +145,24 @@ const deleteDegreeProgram = async (req, res) => {
   const { id } = req.params;
 
   try {
-      if (!id) {
-          return res.status(400).json({ status: "FAILED", message: "Degree program ID is required" });
+    if (!id) {
+      return res.status(400).json({ status: "FAILED", message: "Degree program ID is required" });
+    }
+
+    // Perform the delete operation and select the deleted row
+    const { data, error } = await degreeProgramService.deleteDegreeProgramById(req.supabase, id);
+
+    if (error) {
+      if (error.details && error.details.includes("not found")) {
+        return res.status(404).json({ status: "FAILED", message: "Degree program not found" });
       }
+      throw error;
+    }
 
-      // Perform the delete operation and select the deleted row
-      const { data, error } = await degreeProgramService.deleteDegreeProgramById(req.supabase, id);
-
-      if (error) {
-          if (error.details && error.details.includes("not found")) {
-              return res.status(404).json({ status: "FAILED", message: "Degree program not found" });
-          }
-          throw error;
-      }
-
-      return res.status(200).json({ status: "DELETED", message: "Degree program successfully deleted" });
+    return res.status(200).json({ status: "DELETED", message: "Degree program successfully deleted" });
   } catch (err) {
-      console.error("Error deleting degree program:", err.message);
-      return res.status(500).json({ status: "FAILED", message: err.message });
+    console.error("Error deleting degree program:", err.message);
+    return res.status(500).json({ status: "FAILED", message: err.message });
   }
 };
 

@@ -1,9 +1,9 @@
-"use client"
-import Link from "next/link"
-import { useState } from "react"
+"use client";
+import Link from "next/link";
+import { useState } from "react";
 
 export default function PersonalInfoPage() {
-  const [delegation, setDelegation] = useState("")
+  const [delegation, setDelegation] = useState("");
   const [formValues, setFormValues] = useState({
     firstName: "",
     middleName: "",
@@ -14,13 +14,13 @@ export default function PersonalInfoPage() {
     civilStatus: "",
     placeOfBirth: "",
     citizenship: "Philippines"
-  })
-  const [showError, setShowError] = useState(false)
+  });
+  const [showError, setShowError] = useState(false);
 
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormValues((prev) => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    setFormValues((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleNext = () => {
     const requiredFilled = delegation &&
@@ -31,15 +31,15 @@ export default function PersonalInfoPage() {
       formValues.sex &&
       formValues.civilStatus &&
       formValues.placeOfBirth &&
-      formValues.citizenship
+      formValues.citizenship;
 
     if (!requiredFilled) {
-      setShowError(true)
+      setShowError(true);
     } else {
-      setShowError(false)
-      window.location.href = "/signup/3"
+      setShowError(false);
+      window.location.href = "/signup/3";
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-[var(--color-astratintedwhite)]">
@@ -152,7 +152,7 @@ export default function PersonalInfoPage() {
                     className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md bg-white text-gray-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
                   />
                 </div>
-                
+
                 <div className="flex-1">
                   <label htmlFor="sex" className="block text-sm font-medium text-[var(--color-astrablack)] mb-1">
                     Sex <span className="text-[var(--color-astrared)]">*</span>
@@ -264,5 +264,5 @@ export default function PersonalInfoPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

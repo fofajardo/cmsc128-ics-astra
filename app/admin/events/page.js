@@ -3,7 +3,7 @@ import { useState } from "react";
 import { TableHeader, Table, PageTool } from "@/components/TableBuilder";
 import { useTab } from "../../components/TabContext";
 import ToastNotification from "@/components/ToastNotification";
-import EventModal from "./EventModal"; 
+import EventModal from "./EventModal";
 import eventListDummy from "./eventDummy";
 import { Trash2, Eye, Pencil } from "lucide-react";
 

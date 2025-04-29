@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import EventDateLocation from "./EventDateLocation";
 import EventActions from "./EventActions";

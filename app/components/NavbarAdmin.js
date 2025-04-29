@@ -80,7 +80,7 @@ function Navbar({ toggleSidebar, isSidebarOpen, isScrolled }) {
           className="rounded-full cursor-pointer"
         />
       </div>
-            <AvatarMenu/>
+      <AvatarMenu/>
     </nav>
   );
 }
@@ -94,7 +94,7 @@ function AvatarMenu() {
   };
 
   const handleLogout = () => {
-    console.log('Logged out');
+    console.log("Logged out");
     setIsMenuOpen(false);
   };
 
@@ -105,9 +105,9 @@ function AvatarMenu() {
         setIsMenuOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -123,10 +123,10 @@ function AvatarMenu() {
         onClick={toggleMenu}
       />
 
-     {/* Floating Menu */}
-     <div
+      {/* Floating Menu */}
+      <div
         className={`absolute right-0 mt-2 p-4 w-48 bg-astratintedwhite rounded-lg shadow-lg border border-astragray z-10 transform transition-all duration-200 ease-in-out ${
-          isMenuOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'
+          isMenuOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
         }`}
       >
         <div className="py-1">
@@ -139,7 +139,7 @@ function AvatarMenu() {
           </button>
         </div>
       </div>
-      </div>
+    </div>
   );
 }
 

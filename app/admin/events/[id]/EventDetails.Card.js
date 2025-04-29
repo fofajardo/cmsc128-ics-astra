@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { CalendarDays, MapPin } from "lucide-react";
 

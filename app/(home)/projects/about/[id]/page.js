@@ -1,6 +1,6 @@
 "use client";
 import { useState, use } from "react";
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import BackButton from "@/components/events/IndividualEvent/BackButton";
 import {

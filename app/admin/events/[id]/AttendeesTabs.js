@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 export default function AttendeesTabs({ attendees, interested, activeTab, setActiveTab, setCurrentPage }) {
   return (

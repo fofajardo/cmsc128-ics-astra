@@ -167,7 +167,7 @@ export default function ProjectsAdmin() {
                 onClick={() => handleTabChange("Active")}
               />
 
-               {/*total raised card */}
+              {/*total raised card */}
               <AdminStatCard
                 delay={0.1}
                 title="Total Raised"
@@ -181,7 +181,7 @@ export default function ProjectsAdmin() {
                 route={false}
               />
 
-               {/*contributors card */}
+              {/*contributors card */}
               <AdminStatCard
                 delay={0.2}
                 title="Contributors"

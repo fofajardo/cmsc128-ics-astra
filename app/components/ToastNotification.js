@@ -1,8 +1,8 @@
-'use client';
-import { useEffect, useState } from 'react';
+"use client";
+import { useEffect, useState } from "react";
 import { CheckCircle2Icon, XCircle } from "lucide-react";
 
-export default function ToastNotification({ type = 'success', message, onClose }) {
+export default function ToastNotification({ type = "success", message, onClose }) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -18,8 +18,8 @@ export default function ToastNotification({ type = 'success', message, onClose }
   }, [onClose]);
 
   const styles = {
-    success: 'bg-astragreen text-astrawhite',
-    fail: 'bg-astrared text-astrawhite',
+    success: "bg-astragreen text-astrawhite",
+    fail: "bg-astrared text-astrawhite",
   };
 
   const icons = {
@@ -30,7 +30,7 @@ export default function ToastNotification({ type = 'success', message, onClose }
   return (
     <div
       className={`fixed top-5 right-5 z-50 px-6 py-4 rounded-lg shadow-lg flex items-center justify-between min-w-[300px] transition-all duration-300 ease-in-out 
-        ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'} 
+        ${visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"} 
         ${styles[type]}`}
     >
       <div className="flex items-center gap-2">

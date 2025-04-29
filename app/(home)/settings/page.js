@@ -1,92 +1,92 @@
-"use client"
-import { useState } from "react"
-import { Mail, Eye, EyeOff, User, Bell, ChevronRight } from "lucide-react"
-import ToastNotification from "@/components/ToastNotification"
+"use client";
+import { useState } from "react";
+import { Mail, Eye, EyeOff, User, Bell, ChevronRight } from "lucide-react";
+import ToastNotification from "@/components/ToastNotification";
 
 export default function AccountSettings() {
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
-  const [showNewPassword, setShowNewPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [activeTab, setActiveTab] = useState("email")
-  const [isVerificationVisible, setIsVerificationVisible] = useState(false)
-  const [isSubscribed, setIsSubscribed] = useState(false)
-  const [showToast, setShowToast] = useState(false)
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [activeTab, setActiveTab] = useState("email");
+  const [isVerificationVisible, setIsVerificationVisible] = useState(false);
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [showToast, setShowToast] = useState(false);
 
-  const [newEmail, setNewEmail] = useState("")
-  const [verificationCode, setVerificationCode] = useState("")
-  const [emailError, setEmailError] = useState("")
-  const [codeError, setCodeError] = useState("")
+  const [newEmail, setNewEmail] = useState("");
+  const [verificationCode, setVerificationCode] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [codeError, setCodeError] = useState("");
 
-  const [currentPassword, setCurrentPassword] = useState("")
-  const [newPassword, setNewPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
-  const [passwordError, setPasswordError] = useState("")
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   const isValidEmail = (email) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const tabs = [
     { id: "email", label: "Email Settings", icon: <Mail className="h-5 w-5" /> },
     { id: "password", label: "Password Settings", icon: <User className="h-5 w-5" /> },
     { id: "newsletter", label: "Newsletter Settings", icon: <Bell className="h-5 w-5" /> },
-  ]
+  ];
 
   const handleUpdateEmail = () => {
     if (!newEmail || !isValidEmail(newEmail)) {
-      setEmailError("Please enter a valid email address.")
-      return
+      setEmailError("Please enter a valid email address.");
+      return;
     }
     setShowToast({
       type: "success",
       message: "Verification code sent to email!"
-    })
-    setIsVerificationVisible(true)
-  }
+    });
+    setIsVerificationVisible(true);
+  };
 
   const handleVerifyCode = () => {
     if (!verificationCode) {
-      setCodeError("Please enter the verification code.")
+      setCodeError("Please enter the verification code.");
     } else {
-      setCodeError("")
+      setCodeError("");
       setShowToast({
         type: "success",
         message: "Email updated successfully!"
-      })
+      });
     }
-  }
+  };
 
   const handleSavePassword = () => {
     if (!currentPassword || !newPassword || !confirmPassword) {
-      setPasswordError("All fields are required.")
-      return
+      setPasswordError("All fields are required.");
+      return;
     }
 
     if (newPassword !== confirmPassword) {
-      setPasswordError("New password and confirmation do not match.")
-      return
+      setPasswordError("New password and confirmation do not match.");
+      return;
     }
 
-    setPasswordError("")
+    setPasswordError("");
     setShowToast({
       type: "success",
       message: "Password updated successfully!"
-    })
-  }
+    });
+  };
 
   const handleResendCode = () => {
     setShowToast({
       type: "success",
       message: "Verification code resent!"
-    })
-  }
+    });
+  };
 
   const handleToggleSubscription = () => {
-    setIsSubscribed(!isSubscribed)
+    setIsSubscribed(!isSubscribed);
     setShowToast({
       type: "success",
       message: isSubscribed ? "Unsubscribed from newsletter!" : "Subscribed to newsletter!"
-    })
-  }
+    });
+  };
 
   return (
     <div className="min-h-[600px] bg-[#eff2fa] flex flex-col py-8 px-4">
@@ -270,5 +270,5 @@ export default function AccountSettings() {
         />
       )}
     </div>
-  )
+  );
 }

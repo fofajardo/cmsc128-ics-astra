@@ -1,10 +1,10 @@
-'use client';
-import * as React from 'react';
-import { GoBackButton } from '@/components/Buttons';
-import SkillTag from '@/components/SkillTag';
-import { alumniData } from '@/components/DummyDataSearch';
+"use client";
+import * as React from "react";
+import { GoBackButton } from "@/components/Buttons";
+import SkillTag from "@/components/SkillTag";
+import { alumniData } from "@/components/DummyDataSearch";
 import { Mail, MapPin, GraduationCap, Image as LucideImage } from "lucide-react";
-import TransitionSlide from '@/components/transitions/TransitionSlide';
+import TransitionSlide from "@/components/transitions/TransitionSlide";
 
 export default function AlumniSearchProfile({ params }) {
   const unwrappedParams = React.use(params);
@@ -16,8 +16,8 @@ export default function AlumniSearchProfile({ params }) {
     return <div className="text-center mt-20 text-red-500">Alumnus not found.</div>;
   }
 
-  const skillsArray = alumnus.skills ? alumnus.skills.split(', ').map(skill => skill.trim()) : [];
-  const interestsArray = alumnus.interests ? alumnus.interests.split(', ').map(interest => interest.trim()) : [];
+  const skillsArray = alumnus.skills ? alumnus.skills.split(", ").map(skill => skill.trim()) : [];
+  const interestsArray = alumnus.interests ? alumnus.interests.split(", ").map(interest => interest.trim()) : [];
 
   return (
     <div className="p-4 bg-astradirtywhite min-h-screen">
@@ -120,8 +120,8 @@ export default function AlumniSearchProfile({ params }) {
                     <p className="font-semibold text-astrablack">{exp.company}</p>
                     <p className="italic text-astradarkgray">{exp.location}</p>
                     <p className="text-astradarkgray">
-                      {new Date(exp.start_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} -
-                      {exp.end_date ? new Date(exp.end_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Present'}
+                      {new Date(exp.start_date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })} -
+                      {exp.end_date ? new Date(exp.end_date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : "Present"}
                     </p>
                     {exp.position && <p className="text-astradarkgray">Position: {exp.position}</p>}
                   </div>
@@ -143,8 +143,8 @@ export default function AlumniSearchProfile({ params }) {
                     <p className="font-semibold text-astrablack">{aff.organization}</p>
                     {aff.position && <p className="italic text-astradarkgray">{aff.position}</p>}
                     <p className="text-astradarkgray">
-                      {new Date(aff.start_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} -
-                      {aff.end_date ? new Date(aff.end_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Present'}
+                      {new Date(aff.start_date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })} -
+                      {aff.end_date ? new Date(aff.end_date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : "Present"}
                       {aff.institution && <><br />{aff.institution}</>}
                     </p>
                   </div>

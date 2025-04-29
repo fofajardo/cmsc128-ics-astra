@@ -37,12 +37,12 @@ export function HeroSection() {
   }, []);
 
   const handleLearnMore = () => {
-    router.push('/whats-up/about'); // Replace with your desired route
+    router.push("/whats-up/about"); // Replace with your desired route
   };
 
   return (
     <div className="w-full bg-astradirtywhite">
-      
+
       <div
         className="relative w-full bg-cover bg-center overflow-hidden"
         style={{ backgroundImage: "url('/blue-bg.png')" }}
@@ -71,7 +71,7 @@ export function HeroSection() {
               Stay connected and informed with the latest updates and stories.
             </p>
             <div className="flex justify-center lg:justify-end">
-              <button 
+              <button
                 onClick={handleLearnMore}
                 className={`mt-4 px-8 py-3 border-2 border-white text-white hover:bg-white hover:text-astraprimary rounded-xl transition-all duration-300 ${animations.glowEffect}`}
               >

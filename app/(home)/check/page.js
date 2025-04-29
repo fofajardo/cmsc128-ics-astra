@@ -25,13 +25,13 @@ export default function InformationChanged() {
           </p>
 
           <div className="space-y-3">
-            <button 
+            <button
               onClick={handleYesClick}
               className="w-full py-2.5 px-4 border text-[var(--color-astrawhite)] bg-[var(--color-astraprimary)] rounded-md text-sm text-center"
             >
               Yes, my information has changed
             </button>
-            <button 
+            <button
               onClick={handleNoClick}
               className="w-full py-2.5 px-4 border border-gray-200 rounded-md text-sm text-center text-[var(--color-astrablack)]"
             >

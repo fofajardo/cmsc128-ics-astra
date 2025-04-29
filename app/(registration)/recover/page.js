@@ -9,20 +9,20 @@ export default function ForgotPassword() {
   const handleSendEmail = () => {
 
     if (!email) {
-        setShowToast({
-            type: "fail",
-            message: "Please enter your email address.",
-        });
-        return;
+      setShowToast({
+        type: "fail",
+        message: "Please enter your email address.",
+      });
+      return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-        setShowToast({
-            type: "fail",
-            message: "Please enter a valid email address.",
-        });
-        return;
+      setShowToast({
+        type: "fail",
+        message: "Please enter a valid email address.",
+      });
+      return;
     }
 
     window.location.href = "/recover/2"; // Redirect to next step
@@ -72,13 +72,13 @@ export default function ForgotPassword() {
         </div>
       </div>
 
-    {showToast && (
+      {showToast && (
         <ToastNotification
-            type={showToast.type}
-            message={showToast.message}
-            onClose={() => setShowToast(null)} // Close the toast when it disappears
+          type={showToast.type}
+          message={showToast.message}
+          onClose={() => setShowToast(null)} // Close the toast when it disappears
         />
-    )}
+      )}
     </div>
   );
 }

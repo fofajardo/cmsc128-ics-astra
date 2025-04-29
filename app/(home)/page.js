@@ -1,9 +1,9 @@
-'use client'
+"use client";
 
-import Image from 'next/image';
-import Head from 'next/head';
-import Slideshow from '@/components/Slideshow';
-import { FileText } from 'lucide-react';
+import Image from "next/image";
+import Head from "next/head";
+import Slideshow from "@/components/Slideshow";
+import { FileText } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Rocket, Users, Code, Database, Star } from "lucide-react";
 
@@ -25,48 +25,48 @@ export default function Page() {
       <section className="bg-astratintedwhite py-20">
         {/* Display Astra logo */}
         <div className="logo-container flex justify-center items-center py-10">
-        <motion.div
-                initial={{ opacity: 0, rotateY: -30 }}
-                whileInView={{ opacity: 1, rotateY: 0 }}
-                transition={{ duration: 1 }}
-                viewport={{ once: true }}
-                className="relative"
-              >
-          <Image
-            src="/astra-logo.png"
-            alt="Astra Logo"
-            width={350}
-            height={350}
-            priority
-          />
+          <motion.div
+            initial={{ opacity: 0, rotateY: -30 }}
+            whileInView={{ opacity: 1, rotateY: 0 }}
+            transition={{ duration: 1 }}
+            viewport={{ once: true }}
+            className="relative"
+          >
+            <Image
+              src="/astra-logo.png"
+              alt="Astra Logo"
+              width={350}
+              height={350}
+              priority
+            />
           </motion.div>
         </div>
         <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-              className="order-2 md:order-2"
-            >
+          initial={{ opacity: 0, x: 50 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="order-2 md:order-2"
+        >
 
-        <div className="px-6 md:px-16 lg:px-32 xl:px-48 2xl:px-64 py-8">
-      
-          <h1 className="text-2xl md:text-3xl lg:text-4xl text-center leading-relaxed">
-            <span className="font-bold text-astraprimary">ICS-ASTRA</span>{" "}
-            <span className="font-medium text-astrablack">is a</span>{" "}
-            <span className="font-medium text-astrablack">
-              system catered towards the alumni of the Institute of Computer Science
-              (ICS) of the University of the Philippines Los Baños (UPLB). Its
-              purpose is to improve and maintain the connections between ICS and its
-              alumni that it had produced over the years.
-            </span>
-          </h1>
-        </div>
+          <div className="px-6 md:px-16 lg:px-32 xl:px-48 2xl:px-64 py-8">
+
+            <h1 className="text-2xl md:text-3xl lg:text-4xl text-center leading-relaxed">
+              <span className="font-bold text-astraprimary">ICS-ASTRA</span>{" "}
+              <span className="font-medium text-astrablack">is a</span>{" "}
+              <span className="font-medium text-astrablack">
+                system catered towards the alumni of the Institute of Computer Science
+                (ICS) of the University of the Philippines Los Baños (UPLB). Its
+                purpose is to improve and maintain the connections between ICS and its
+                alumni that it had produced over the years.
+              </span>
+            </h1>
+          </div>
         </motion.div>
 
-        
+
       </section>
-    
+
       {/* Mission section */}
       <section
         id="mission"
@@ -106,19 +106,19 @@ export default function Page() {
               </h2>
               <div className="space-y-6 md:space-y-8">
                 <div className="flex items-start gap-4">
-                
+
                   <p className="text-[var(--color-astrablack)] text-base md:text-lg">
-                  Stay connected with the latest updates from Astra-ICS. From important news to exciting announcements, find out what’s happening, what’s new, and what’s coming next — all right here.
+                    Stay connected with the latest updates from Astra-ICS. From important news to exciting announcements, find out what’s happening, what’s new, and what’s coming next — all right here.
                   </p>
                 </div>
-              
+
               </div>
             </motion.div>
           </div>
         </div>
       </section>
 
-    
+
     </main>
   );
 }

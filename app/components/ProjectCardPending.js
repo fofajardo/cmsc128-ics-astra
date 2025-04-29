@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { GraduationCap, HeartHandshake } from "lucide-react";
 import Link from "next/link";
 
@@ -17,9 +17,9 @@ export default function ProjectCardPending({
   const handleApprove = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    setToast({ 
-      type: 'success', 
-      message: `${title} has been approved!` 
+    setToast({
+      type: "success",
+      message: `${title} has been approved!`
     });
   };
 
@@ -27,9 +27,9 @@ export default function ProjectCardPending({
   const handleDecline = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    setToast({ 
-      type: 'fail', 
-      message: `${title} has been declined!` 
+    setToast({
+      type: "fail",
+      message: `${title} has been declined!`
     });
   };
 
@@ -52,7 +52,7 @@ export default function ProjectCardPending({
             {type}
           </div>
         </div>
-        
+
         {/* Content */}
         <div className="p-4">
           <h3 className="font-lb text-lg line-clamp-1">{title}</h3>
@@ -63,17 +63,17 @@ export default function ProjectCardPending({
             <span className="font-sb">Goal:</span> {goal}
           </p>
           <p className="text-astradarkgray font-s mt-2 line-clamp-2">{description}</p>
-          
+
           {/* Action Buttons */}
           <div className="flex flex-col gap-3 mt-4">
-            <button 
-              className="green-button px-2 py-1" 
+            <button
+              className="green-button px-2 py-1"
               onClick={handleApprove}
             >
               Approve
             </button>
-            <button 
-              className="red-button px-2 py-1" 
+            <button
+              className="red-button px-2 py-1"
               onClick={handleDecline}
             >
               Decline

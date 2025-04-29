@@ -1,358 +1,358 @@
-import httpStatus from 'http-status-codes';
-import projectsService from '../services/projectsService.js';
-import contentsService from '../services/contentsService.js';
-import { isValidUUID, isValidDate } from '../utils/validators.js';
+import httpStatus from "http-status-codes";
+import projectsService from "../services/projectsService.js";
+import contentsService from "../services/contentsService.js";
+import { isValidUUID, isValidDate } from "../utils/validators.js";
 import {Actions, Subjects} from "../../common/scopes.js";
 
 const getProjects = async (req, res) => {
-    if (req.you.cannot(Actions.READ, Subjects.PROJECT)) {
-        return res.status(httpStatus.FORBIDDEN).json({
-            status: "FORBIDDEN",
-            message: "You are not allowed to access this resource."
-        });
+  if (req.you.cannot(Actions.READ, Subjects.PROJECT)) {
+    return res.status(httpStatus.FORBIDDEN).json({
+      status: "FORBIDDEN",
+      message: "You are not allowed to access this resource."
+    });
+  }
+
+  try {
+    const filters = req.query;
+    const { data, error } = await projectsService.fetchProjects(req.supabase, filters);
+
+    if (error) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error.message
+      });
     }
 
-    try {
-        const filters = req.query;
-        const { data, error } = await projectsService.fetchProjects(req.supabase, filters);
+    return res.status(httpStatus.OK).json({
+      status: "OK",
+      projects: data || [],
+    });
 
-        if (error) {
-            return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-                status: 'FAILED',
-                message: error.message
-            });
-        }
-
-        return res.status(httpStatus.OK).json({
-            status: 'OK',
-            projects: data || [],
-        });
-
-    } catch (error) {
-        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-            status: 'FAILED',
-            message: error.message
-        });
-    }
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
 };
 
 const getProjectById = async (req, res) => {
-    if (req.you.cannot(Actions.READ, Subjects.PROJECT)) {
-        return res.status(httpStatus.FORBIDDEN).json({
-            status: "FORBIDDEN",
-            message: "You are not allowed to access this resource."
-        });
+  if (req.you.cannot(Actions.READ, Subjects.PROJECT)) {
+    return res.status(httpStatus.FORBIDDEN).json({
+      status: "FORBIDDEN",
+      message: "You are not allowed to access this resource."
+    });
+  }
+
+  try {
+    const { projectId } = req.params;
+
+    if (!isValidUUID(projectId)) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "Invalid projectId format"
+      });
     }
 
-    try {
-        const { projectId } = req.params;
+    const { data, error } = await projectsService.fetchProjectById(req.supabase, projectId);
 
-        if (!isValidUUID(projectId)) {
-            return res.status(httpStatus.BAD_REQUEST).json({
-                status: 'FAILED',
-                message: 'Invalid projectId format'
-            });
-        }
-
-        const { data, error } = await projectsService.fetchProjectById(req.supabase, projectId);
-
-        if (error) {
-            return res.status(httpStatus.NOT_FOUND).json({
-                status: 'FAILED',
-                message: 'Project not found'
-            });
-        }
-
-        return res.status(httpStatus.OK).json({
-            status: 'OK',
-            project: data
-        });
-
-    } catch (error) {
-        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-            status: 'FAILED',
-            message: error.message
-        });
+    if (error) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: "FAILED",
+        message: "Project not found"
+      });
     }
+
+    return res.status(httpStatus.OK).json({
+      status: "OK",
+      project: data
+    });
+
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
 };
 
 const createProject = async (req, res) => {
-    if (req.you.cannot(Actions.CREATE, Subjects.PROJECT)) {
-        return res.status(httpStatus.FORBIDDEN).json({
-            status: "FORBIDDEN",
-            message: "You are not allowed to access this resource."
-        });
+  if (req.you.cannot(Actions.CREATE, Subjects.PROJECT)) {
+    return res.status(httpStatus.FORBIDDEN).json({
+      status: "FORBIDDEN",
+      message: "You are not allowed to access this resource."
+    });
+  }
+
+  try {
+    const projectId = req.body["project_id"];
+
+    if (!isValidUUID(projectId)) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "Invalid projectId format"
+      });
     }
 
-    try {
-        const projectId = req.body['project_id'];
+    const { data: contentData, error: contentError } = await contentsService.fetchContentById(req.supabase, projectId);
 
-        if (!isValidUUID(projectId)) {
-            return res.status(httpStatus.BAD_REQUEST).json({
-                status: 'FAILED',
-                message: `Invalid projectId format`
-            });
-        }
+    if (contentError || !contentData) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: "FAILED",
+        message: "Content not found"
+      });
+    }
 
-        const { data: contentData, error: contentError } = await contentsService.fetchContentById(req.supabase, projectId);
+    // Check if project already exists (GET /v1/project/:projectId)
+    const { data: projectData, error: projectError } = await projectsService.fetchProjectById(req.supabase, projectId);
 
-        if (contentError || !contentData) {
-            return res.status(httpStatus.NOT_FOUND).json({
-                status: 'FAILED',
-                message: 'Content not found'
-            });
-        }
+    if (projectData) {
+      return res.status(httpStatus.CONFLICT).json({
+        status: "FAILED",
+        message: "Project already exists"
+      });
+    }
 
-        // Check if project already exists (GET /v1/project/:projectId)
-        const { data: projectData, error: projectError } = await projectsService.fetchProjectById(req.supabase, projectId);
+    // Check required fields
+    const requiredFields = [
+      "project_id",
+      "project_status",
+      "due_date",
+      // 'date_completed',
+      "goal_amount",
+      "donation_link"
+    ];
 
-        if (projectData) {
-            return res.status(httpStatus.CONFLICT).json({
-                status: 'FAILED',
-                message: 'Project already exists'
-            });
-        }
+    const missingFields = requiredFields.filter(field => req.body[field] === undefined || req.body[field] === null);
 
-        // Check required fields
-        const requiredFields = [
-            'project_id',
-            'project_status',
-            'due_date',
-            // 'date_completed',
-            'goal_amount',
-            'donation_link'
-        ];
+    if (missingFields.length > 0) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: `Missing required fields: ${missingFields.join(", ")}`
+      });
+    }
 
-        const missingFields = requiredFields.filter(field => req.body[field] === undefined || req.body[field] === null);
+    // Insert data to supabase
+    const {
+      project_id,
+      project_status,
+      due_date,
+      date_completed,
+      goal_amount,
+      donation_link
+    } = req.body;
 
-        if (missingFields.length > 0) {
-            return res.status(httpStatus.BAD_REQUEST).json({
-                status: 'FAILED',
-                message: `Missing required fields: ${missingFields.join(', ')}`
-            });
-        }
-
-        // Insert data to supabase
-        const {
-            project_id,
-            project_status,
-            due_date,
-            date_completed,
-            goal_amount,
-            donation_link
-        } = req.body;
-
-        // Invalid date_completed will result to null (invalid date objects serialized to null)
-        if ((typeof project_status !== 'number' || ![0, 1].includes(project_status)) ||
+    // Invalid date_completed will result to null (invalid date objects serialized to null)
+    if ((typeof project_status !== "number" || ![0, 1].includes(project_status)) ||
             !isValidDate(due_date) ||
             (date_completed !== undefined && date_completed !== null && !isValidDate(date_completed)) ||
-            typeof goal_amount !== 'number' ||
-            typeof donation_link !== 'string'
-        ) {
-            return res.status(httpStatus.BAD_REQUEST).json({
-                status: 'FAILED',
-                message: 'Invalid field values'
-            });
-        }
-
-        // Sanitize string fields
-        const clean_donation_link = donation_link.trim();
-
-        const { data, error } = await projectsService.insertProject(req.supabase, {
-            project_id,
-            project_status,
-            due_date,
-            date_completed,
-            goal_amount,
-            donation_link: clean_donation_link
-        });
-
-        if (error) {
-            return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-                status: 'FAILED',
-                message: error
-            });
-        }
-
-        return res.status(httpStatus.CREATED).json({
-            status: 'CREATED',
-            message: 'Project successfully created',
-            id: projectId
-        });
-
-    } catch (error) {
-        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-            status: 'FAILED',
-            message: error.message
-        });
+            typeof goal_amount !== "number" ||
+            typeof donation_link !== "string"
+    ) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "Invalid field values"
+      });
     }
+
+    // Sanitize string fields
+    const clean_donation_link = donation_link.trim();
+
+    const { data, error } = await projectsService.insertProject(req.supabase, {
+      project_id,
+      project_status,
+      due_date,
+      date_completed,
+      goal_amount,
+      donation_link: clean_donation_link
+    });
+
+    if (error) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error
+      });
+    }
+
+    return res.status(httpStatus.CREATED).json({
+      status: "CREATED",
+      message: "Project successfully created",
+      id: projectId
+    });
+
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
 };
 
 const updateProject = async (req, res) => {
-    if (req.you.cannot(Actions.MANAGE, Subjects.PROJECT)) {
-        return res.status(httpStatus.FORBIDDEN).json({
-            status: "FORBIDDEN",
-            message: "You are not allowed to access this resource."
-        });
+  if (req.you.cannot(Actions.MANAGE, Subjects.PROJECT)) {
+    return res.status(httpStatus.FORBIDDEN).json({
+      status: "FORBIDDEN",
+      message: "You are not allowed to access this resource."
+    });
+  }
+
+  try {
+    const projectId = req.params.projectId;
+
+    if (!isValidUUID(projectId)) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "Invalid projectId format"
+      });
     }
 
-    try {
-        const projectId = req.params.projectId;
+    // Check if project exists
+    const { data: projectData, error: projectError } = await projectsService.fetchProjectById(req.supabase, projectId);
 
-        if (!isValidUUID(projectId)) {
-            return res.status(httpStatus.BAD_REQUEST).json({
-                status: 'FAILED',
-                message: 'Invalid projectId format'
-            });
-        }
-
-        // Check if project exists
-        const { data: projectData, error: projectError } = await projectsService.fetchProjectById(req.supabase, projectId);
-
-        if (projectError || !projectData) {
-            return res.status(httpStatus.NOT_FOUND).json({
-                status: 'FAILED',
-                message: 'Project not found'
-            });
-        }
-
-        // TODO: Clarify if disallow edits to donation_link
-        // if (
-        //     ('donation_link' in req.body && req.body.donation_link !== projectData.donation_link)
-        // ) {
-        //     return res.status(httpStatus.FORBIDDEN).json({
-        //         status: 'FORBIDDEN',
-        //         message: 'Editing donation_link is not allowed'
-        //     });
-        // }
-
-        // Update only allowed fields
-        const {
-            project_id,
-            project_status,
-            due_date,
-            date_completed,
-            goal_amount,
-            donation_link
-        } = req.body;
-
-        const updateData = {
-            project_id,
-            project_status,
-            due_date,
-            date_completed,
-            goal_amount,
-            donation_link
-        };
-
-        // Remove undefined fields to avoid overwriting with nulls
-        Object.keys(updateData).forEach(key => {
-            if (updateData[key] === undefined) {
-                delete updateData[key];
-            }
-        });
-
-        // Validate request body
-        const allowedFields = ['project_status', 'due_date', 'date_completed', 'goal_amount', 'donation_link'];
-
-        allowedFields.forEach(field => {
-            if (!(field in req.body)) {
-                return;
-            }; // skip if field is not present
-
-            const value = req.body[field];
-
-            if ((field === 'project_status' && (typeof value !== 'number' || ![0, 1, 2].includes(value))) ||
-                (field === 'due_date' && !isValidDate(value)) ||
-                (field === 'date_completed' && (value !== null && !isValidDate(value))) ||
-                (field === 'goal_amount' && typeof value !== 'number') ||
-                (field === 'donation_link' && typeof value !== 'string')
-            ) {
-                return res.status(httpStatus.BAD_REQUEST).json({
-                    status: 'FAILED',
-                    message: 'Invalid field values',
-                });
-            }
-        })
-
-        const { data, error } = await projectsService.updateProjectData(req.supabase, projectId, updateData)
-
-        if (error) {
-            return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-                status: 'FAILED',
-                message: error
-            });
-        }
-
-        return res.status(httpStatus.OK).json({
-            status: 'UPDATED',
-            message: 'Project successfully updated',
-            id: projectId
-        });
-
-    } catch (error) {
-        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-            status: 'FAILED',
-            message: error.message || error
-        });
+    if (projectError || !projectData) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: "FAILED",
+        message: "Project not found"
+      });
     }
+
+    // TODO: Clarify if disallow edits to donation_link
+    // if (
+    //     ('donation_link' in req.body && req.body.donation_link !== projectData.donation_link)
+    // ) {
+    //     return res.status(httpStatus.FORBIDDEN).json({
+    //         status: 'FORBIDDEN',
+    //         message: 'Editing donation_link is not allowed'
+    //     });
+    // }
+
+    // Update only allowed fields
+    const {
+      project_id,
+      project_status,
+      due_date,
+      date_completed,
+      goal_amount,
+      donation_link
+    } = req.body;
+
+    const updateData = {
+      project_id,
+      project_status,
+      due_date,
+      date_completed,
+      goal_amount,
+      donation_link
+    };
+
+    // Remove undefined fields to avoid overwriting with nulls
+    Object.keys(updateData).forEach(key => {
+      if (updateData[key] === undefined) {
+        delete updateData[key];
+      }
+    });
+
+    // Validate request body
+    const allowedFields = ["project_status", "due_date", "date_completed", "goal_amount", "donation_link"];
+
+    allowedFields.forEach(field => {
+      if (!(field in req.body)) {
+        return;
+      }; // skip if field is not present
+
+      const value = req.body[field];
+
+      if ((field === "project_status" && (typeof value !== "number" || ![0, 1, 2].includes(value))) ||
+                (field === "due_date" && !isValidDate(value)) ||
+                (field === "date_completed" && (value !== null && !isValidDate(value))) ||
+                (field === "goal_amount" && typeof value !== "number") ||
+                (field === "donation_link" && typeof value !== "string")
+      ) {
+        return res.status(httpStatus.BAD_REQUEST).json({
+          status: "FAILED",
+          message: "Invalid field values",
+        });
+      }
+    });
+
+    const { data, error } = await projectsService.updateProjectData(req.supabase, projectId, updateData);
+
+    if (error) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error
+      });
+    }
+
+    return res.status(httpStatus.OK).json({
+      status: "UPDATED",
+      message: "Project successfully updated",
+      id: projectId
+    });
+
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message || error
+    });
+  }
 };
 
 const deleteProject = async (req, res) => {
-    if (req.you.cannot(Actions.MANAGE, Subjects.PROJECT)) {
-        return res.status(httpStatus.FORBIDDEN).json({
-            status: "FORBIDDEN",
-            message: "You are not allowed to access this resource."
-        });
+  if (req.you.cannot(Actions.MANAGE, Subjects.PROJECT)) {
+    return res.status(httpStatus.FORBIDDEN).json({
+      status: "FORBIDDEN",
+      message: "You are not allowed to access this resource."
+    });
+  }
+
+  try {
+    const { projectId } = req.params;
+
+    if (!isValidUUID(projectId)) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "Invalid projectId format"
+      });
     }
 
-    try {
-        const { projectId } = req.params;
+    // Check if project exists
+    const { data: projectData, error: projectError } = await projectsService.fetchProjectById(req.supabase, projectId);
 
-        if (!isValidUUID(projectId)) {
-            return res.status(httpStatus.BAD_REQUEST).json({
-                status: 'FAILED',
-                message: 'Invalid projectId format'
-            });
-        }
-
-        // Check if project exists
-        const { data: projectData, error: projectError } = await projectsService.fetchProjectById(req.supabase, projectId);
-
-        if (projectError || !projectData) {
-            return res.status(httpStatus.NOT_FOUND).json({
-                status: 'FAILED',
-                message: 'Project not found'
-            });
-        }
-
-        const { error } = await projectsService.deleteProject(req.supabase, projectId);
-
-        if (error) {
-            return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-                status: 'FAILED',
-                message: error.message
-            });
-        }
-
-        return res.status(httpStatus.OK).json({
-            status: 'DELETED',
-            message: `Project ${projectId} has been deleted.`
-        });
-    } catch (error) {
-        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-            status: 'FAILED',
-            message: error.message
-        });
+    if (projectError || !projectData) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: "FAILED",
+        message: "Project not found"
+      });
     }
+
+    const { error } = await projectsService.deleteProject(req.supabase, projectId);
+
+    if (error) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error.message
+      });
+    }
+
+    return res.status(httpStatus.OK).json({
+      status: "DELETED",
+      message: `Project ${projectId} has been deleted.`
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
 };
 
 const projectsController = {
-    getProjects,
-    getProjectById,
-    createProject,
-    updateProject,
-    deleteProject
+  getProjects,
+  getProjectById,
+  createProject,
+  updateProject,
+  deleteProject
 };
 
 export default projectsController;

@@ -23,7 +23,7 @@ export default function ProjectsPage({ projects }) {
   const [showTypeDropdown, setShowTypeDropdown] = useState(false);
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const [showSortDropdown, setShowSortDropdown] = useState(false);
-  
+
 
 
 
@@ -64,18 +64,18 @@ export default function ProjectsPage({ projects }) {
     //completed projects data
     //const completedProjects = allProjects.filter(project => project.status === "Completed");
 
-    // Sample completed projects data
+  // Sample completed projects data
   const completedProjects =
   projects ||
   Array(6).fill({
-  image: "/projects/assets/Donation.jpg",
-  title: "tapos na",
-  description: "This project aims to provide snacks to students to encourage attendance and enhance focus.",
-  amountRaised: "₱10,000",
-  goalAmount: "₱30,000",
-  donors: "32",
-  buttonText: "Read story",
-});
+    image: "/projects/assets/Donation.jpg",
+    title: "tapos na",
+    description: "This project aims to provide snacks to students to encourage attendance and enhance focus.",
+    amountRaised: "₱10,000",
+    goalAmount: "₱30,000",
+    donors: "32",
+    buttonText: "Read story",
+  });
 
   // Filter projects based on type and search term
   const filteredProjects = allProjects.filter((project) => {
@@ -170,91 +170,91 @@ export default function ProjectsPage({ projects }) {
       {/* Project Grid - Dynamic */}
       <section className="bg-astrawhite py-16 px-4">
         <div className="max-w-6xl mx-auto">
-        <div className="mb-8">
-  <h2 className="font-h2 text-center mb-8">Fund the future of technology</h2>
+          <div className="mb-8">
+            <h2 className="font-h2 text-center mb-8">Fund the future of technology</h2>
 
-  {/* Search Bar */}
-  <div className="flex w-full gap-0 mb-6">
-    <input
-      type="text"
-      placeholder="Search for project"
-      value={searchTerm}
-      onChange={(e) => setSearchTerm(e.target.value)}
-      className="flex-1 p-3 border border-astraprimary rounded-l-md focus:outline-none"
-    />
-    <button className="px-6 py-3 bg-astraprimary text-astrawhite rounded-r-md flex items-center gap-2">
-      <i className="ri-search-line"></i> Search
-    </button>
-  </div>
-      {/* Filters */}
-  <div className="flex flex-wrap gap-4 justify-center">
-    {/* Type Filter */}
-    <div className="relative">
-      <button
-        onClick={() => {
-          setShowTypeDropdown(!showTypeDropdown);
-          setShowStatusDropdown(false);
-          setShowSortDropdown(false);
-        }}
-        className="flex items-center gap-2 border-2 border-astraprimary px-4 py-2 rounded-md text-[#0E6CF3] font-medium"
-      >
-        <i className="ri-map-pin-line"></i> Type
-        <i className="ri-arrow-down-s-line"></i>
-      </button>
-      {showTypeDropdown && (
-        <div className="absolute mt-2 bg-white border border-gray-300 rounded shadow-md z-10 w-48">
-          <button onClick={() => { setSelectedType("All"); setShowTypeDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">All Projects</button>
-          <button onClick={() => { setSelectedType("Fundraiser"); setShowTypeDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">Fundraiser</button>
-          <button onClick={() => { setSelectedType("Scholarship"); setShowTypeDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">Scholarship</button>
-        </div>
-      )}
-    </div>
+            {/* Search Bar */}
+            <div className="flex w-full gap-0 mb-6">
+              <input
+                type="text"
+                placeholder="Search for project"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="flex-1 p-3 border border-astraprimary rounded-l-md focus:outline-none"
+              />
+              <button className="px-6 py-3 bg-astraprimary text-astrawhite rounded-r-md flex items-center gap-2">
+                <i className="ri-search-line"></i> Search
+              </button>
+            </div>
+            {/* Filters */}
+            <div className="flex flex-wrap gap-4 justify-center">
+              {/* Type Filter */}
+              <div className="relative">
+                <button
+                  onClick={() => {
+                    setShowTypeDropdown(!showTypeDropdown);
+                    setShowStatusDropdown(false);
+                    setShowSortDropdown(false);
+                  }}
+                  className="flex items-center gap-2 border-2 border-astraprimary px-4 py-2 rounded-md text-[#0E6CF3] font-medium"
+                >
+                  <i className="ri-map-pin-line"></i> Type
+                  <i className="ri-arrow-down-s-line"></i>
+                </button>
+                {showTypeDropdown && (
+                  <div className="absolute mt-2 bg-white border border-gray-300 rounded shadow-md z-10 w-48">
+                    <button onClick={() => { setSelectedType("All"); setShowTypeDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">All Projects</button>
+                    <button onClick={() => { setSelectedType("Fundraiser"); setShowTypeDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">Fundraiser</button>
+                    <button onClick={() => { setSelectedType("Scholarship"); setShowTypeDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">Scholarship</button>
+                  </div>
+                )}
+              </div>
 
-    {/* Status Filter */}
-    <div className="relative">
-      <button
-        onClick={() => {
-          setShowStatusDropdown(!showStatusDropdown);
-          setShowTypeDropdown(false);
-          setShowSortDropdown(false);
-        }}
-        className="flex items-center gap-2 border-2 border-astraprimary px-4 py-2 rounded-md text-astraprimary font-medium"
-      >
-        <i className="ri-time-line"></i> Status
-        <i className="ri-arrow-down-s-line"></i>
-      </button>
-      {showStatusDropdown && (
-        <div className="absolute mt-2 bg-white border border-gray-300 rounded shadow-md z-10 w-48">
-          <button onClick={() => { setSelectedStatus("All"); setShowStatusDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">All</button>
-          <button onClick={() => { setSelectedStatus("Ongoing"); setShowStatusDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">Ongoing</button>
-          <button onClick={() => { setSelectedStatus("Completed"); setShowStatusDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">Completed</button>
-        </div>
-      )}
-    </div>
+              {/* Status Filter */}
+              <div className="relative">
+                <button
+                  onClick={() => {
+                    setShowStatusDropdown(!showStatusDropdown);
+                    setShowTypeDropdown(false);
+                    setShowSortDropdown(false);
+                  }}
+                  className="flex items-center gap-2 border-2 border-astraprimary px-4 py-2 rounded-md text-astraprimary font-medium"
+                >
+                  <i className="ri-time-line"></i> Status
+                  <i className="ri-arrow-down-s-line"></i>
+                </button>
+                {showStatusDropdown && (
+                  <div className="absolute mt-2 bg-white border border-gray-300 rounded shadow-md z-10 w-48">
+                    <button onClick={() => { setSelectedStatus("All"); setShowStatusDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">All</button>
+                    <button onClick={() => { setSelectedStatus("Ongoing"); setShowStatusDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">Ongoing</button>
+                    <button onClick={() => { setSelectedStatus("Completed"); setShowStatusDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">Completed</button>
+                  </div>
+                )}
+              </div>
 
-    {/* Sort Filter */}
-    <div className="relative">
-      <button
-        onClick={() => {
-          setShowSortDropdown(!showSortDropdown);
-          setShowTypeDropdown(false);
-          setShowStatusDropdown(false);
-        }}
-        className="flex items-center gap-2 border-2 border-astraprimary px-4 py-2 rounded-md text-astraprimary font-medium"
-      >
-        <i className="ri-filter-2-line"></i> Sort
-        <i className="ri-arrow-down-s-line"></i>
-      </button>
-      {showSortDropdown && (
-        <div className="absolute mt-2 bg-white border border-gray-300 rounded shadow-md z-10 w-48">
-          <button onClick={() => { setSortOrder("Recent"); setShowSortDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">Most Recent</button>
-          <button onClick={() => { setSortOrder("Oldest"); setShowSortDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">Oldest</button>
-        </div>
-      )}
-    </div>
-  </div>
- 
-</div>
+              {/* Sort Filter */}
+              <div className="relative">
+                <button
+                  onClick={() => {
+                    setShowSortDropdown(!showSortDropdown);
+                    setShowTypeDropdown(false);
+                    setShowStatusDropdown(false);
+                  }}
+                  className="flex items-center gap-2 border-2 border-astraprimary px-4 py-2 rounded-md text-astraprimary font-medium"
+                >
+                  <i className="ri-filter-2-line"></i> Sort
+                  <i className="ri-arrow-down-s-line"></i>
+                </button>
+                {showSortDropdown && (
+                  <div className="absolute mt-2 bg-white border border-gray-300 rounded shadow-md z-10 w-48">
+                    <button onClick={() => { setSortOrder("Recent"); setShowSortDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">Most Recent</button>
+                    <button onClick={() => { setSortOrder("Oldest"); setShowSortDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">Oldest</button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+          </div>
 
 
           {/* Project type indicator */}
@@ -305,12 +305,12 @@ export default function ProjectsPage({ projects }) {
               {/* Loading Indicator for large datasets */}
               {visibleCount < filteredProjects.length &&
                 filteredProjects.length > 20 && (
-                  <div className="flex justify-center items-center py-4">
-                    <div className="animate-pulse text-astradarkgray">
-                      Loading more projects...
-                    </div>
+                <div className="flex justify-center items-center py-4">
+                  <div className="animate-pulse text-astradarkgray">
+                    Loading more projects...
                   </div>
-                )}
+                </div>
+              )}
             </>
           ) : (
             <div className="text-center py-16">
@@ -515,9 +515,9 @@ export default function ProjectsPage({ projects }) {
                   className={`
               md:ml-0 pl-10 md:pl-0
               ${
-                item.position === "right"
-                  ? "md:pl-12 md:w-1/2 md:float-right"
-                  : "md:pr-12 md:w-1/2 md:float-left"
+              item.position === "right"
+                ? "md:pl-12 md:w-1/2 md:float-right"
+                : "md:pr-12 md:w-1/2 md:float-left"
               }
             `}
                 >

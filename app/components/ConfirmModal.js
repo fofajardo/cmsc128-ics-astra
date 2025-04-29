@@ -1,5 +1,5 @@
-'use client';
-import React from 'react';
+"use client";
+import React from "react";
 
 export default function ConfirmModal({
   title,
@@ -11,13 +11,13 @@ export default function ConfirmModal({
   confirmColor = "blue",
   count = null, // for optional "(5)" style
 }) {
-    
+
   if (!isOpen) return null;
 
   const colorVariants = {
-    red: 'bg-astrared hover:bg-astrared/90',
-    blue: 'bg-astraprimary hover:bg-astradark',
-    green: 'bg-astragreen hover:bg-astragreen/90',
+    red: "bg-astrared hover:bg-astrared/90",
+    blue: "bg-astraprimary hover:bg-astradark",
+    green: "bg-astragreen hover:bg-astragreen/90",
   };
 
   return (

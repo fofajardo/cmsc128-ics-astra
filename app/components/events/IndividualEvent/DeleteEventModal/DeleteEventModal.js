@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 export default function DeleteConfirmationModal({ title, onConfirm, onCancel }) {
   return (

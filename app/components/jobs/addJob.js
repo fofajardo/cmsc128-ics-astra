@@ -1,244 +1,243 @@
-'use client';
+"use client";
 
-import {X} from 'lucide-react';
-import Select from 'react-select';
-import { useState } from 'react';
-import ConfirmationPrompt from './edit/confirmation';
-import axios from 'axios';
-import { v4 as uuvidv4 } from 'uuid';
+import {X} from "lucide-react";
+import Select from "react-select";
+import { useState } from "react";
+import ConfirmationPrompt from "./edit/confirmation";
+import axios from "axios";
+import { v4 as uuvidv4 } from "uuid";
 
 export default function JobForm({isEdit, close}){
-    const [showPrompt, setPrompt] = useState(false);
-    const employmentOptions =[{value: "1", label: "Part-Time"},{value: "2", label: "Full-time"}, {value: "3", label: "Temporary"}, {value: "4", label: "Freelance"}]
-    const locationOptions =[{value: "1", label: "Onsite"},{value: "2", label: "Remote"}, {value: "3", label: "Hybrid"}]
-    const statusOptions =[{value: "1", label: "Open"},{value: "2", label: "Closed"}]
-    const [errors, setErrors] = useState({})
-    
-    const [formData, setFormData] = useState({company_name: '', job_title: '', location: '', salary: '', apply_link: '', details: '', expires_at: '', job_requirements: '', hiring_manager: ''});
-    const [employmentType, setEmploymentType] = useState(null)
-    const [locationType, setLocationType] = useState(null)
-    const [status, setStatus] = useState(null)
+  const [showPrompt, setPrompt] = useState(false);
+  const employmentOptions =[{value: "1", label: "Part-Time"},{value: "2", label: "Full-time"}, {value: "3", label: "Temporary"}, {value: "4", label: "Freelance"}];
+  const locationOptions =[{value: "1", label: "Onsite"},{value: "2", label: "Remote"}, {value: "3", label: "Hybrid"}];
+  const statusOptions =[{value: "1", label: "Open"},{value: "2", label: "Closed"}];
+  const [errors, setErrors] = useState({});
 
-    const handleClear = () => {
-        setFormData({company_name: '', job_title: '', location: '', salary: '', apply_link: '', details: '', expires_at: '', job_requirements: '', hiring_manager: ''})
-        setEmploymentType(null)
-        setLocationType(null)
-        setStatus(null)
-        setErrors({})
-    }
+  const [formData, setFormData] = useState({company_name: "", job_title: "", location: "", salary: "", apply_link: "", details: "", expires_at: "", job_requirements: "", hiring_manager: ""});
+  const [employmentType, setEmploymentType] = useState(null);
+  const [locationType, setLocationType] = useState(null);
+  const [status, setStatus] = useState(null);
 
-    const handleChange = (e) => {
-        e.preventDefault();
-        const {name, value} = e.target;
-        // console.log({name, value});
-        setFormData((prevData) => ({
-          ...prevData,
-          [name]: value,
-        }));
+  const handleClear = () => {
+    setFormData({company_name: "", job_title: "", location: "", salary: "", apply_link: "", details: "", expires_at: "", job_requirements: "", hiring_manager: ""});
+    setEmploymentType(null);
+    setLocationType(null);
+    setStatus(null);
+    setErrors({});
+  };
+
+  const handleChange = (e) => {
+    e.preventDefault();
+    const {name, value} = e.target;
+    // console.log({name, value});
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+
+  const handleAdd = async () => {
+    const payload = {
+      company_name: formData.company_name,
+      job_title: formData.job_title,
+      location: formData.location,
+      location_type: locationType?.value,
+      hiring_manager: formData.company_name,
+      employment_type: 1,
+      salary: formData.salary,
+      expires_at: formData.expires_at,
+      apply_link: formData.apply_link,
+      details: formData.details,
+      user_id: "05a4762d-29ef-4543-824b-9d16f77c6946",
+    };
+
+    try {
+      console.log("Sending payload:", payload);
+
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs`, payload);
+
+      if (response.data.status === "CREATED") {
+        close();
       }
 
-
-      const handleAdd = async () => {
-        const payload = {
-            company_name: formData.company_name,
-            job_title: formData.job_title,
-            location: formData.location,
-            location_type: locationType?.value,
-            hiring_manager: formData.company_name,
-            employment_type: 1,
-            salary: formData.salary,
-            expires_at: formData.expires_at,
-            apply_link: formData.apply_link,
-            details: formData.details,
-            user_id: '05a4762d-29ef-4543-824b-9d16f77c6946',
-        };
-    
-        try {
-            console.log('Sending payload:', payload);
-    
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs`, payload);
-    
-            if (response.data.status === 'CREATED') {
-                close();
-            }
-            
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
-                console.error('Axios error:', error.response?.data || error.message);
-            } else {
-                console.error('Unexpected error:', error);
-            }
-        }
-    };
-    
-    
-    const selectStyle = {
-        control: (state) =>
-        `${state.isFocused ? console.log(state) : console.log(state) } focus:border-[#0E6CF3] !cursor-text outline-none border-1 border-[#C4C4C4] rounded-sm w-full min-h-[30px] min-h-[unset] h-[30px] mt-1.5 px-3 text-sm`,
-        valueContainer: () => 'focus:border-[#0E6CF3] m-0 p-0 h-full flex items-center',
-        placeholder: () => 'text-[var(--color-astradarkgray)] p-0 m-0',
-        dropdownIndicator: ({menuIsOpen}) => `py-0 text-[var(--color-astraprimary)] transition-transform duration-300 ease-in-out ${menuIsOpen ? 'rotate-180' : ''}`,
-        indicatorSeparator: () => 'hidden',
-        singleValue: () => 'leading-none',
-        menu: () => 'mt-1 bg-[#F8F8F8] border border-[#C4C4C4] rounded-b-md',
-        option: ({ isSelected, isFocused }) =>
-        `cursor-pointer px-3 py-2 text-[var(--color-astrablack)] rounded-sm leading-none ${
-            isSelected || isFocused
-            ? 'bg-[var(--color-astratintedwhite)]'
-            : 'bg-[#F8F8F8]'
-        }`,
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Axios error:", error.response?.data || error.message);
+      } else {
+        console.error("Unexpected error:", error);
+      }
     }
+  };
 
-    const selectBaseStyle = {
-        control: (base) => ({...base, minHeight: '30px'}),
-        option: (base) => ({...base, fontSize: '14px'}) 
-    }
 
-    return (
+  const selectStyle = {
+    control: (state) =>
+      `${state.isFocused ? console.log(state) : console.log(state) } focus:border-[#0E6CF3] !cursor-text outline-none border-1 border-[#C4C4C4] rounded-sm w-full min-h-[30px] min-h-[unset] h-[30px] mt-1.5 px-3 text-sm`,
+    valueContainer: () => "focus:border-[#0E6CF3] m-0 p-0 h-full flex items-center",
+    placeholder: () => "text-[var(--color-astradarkgray)] p-0 m-0",
+    dropdownIndicator: ({menuIsOpen}) => `py-0 text-[var(--color-astraprimary)] transition-transform duration-300 ease-in-out ${menuIsOpen ? "rotate-180" : ""}`,
+    indicatorSeparator: () => "hidden",
+    singleValue: () => "leading-none",
+    menu: () => "mt-1 bg-[#F8F8F8] border border-[#C4C4C4] rounded-b-md",
+    option: ({ isSelected, isFocused }) =>
+      `cursor-pointer px-3 py-2 text-[var(--color-astrablack)] rounded-sm leading-none ${
+        isSelected || isFocused
+          ? "bg-[var(--color-astratintedwhite)]"
+          : "bg-[#F8F8F8]"
+      }`,
+  };
+
+  const selectBaseStyle = {
+    control: (base) => ({...base, minHeight: "30px"}),
+    option: (base) => ({...base, fontSize: "14px"})
+  };
+
+  return (
     <div className="fixed inset-0 h-auto bg-astrablack/60 flex items-center justify-center z-100">
-        <div className="bg-[#F8F8F8] max-w-[1000px] w-19/20 min-h-[100px] h-auto max-h-[95vh] rounded-xl pt-8 pb-5 overflow-y-auto">
-            
-            <div className='flex items-end justify-between border-b-1 border-b-black/30 px-8 pb-4'>
-                <h1 className="text-astrablack text-2xl font-semibold">Add Job Details</h1>
-                <X onClick={close} size={25} color='black' className='!cursor-pointer '/>
-            </div>
+      <div className="bg-[#F8F8F8] max-w-[1000px] w-19/20 min-h-[100px] h-auto max-h-[95vh] rounded-xl pt-8 pb-5 overflow-y-auto">
 
-            <form className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5 px-8">
-                
-
-                <div className=''>
-                    <div className='flex flex-row gap-2 items-center justify-between'>
-                        <label className='text-black font-medium text-lg'>Title</label>
-                        {errors.job_title ?
-                            <p className="text-sm text-astrared self-end">Required</p> : <></>
-                        }
-                    </div>
-                    <input type="text" placeholder="Ex: User Experience Researcher" onChange={handleChange} value={formData.job_title} name="job_title" className='focus:border-astraprimary placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
-                </div>
-                
-                <div className='col-span-1 md:col-span-1'>
-                    <div className='flex flex-row gap-2 justify-between'>
-                        <label className='text-black font-medium text-lg'>Company</label>
-                        {errors.company_name ?
-                            <p className="text-sm text-astrared self-end">Required</p> : <></>
-                        }
-                    </div>
-                    <input type="text" placeholder="Ex: Google" onChange={handleChange} value={formData.company_name} name="company_name" className='focus:border-astraprimary placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
-                </div>
-                
-                <div className=''>
-                <div className='flex flex-row gap-2 items-center justify-between'>
-                        <label className='text-black font-medium text-lg'>Location</label>
-                        {errors.location ?
-                            <p className="text-sm text-astrared self-end">Required</p> : <></>
-                        }
-                    </div>
-                    <input type="text" placeholder="Ex: Santa Rosa City, Laguna" onChange={handleChange} value={formData.location} name="location" className='focus:border-astraprimary placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
-                </div>
-
-                <div>
-                <div className='flex flex-row gap-2 items-center justify-between'>
-                        <label className='text-black font-medium text-lg'>Location Type</label>
-                        {errors.location_type ?
-                            <p className="text-sm text-astrared self-end">Required</p> : <></>
-                        }
-                    </div>
-                    <Select unstyled options={locationOptions} placeholder="Please Select" onChange={setLocationType} value={locationType} instanceId="locationType" styles={selectBaseStyle} classNames={selectStyle}/>
-                </div>
-
-                <div className=''>
-                    <div className='flex flex-row gap-2 items-center justify-between'>
-                        <label className='text-black font-medium text-lg'>Job Salary (₱)</label>
-                        {errors.salary ?
-                            <p className="text-sm text-astrared self-end">Required</p> : <></>
-                        }
-                    </div>
-                    <input type="text" placeholder="Ex: ₱40,000 - ₱50,000" onChange={handleChange} value={formData.salary} name="salary" className='focus:border-astraprimary placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
-                </div>
-
-                <div>
-                    <div className='flex flex-row gap-2 items-center justify-between'>
-                        <label className='text-black font-medium text-lg'>Employment Type</label>
-                        {errors.job_type ?
-                            <p className="text-sm text-astrared self-end">Required</p> : <></>
-                        }
-                    </div>
-                    <Select unstyled options={employmentOptions} placeholder="Please Select" onChange={setEmploymentType} value={employmentType} instanceId="employmentType" classNames={selectStyle}
-                        styles={selectBaseStyle}/>
-                </div>
-
-                <div className=''>
-                <div className='flex flex-row gap-2 items-center justify-between'>
-                        <label className='text-black font-medium text-lg'>Deadline of Applications</label>
-                        {errors.expires_at ?
-                            <p className="text-sm text-astrared self-end">Required</p> : <></>
-                        }
-                    </div>
-                    <input  type="date" placeholder="YYYY/MM/DD" onChange={handleChange} className='focus:border-astraprimary !cursor-pointer placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'
-                            name={"expires_at"} style={{ colorScheme: 'light', accentColor: '#0E6CF3' }}></input>
-                </div>
-
-                <div>
-                    <div className='flex flex-row gap-2 items-center justify-between'>
-                        <label className='text-black font-medium text-lg'>Job Status</label>
-                        {errors.status ?
-                            <p className="text-sm text-astrared self-end">Required</p> : <></>
-                        }
-                    </div>
-                    <Select unstyled options={statusOptions} placeholder="Please Select" onChange={setStatus} value={status} instanceId="status"classNames={selectStyle}
-                        styles={selectBaseStyle}/>
-                </div>
-
-                <div className=''>
-                    <div className='flex flex-row gap-2 items-center justify-between'>
-                        <label className='text-black font-medium text-lg'>Application Link</label>
-                        {errors.apply_link ?
-                            <p className="text-sm text-astrared self-end">Required</p> : <></>
-                        }
-                    </div>
-                    <input type="text" placeholder="Ex: https://hiring.com/apply" onChange={handleChange} value={formData.apply_link} name="apply_link" className='focus:border-astraprimary placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
-                </div>
-
-                <div className=''>
-                    <div className='flex flex-row gap-2 items-center justify-between'>
-                        <label className='text-black font-medium text-lg'>Contact Information</label>
-                        {errors.hiring_manager ?
-                            <p className="text-sm text-astrared self-end">Required</p> : <></>
-                        }
-                    </div>
-                    <input type="text" placeholder="Email address/phone number" onChange={handleChange} value={formData.hiring_manager} name="hiring_manager" className='focus:border-astraprimary placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
-                </div>
-
-                <div className='col-span-1 md:col-span-2'>
-                <div className='flex flex-row gap-2 items-center justify-between'>
-                        <label className='text-black font-medium text-lg'>Job Description</label>
-                        {errors.details ?
-                            <p className="text-sm text-astrared self-end">Required</p> : <></>
-                        }
-                    </div>
-                    <textarea  type="text" placeholder="Provide a concise overview of the role, including job requirements, key responsibilities, and objectives. You may also include your company’s representative email for additional inquiries." 
-                            onChange={handleChange} name={"details"} value={formData.details} className='focus:border-astraprimary placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm resize-none h-[110px]'></textarea>
-                </div>
-
-                <div className='col-span-1 md:col-span-2'>
-                <div className='flex flex-row gap-2 items-center justify-between'>
-                        <label className='text-black font-medium text-lg'>Requirements</label>
-                        {errors.job_requirements ?
-                            <p className="text-sm text-astrared self-end">Required</p> : <></>
-                        }
-                    </div>
-                    <textarea  type="text" placeholder="Provide the requirements that are needed for the role. You may include skills (technical/non-technical), certifications, and experiences that you are looking for in an applicant." 
-                            onChange={handleChange} name={"job_requirements"} value={formData.job_requirements} className='focus:border-astraprimary placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm resize-none h-[110px]'></textarea>
-                </div>
-            </form>
-
-            <div className="flex justify-between my-4 px-8">
-                <button onClick={handleClear} className="!cursor-pointer text-astraprimary border-1 border-astraprimary font-semibold w-35 py-2 rounded-lg text-base">Clear Details</button>
-                <button onClick={()=>{setPrompt(true)}} className="focus:border-astraprimary !cursor-pointer text-astrawhite border-1 border-astraprimary bg-astraprimary font-semibold w-35 py-2 rounded-lg text-base">Publish Post</button>
-            </div>
-
+        <div className='flex items-end justify-between border-b-1 border-b-black/30 px-8 pb-4'>
+          <h1 className="text-astrablack text-2xl font-semibold">Add Job Details</h1>
+          <X onClick={close} size={25} color='black' className='!cursor-pointer '/>
         </div>
-        {showPrompt ? <ConfirmationPrompt prompt={"Are you sure you want to post this job posting?"} close={()=>setPrompt(false)} handleConfirm={handleAdd}/> : <></>}
+
+        <form className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5 px-8">
+
+
+          <div className=''>
+            <div className='flex flex-row gap-2 items-center justify-between'>
+              <label className='text-black font-medium text-lg'>Title</label>
+              {errors.job_title ?
+                <p className="text-sm text-astrared self-end">Required</p> : <></>
+              }
+            </div>
+            <input type="text" placeholder="Ex: User Experience Researcher" onChange={handleChange} value={formData.job_title} name="job_title" className='focus:border-astraprimary placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
+          </div>
+
+          <div className='col-span-1 md:col-span-1'>
+            <div className='flex flex-row gap-2 justify-between'>
+              <label className='text-black font-medium text-lg'>Company</label>
+              {errors.company_name ?
+                <p className="text-sm text-astrared self-end">Required</p> : <></>
+              }
+            </div>
+            <input type="text" placeholder="Ex: Google" onChange={handleChange} value={formData.company_name} name="company_name" className='focus:border-astraprimary placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
+          </div>
+
+          <div className=''>
+            <div className='flex flex-row gap-2 items-center justify-between'>
+              <label className='text-black font-medium text-lg'>Location</label>
+              {errors.location ?
+                <p className="text-sm text-astrared self-end">Required</p> : <></>
+              }
+            </div>
+            <input type="text" placeholder="Ex: Santa Rosa City, Laguna" onChange={handleChange} value={formData.location} name="location" className='focus:border-astraprimary placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
+          </div>
+
+          <div>
+            <div className='flex flex-row gap-2 items-center justify-between'>
+              <label className='text-black font-medium text-lg'>Location Type</label>
+              {errors.location_type ?
+                <p className="text-sm text-astrared self-end">Required</p> : <></>
+              }
+            </div>
+            <Select unstyled options={locationOptions} placeholder="Please Select" onChange={setLocationType} value={locationType} instanceId="locationType" styles={selectBaseStyle} classNames={selectStyle}/>
+          </div>
+
+          <div className=''>
+            <div className='flex flex-row gap-2 items-center justify-between'>
+              <label className='text-black font-medium text-lg'>Job Salary (₱)</label>
+              {errors.salary ?
+                <p className="text-sm text-astrared self-end">Required</p> : <></>
+              }
+            </div>
+            <input type="text" placeholder="Ex: ₱40,000 - ₱50,000" onChange={handleChange} value={formData.salary} name="salary" className='focus:border-astraprimary placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
+          </div>
+
+          <div>
+            <div className='flex flex-row gap-2 items-center justify-between'>
+              <label className='text-black font-medium text-lg'>Employment Type</label>
+              {errors.job_type ?
+                <p className="text-sm text-astrared self-end">Required</p> : <></>
+              }
+            </div>
+            <Select unstyled options={employmentOptions} placeholder="Please Select" onChange={setEmploymentType} value={employmentType} instanceId="employmentType" classNames={selectStyle}
+              styles={selectBaseStyle}/>
+          </div>
+
+          <div className=''>
+            <div className='flex flex-row gap-2 items-center justify-between'>
+              <label className='text-black font-medium text-lg'>Deadline of Applications</label>
+              {errors.expires_at ?
+                <p className="text-sm text-astrared self-end">Required</p> : <></>
+              }
+            </div>
+            <input  type="date" placeholder="YYYY/MM/DD" onChange={handleChange} className='focus:border-astraprimary !cursor-pointer placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'
+              name={"expires_at"} style={{ colorScheme: "light", accentColor: "#0E6CF3" }}></input>
+          </div>
+
+          <div>
+            <div className='flex flex-row gap-2 items-center justify-between'>
+              <label className='text-black font-medium text-lg'>Job Status</label>
+              {errors.status ?
+                <p className="text-sm text-astrared self-end">Required</p> : <></>
+              }
+            </div>
+            <Select unstyled options={statusOptions} placeholder="Please Select" onChange={setStatus} value={status} instanceId="status"classNames={selectStyle}
+              styles={selectBaseStyle}/>
+          </div>
+
+          <div className=''>
+            <div className='flex flex-row gap-2 items-center justify-between'>
+              <label className='text-black font-medium text-lg'>Application Link</label>
+              {errors.apply_link ?
+                <p className="text-sm text-astrared self-end">Required</p> : <></>
+              }
+            </div>
+            <input type="text" placeholder="Ex: https://hiring.com/apply" onChange={handleChange} value={formData.apply_link} name="apply_link" className='focus:border-astraprimary placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
+          </div>
+
+          <div className=''>
+            <div className='flex flex-row gap-2 items-center justify-between'>
+              <label className='text-black font-medium text-lg'>Contact Information</label>
+              {errors.hiring_manager ?
+                <p className="text-sm text-astrared self-end">Required</p> : <></>
+              }
+            </div>
+            <input type="text" placeholder="Email address/phone number" onChange={handleChange} value={formData.hiring_manager} name="hiring_manager" className='focus:border-astraprimary placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
+          </div>
+
+          <div className='col-span-1 md:col-span-2'>
+            <div className='flex flex-row gap-2 items-center justify-between'>
+              <label className='text-black font-medium text-lg'>Job Description</label>
+              {errors.details ?
+                <p className="text-sm text-astrared self-end">Required</p> : <></>
+              }
+            </div>
+            <textarea  type="text" placeholder="Provide a concise overview of the role, including job requirements, key responsibilities, and objectives. You may also include your company’s representative email for additional inquiries."
+              onChange={handleChange} name={"details"} value={formData.details} className='focus:border-astraprimary placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm resize-none h-[110px]'></textarea>
+          </div>
+
+          <div className='col-span-1 md:col-span-2'>
+            <div className='flex flex-row gap-2 items-center justify-between'>
+              <label className='text-black font-medium text-lg'>Requirements</label>
+              {errors.job_requirements ?
+                <p className="text-sm text-astrared self-end">Required</p> : <></>
+              }
+            </div>
+            <textarea  type="text" placeholder="Provide the requirements that are needed for the role. You may include skills (technical/non-technical), certifications, and experiences that you are looking for in an applicant."
+              onChange={handleChange} name={"job_requirements"} value={formData.job_requirements} className='focus:border-astraprimary placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm resize-none h-[110px]'></textarea>
+          </div>
+        </form>
+
+        <div className="flex justify-between my-4 px-8">
+          <button onClick={handleClear} className="!cursor-pointer text-astraprimary border-1 border-astraprimary font-semibold w-35 py-2 rounded-lg text-base">Clear Details</button>
+          <button onClick={()=>{setPrompt(true);}} className="focus:border-astraprimary !cursor-pointer text-astrawhite border-1 border-astraprimary bg-astraprimary font-semibold w-35 py-2 rounded-lg text-base">Publish Post</button>
+        </div>
+
+      </div>
+      {showPrompt ? <ConfirmationPrompt prompt={"Are you sure you want to post this job posting?"} close={()=>setPrompt(false)} handleConfirm={handleAdd}/> : <></>}
     </div>
-  )}
-  
+  );}

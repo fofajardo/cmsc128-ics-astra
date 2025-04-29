@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
 export default function EventActions({ status, onGoingClick, onInterestClick, isGoing, isInterested }) {
   if (status === "Closed") {
@@ -26,8 +26,8 @@ export default function EventActions({ status, onGoingClick, onInterestClick, is
           onClick={onGoingClick}
           className={`w-full sm:w-auto px-4 py-2 rounded-lg font-semibold transition-colors ${
             isGoing
-              ? 'bg-green-700 text-white'
-              : 'bg-astragray text-astradarkgray hover:bg-astradarkgray hover:text-white'
+              ? "bg-green-700 text-white"
+              : "bg-astragray text-astradarkgray hover:bg-astradarkgray hover:text-white"
           }`}
         >
           {isGoing ? "Going ✓" : "Going"}

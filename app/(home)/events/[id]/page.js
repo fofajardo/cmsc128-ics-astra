@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { useParams } from "next/navigation";
 import events from "../../../data/events";
 import { useState } from "react";
@@ -13,7 +13,7 @@ export default function EventDetailPage() {
   const { id } = useParams();
   const originalEvent = events.find((e) => e.id === id);
   const [event, setEvent] = useState(originalEvent);
-  const [isInterested, setIsInterested] = useState(false); 
+  const [isInterested, setIsInterested] = useState(false);
   const [isGoing, setIsGoing] = useState(false);
 
 
@@ -25,12 +25,12 @@ export default function EventDetailPage() {
     setIsInterested((prev) => !prev);
     if (isGoing) setIsGoing(false); // Optional: disable "Going" when "Interested" is clicked
   };
-  
+
   const handleGoingClick = () => {
     setIsGoing((prev) => !prev);
     if (isInterested) setIsInterested(false); // Optional: disable "Interested" when "Going" is clicked
   };
-  
+
   if (!event) {
     return <div className="p-10 text-center text-xl">Event not found.</div>;
   }

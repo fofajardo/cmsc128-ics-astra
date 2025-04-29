@@ -1,12 +1,12 @@
 const fetchAlumniProfiles = async (supabase, page = 1, limit = 10) => {
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + Number(limit) - 1;
+  const startIndex = (page - 1) * limit;
+  const endIndex = startIndex + Number(limit) - 1;
 
-    return await supabase
-        .from("alumni_profiles")
-        // .select("*")
-        // remove unnecessary columns to reduce data transfer
-        .select(`
+  return await supabase
+    .from("alumni_profiles")
+  // .select("*")
+  // remove unnecessary columns to reduce data transfer
+    .select(`
             *,
             primary_work_experience:work_experiences (
                 title,
@@ -17,13 +17,13 @@ const fetchAlumniProfiles = async (supabase, page = 1, limit = 10) => {
                 salary
             )
         `)
-        .range(startIndex, endIndex);
+    .range(startIndex, endIndex);
 };
 
 const fetchAlumniProfileById = async (supabase, userId) => {
-    return await supabase
-        .from("alumni_profiles")
-        .select(`
+  return await supabase
+    .from("alumni_profiles")
+    .select(`
             *,
             primary_work_experience:work_experiences (
                 title,
@@ -34,36 +34,36 @@ const fetchAlumniProfileById = async (supabase, userId) => {
                 salary
             )
         `)
-        .eq("alum_id", userId)
-        .single();
+    .eq("alum_id", userId)
+    .single();
 };
 
 const insertAlumniProfile = async (supabase, alumniProfileData) => {
-    return await supabase
-        .from("alumni_profiles")
-        .insert(alumniProfileData);
+  return await supabase
+    .from("alumni_profiles")
+    .insert(alumniProfileData);
 };
 
 const updateAlumniProfileData = async (supabase, userId, updateData) => {
-    return await supabase
-        .from("alumni_profiles")
-        .update(updateData)
-        .eq("alum_id", userId);
+  return await supabase
+    .from("alumni_profiles")
+    .update(updateData)
+    .eq("alum_id", userId);
 };
 
 const deleteAlumniProfileData = async (supabase, userId) => {
-    return await supabase
-        .from("alumni_profiles")
-        .delete()
-        .eq("alum_id", userId);
+  return await supabase
+    .from("alumni_profiles")
+    .delete()
+    .eq("alum_id", userId);
 };
 
 const alumniService = {
-    fetchAlumniProfiles,
-    fetchAlumniProfileById,
-    insertAlumniProfile,
-    updateAlumniProfileData,
-    deleteAlumniProfileData
+  fetchAlumniProfiles,
+  fetchAlumniProfileById,
+  insertAlumniProfile,
+  updateAlumniProfileData,
+  deleteAlumniProfileData
 };
 
 export default alumniService;

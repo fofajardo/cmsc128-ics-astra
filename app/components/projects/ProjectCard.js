@@ -1,8 +1,8 @@
-'use client';
-import Image from 'next/image';
+"use client";
+import Image from "next/image";
 import { GraduationCap, HeartHandshake, Users, Calendar } from "lucide-react";
-import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 
 export default function ProjectCard({
   id,
@@ -19,62 +19,62 @@ export default function ProjectCard({
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-  
+
   // Calculate progress percentage
-  const goalAmount = parseInt(goal.replace(/[^0-9]/g, ''));
-  const raisedAmount = parseInt(raised.replace(/[^0-9]/g, ''));
+  const goalAmount = parseInt(goal.replace(/[^0-9]/g, ""));
+  const raisedAmount = parseInt(raised.replace(/[^0-9]/g, ""));
   const progressPercent = Math.min(Math.round((raisedAmount / goalAmount) * 100), 100);
-  
+
   // Format end date
-  const formattedDate = endDate ? new Date(endDate).toLocaleDateString('en-PH', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  }) : '';
-  
+  const formattedDate = endDate ? new Date(endDate).toLocaleDateString("en-PH", {
+    year: "numeric",
+    month: "short",
+    day: "numeric"
+  }) : "";
+
   // Determine progress bar color based on percentage
   const getProgressColor = () => {
-    if (progressPercent < 25) return 'bg-red-500';
-    if (progressPercent < 50) return 'bg-orange-500';
-    if (progressPercent < 75) return 'bg-yellow-500';
-    return 'bg-green-500';
+    if (progressPercent < 25) return "bg-red-500";
+    if (progressPercent < 50) return "bg-orange-500";
+    if (progressPercent < 75) return "bg-yellow-500";
+    return "bg-green-500";
   };
 
   // Handle window resize for responsive design
   useEffect(() => {
     setIsMounted(true);
-    
+
     const updateDimensions = () => {
       setDimensions({
         width: window.innerWidth,
         height: window.innerHeight
       });
     };
-    
-    window.addEventListener('resize', updateDimensions);
+
+    window.addEventListener("resize", updateDimensions);
     updateDimensions();
-    
+
     return () => {
-      window.removeEventListener('resize', updateDimensions);
+      window.removeEventListener("resize", updateDimensions);
     };
   }, []);
 
   // Adjust image height based on screen size
   const getImageHeight = () => {
-    if (!isMounted) return 'h-48';
-    if (dimensions.width < 640) return 'h-40';
-    if (dimensions.width < 1024) return 'h-44';
-    return 'h-48';
+    if (!isMounted) return "h-48";
+    if (dimensions.width < 640) return "h-40";
+    if (dimensions.width < 1024) return "h-44";
+    return "h-48";
   };
-  
+
   // Description line clamp based on screen size
   const getDescriptionClamp = () => {
-    if (!isMounted) return 'line-clamp-2';
-    if (dimensions.width < 640) return 'line-clamp-1';
-    if (dimensions.width < 1024) return 'line-clamp-2';
-    return 'line-clamp-2';
+    if (!isMounted) return "line-clamp-2";
+    if (dimensions.width < 640) return "line-clamp-1";
+    if (dimensions.width < 1024) return "line-clamp-2";
+    return "line-clamp-2";
   };
-  
+
   return (
     <div className="group bg-astrawhite rounded-2xl shadow hover:shadow-lg transition-all duration-300 cursor-pointer border-2 border-transparent hover:border-astraprimary overflow-hidden h-full flex flex-col">
       {/* Project Image */}
@@ -95,12 +95,12 @@ export default function ProjectCard({
           {type}
         </div>
       </div>
-      
+
       {/* Content */}
       <div className="p-4 flex flex-col flex-1">
         <h3 className="font-lb text-lg line-clamp-1">{title}</h3>
         <p className={`text-astradarkgray font-s mt-2 text-sm ${getDescriptionClamp()}`}>{description}</p>
-        
+
         {/* Progress bar */}
         <div className="mt-auto pt-3">
           <div className="flex justify-between text-xs font-s mb-1 line-clamp-1">
@@ -108,8 +108,8 @@ export default function ProjectCard({
             <span>Goal: {goal}</span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
-            <div 
-              className={`${getProgressColor()} h-2 rounded-full transition-all duration-500`} 
+            <div
+              className={`${getProgressColor()} h-2 rounded-full transition-all duration-500`}
               style={{ width: `${progressPercent}%` }}
             ></div>
           </div>
@@ -126,10 +126,10 @@ export default function ProjectCard({
             )}
           </div>
         </div>
-        
+
         {/* Action Button */}
         {showDonate && (
-          <button 
+          <button
             onClick={() => router.push(`/projects/donate/${id}`)}
             className="mt-3 w-full blue-button font-s py-1"
           >

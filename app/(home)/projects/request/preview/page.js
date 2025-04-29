@@ -29,11 +29,11 @@ const FundraiserConfirmPage = () => {
   const zipCode = searchParams.get("zipCode") || dummyData.zipCode;
   const amount = searchParams.get("amount") || dummyData.amount;
   const targetDate = searchParams.get("targetDate") || dummyData.targetDate;
-  
+
   // Safe sessionStorage access in useEffect to avoid SSR issues
   useEffect(() => {
     // Only access sessionStorage in the browser environment
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const storedPhotoUrl = sessionStorage.getItem("fundraiserPhotoPreview");
       setPhotoUrl(storedPhotoUrl || dummyData.photoUrl);
     } else {
@@ -43,22 +43,22 @@ const FundraiserConfirmPage = () => {
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
-    
+
     try {
       //code for backend API call to submit the fundraiser
-     
-      
+
+
       // Simulate API call with timeout
       await new Promise(resolve => setTimeout(resolve, 1500));
-      
+
       // Show success toast
       setShowToast(true);
-      
+
       // After 3 seconds (matching toast duration), redirect to projects page
       setTimeout(() => {
         router.push("/projects");
       }, 500);
-      
+
     } catch (error) {
       console.error("Error submitting fundraiser:", error);
       // Handle error state here
@@ -73,17 +73,17 @@ const FundraiserConfirmPage = () => {
 
   // Format currency with commas for better readability
   const formatCurrency = (value) => {
-    return new Intl.NumberFormat('en-PH').format(value);
+    return new Intl.NumberFormat("en-PH").format(value);
   };
 
   // Format date to be more user-friendly
   const formatDate = (dateString) => {
-    if (!dateString) return '';
+    if (!dateString) return "";
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric"
     });
   };
 
@@ -98,13 +98,13 @@ const FundraiserConfirmPage = () => {
           Please review all details before submitting your fundraiser.
         </p>
       </div>
-      
+
       {/*Main content*/}
       <div className="flex-grow p-6 md:p-12">
         <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
           {/* Preview header that mimics how the fundraiser will look */}
           <div className="bg-gradient-to-r from-astraprimary to-astrablue h-16"></div>
-          
+
           <div className="p-6 md:p-8">
             <div className="grid md:grid-cols-2 gap-8">
               {/* Left column - Photo preview */}
@@ -136,13 +136,13 @@ const FundraiserConfirmPage = () => {
                     </div>
                   )}
                 </div>
-                
+
                 <div className="space-y-4">
                   <div>
                     <h2 className="text-lg font-semibold text-astrablack">Location</h2>
                     <p className="text-astradarkgray">ZIP Code: {zipCode}</p>
                   </div>
-                  
+
                   {/* Added Target Date section */}
                   <div>
                     <h2 className="text-lg font-semibold text-astrablack">Target Date</h2>
@@ -150,7 +150,7 @@ const FundraiserConfirmPage = () => {
                   </div>
                 </div>
               </div>
-              
+
               {/* Right column - Text details */}
               <div className="order-1 md:order-2">
                 <div className="mb-6">
@@ -159,7 +159,7 @@ const FundraiserConfirmPage = () => {
                     <p className="text-xl font-semibold text-astraprimary">₱{formatCurrency(amount)} <span className="text-sm text-astradarkgray">fundraising goal</span></p>
                   </div>
                 </div>
-                
+
                 <div>
                   <h2 className="text-xl font-semibold text-astrablack mb-2">About this fundraiser</h2>
                   <div className="bg-white rounded-lg">
@@ -171,14 +171,14 @@ const FundraiserConfirmPage = () => {
           </div>
         </div>
       </div>
-      
+
       {/* Bottom navigation */}
       <div className="flex justify-between items-center px-6 md:px-12 py-5 border-astralightgray border-t-1 bg-white">
         <BackButton />
         <button
           onClick={handleSubmit}
           disabled={isSubmitting}
-          className={`blue-button font-semibold transition cursor-pointer w-[200px] h-[55px] flex items-center justify-center ${isSubmitting ? 'opacity-75' : ''}`}
+          className={`blue-button font-semibold transition cursor-pointer w-[200px] h-[55px] flex items-center justify-center ${isSubmitting ? "opacity-75" : ""}`}
         >
           {isSubmitting ? (
             <>

@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import BigJobCard from '../../../../components/jobs/view/bigJobCard';
-import SmallJobCard from '../../../../components/jobs/view/smallJobCard';
-import Back from '../../../../components/jobs/view/back';
+import { useParams } from "next/navigation";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import BigJobCard from "../../../../components/jobs/view/bigJobCard";
+import SmallJobCard from "../../../../components/jobs/view/smallJobCard";
+import Back from "../../../../components/jobs/view/back";
 
 export default function JobsPage() {
   const { id } = useParams();
@@ -16,20 +16,20 @@ export default function JobsPage() {
 
   useEffect(() => {
     const fetchJobAndContent = async () => {
-      console.log('Fetching job and content with id:', id);
+      console.log("Fetching job and content with id:", id);
       try {
         // Fetch job data
         const jobResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs/${id}`);
-        console.log('Job API Response:', jobResponse.data);
+        console.log("Job API Response:", jobResponse.data);
 
         // Fetch content data
         const contentResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`);
-        console.log('Content API Response:', contentResponse.data);
+        console.log("Content API Response:", contentResponse.data);
 
         if (
-          jobResponse.data.status === 'OK' &&
+          jobResponse.data.status === "OK" &&
           jobResponse.data.content &&
-          contentResponse.data.status === 'OK' &&
+          contentResponse.data.status === "OK" &&
           contentResponse.data.content
         ) {
           // Normalize job data (e.g., convert expires_at to Date)
@@ -41,14 +41,14 @@ export default function JobsPage() {
           };
           setJob(jobData);
           setContent(contentResponse.data.content);
-          console.log('Normalized job data:', jobData);
-          console.log('Content data:', contentResponse.data.content);
+          console.log("Normalized job data:", jobData);
+          console.log("Content data:", contentResponse.data.content);
         } else {
-          setError('Job or content not found.');
+          setError("Job or content not found.");
         }
       } catch (error) {
-        console.error('Error fetching job/content:', error.message, error.response?.status, error.response?.data);
-        setError(error.response?.status === 404 ? 'Job or content not found.' : 'Failed to fetch job data.');
+        console.error("Error fetching job/content:", error.message, error.response?.status, error.response?.data);
+        setError(error.response?.status === 404 ? "Job or content not found." : "Failed to fetch job data.");
       } finally {
         setLoading(false);
       }
@@ -57,7 +57,7 @@ export default function JobsPage() {
     if (id) {
       fetchJobAndContent();
     } else {
-      setError('Invalid job ID.');
+      setError("Invalid job ID.");
       setLoading(false);
     }
   }, [id]);
@@ -75,11 +75,11 @@ export default function JobsPage() {
       <Back />
       <div className="flex justify-between gap-y-2 flex-wrap max-w-[1250px] w-19/20">
         {
-            job && content &&
+          job && content &&
             <>
-                <BigJobCard job={job} content={content} />
-                {/* FIXME: restore sidejob card. */}
-                {/* <SideJobCard {...job} /> */}
+              <BigJobCard job={job} content={content} />
+              {/* FIXME: restore sidejob card. */}
+              {/* <SideJobCard {...job} /> */}
             </>
         }
       </div>

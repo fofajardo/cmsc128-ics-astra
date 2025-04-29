@@ -1,9 +1,9 @@
-import { InView } from 'react-intersection-observer';
-import { useState } from 'react';
+import { InView } from "react-intersection-observer";
+import { useState } from "react";
 
 const TransitionSlide = ({
   children,
-  className = '',
+  className = "",
   threshold = 0,
   delay = 0.1,
   navbarHeight = 100,
@@ -29,15 +29,15 @@ const TransitionSlide = ({
             ease-in-out
             ${className}
             ${
-              isVisible
-                ? 'opacity-100 translate-y-0'   // Fade in and move to normal position
-                : 'opacity-0 -translate-y-5'    // Fade out and move up when hiding
-            }
+        isVisible
+          ? "opacity-100 translate-y-0"   // Fade in and move to normal position
+          : "opacity-0 -translate-y-5"    // Fade out and move up when hiding
+        }
           `}
           style={{
             transitionDelay: `${delay}s`,
-            position: 'relative',
-            transformOrigin: 'bottom', // Ensures upward movement feels natural
+            position: "relative",
+            transformOrigin: "bottom", // Ensures upward movement feels natural
           }}
         >
           {children}

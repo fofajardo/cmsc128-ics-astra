@@ -1,8 +1,8 @@
 "use client";
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Mail, FileText, Clock, CheckCircle } from 'lucide-react';
-import Link from 'next/link';
+import React from "react";
+import { motion } from "framer-motion";
+import { Mail, FileText, Clock, CheckCircle } from "lucide-react";
+import Link from "next/link";
 import { GoBackButton } from "@/components/Buttons";
 
 export default function RequestInstructionsPage() {
@@ -37,7 +37,7 @@ export default function RequestInstructionsPage() {
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 pt-24 pb-16">
       <div className="container mx-auto px-4 max-w-4xl">
         <GoBackButton />
-        
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -122,7 +122,7 @@ export default function RequestInstructionsPage() {
           </div>
 
           <div className="mt-8 flex justify-center">
-            <Link 
+            <Link
               href="mailto:ics.uplb@up.edu.ph?subject=Alumni%20Information%20Request"
               className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center gap-2"
             >

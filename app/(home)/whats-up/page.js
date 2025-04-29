@@ -15,7 +15,7 @@ export default function WhatsUpPage() {
 
   useEffect(() => {
     // Add staggered animation to news items
-    const items = document.querySelectorAll('.news-item');
+    const items = document.querySelectorAll(".news-item");
     items.forEach((item, index) => {
       item.style.animationDelay = `${index * 0.2}s`;
     });

@@ -5,7 +5,7 @@ export default function ExploreUPLBSection() {
     <div
       className="relative w-full h-[600px] bg-cover bg-center flex items-center justify-center text-white overflow-hidden group"
       style={{
-        backgroundImage: `url('https://media.licdn.com/dms/image/v2/C561BAQHTTyItFp0LnA/company-background_10000/company-background_10000/0/1603683849421/uplbofficial_cover?e=2147483647&v=beta&t=rsKQQawpb1eGGs9FPv5Hb1I2jddO9cxwGG3DFwgM7Xs')`,
+        backgroundImage: "url('https://media.licdn.com/dms/image/v2/C561BAQHTTyItFp0LnA/company-background_10000/company-background_10000/0/1603683849421/uplbofficial_cover?e=2147483647&v=beta&t=rsKQQawpb1eGGs9FPv5Hb1I2jddO9cxwGG3DFwgM7Xs')",
       }}
     >
       {/* Overlay */}

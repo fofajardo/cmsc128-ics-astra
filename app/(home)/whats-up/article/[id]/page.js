@@ -9,7 +9,7 @@ const ArticleView = () => {
 
   return (
     <div role="main" className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
-      <motion.article 
+      <motion.article
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
@@ -29,7 +29,7 @@ const ArticleView = () => {
           </motion.button>
         </nav>
 
-        <motion.section 
+        <motion.section
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
@@ -45,7 +45,7 @@ const ArticleView = () => {
           </div>
 
           <div className="px-8 md:px-16 py-12">
-            <motion.h1 
+            <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
@@ -64,7 +64,7 @@ const ArticleView = () => {
               Published on April 01, 2025
             </motion.time>
 
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8 }}

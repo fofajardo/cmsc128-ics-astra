@@ -3,7 +3,7 @@
 import { useState } from "react";
 import AdminStatCard from "@/components/AdminStatCard";
 import { CalendarClock, CalendarRange, CalendarCheck2 } from "lucide-react";
-import { TabContext } from '@/components/TabContext';
+import { TabContext } from "@/components/TabContext";
 
 export default function AdminEventsLayout({ children }) {
   const [info, setInfo] = useState({

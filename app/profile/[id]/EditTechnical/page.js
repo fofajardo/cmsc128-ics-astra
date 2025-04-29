@@ -1,35 +1,35 @@
-"use client"
-import { useState } from "react"
-import SkillTag from "@/components/SkillTag"
-import { XCircle } from "lucide-react"
-import ToastNotification from "@/components/ToastNotification"
+"use client";
+import { useState } from "react";
+import SkillTag from "@/components/SkillTag";
+import { XCircle } from "lucide-react";
+import ToastNotification from "@/components/ToastNotification";
 
 export default function EditTechnical({ technicalSkills, hideTechnicalForm }) {
-  const [skills, setSkills] = useState([...technicalSkills])
-  const [newSkill, setNewSkill] = useState("")
-  const [showToast, setShowToast] = useState(null)
+  const [skills, setSkills] = useState([...technicalSkills]);
+  const [newSkill, setNewSkill] = useState("");
+  const [showToast, setShowToast] = useState(null);
 
   const handleAddSkill = (e) => {
     if (e.key === "Enter" && newSkill.trim() !== "") {
       const newTag = {
         text: newSkill.trim(),
         color: "bg-green-100 text-green-800 border-green-300"
-      }
-      setSkills([...skills, newTag])
-      setNewSkill("")
+      };
+      setSkills([...skills, newTag]);
+      setNewSkill("");
     }
-  }
+  };
 
   const handleRemoveSkill = (index) => {
-    const updated = [...skills]
-    updated.splice(index, 1)
-    setSkills(updated)
-  }
+    const updated = [...skills];
+    updated.splice(index, 1);
+    setSkills(updated);
+  };
 
   const handleSave = () => {
-    console.log("Saving skills:", skills)
-    setShowToast({ type: "success", message: "Skills saved successfully!" })
-  }
+    console.log("Saving skills:", skills);
+    setShowToast({ type: "success", message: "Skills saved successfully!" });
+  };
 
   return (
     <div className="w-full max-w-full sm:max-w-2xl px-4 sm:px-6 md:px-8">
@@ -96,5 +96,5 @@ export default function EditTechnical({ technicalSkills, hideTechnicalForm }) {
         />
       )}
     </div>
-  )
+  );
 }

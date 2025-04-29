@@ -1,35 +1,35 @@
-"use client"
-import { useState } from "react"
-import SkillTag from "@/components/SkillTag"
-import { XCircle } from "lucide-react"
-import ToastNotification from "@/components/ToastNotification"
+"use client";
+import { useState } from "react";
+import SkillTag from "@/components/SkillTag";
+import { XCircle } from "lucide-react";
+import ToastNotification from "@/components/ToastNotification";
 
 export default function EditInterest({ fieldOfInterests, hideInterestForm }) {
-  const [interests, setInterests] = useState([...fieldOfInterests])
-  const [newInterest, setNewInterest] = useState("")
-  const [showToast, setShowToast] = useState(null)
+  const [interests, setInterests] = useState([...fieldOfInterests]);
+  const [newInterest, setNewInterest] = useState("");
+  const [showToast, setShowToast] = useState(null);
 
   const handleAddInterest = (e) => {
     if (e.key === "Enter" && newInterest.trim() !== "") {
       const newTag = {
         text: newInterest.trim(),
         color: "bg-indigo-100 text-indigo-800 border-indigo-300"
-      }
-      setInterests([...interests, newTag])
-      setNewInterest("")
+      };
+      setInterests([...interests, newTag]);
+      setNewInterest("");
     }
-  }
+  };
 
   const handleRemoveInterest = (index) => {
-    const updated = [...interests]
-    updated.splice(index, 1)
-    setInterests(updated)
-  }
+    const updated = [...interests];
+    updated.splice(index, 1);
+    setInterests(updated);
+  };
 
   const handleSave = () => {
-    console.log("Saving interests:", interests)
-    setShowToast({ type: "success", message: "Interests saved successfully!" })
-  }
+    console.log("Saving interests:", interests);
+    setShowToast({ type: "success", message: "Interests saved successfully!" });
+  };
 
   return (
     <div className="w-full max-w-full sm:max-w-2xl px-4 sm:px-6 md:px-8 mx-auto">
@@ -64,7 +64,7 @@ export default function EditInterest({ fieldOfInterests, hideInterestForm }) {
         </div>
       </div>
 
-      
+
 
       <div className="flex flex-wrap justify-between gap-4">
         <button
@@ -97,5 +97,5 @@ export default function EditInterest({ fieldOfInterests, hideInterestForm }) {
         />
       )}
     </div>
-  )
+  );
 }

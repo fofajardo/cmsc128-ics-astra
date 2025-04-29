@@ -1,14 +1,14 @@
- 'use client'
-import React, { useState, useMemo } from 'react';
-import Image from 'next/image';
-import eventsVector from '../../assets/search.gif';
-import { Table } from '@/components/TableBuilder';
-import SkillTag from '@/components/SkillTag';
-import { ActionButton } from '@/components/Buttons';
-import { alumniData } from '@/components/DummyDataSearch';
-import Pagination from '@/components/search/GroupedEvents/Pagination';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+"use client";
+import React, { useState, useMemo } from "react";
+import Image from "next/image";
+import eventsVector from "../../assets/search.gif";
+import { Table } from "@/components/TableBuilder";
+import SkillTag from "@/components/SkillTag";
+import { ActionButton } from "@/components/Buttons";
+import { alumniData } from "@/components/DummyDataSearch";
+import Pagination from "@/components/search/GroupedEvents/Pagination";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -16,18 +16,18 @@ export default function Page() {
   const initialAlumniList = useMemo(() => alumniData, []);
 
   const [alumList, setAlumList] = useState(initialAlumniList);
-  const [sortBy, setSortBy] = useState('');
+  const [sortBy, setSortBy] = useState("");
   const [filters, setFilters] = useState({
-    minGradYear: '',
-    maxGradYear: '',
-    location: '',
-    skills: '',
+    minGradYear: "",
+    maxGradYear: "",
+    location: "",
+    skills: "",
   });
   const [appliedFilters, setAppliedFilters] = useState({
-    minGradYear: '',
-    maxGradYear: '',
-    location: '',
-    skills: '',
+    minGradYear: "",
+    maxGradYear: "",
+    location: "",
+    skills: "",
   });
   const [showFilters, setShowFilters] = useState({
     graduationYear: false,
@@ -35,7 +35,7 @@ export default function Page() {
     skills: false,
   });
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState(''); // State for the search input
+  const [searchTerm, setSearchTerm] = useState(""); // State for the search input
 
   const toggleFilter = (filterName) => {
     setShowFilters((prevShowFilters) => ({
@@ -94,13 +94,13 @@ export default function Page() {
 
   const sortedAlumList = useMemo(() => {
     let sortedList = [...filteredAlumList];
-    if (sortBy === 'firstName') {
+    if (sortBy === "firstName") {
       sortedList.sort((a, b) => a.first_name.localeCompare(b.first_name));
     }
-    if (sortBy === 'lastName') {
+    if (sortBy === "lastName") {
       sortedList.sort((a, b) => a.last_name.localeCompare(b.last_name));
     }
-    if (sortBy === 'graduationYear' && sortedList[0]?.year_graduated) {
+    if (sortBy === "graduationYear" && sortedList[0]?.year_graduated) {
       sortedList.sort(
         (a, b) =>
           parseInt(a.year_graduated.substring(0, 4), 10) -
@@ -121,31 +121,31 @@ export default function Page() {
   }, [sortedAlumList, currentPage]);
 
   const cols = [
-    { label: 'Image:label-hidden', justify: 'center', visible: 'all' },
+    { label: "Image:label-hidden", justify: "center", visible: "all" },
     {
-      label: 'First Name',
-      justify: 'start',
-      visible: 'sm',
+      label: "First Name",
+      justify: "start",
+      visible: "sm",
       sortable: true,
-      onSort: () => handleSort('firstName'),
+      onSort: () => handleSort("firstName"),
     },
     {
-      label: 'Last Name',
-      justify: 'start',
-      visible: 'sm',
+      label: "Last Name",
+      justify: "start",
+      visible: "sm",
       sortable: true,
-      onSort: () => handleSort('lastName'),
+      onSort: () => handleSort("lastName"),
     },
     {
-      label: 'Graduation Year',
-      justify: 'center',
-      visible: 'md',
+      label: "Graduation Year",
+      justify: "center",
+      visible: "md",
       sortable: true,
-      onSort: () => handleSort('graduationYear'),
+      onSort: () => handleSort("graduationYear"),
     },
-    { label: 'Location', justify: 'center', visible: 'lg' },
-    { label: 'Skills', justify: 'center', visible: 'md' },
-    { label: 'Quick Actions', justify: 'center', visible: 'all' },
+    { label: "Location", justify: "center", visible: "lg" },
+    { label: "Skills", justify: "center", visible: "md" },
+    { label: "Quick Actions", justify: "center", visible: "all" },
   ];
   function handleSort(column) {
     setCurrentPage(1);
@@ -154,13 +154,13 @@ export default function Page() {
 
   function createRows(alumList) {
     return alumList.map((alum) => ({
-      'Image:label-hidden': renderAvatar(alum.image, `${alum.first_name} ${alum.last_name}`),
-      'First Name': renderText(alum.first_name),
-      'Last Name': renderText(alum.last_name),
-      'Graduation Year': renderText(alum.year_graduated ? alum.year_graduated.substring(0, 4) : 'N/A'),
-      Location: renderText(alum.location || 'N/A'),
-      Skills: renderSkills(alum.skills ? alum.skills.split(', ') : []),
-      'Quick Actions': renderActions(alum.id),
+      "Image:label-hidden": renderAvatar(alum.image, `${alum.first_name} ${alum.last_name}`),
+      "First Name": renderText(alum.first_name),
+      "Last Name": renderText(alum.last_name),
+      "Graduation Year": renderText(alum.year_graduated ? alum.year_graduated.substring(0, 4) : "N/A"),
+      Location: renderText(alum.location || "N/A"),
+      Skills: renderSkills(alum.skills ? alum.skills.split(", ") : []),
+      "Quick Actions": renderActions(alum.id),
     }));
   }
 
@@ -190,7 +190,7 @@ export default function Page() {
       <div className="relative flex justify-center items-center cursor-default p-2">
         <div className="flex flex-wrap justify-center items-center">
           {visibleSkills.map((skill, index) => (
-            <SkillTag key={index} text={skill} margin={'m-1'} />
+            <SkillTag key={index} text={skill} margin={"m-1"} />
           ))}
           {remainingCount > 0 && (
             <div className="size-8 flex justify-center items-center rounded-full text-xs font-medium border border-dashed text-astradarkgray bg-astratintedwhite cursor-default">
@@ -316,114 +316,114 @@ export default function Page() {
                     <div className="pb-2 border-b border-astragray">
                       <button
                         className="w-full py-2 rounded-md text-astrablack font-medium text-left focus:outline-none focus:ring-2 focus:ring-astraprimary flex items-center justify-between"
-                        onClick={() => toggleFilter('graduationYear')}
-                        >
-                          Graduation Year
-                          <FontAwesomeIcon icon={faPlus} className="h-4 w-4" />
-                        </button>
-                        {showFilters.graduationYear && (
-                          <div className="flex items-center gap-1 mt-2">
-                            <div className="relative w-full">
-                              <input
-                                type="text"
-                                id="minGradYear"
-                                name="minGradYear"
-                                placeholder="From"
-                                className="border border-astragray p-2 pl-4 w-full h-10"
-                                value={filters.minGradYear}
-                                onChange={handleFilterChange}
-                              />
-                            </div>
-                            <p className="px-1 font-normal text-sm leading-6 text-astradarkgray">to</p>
-                            <div className="relative w-full">
-                              <input
-                                type="text"
-                                id="maxGradYear"
-                                name="maxGradYear"
-                                placeholder="To"
-                                className="border border-astragray p-2 pl-4 w-full h-10"
-                                value={filters.maxGradYear}
-                                onChange={handleFilterChange}
-                              />
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="pb-2 border-b border-astragray">
-                        <button
-                          className="w-full py-2 rounded-md text-astrablack font-medium text-left focus:outline-none focus:ring-2 focus:ring-astraprimary flex items-center justify-between"
-                          onClick={() => toggleFilter('location')}
-                        >
-                          Location
-                          <FontAwesomeIcon icon={faPlus} className="h-4 w-4" />
-                        </button>
-                        {showFilters.location && (
-                          <div className="relative w-full mt-2">
+                        onClick={() => toggleFilter("graduationYear")}
+                      >
+                        Graduation Year
+                        <FontAwesomeIcon icon={faPlus} className="h-4 w-4" />
+                      </button>
+                      {showFilters.graduationYear && (
+                        <div className="flex items-center gap-1 mt-2">
+                          <div className="relative w-full">
                             <input
                               type="text"
-                              id="location"
-                              name="location"
-                              placeholder="Enter Location"
+                              id="minGradYear"
+                              name="minGradYear"
+                              placeholder="From"
                               className="border border-astragray p-2 pl-4 w-full h-10"
-                              value={filters.location}
+                              value={filters.minGradYear}
                               onChange={handleFilterChange}
                             />
                           </div>
-                        )}
-                      </div>
-                    </div>
-  
-                    <div className="space-y-2">
-                      <div className="pb-2 border-b border-astragray">
-                        <button
-                          className="w-full py-2 rounded-md text-astrablack font-medium text-left focus:outline-none focus:ring-2 focus:ring-astraprimary flex items-center justify-between"
-                          onClick={() => toggleFilter('skills')}
-                        >
-                          Skills
-                          <FontAwesomeIcon icon={faPlus} className="h-4 w-4" />
-                        </button>
-                        {showFilters.skills && (
-                          <div className="relative w-full mt-2">
+                          <p className="px-1 font-normal text-sm leading-6 text-astradarkgray">to</p>
+                          <div className="relative w-full">
                             <input
                               type="text"
-                              id="skills"
-                              name="skills"
-                              placeholder="Enter Skills"
+                              id="maxGradYear"
+                              name="maxGradYear"
+                              placeholder="To"
                               className="border border-astragray p-2 pl-4 w-full h-10"
-                              value={filters.skills}
+                              value={filters.maxGradYear}
                               onChange={handleFilterChange}
                             />
                           </div>
-                        )}
-                      </div>
+                        </div>
+                      )}
                     </div>
-  
-                    <button
-                      className="blue-button w-full py-2.5 flex items-center justify-center gap-2 rounded-full text-sm font-semibold shadow-sm shadow-transparent transition-all duration-300 hover:bg-astradark hover:shadow-astraprimary/20"
-                      onClick={handleApplyFilters}
-                    >
-                      Apply
-                    </button>
                   </div>
+                  <div className="space-y-2">
+                    <div className="pb-2 border-b border-astragray">
+                      <button
+                        className="w-full py-2 rounded-md text-astrablack font-medium text-left focus:outline-none focus:ring-2 focus:ring-astraprimary flex items-center justify-between"
+                        onClick={() => toggleFilter("location")}
+                      >
+                        Location
+                        <FontAwesomeIcon icon={faPlus} className="h-4 w-4" />
+                      </button>
+                      {showFilters.location && (
+                        <div className="relative w-full mt-2">
+                          <input
+                            type="text"
+                            id="location"
+                            name="location"
+                            placeholder="Enter Location"
+                            className="border border-astragray p-2 pl-4 w-full h-10"
+                            value={filters.location}
+                            onChange={handleFilterChange}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="pb-2 border-b border-astragray">
+                      <button
+                        className="w-full py-2 rounded-md text-astrablack font-medium text-left focus:outline-none focus:ring-2 focus:ring-astraprimary flex items-center justify-between"
+                        onClick={() => toggleFilter("skills")}
+                      >
+                        Skills
+                        <FontAwesomeIcon icon={faPlus} className="h-4 w-4" />
+                      </button>
+                      {showFilters.skills && (
+                        <div className="relative w-full mt-2">
+                          <input
+                            type="text"
+                            id="skills"
+                            name="skills"
+                            placeholder="Enter Skills"
+                            className="border border-astragray p-2 pl-4 w-full h-10"
+                            value={filters.skills}
+                            onChange={handleFilterChange}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <button
+                    className="blue-button w-full py-2.5 flex items-center justify-center gap-2 rounded-full text-sm font-semibold shadow-sm shadow-transparent transition-all duration-300 hover:bg-astradark hover:shadow-astraprimary/20"
+                    onClick={handleApplyFilters}
+                  >
+                    Apply
+                  </button>
                 </div>
-                <div className="col-span-12 md:col-span-9">
-                  <div className="overflow-x-auto md:pl-4"> {/* Added overflow-x-auto */}
-                    <Table cols={cols} data={createRows(paginatedAlumList)} />
-                    {totalPages > 1 && (
-                      <Pagination
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        onPageChange={(page) => setCurrentPage(page)}
-                      />
-                    )}
-                  </div>
+              </div>
+              <div className="col-span-12 md:col-span-9">
+                <div className="overflow-x-auto md:pl-4"> {/* Added overflow-x-auto */}
+                  <Table cols={cols} data={createRows(paginatedAlumList)} />
+                  {totalPages > 1 && (
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={(page) => setCurrentPage(page)}
+                    />
+                  )}
                 </div>
               </div>
             </div>
-          </section>
-        </>
-      </div>
-    );
-  }
+          </div>
+        </section>
+      </>
+    </div>
+  );
+}

@@ -44,7 +44,7 @@ export default function NavbarUser() {
 
   return (
     <nav
-      className={`sticky top-0 z-50 w-full transition-all duration-300 bg-astrawhite shadow-md`}
+      className={"sticky top-0 z-50 w-full transition-all duration-300 bg-astrawhite shadow-md"}
       style={{ height: "80px" }}
     >
       <div className="flex items-center justify-between max-w-screen-xl mx-auto h-full px-4 sm:px-12 w-full">

@@ -25,7 +25,7 @@ export default function Footer() {
         <div className="flex flex-col lg:flex-row gap-10">
           <div className="flex flex-col gap-4 flex-1">
             <div className="flex items-center gap-5">
-              <Image width={70} height={70} src={'/astra-logo.png'} alt="ICS-ASTRA Logo" />
+              <Image width={70} height={70} src={"/astra-logo.png"} alt="ICS-ASTRA Logo" />
               <h1 className="text-2xl font-bold text-astraprimary">ICS-ASTRA</h1>
             </div>
             <p className="text-sm text-astradarkgray">
@@ -71,7 +71,7 @@ export default function Footer() {
                 </ul>
               </div>
             </div>
-            
+
 
             {/* Contact Us (Right Side, Separate Below) */}
             <div className="flex flex-col w-full lg:w-auto lg:ml-auto">

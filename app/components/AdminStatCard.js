@@ -4,15 +4,15 @@
 // route = ''
 
 
-'use client'
-import { useRouter } from 'next/navigation';
-import TransitionGrow from './transitions/TransitionGrow';
+"use client";
+import { useRouter } from "next/navigation";
+import TransitionGrow from "./transitions/TransitionGrow";
 
 export default function AdminStatCard({ title, value, icon, route, onClick=null, delay=0 }) {
   const router = useRouter();
 
   const handleClick = () => {
-    if (route === false){onClick()}
+    if (route === false){onClick();}
     else router.push(route);
   };
 

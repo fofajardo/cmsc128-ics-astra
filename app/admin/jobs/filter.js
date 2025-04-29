@@ -45,11 +45,11 @@ export default function SearchFilter({onClose, onApply}) {
           </button>
         </div>
         <input
-        type="text"
-        placeholder="Ex. UPLB IRRI"
-        value={filters.companyName}
-        onChange={(e) => setFilters({ ...filters, companyName: e.target.value })}
-        className="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white font-r"
+          type="text"
+          placeholder="Ex. UPLB IRRI"
+          value={filters.companyName}
+          onChange={(e) => setFilters({ ...filters, companyName: e.target.value })}
+          className="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white font-r"
         />
       </div>
 
@@ -96,34 +96,34 @@ export default function SearchFilter({onClose, onApply}) {
           <option value="freelance">Freelance</option>
         </select>
       </div>
-        {/* Date Posted */}
-        <div>
-            <div className="flex justify-between items-center mb-1">
-            <div className="text-black font-medium text-lg">Date Posted</div>
-            <button
-                onClick={() => setFilters({ ...filters, fromDate: "", yearDate: "" })}
-                className="text-astraprimary font-sb text-sm"
-            >
-                Reset
-            </button>
-            </div>
-            <div className="flex gap-2">
-            <input
-                type="text"
-                placeholder="From"
-                value={filters.fromDate}
-                onChange={(e) => setFilters({ ...filters, fromDate: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white font-r"
-            />
-            <input
-                type="text"
-                placeholder="Latest"
-                value={filters.toDate}
-                onChange={(e) => setFilters({ ...filters, toDate: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white font-r"
-            />
-            </div>
+      {/* Date Posted */}
+      <div>
+        <div className="flex justify-between items-center mb-1">
+          <div className="text-black font-medium text-lg">Date Posted</div>
+          <button
+            onClick={() => setFilters({ ...filters, fromDate: "", yearDate: "" })}
+            className="text-astraprimary font-sb text-sm"
+          >
+            Reset
+          </button>
         </div>
+        <div className="flex gap-2">
+          <input
+            type="text"
+            placeholder="From"
+            value={filters.fromDate}
+            onChange={(e) => setFilters({ ...filters, fromDate: e.target.value })}
+            className="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white font-r"
+          />
+          <input
+            type="text"
+            placeholder="Latest"
+            value={filters.toDate}
+            onChange={(e) => setFilters({ ...filters, toDate: e.target.value })}
+            className="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white font-r"
+          />
+        </div>
+      </div>
 
       {/* Sort */}
       <div>
@@ -165,11 +165,11 @@ export default function SearchFilter({onClose, onApply}) {
             ))}
           </div>
         </div>
-        </div>
-        
+      </div>
 
-       {/* Action Buttons */}
-       <div className="flex gap-2 pt-2">
+
+      {/* Action Buttons */}
+      <div className="flex gap-2 pt-2">
         <button
           className="w-full py-4 rounded-md border border-astraprimary text-astraprimary hover:bg-astralight/20 transition font-sb"
           onClick={handleResetAll}

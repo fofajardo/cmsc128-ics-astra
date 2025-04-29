@@ -165,7 +165,7 @@ function SummaryStats({ summary, chartConfig, activeChart, setActiveChart }) {
 
             {/* Main content */}
             <div className="flex flex-row md:flex-col justify-baseline items-center md:items-baseline ">
-              <div className={`font-rb text-left ${isActive ? 'text-astraprimary' : 'text-astrablack transition-colors'}`}>
+              <div className={`font-rb text-left ${isActive ? "text-astraprimary" : "text-astrablack transition-colors"}`}>
                 {total}
               </div>
 
@@ -180,7 +180,7 @@ function SummaryStats({ summary, chartConfig, activeChart, setActiveChart }) {
                   <MoveDownRight className="ml-2 h-3 w-3 text-astrared/75 inline mr-1"  strokeWidth={3} />
                 )}
 
-                <div className={`font-s hidden lg:block ${delta >= 0 ? 'text-astraprimary' : 'text-astrared'}`}>{Math.floor(Math.abs(percentage))}%</div>
+                <div className={`font-s hidden lg:block ${delta >= 0 ? "text-astraprimary" : "text-astrared"}`}>{Math.floor(Math.abs(percentage))}%</div>
               </div>
             </div>
 

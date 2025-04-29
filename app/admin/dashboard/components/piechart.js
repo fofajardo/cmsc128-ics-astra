@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { useRouter } from 'next/navigation';
-import * as React from "react"
-import { TrendingUp } from "lucide-react"
-import { Label, Pie, PieChart } from "recharts"
+import { useRouter } from "next/navigation";
+import * as React from "react";
+import { TrendingUp } from "lucide-react";
+import { Label, Pie, PieChart } from "recharts";
 
 import {
   Card,
@@ -12,13 +12,13 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart"
+} from "@/components/ui/chart";
 const chartData = [
   { donationTitle: "BSCS Scholarship", funds: 50000, fill: "var(--color-pieastra-primary-100)" },
   { donationTitle: "Abot-kaya Scholarship", funds: 39200, fill: "var(--color-pieastra-primary-80)" },
@@ -26,7 +26,7 @@ const chartData = [
   { donationTitle: "E-Jeepney Modernization", funds: 16800, fill: "var(--color-pieastra-primary-40)" },
   { donationTitle: "Additions of PC", funds: 12600, fill: "var(--color-pieastra-primary-20)" },
   { donationTitle: "Additions of Server", funds: 10000, fill: "var(--color-pieastra-primary-10)" },
-]
+];
 
 const chartConfig = {
   funds: {
@@ -56,7 +56,7 @@ const chartConfig = {
     label: "ASD",
     color: "hsl(var(--chart-2))",
   },
-}
+};
 
 function FundDisplay({ color, title, funds }) {
   return (
@@ -79,8 +79,8 @@ function FundDisplay({ color, title, funds }) {
 export function Donut() {
   const router = useRouter();
   const totalFunds = React.useMemo(() => {
-    return chartData.reduce((acc, curr) => acc + curr.funds, 0)
-  }, [])
+    return chartData.reduce((acc, curr) => acc + curr.funds, 0);
+  }, []);
 
   return (
     <Card className="flex flex-col h-full">
@@ -91,10 +91,10 @@ export function Donut() {
             <CardDescription>January - April 2025</CardDescription>
           </div>
           <a
-              onClick={() => router.push('/admin/projects')}
-              className="text-astraprimary font-rb hover:underline cursor-pointer"
-            >
-              See All
+            onClick={() => router.push("/admin/projects")}
+            className="text-astraprimary font-rb hover:underline cursor-pointer"
+          >
+            See All
           </a>
         </div>
         <hr className="h-2 border-astrablack"></hr>
@@ -107,7 +107,7 @@ export function Donut() {
           <PieChart>
             <ChartTooltip
               cursor={false}
-              
+
               content={<ChartTooltipContent hideLabel showPeso={true}/>}
             />
             <Pie
@@ -142,7 +142,7 @@ export function Donut() {
                           Total Funds Raised
                         </tspan>
                       </text>
-                    )
+                    );
                   }
                 }}
               />
@@ -150,29 +150,29 @@ export function Donut() {
           </PieChart>
         </ChartContainer>
         <CardFooter className="flex-col gap-2 font-s">
-        <div className="flex items-center gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Showing 6 out of 25 Donation Drives
-        </div>
+          <div className="flex items-center gap-2 font-medium leading-none">
+            Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+          </div>
+          <div className="leading-none text-muted-foreground">
+            Showing 6 out of 25 Donation Drives
+          </div>
 
-        <div className="mt-4 flex flex-col space-y-1.5 min-w-full gap-2">
-          {chartData.map((item, index) => (
-            <div
-              key={index}
-              className="transition-all cursor-pointer duration-200 hover:scale-102 hover:shadow-md hover:bg-gray-50 rounded-lg px-2.5 py-1"
-            >
-              <FundDisplay
-                title={item.donationTitle}
-                funds={item.funds}
-                color={item.fill}
-              />
-            </div>
-          ))}
-        </div>
-      </CardFooter>
+          <div className="mt-4 flex flex-col space-y-1.5 min-w-full gap-2">
+            {chartData.map((item, index) => (
+              <div
+                key={index}
+                className="transition-all cursor-pointer duration-200 hover:scale-102 hover:shadow-md hover:bg-gray-50 rounded-lg px-2.5 py-1"
+              >
+                <FundDisplay
+                  title={item.donationTitle}
+                  funds={item.funds}
+                  color={item.fill}
+                />
+              </div>
+            ))}
+          </div>
+        </CardFooter>
       </CardContent>
     </Card>
-  )
+  );
 }

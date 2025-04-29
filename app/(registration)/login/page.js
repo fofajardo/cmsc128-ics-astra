@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useState } from "react";
 import Link from "next/link";
 import { User } from "lucide-react";
@@ -10,15 +10,15 @@ export default function LoginPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const newErrors = []
-  
+    const newErrors = [];
+
     // Check if all fields are filled
     if (!email || !password) {
-      newErrors.push("Please fill in all fields.")
+      newErrors.push("Please fill in all fields.");
     }
-  
-    setErrors(newErrors)  // Store the error messages
-    return newErrors.length === 0  // Return true if no errors
+
+    setErrors(newErrors);  // Store the error messages
+    return newErrors.length === 0;  // Return true if no errors
   };
 
   return (

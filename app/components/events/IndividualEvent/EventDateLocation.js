@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { Clock, MapPin } from "lucide-react";
 

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { GoBackButton } from "@/components/Buttons";
 
 export default function AboutWhatsUp() {
@@ -6,10 +6,10 @@ export default function AboutWhatsUp() {
     <div className="min-h-screen bg-astradirtywhite pt-40 pb-8">
       <div className="max-w-4xl mx-auto px-4">
         <GoBackButton />
-        
+
         <div className="mt-8 bg-astrawhite rounded-xl overflow-hidden shadow-md p-8">
           <h1 className="font-h1 text-astrablack mb-6">About What's Up</h1>
-          
+
           <div className="prose max-w-none">
             <p className="font-r text-astradarkgray mb-6">
               Welcome to What's Up, your central hub for staying connected with the UPLB-ICS community. Here you'll find the latest announcements, news, and updates about our vibrant academic community.

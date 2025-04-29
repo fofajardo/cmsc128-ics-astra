@@ -1,6 +1,6 @@
-'use client';
-import { Icon } from '@iconify/react';
-import { motion, AnimatePresence } from 'framer-motion';
+"use client";
+import { Icon } from "@iconify/react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function HeaderTitleBar({
   title,

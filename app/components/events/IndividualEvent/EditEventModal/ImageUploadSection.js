@@ -1,10 +1,10 @@
-'use client';
-import { useState } from 'react';
-import { UploadCloud, ImageIcon, Trash2 } from 'lucide-react';
+"use client";
+import { useState } from "react";
+import { UploadCloud, ImageIcon, Trash2 } from "lucide-react";
 
 export default function ImageUploadSection({ image, setImage }) {
-  const [imagePreview, setImagePreview] = useState(image || '');
-  const [fileName, setFileName] = useState('');
+  const [imagePreview, setImagePreview] = useState(image || "");
+  const [fileName, setFileName] = useState("");
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -20,9 +20,9 @@ export default function ImageUploadSection({ image, setImage }) {
   };
 
   const handleImageRemove = () => {
-    setImage('');
-    setImagePreview('');
-    setFileName('');
+    setImage("");
+    setImagePreview("");
+    setFileName("");
   };
 
   return (
@@ -47,7 +47,7 @@ export default function ImageUploadSection({ image, setImage }) {
       <div className="mt-2 bg-astrawhite border border-blue-200 rounded-md px-3 py-2 flex items-center justify-between text-sm text-blue-800">
         <div className="flex items-center gap-2">
           <ImageIcon className="w-4 h-4" />
-          <span>{fileName || 'No selected File'}</span>
+          <span>{fileName || "No selected File"}</span>
         </div>
         {imagePreview && (
           <button
