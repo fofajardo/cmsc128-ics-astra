@@ -61,10 +61,10 @@ export default function AdminAlumniLayout({ children }) {
           </div>
           <div className="pt-6 pb-4 overflow-y-scroll w-full scrollbar-hide">
             <div className="flex flex-row gap-3 min-w-max px-4 justify-center"> 
-                  <AdminStatCard title='Active Job Posts' value = {255} icon={<BriefcaseBusiness className='size-13 text-astrawhite/>' strokeWidth={3}/>} route={false} onClick={() =>{}}/>
-                  <AdminStatCard title='Closed Job Posts' value = {59} icon={<BriefcaseBusiness className='size-13 text-astrawhite/>' strokeWidth={3}/>} route={false} onClick={() =>{}}/>
-                  <AdminStatCard title='Total Job Posts' value = {179} icon={<BriefcaseBusiness className='size-13 text-astrawhite/>' strokeWidth={3}/>} route={false} onClick={() =>{}}/>
-                  <AdminStatCard title='Total Companies' value = {12} icon={<BriefcaseBusiness className='size-13 text-astrawhite/>' strokeWidth={3}/>} route={false} onClick={() =>{}}/>
+                  <AdminStatCard delay={0.0} title='Active Job Posts' value = {255} icon={<BriefcaseBusiness className='size-13 text-astrawhite/>' strokeWidth={3}/>} route={false} onClick={() =>{}}/>
+                  <AdminStatCard delay={0.1} title='Closed Job Posts' value = {59} icon={<BriefcaseBusiness className='size-13 text-astrawhite/>' strokeWidth={3}/>} route={false} onClick={() =>{}}/>
+                  <AdminStatCard delay={0.2} title='Total Job Posts' value = {179} icon={<BriefcaseBusiness className='size-13 text-astrawhite/>' strokeWidth={3}/>} route={false} onClick={() =>{}}/>
+                  <AdminStatCard delay={0.3} title='Total Companies' value = {12} icon={<BriefcaseBusiness className='size-13 text-astrawhite/>' strokeWidth={3}/>} route={false} onClick={() =>{}}/>
             </div>
           </div>
         </div>

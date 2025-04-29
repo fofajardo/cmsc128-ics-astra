@@ -36,7 +36,7 @@ export default function EventDetailPage() {
   }
 
   return (
-    <div className="bg-astradirtywhite min-h-screen pt-[100px] px-6 sm:px-12 py-6 max-w-screen-xl mx-auto">
+    <div className="bg-astradirtywhite min-h-screen px-6 sm:px-12 py-6 max-w-screen-xl mx-auto">
       <BackButton />
 
       <div className="flex flex-col lg:flex-row gap-6">

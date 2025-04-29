@@ -118,7 +118,13 @@ const job = {
     Why Join? Work on the forefront of cloud innovation, shape the future of enterprise tech, and grow with a global leader in  cloud computing.
 
     Interested? Explore openings at careers.google.com. 🚀`,
-    apply_link: "https://amis.uplb.edu.ph"
+    apply_link: "https://amis.uplb.edu.ph",
+    job_requirements: 
+`Hands-on experience with GCP services
+Proficiency with Infrastructure as Code (Terraform, Ansible)
+Strong coding skills in Python or Go
+Deep understanding of networking and security principles`,
+    hiring_manager: "cloud.recruiter@google.com"
 }
 
 export {jobList, job}

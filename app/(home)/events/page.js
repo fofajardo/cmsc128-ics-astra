@@ -1,16 +1,17 @@
 'use client';
 
 import Image from "next/image";
-import { Icon } from "@iconify/react";
+import Link from "next/link";
 import { useState } from "react";
+import { Sparkles } from "lucide-react";
 
-// Import the needed components for the events page.
 import EventCard from "@/components/events/GroupedEvents/EventCard/EventCard";
 import FilterDropdown from "@/components/events/GroupedEvents/FilterDropdown";
 import DateFilter from "@/components/events/GroupedEvents/DateFilter";
 import Pagination from "@/components/events/GroupedEvents/Pagination";
 import EventCarousel from "@/components/events/GroupedEvents/CardCarousel/EventCarousel";
-
+import ExploreUPLBSection from "@/components/events/GroupedEvents/ExploreUPLBSection";
+import UPLBImageCollage from "@/components/events/GroupedEvents/UPLBImageCollage";
 
 import events from "../../data/events";
 import eventsVector from "../../assets/events-vector.png";
@@ -27,9 +28,7 @@ export default function EventsPage() {
 
   return (
     <div className="w-full bg-astradirtywhite">
-      <div className="h-[100px]" />
-
-      {/* Hero */}
+      {/* Hero Section */}
       <div
         className="relative w-full bg-cover bg-center"
         style={{ backgroundImage: "url('/blue-bg.png')" }}
@@ -47,7 +46,7 @@ export default function EventsPage() {
             </button>
           </div>
           <div className="w-full lg:w-[550px] flex justify-center">
-            <div className="relative w-full h-auto max-w-[550px] animate-float">
+            <div className="relative w-full h-auto max-w-[550px] animate-natural-float">
               <Image
                 src={eventsVector}
                 alt="Events Illustration"
@@ -59,8 +58,8 @@ export default function EventsPage() {
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="relative z-10 bg-astradirtywhite w-full py-14 -mt-10 border-t border-astradarkgray">
+      {/* Filters Section */}
+      <div className="relative z-20 bg-astradirtywhite w-full py-14 -mt-10 border-t border-astradarkgray">
         <div className="max-w-[1440px] mx-auto flex flex-col items-center gap-8 px-4">
           <div className="w-full max-w-[1000px]">
             <div className="flex items-stretch w-full border border-astragray bg-astrawhite">
@@ -70,14 +69,12 @@ export default function EventsPage() {
                 className="flex-grow py-4 pl-6 focus:outline-none text-base text-astradark"
               />
               <button className="px-6 bg-astraprimary hover:bg-astradark text-astrawhite font-semibold transition flex items-center gap-2 cursor-pointer">
-                <Icon icon="tabler:search" className="text-lg" />
                 Search
               </button>
             </div>
           </div>
 
-          {/* Filter Dropdowns */}
-          <div className="w-full max-w-[1000px] flex flex-wrap justify-center gap-4 text-sm font-medium">
+          <div className="w-full max-w-[1000px] flex flex-wrap justify-center gap-4 text-sm font-medium z-20">
             <FilterDropdown
               icon="material-symbols:location-on"
               options={[
@@ -110,8 +107,8 @@ export default function EventsPage() {
         </div>
       </div>
 
-      {/* All Events Section */}
-      <div className="max-w-[1440px] mx-auto px-12 mt-20">
+      {/* All Events */}
+      <div className="max-w-[1440px] mx-auto px-12 mt-20 relative z-10">
         <h1 className="text-[28px] font-extrabold text-astradarkgray mb-10">
           All Events
         </h1>
@@ -127,45 +124,43 @@ export default function EventsPage() {
         />
       </div>
 
-      {/* Event Carousel Section */}
-      <div className="max-w-[1440px] mx-auto px-12 mt-24 pb-32 bg-astradirtywhite">
+      {/* Carousel */}
+      <div className="max-w-[1440px] mx-auto px-12 mt-24 pb-20 bg-astradirtywhite">
         <EventCarousel events={events} />
       </div>
 
+      {/* Explore UPLB Section */}
+      <ExploreUPLBSection />
+
+      {/* UPLB Image Collage */}
+      <UPLBImageCollage />
+
       {/* Animations */}
       <style jsx global>{`
-        @keyframes floatUp {
-          0% {
-            transform: translateY(0px);
-            filter: none;
-          }
-          50% {
-            transform: translateY(-15px);
-            filter: drop-shadow(0 0 10px white) drop-shadow(0 0 20px white);
-          }
-          100% {
-            transform: translateY(0px);
-            filter: none;
-          }
+        @keyframes naturalFloat {
+          0% { transform: translate(0px, 0px) rotate(0deg); }
+          25% { transform: translate(8px, -10px) rotate(1deg); }
+          50% { transform: translate(0px, -20px) rotate(0deg); }
+          75% { transform: translate(-8px, -10px) rotate(-1deg); }
+          100% { transform: translate(0px, 0px) rotate(0deg); }
         }
-
-        @keyframes fadeUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+        @keyframes fadeBounce {
+          0% { opacity: 0; transform: translateY(-10px); }
+          50% { opacity: 1; transform: translateY(5px); }
+          100% { transform: translateY(0px); }
         }
-
-        .animate-float {
-          animation: floatUp 4s ease-in-out infinite;
+        @keyframes particles {
+          0% { background-position: 0 0; }
+          100% { background-position: 1000px 0; }
         }
-
-        .animate-hero-text {
-          animation: fadeUp 1.5s ease forwards;
+        .animate-natural-float { animation: naturalFloat 8s ease-in-out infinite; }
+        .animate-fade-bounce { animation: fadeBounce 1.5s ease forwards; }
+        .animate-hero-text { animation: fadeBounce 2s ease-in-out; }
+        .animate-particles {
+          background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+          background-size: 20px 20px;
+          animation: particles 60s linear infinite;
+          pointer-events: none;
         }
       `}</style>
     </div>

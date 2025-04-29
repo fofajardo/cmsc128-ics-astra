@@ -1,12 +1,19 @@
 "use client"
+import { useState } from "react";
+import ToastNotification from "@/components/ToastNotification";
 
 export default function CheckEmail() {
+  const [showToast, setShowToast] = useState(false);
+
   const handleOpenEmailApp = () => {
     window.location.href = "/recover/3"
   }
 
   const handleResend = () => {
-    alert("Email resent!")
+    setShowToast({
+      type: "success",
+      message: "Email resent successfully!",
+    });
   }
 
   return (
@@ -46,6 +53,14 @@ export default function CheckEmail() {
             </div>
         </div>
       </div>
+
+      {showToast && (
+        <ToastNotification
+            type={showToast.type}
+            message={showToast.message}
+            onClose={() => setShowToast(null)} // Close the toast when it disappears
+        />
+      )}
     </div>
   )
 }

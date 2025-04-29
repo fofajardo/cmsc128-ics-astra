@@ -1,14 +1,25 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { useRouter } from "next/navigation"; // Import Next.js router
 import { HeroSection } from "./components/HeroSection";
 import { NewsItem } from "./components/NewsItem";
 import { PaginationControls } from "./components/PaginationControls";
 import { YearFilter } from "./components/YearFilter";
 import { NewsletterArchive } from "./components/NewsletterArchive";
+import animations from "./styles/animations.module.css";
+import { FileText } from "lucide-react";
+import Link from "next/link";
 
 export default function WhatsUpPage() {
   const router = useRouter(); // Initialize router
+
+  useEffect(() => {
+    // Add staggered animation to news items
+    const items = document.querySelectorAll('.news-item');
+    items.forEach((item, index) => {
+      item.style.animationDelay = `${index * 0.2}s`;
+    });
+  }, []);
 
   // Sample news data for demonstration
   const newsItems = [
@@ -45,11 +56,12 @@ export default function WhatsUpPage() {
   ];
 
   return (
-    <main className="rounded-none">
-      <div className="flex flex-col pb-20 w-full bg-slate-100 max-md:pb-12 max-md:max-w-full">
+    <main className={animations.fadeSlideUp}>
+      <div className="flex flex-col w-full bg-slate-100 max-md:max-w-full">
         <HeroSection />
 
-        <section className="flex flex-col self-center mt-16 mb-0 w-full max-w-[1200px] max-md:mt-8 max-md:mb-2 max-md:max-w-full px-4">
+        <section className="flex flex-col self-center px-4 w-full max-w-[1200px] pb-20">
+          <div className="h-[100px]" />
           <h2 className="self-start text-3xl font-bold text-slate-900 max-md:max-w-full max-md:text-2xl">
             Latest News and Announcements
           </h2>
@@ -64,7 +76,10 @@ export default function WhatsUpPage() {
             {/* News items grid */}
             <div className="flex flex-col gap-8 max-md:gap-6">
               {newsItems.map((item) => (
-                <div key={item.id} className="flex flex-row gap-6 bg-white rounded-lg shadow-sm max-md:flex-col">
+                <div
+                  key={item.id}
+                  className={`news-item ${animations.staggered} flex flex-row gap-6 bg-white rounded-lg shadow-sm hover:shadow-xl hover:scale-102 transition-all duration-300 max-md:flex-col`}
+                >
                   <div className="w-2/5 max-md:w-full">
                     <img
                       src={item.imageUrl}
@@ -109,6 +124,34 @@ export default function WhatsUpPage() {
           <NewsletterArchive />
         </section>
       </div>
+
+      {/* Animations */}
+      <style jsx global>{`
+        @keyframes pageFadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        .animate-page-fade-in {
+          animation: pageFadeIn 1s ease-in-out;
+        }
+
+        .hover:scale-105 {
+          transition: transform 0.3s ease-in-out;
+        }
+
+        .hover:shadow-md {
+          transition: box-shadow 0.3s ease-in-out;
+        }
+
+        .hover\\:scale-102:hover {
+          transform: scale(1.02);
+        }
+      `}</style>
     </main>
   );
 }

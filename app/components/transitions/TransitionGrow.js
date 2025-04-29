@@ -1,55 +1,68 @@
 import { InView } from 'react-intersection-observer';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 const TransitionGrow = ({
   children,
   className = '',
-  threshold = 0.10,
+  threshold = 0,
   delay = 0,
+  navbarHeight = 100,
+  onClick = () => {},
 }) => {
-  const [isVisible, setIsVisible] = useState(false);
-  const [scrollDirection, setScrollDirection] = useState('down');
-  const [lastY, setLastY] = useState(0);
-
-  // Track scroll direction more reliably
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentY = window.scrollY;
-      setScrollDirection(currentY > lastY ? 'down' : 'up');
-      setLastY(currentY);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastY]);
+  const [hasBeenVisible, setHasBeenVisible] = useState(false);
+  const [currentDelay, setCurrentDelay] = useState(delay); 
 
   return (
     <InView
       as="div"
-      onChange={(inView, entry) => {
-        setIsVisible(inView);
-        // Only update scroll direction when element is out of view
-        if (!inView) {
-          setScrollDirection(entry.boundingClientRect.y > 0 ? 'up' : 'down');
+      onChange={(inView) => {
+        if (inView && !hasBeenVisible) {
+          setHasBeenVisible(true);
+          setTimeout(() => {
+            setCurrentDelay(0); 
+          }, 1000);
         }
       }}
-      threshold={scrollDirection === 'up' ? 0 : threshold}
-      className={`
-        size-full
-        transition-[opacity,transform]
-        duration-250
-        ease-out
-        ${className}
-        ${isVisible
-          ? 'opacity-100 blur-none translate-y-0'
-          : scrollDirection === 'up'
-          ? 'opacity-0 blur-sm -translate-y-12'
-          : 'opacity-0 blur-sm translate-y-12'
-        }
-      `}
-      style={{ transitionDelay: `${delay}s` }}
+      threshold={threshold}
+      rootMargin={`-${navbarHeight}px 0px 0px 0px`}
     >
-      {children}
+      {({ ref }) => (
+        <div
+          ref={ref}
+          onClick={onClick}
+          className={`
+            size-full
+            transition-all
+            duration-250
+            ease-in-out
+            ${className}
+            ${hasBeenVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-85'}
+          `}
+          style={{
+            transitionDelay: `${currentDelay}s`,
+            position: 'relative',
+            transformOrigin: 'bottom',
+            willChange: 'opacity, transform',
+            animation: hasBeenVisible
+              ? 'breathe 5s ease-in-out infinite'
+              : 'none',
+          }}
+        >
+          <style>
+            {`
+              @keyframes breathe {
+                0%, 100% {
+                  transform: scale(1);
+                }
+                50% {
+                  transform: scale(1.01);
+                }
+              }
+            `}
+          </style>
+          {children}
+        </div>
+      )}
     </InView>
   );
 };

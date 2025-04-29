@@ -71,10 +71,21 @@ export default function JobsPage() {
   }
 
   return (
-    <div className="mt-[80px] py-8 bg-astratintedwhite w-full flex flex-col items-center">
+    <div className="py-8 bg-astratintedwhite w-full flex flex-col items-center">
       <Back />
-      {job && content && <BigJobCard job={job} content={content} />}
+      <div className="flex justify-between gap-y-2 flex-wrap max-w-[1250px] w-19/20">
+        {
+            job && content &&
+            <>
+                <BigJobCard job={job} content={content} />
+                {/* FIXME: restore sidejob card. */}
+                {/* <SideJobCard {...job} /> */}
+            </>
+        }
+      </div>
+
       <div className="h-11" />
+
       {job && <SmallJobCard job={job} showApply={true} />}
     </div>
   );

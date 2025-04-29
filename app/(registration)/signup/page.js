@@ -12,13 +12,19 @@ export default function SignupPage() {
 
   const validateForm = () => {
     const newErrors = []
-
-    if (!email.includes("@")) newErrors.push("Invalid email format.")
-    if (password.length < 8) newErrors.push("Password must be at least 8 characters.")
+  
+    // Check if all fields are filled
+    if (!email || !password || !confirmPassword) {
+      newErrors.push("Please fill in all fields.")
+    }
+  
+    // Additional validations
+    if (email && !email.includes("@")) newErrors.push("Invalid email format.")
+    if (password && password.length < 8) newErrors.push("Password must be at least 8 characters.")
     if (password !== confirmPassword) newErrors.push("Passwords do not match.")
-
-    setErrors(newErrors)
-    return newErrors.length === 0
+  
+    setErrors(newErrors)  // Store the error messages
+    return newErrors.length === 0  // Return true if no errors
   }
 
   const handleSubmit = (e) => {
@@ -32,11 +38,11 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen flex flex-col bg-[var(--color-astratintedwhite)]">
       <div className="flex-1 flex">
-        <div className="w-full md:w-1/2 p-4 md:p-8 pt-12 md:pt-20 px-4 md:px-0 flex items-center justify-center">
+        <div className="w-full md:w-1/2 p-4 md:p-8 px-4 md:px-0 flex items-center justify-center">
           <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
             <div className="mb-6 flex justify-between items-center">
-              <h2 className="text-2xl font-semibold text-[var(--color-astrablack)]">Sign Up</h2>
-              <Link href="/login" className="text-[var(--color-astraprimary)] text-sm hover:underline">I have an account</Link>
+              <h2 className="text-xl md:text-2xl font-semibold text-[var(--color-astrablack)]">Sign Up</h2>
+              <Link href="/login" className="text-[var(--color-astraprimary)] text-sm md:text-base hover:underline">I have an account</Link>
             </div>
 
             <form className="space-y-4" onSubmit={handleSubmit}>
@@ -46,7 +52,7 @@ export default function SignupPage() {
                   placeholder="Email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-gray-900"
+                  className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-gray-900 text-sm md:text-base"
                 />
               </div>
               <div>
@@ -55,7 +61,7 @@ export default function SignupPage() {
                   placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-gray-900"
+                  className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-gray-900 text-sm md:text-base"
                 />
               </div>
               <div>
@@ -64,14 +70,14 @@ export default function SignupPage() {
                   placeholder="Confirm Password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-gray-900"
+                  className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-gray-900 text-sm md:text-base"
                 />
               </div>
 
               {errors.length > 0 && (
-                <div className="bg-red-100 text-[var(--color-astrared)] text-sm p-2 rounded">
+                <div className="bg-red-100 text-[var(--color-astrared)] text-sm px-3 py-2 rounded">
                   {errors.map((err, idx) => (
-                    <p key={idx}>• {err}</p>
+                    <p key={idx}>{err}</p>
                   ))}
                 </div>
               )}
@@ -85,13 +91,13 @@ export default function SignupPage() {
             </form>
 
             <div className="mt-4 text-center">
-              <Link href="/recover" className="text-[var(--color-astraprimary)] text-sm hover:underline">Forgot password?</Link>
+              <Link href="/recover" className="text-[var(--color-astraprimary)] text-sm md:text-base hover:underline">Forgot password?</Link>
             </div>
 
             <div className="mt-6">
               <button className="w-full border border-[var(--color-astradirtywhite)] bg-white hover:bg-gray-100 rounded-md py-1 px-4 flex items-center justify-center transition-colors">
                 <User size={18} className="mr-2 text-[var(--color-astralightgray)]" />
-                <span className="text-sm text-[var(--color-astrablack)]">Continue as Guest</span>
+                <span className="text-sm md:text-base text-[var(--color-astrablack)]">Continue as Guest</span>
               </button>
             </div>
 
