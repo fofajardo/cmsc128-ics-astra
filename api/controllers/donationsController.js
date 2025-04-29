@@ -159,7 +159,7 @@ const createDonation = async (req, res) => {
     }
 
     // Check if userId and projectId exists
-    const userIdResponse = await supabase
+    const userIdResponse = await req.supabase
       .from("alumni_profiles")
       .select("alum_id")
       .eq("alum_id", userId)
@@ -173,7 +173,7 @@ const createDonation = async (req, res) => {
       });
     }
 
-    const projectIdResponse = await supabase
+    const projectIdResponse = await req.supabase
       .from("projects")
       .select("project_id")
       .eq("project_id", projectId)
@@ -256,7 +256,7 @@ const updateDonation = async (req, res) => {
     }
 
     // Check if the donation exists in the database
-    const { data: donationData, error: fetchError } = await supabase
+    const { data: donationData, error: fetchError } = await req.supabase
       .from("donations")
       .select()
       .eq("id", donationId)
@@ -279,7 +279,7 @@ const updateDonation = async (req, res) => {
 
     // Check if the user exists in the database
     if (userId) {
-      const { data: existingAlum, error: alumFetchError } = await supabase
+      const { data: existingAlum, error: alumFetchError } = await req.supabase
         .from("alumni_profiles")
         .select()
         .eq("alum_id", userId)
@@ -296,7 +296,7 @@ const updateDonation = async (req, res) => {
 
     // Check if the project exists in the database
     if (projectId) {
-      const { data: existingProject, error: projectFetchError } = await supabase
+      const { data: existingProject, error: projectFetchError } = await req.supabase
         .from("projects")
         .select()
         .eq("project_id", projectId)

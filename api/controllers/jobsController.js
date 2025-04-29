@@ -219,8 +219,8 @@ const createJob = async (req, res) => {
 
 
 const updateJob =  async (req, res) => {
+  const jobId = req.params.jobId;
   try {
-    const jobId = req.params.jobId;
 
     // Validate job format
     if (!isValidUUID(jobId)) {
@@ -345,7 +345,7 @@ const deleteJob = async (req, res) => {
       });
     }
 
-    const { data, error: findError } = await jobsService.fetchJobById(supabase, jobId);
+    const { data, error: findError } = await jobsService.fetchJobById(req.supabase, jobId);
 
     if (findError || !data) {
       return res.status(httpStatus.NOT_FOUND).json({
@@ -355,7 +355,7 @@ const deleteJob = async (req, res) => {
     }
 
 
-    const { error: deleteError } = await jobsService.deleteJobData(supabase, jobId);
+    const { error: deleteError } = await jobsService.deleteJobData(req.supabase, jobId);
 
     if (deleteError) {
       console.error(`Error deleting job with ID ${jobId}:`, deleteError);
