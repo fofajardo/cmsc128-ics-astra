@@ -28,7 +28,7 @@ export default function CheckEmail() {
             Check your email
           </h1>
           <p className="text-sm mb-6 text-gray-700">
-            We've sent a password reset link to your email
+            We&apos;ve sent a password reset link to your email
           </p>
 
           <button
@@ -39,7 +39,7 @@ export default function CheckEmail() {
           </button>
 
           <p className="text-sm mb-2 text-gray-700">
-            Don't receive the email?{" "}
+            Don&apos;t receive the email?{" "}
             <span className="text-sm cursor-pointer text-[var(--color-astraprimary)]" onClick={handleResend}>
               Click to resend
             </span>

@@ -386,7 +386,7 @@ export default function AboutPage() {
                     />
                   </div>
                   <p className="text-[var(--color-astrablack)] text-base md:text-lg">
-                    To produce the needed quality manpower for the Philippines'
+                    To produce the needed quality manpower for the Philippines&apos;
                     software industry and the manpower needed to carry out the
                     information processing functions of private and government
                     institutions.
