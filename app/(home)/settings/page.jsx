@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Mail, Eye, EyeOff, User, Bell, ChevronRight } from "lucide-react";
+import { Mail, Eye, EyeOff, User, Bell, ChevronRight, Lock } from "lucide-react";
 import ToastNotification from "@/components/ToastNotification";
 
 export default function AccountSettings() {
@@ -22,6 +22,36 @@ export default function AccountSettings() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
+  const [requestingCode, setRequestingCode] = useState(false);
+  const [code, setCode] = useState("");
+
+  // Simulate verification process
+  const handleEnable2FA = () => {
+    if (code === "123456") {
+      setShowToast({
+        type: "success",
+        message: "Two-Factor Authentication Enabled!"
+      });
+      setTwoFactorEnabled(true);
+      setRequestingCode(false);
+      setCode("");
+    } else {
+      setShowToast({
+        type: "fail",
+        message: "Invalid verification code. Please try again."
+      });
+    }
+  };
+
+  const handleDisable2FA = () => {
+    setShowToast({
+      type: "success",
+      message: "Two-Factor Authentication Disabled!"
+    });
+    setTwoFactorEnabled(false);
+  };
+
   const isValidEmail = (email) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -29,6 +59,7 @@ export default function AccountSettings() {
     { id: "email", label: "Email Settings", icon: <Mail className="h-5 w-5" /> },
     { id: "password", label: "Password Settings", icon: <User className="h-5 w-5" /> },
     { id: "newsletter", label: "Newsletter Settings", icon: <Bell className="h-5 w-5" /> },
+    { id: "twofactor", label: "Two-Factor Auth", icon: <Lock className="h-5 w-5" /> },
   ];
 
   const handleUpdateEmail = () => {
@@ -89,7 +120,7 @@ export default function AccountSettings() {
   };
 
   return (
-    <div className="min-h-[600px] bg-[#eff2fa] flex flex-col py-8 px-4">
+    <div className="min-h-[600px] bg-[var(--color-astratintedwhite)] flex flex-col py-8 px-4">
       <div className="w-full max-w-5xl mx-auto p-6">
         <h1 className="text-[var(--color-astrablack)] text-xl md:text-2xl font-bold mb-4">Account Settings</h1>
         <div className="bg-white rounded-lg shadow-sm w-full flex flex-col md:flex-row">
@@ -105,7 +136,7 @@ export default function AccountSettings() {
                   }`}
                 >
                   <div className="flex items-center gap-3">{tab.icon}<span>{tab.label}</span></div>
-                  <ChevronRight className={`h-4 w-4 transition-transform ${activeTab === tab.id ? "rotate-90" : ""}`} />
+                  <ChevronRight className={`h-4 w-4 transition-transform ${activeTab === tab.id ? "sm:rotate-90" : ""}`} />
                 </button>
               ))}
             </div>
@@ -124,7 +155,7 @@ export default function AccountSettings() {
                       type="email"
                       value="jmdelacruz@up.edu.ph"
                       readOnly
-                      className="text-sm md:text-base bg-[#f1f3f6] text-gray-500 w-full py-2 px-3 border border-gray-300 rounded-md"
+                      className="text-sm md:text-base bg-[var(--color-astradirtywhite)] text-gray-500 w-full py-2 px-3 border border-gray-300 rounded-md"
                     />
                   </div>
                   <div>
@@ -163,16 +194,16 @@ export default function AccountSettings() {
                           placeholder="Enter verification code"
                           value={verificationCode}
                           onChange={(e) => setVerificationCode(e.target.value)}
-                          className="flex-grow py-2 px-3 border border-gray-300 rounded-md"
+                          className="flex-grow py-2 px-3 border border-gray-300 rounded-md text-sm md:text-base"
                         />
-                        <button onClick={handleResendCode} className="bg-[var(--color-astraprimary)] hover:bg-[var(--color-astradark)] text-white py-2 px-4 rounded-md">
+                        <button onClick={handleResendCode} className="bg-[var(--color-astraprimary)] hover:bg-[var(--color-astradark)] text-white py-2 px-4 rounded-md text-sm md:text-base">
                           Resend
                         </button>
                       </div>
                       {codeError && <p className="text-red-500 text-sm md:text-base">{codeError}</p>}
                       <button
                         onClick={handleVerifyCode}
-                        className="w-full bg-[var(--color-astraprimary)] hover:bg-[var(--color-astradark)] text-white mt-2 p-2 rounded-md"
+                        className="w-full bg-[var(--color-astraprimary)] hover:bg-[var(--color-astradark)] text-white mt-2 p-2 rounded-md text-sm md:text-base"
                       >
                         Verify Email
                       </button>
@@ -194,7 +225,7 @@ export default function AccountSettings() {
                         type={showCurrentPassword ? "text" : "password"}
                         value={currentPassword}
                         onChange={(e) => setCurrentPassword(e.target.value)}
-                        className="pr-10 w-full py-2 px-3 border border-gray-300 rounded-md"
+                        className="text-sm md:text-base pr-10 w-full py-2 px-3 border border-gray-300 rounded-md"
                       />
                       <button type="button" onClick={() => setShowCurrentPassword(!showCurrentPassword)} className="absolute inset-y-0 right-0 pr-3">
                         {showCurrentPassword ? <EyeOff className="h-4 w-4 text-gray-500" /> : <Eye className="h-4 w-4 text-gray-500" />}
@@ -209,7 +240,7 @@ export default function AccountSettings() {
                         type={showNewPassword ? "text" : "password"}
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
-                        className="pr-10 w-full py-2 px-3 border border-gray-300 rounded-md"
+                        className="text-sm md:text-base pr-10 w-full py-2 px-3 border border-gray-300 rounded-md"
                       />
                       <button type="button" onClick={() => setShowNewPassword(!showNewPassword)} className="absolute inset-y-0 right-0 pr-3">
                         {showNewPassword ? <EyeOff className="h-4 w-4 text-gray-500" /> : <Eye className="h-4 w-4 text-gray-500" />}
@@ -224,7 +255,7 @@ export default function AccountSettings() {
                         type={showConfirmPassword ? "text" : "password"}
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        className="pr-10 w-full py-2 px-3 border border-gray-300 rounded-md"
+                        className="text-sm md:text-base pr-10 w-full py-2 px-3 border border-gray-300 rounded-md"
                       />
                       <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute inset-y-0 right-0 pr-3">
                         {showConfirmPassword ? <EyeOff className="h-4 w-4 text-gray-500" /> : <Eye className="h-4 w-4 text-gray-500" />}
@@ -234,7 +265,7 @@ export default function AccountSettings() {
                   {passwordError && <p className="text-red-500 text-sm md:text-base">{passwordError}</p>}
                   <button
                     onClick={handleSavePassword}
-                    className="w-full bg-[var(--color-astraprimary)] hover:bg-[var(--color-astradark)] text-white py-2 px-4 rounded-md"
+                    className="text-sm md:text-base w-full bg-[var(--color-astraprimary)] hover:bg-[var(--color-astradark)] text-white py-2 px-4 rounded-md"
                   >
                     Change Password
                   </button>
@@ -252,10 +283,60 @@ export default function AccountSettings() {
                 </p>
                 <button
                   onClick={handleToggleSubscription}
-                  className={`w-full ${isSubscribed ? "bg-[var(--color-astrared)] hover:bg-[#d32f2f]" : "bg-[var(--color-astraprimary)] hover:bg-[var(--color-astradark)]"} text-white py-2 px-4 rounded-md`}
+                  className={`w-full ${isSubscribed ? "bg-[var(--color-astrared)] hover:bg-red-700" : "bg-[var(--color-astraprimary)] hover:bg-[var(--color-astradark)]"} text-white py-2 px-4 rounded-md text-sm md:text-base`}
                 >
                   {isSubscribed ? "Unsubscribe" : "Subscribe"}
                 </button>
+              </div>
+            )}
+
+            {activeTab === "twofactor" && (
+              <div>
+                <h2 className="text-[var(--color-astrablack)] text-md md:text-xl font-semibold mb-4">
+                  Two-Factor Authentication
+                </h2>
+
+                {!twoFactorEnabled ? (
+                  <>
+                    {!requestingCode ? (
+                      <button
+                        onClick={() => setRequestingCode(true)}
+                        className="bg-[var(--color-astraprimary)] hover:bg-[var(--color-astradark)] text-white py-2 px-4 rounded-md text-sm md:text-base"
+                      >
+                        Enable 2FA
+                      </button>
+                    ) : (
+                      <>
+                        <div className="mb-4">
+                          <label className="block text-sm md:text-base font-medium text-[var(--color-astrablack)] mb-1">
+                            Enter Verification Code
+                          </label>
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            value={code}
+                            onChange={(e) => setCode(e.target.value)}
+                            placeholder="Enter digit code"
+                            className="w-full py-2 px-3 border border-gray-300 rounded-md text-sm md:text-base"
+                          />
+                        </div>
+                        <button
+                          onClick={handleEnable2FA}
+                          className="bg-[var(--color-astraprimary)] hover:bg-[var(--color-astradark)] text-white py-2 px-4 rounded-md text-sm md:text-base"
+                        >
+                          Verify and Enable
+                        </button>
+                      </>
+                    )}
+                  </>
+                ) : (
+                  <button
+                    onClick={handleDisable2FA}
+                    className="bg-[var(--color-astrared)] hover:bg-red-700 text-white py-2 px-4 rounded-md text-sm md:text-base"
+                  >
+                    Disable 2FA
+                  </button>
+                )}
               </div>
             )}
           </div>
