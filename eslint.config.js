@@ -57,7 +57,18 @@ export default defineConfig([
       // "no-unused-vars": "warn",
       "no-undef": "warn",
       "no-unused-vars": "off",
-      "react/prop-types": "off",
     }
   },
+  {
+    files: ["**/*.{jsx,mjsx,tsx,mtsx}"],
+    rules: {
+      "react/prop-types": "off",
+      "react/no-unknown-property": [
+        "error",
+        {
+          "ignore": ["jsx", "global"]
+        }
+      ],
+    },
+  }
 ]);
