@@ -4,10 +4,10 @@ import Image from "next/image";
 import ToastNotification from "@/components/ToastNotification";
 
 export default function EmailVerification() {
-  const [toastData, setToastData] = useState(null);
+  const [showToast, setShowToast] = useState(null);
 
   const handleResendLink = () => {
-    setToastData({
+    setShowToast({
       type: "success",
       message: "Verification link resent!",
     });
@@ -39,11 +39,11 @@ export default function EmailVerification() {
         </div>
       </div>
 
-      {toastData && (
+      {showToast && (
         <ToastNotification
-          type={toastData.type}
-          message={toastData.message}
-          onClose={() => setToastData(null)}
+          type={showToast.type}
+          message={showToast.message}
+          onClose={() => setShowToast(null)}
         />
       )}
     </div>
