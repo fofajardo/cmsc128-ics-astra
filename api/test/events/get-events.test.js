@@ -6,11 +6,11 @@ import { TestSignIn, TestSignOut, TestUsers } from "../auth/auth.common.js";
 
 const gAgent = request.agent(app);
 
-describe("Alumni API Tests", function () {
+describe("Alumni API Tests", function() {
   //before(() => TestSignIn(gAgent, TestUsers.alumnus));
   before(() => TestSignIn(gAgent, TestUsers.admin));
-  describe("GET /v1/events", function () {
-    it("should return 200 for GET /v1/events", async function () {
+  describe("GET /v1/events", function() {
+    it("should return 200 for GET /v1/events", async function() {
       const res = await gAgent
         .get("/v1/events")
         .query({ page: 1, limit: 10 });
@@ -22,8 +22,8 @@ describe("Alumni API Tests", function () {
     });
   });
 
-  describe("GET /v1/events", function () {
-    it("should return sorted by event date range count for GET /v1/events", async function () {
+  describe("GET /v1/events", function() {
+    it("should return sorted by event date range count for GET /v1/events", async function() {
       const dateFrom = "2025-04-20T00:00:00.000Z";  // Optional to include time
       const dateTo = "2025-04-30T23:59:59.999Z";
       const res = await gAgent
@@ -41,8 +41,8 @@ describe("Alumni API Tests", function () {
   });
 
 
-  describe("GET /v1/events/:eventId", function () {
-    it("should return 200 for GET /v1/events/eventId", async function () {
+  describe("GET /v1/events/:eventId", function() {
+    it("should return 200 for GET /v1/events/eventId", async function() {
 
       const event_id = "f9b7efab-003c-44f9-bea7-c856fb1e73cd";
       const res = await gAgent.get(`/v1/events/${event_id}`);

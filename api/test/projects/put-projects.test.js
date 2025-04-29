@@ -5,12 +5,12 @@ import httpStatus from "http-status-codes";
 import {TestSignIn, TestSignOut, TestUsers} from "../auth/auth.common.js";
 const gAgent = request.agent(app);
 
-describe("Project API Tests", function () {
+describe("Project API Tests", function() {
   before(() => TestSignIn(gAgent, TestUsers.moderator));
 
   const projectId = "7f857ca0-fcca-4c5b-b619-d0612597dbb1";
 
-  after(async function () {
+  after(async function() {
     const originalData = {
       project_status: 0,
       due_date: new Date("2025-04-01"),
@@ -28,8 +28,8 @@ describe("Project API Tests", function () {
       console.log("Failed to revert project fields");
   });
 
-  describe("PUT /v1/projects/:projectId", function () {
-    it("should return 200 and update valid project details", async function () {
+  describe("PUT /v1/projects/:projectId", function() {
+    it("should return 200 and update valid project details", async function() {
       //Precondition: Ensure the row exists before updating
       const preCheckRes = await gAgent.get(`/v1/projects/${projectId}`);
       expect(preCheckRes.status).to.equal(httpStatus.OK);
@@ -73,7 +73,7 @@ describe("Project API Tests", function () {
     });
 
     // Test case to verify that the API returns 200 for partial updates
-    it("should return 200 and update valid project details", async function () {
+    it("should return 200 and update valid project details", async function() {
       //Precondition: Ensure the row exists before updating
       const preCheckRes = await gAgent.get(`/v1/projects/${projectId}`);
       expect(preCheckRes.status).to.equal(httpStatus.OK);
@@ -110,7 +110,7 @@ describe("Project API Tests", function () {
     });
 
     // Test case to verify that the API returns 400 if invalid field values (status)
-    it("should return 400, status FAILED, and a message", async function () {
+    it("should return 400, status FAILED, and a message", async function() {
       //Precondition: Ensure the row exists before updating
       const preCheckRes = await gAgent.get(`/v1/projects/${projectId}`);
       expect(preCheckRes.status).to.equal(httpStatus.OK);
@@ -136,7 +136,7 @@ describe("Project API Tests", function () {
     });
 
     // Test case to verify that the API returns 400 if invalid projectId
-    it("should return 400, status FAILED, and a message", async function () {
+    it("should return 400, status FAILED, and a message", async function() {
       const invalidProjectId = "389517e7-9a0b-9c96-84f9-3a7080186892"; // Invalid projectId
 
       const validUpdateData = {
@@ -157,7 +157,7 @@ describe("Project API Tests", function () {
     });
 
     // Test case to verify that the API returns 404 if the projectId does not exist in the system
-    it("should return 404, status FAILED, and a message", async function () {
+    it("should return 404, status FAILED, and a message", async function() {
       const notExistingProjectId = "7f857ca0-fcca-4c5b-b619-d0612597dbb3"; // Non-existing projectId
 
       const validUpdateData = {

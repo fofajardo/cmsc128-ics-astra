@@ -5,14 +5,14 @@ import httpStatus from "http-status-codes";
 import {TestSignIn, TestSignOut, TestUsers} from "../auth/auth.common.js";
 const gAgent = request.agent(app);
 
-describe("Users API Tests", function () {
+describe("Users API Tests", function() {
   before(() => TestSignIn(gAgent, TestUsers.admin));
 
-  describe("PUT /v1/users/:userId", function () {
+  describe("PUT /v1/users/:userId", function() {
     let userId = null;
 
     // ✅ Precondition: Create a user before running put tests
-    before(async function () {
+    before(async function() {
       const testUser = {
         username: "put_test_user",
         email: "put_test_user@example.com",
@@ -32,7 +32,7 @@ describe("Users API Tests", function () {
       userId = res.body.id;
     });
 
-    it("should return 200 and update valid user details", async function () {
+    it("should return 200 and update valid user details", async function() {
       const validUpdateData = {
         username: "user",
         email: "email@email.com",
@@ -56,7 +56,7 @@ describe("Users API Tests", function () {
       expect(verifyRes.body.user).to.include(validUpdateData); // Ensures data is correctly updated
     });
 
-    it("should not allow editing of name and role", async function () {
+    it("should not allow editing of name and role", async function() {
       const invalidUpdateData = {
         role: "User", // Attempt to change role
       };
@@ -72,7 +72,7 @@ describe("Users API Tests", function () {
     });
 
     // 🧹 Clean up using DELETE route
-    after(async function () {
+    after(async function() {
       if (userId) {
         const res = await gAgent
           .delete(`/v1/users/${userId}?hard=true`);

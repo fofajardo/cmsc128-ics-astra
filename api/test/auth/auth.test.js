@@ -13,9 +13,9 @@ const kSampleCredentials = {
   password: "admin"
 };
 
-describe("Auth API", function () {
-  describe(`POST ${kAuthPrefix}/sign-in`, function () {
-    it("should sign in with valid credentials and return user data", async function () {
+describe("Auth API", function() {
+  describe(`POST ${kAuthPrefix}/sign-in`, function() {
+    it("should sign in with valid credentials and return user data", async function() {
       const res = await gAgent
         .post(`${kAuthPrefix}/sign-in`)
         .send(kSampleCredentials);
@@ -29,8 +29,8 @@ describe("Auth API", function () {
     });
   });
 
-  describe(`GET ${kAuthPrefix}/signed-in-user`, function () {
-    it("should return 200 and user data if signed in or 204 if not", async function () {
+  describe(`GET ${kAuthPrefix}/signed-in-user`, function() {
+    it("should return 200 and user data if signed in or 204 if not", async function() {
       // Simulate login
       await gAgent.post(`${kAuthPrefix}/sign-in`).send(kSampleCredentials);
 
@@ -39,8 +39,8 @@ describe("Auth API", function () {
     });
   });
 
-  describe(`POST ${kAuthPrefix}/sign-out`, function () {
-    it("should sign out the user and return 200 OK", async function () {
+  describe(`POST ${kAuthPrefix}/sign-out`, function() {
+    it("should sign out the user and return 200 OK", async function() {
       await gAgent.post(`${kAuthPrefix}/sign-in`).send(kSampleCredentials);
 
       const res = await gAgent.post(`${kAuthPrefix}/sign-out`);

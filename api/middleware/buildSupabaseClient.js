@@ -9,7 +9,7 @@ export function BuildSupabaseClient(aRequest, aResponse, aNext) {
   };
   const clientOptions = {
     cookies: {
-      getAll: function () {
+      getAll: function() {
         return parseCookieHeader(aRequest.headers.cookie ?? "");
       },
       setAll: function (aCookiesToSet) {

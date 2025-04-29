@@ -25,7 +25,7 @@ describe("Work Experiences API Tests (POST)", function() {
     let createdWorkExperienceId = null;
 
     // ✅ Successfully creates a work experience
-    it("should return 201, status CREATED, a message, and an id", async function () {
+    it("should return 201, status CREATED, a message, and an id", async function() {
       const res = await gAgent
         .post(kRoutePrefix)
         .send(testWorkExperience);
@@ -40,7 +40,7 @@ describe("Work Experiences API Tests (POST)", function() {
     });
 
     // ❌ Required fields missing
-    it(`should return ${httpStatus.BAD_REQUEST}, status FAILED, and a message when required fields are missing`, async function () {
+    it(`should return ${httpStatus.BAD_REQUEST}, status FAILED, and a message when required fields are missing`, async function() {
       const res = await gAgent
         .post(kRoutePrefix)
         .send({});
@@ -52,7 +52,7 @@ describe("Work Experiences API Tests (POST)", function() {
     });
 
     // ❌ Invalid user_id
-    it(`should return ${httpStatus.BAD_REQUEST}, status FAILED, and a message when user_id is invalid`, async function () {
+    it(`should return ${httpStatus.BAD_REQUEST}, status FAILED, and a message when user_id is invalid`, async function() {
       const res = await gAgent
         .post(kRoutePrefix)
         .send({

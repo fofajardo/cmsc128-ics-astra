@@ -5,13 +5,13 @@ import httpStatus from "http-status-codes";
 import { TestSignIn, TestSignOut, TestUsers } from "../auth/auth.common.js";
 
 const gAgent = request.agent(app);
-describe("Events API Tests", function () {
+describe("Events API Tests", function() {
   before(() => TestSignIn(gAgent, TestUsers.admin));
 
-  describe("DELETE /v1/events/:eventId", function () {
+  describe("DELETE /v1/events/:eventId", function() {
 
     // Test case #1: Successful event deletion
-    it("should return 200 with DELETED status for valid event ID", async function () {
+    it("should return 200 with DELETED status for valid event ID", async function() {
       const testEventId = "885b0b2e-ced1-4c0f-8aac-1fb6857548ec";
       const res = await gAgent
         .delete(`/v1/events/${testEventId}`);
@@ -28,7 +28,7 @@ describe("Events API Tests", function () {
     });
 
     // Test case #3: Empty event ID
-    it("should return 400 for empty event ID", async function () {
+    it("should return 400 for empty event ID", async function() {
       const res = await gAgent
         .delete("/v1/events/"); // Trailing slash indicates empty ID
 
@@ -39,7 +39,7 @@ describe("Events API Tests", function () {
     });
 
     // Test case #4: Non-existent event
-    it("should return proper response for non-existent event", async function () {
+    it("should return proper response for non-existent event", async function() {
       const nonExistentId = "4b02a71e-8e52-42ce-b545-a2f0960f1d16";
       const res = await gAgent
         .delete(`/v1/events/${nonExistentId}`);
@@ -52,7 +52,7 @@ describe("Events API Tests", function () {
     });
 
     // // Test case #5: Special characters in event ID
-    it("should handle special characters in event ID", async function () {
+    it("should handle special characters in event ID", async function() {
       const specialId = "83a34060-fce4-493a-8348-cdacb7c49d0@";
       const res = await gAgent
         .delete(`/v1/events/${encodeURIComponent(specialId)}`);
@@ -65,11 +65,11 @@ describe("Events API Tests", function () {
   after(() => TestSignOut(gAgent));
 });
 
-describe("Alumnus, DELETE /v1/events/:eventId", function () {
+describe("Alumnus, DELETE /v1/events/:eventId", function() {
   before(() => TestSignIn(gAgent, TestUsers.alumnus));
 
   // Test case #6: Unauthorized deletion attempt
-  it("should return 403 when alumnus tries to delete an event", async function () {
+  it("should return 403 when alumnus tries to delete an event", async function() {
     const testEventId = "885b0b2e-ced1-4c0f-8aac-1fb6857548ec";
     const res = await gAgent
       .delete(`/v1/events/${testEventId}`);

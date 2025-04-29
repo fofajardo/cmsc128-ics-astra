@@ -3,10 +3,10 @@ import { expect } from "chai";
 import app from "../../index.js";
 import httpStatus from "http-status-codes";
 
-describe("Alumni API Tests", function () {
+describe("Alumni API Tests", function() {
 
-  describe("GET /v1/jobs", function () {
-    it("should return 200 for GET /v1/jobs", async function () {
+  describe("GET /v1/jobs", function() {
+    it("should return 200 for GET /v1/jobs", async function() {
       const res = await request(app)
         .get("/v1/jobs")
         .query({ page: 1, limit: 10 });
@@ -18,8 +18,8 @@ describe("Alumni API Tests", function () {
     });
   });
 
-  describe("GET /v1/jobs/:jobId", function () {
-    it("should return 200 for GET /v1/jobs/jobId", async function () {
+  describe("GET /v1/jobs/:jobId", function() {
+    it("should return 200 for GET /v1/jobs/jobId", async function() {
       const job_id = "5989b548-87d7-4492-b712-5d454581454c";
       const res = await request(app).get(`/v1/jobs/${job_id}`);
 

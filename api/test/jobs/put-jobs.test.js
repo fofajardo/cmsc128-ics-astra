@@ -3,8 +3,8 @@ import { expect } from "chai";
 import app from "../../index.js";
 import httpStatus from "http-status-codes";
 
-describe("PUT /v1/jobs/:jobId", function () {
-  it("should update a job successfully", async function () {
+describe("PUT /v1/jobs/:jobId", function() {
+  it("should update a job successfully", async function() {
     const jobId = "12345";          //replace with legit jobId para dynamic
 
     // replace the hardcoded values with user input
@@ -26,7 +26,7 @@ describe("PUT /v1/jobs/:jobId", function () {
     expect(response.body).to.have.property("message");              // value should change
   });                                                               // since eto lang yung success
 
-  it("should return FORBIDDEN if the user is not authorized", async function () {
+  it("should return FORBIDDEN if the user is not authorized", async function() {
     const jobId = "67890";          //replace with legit jobId para dynamic
 
     // replace the hardcoded values with user input
@@ -48,7 +48,7 @@ describe("PUT /v1/jobs/:jobId", function () {
     expect(response.body).to.have.property("message");              // value should not change
   });
 
-  it("should return FAILED if jobId is invalid", async function () {
+  it("should return FAILED if jobId is invalid", async function() {
     const jobId = "invalid-id";         //replace with legit jobId para dynamic
 
     // replace the hardcoded values with user input

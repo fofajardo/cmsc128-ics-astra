@@ -3,8 +3,8 @@ import { expect } from "chai";
 import app from "../../index.js";
 import httpStatus from "http-status-codes";
 
-describe("Organizations API Tests", function () {
-  describe("POST /v1/organizations", function () {
+describe("Organizations API Tests", function() {
+  describe("POST /v1/organizations", function() {
     const testOrg = {
       name: "UPLB University Student Council",
       acronym: "USC",
@@ -23,7 +23,7 @@ describe("Organizations API Tests", function () {
     let createdOrgId2 = null;
 
     // ✅ Successfully creates an org
-    it("should return 201, status CREATED, a message, and an id", async function () {
+    it("should return 201, status CREATED, a message, and an id", async function() {
       const res = await request(app)
         .post("/v1/organizations")
         .send(testOrg);
@@ -38,7 +38,7 @@ describe("Organizations API Tests", function () {
     });
 
     // ✅ Successfully creates an org
-    it("should return 201, status CREATED, a message, and an id (different name but same acronym)", async function () {
+    it("should return 201, status CREATED, a message, and an id (different name but same acronym)", async function() {
       const res = await request(app)
         .post("/v1/organizations")
         .send(sameAc);
@@ -53,7 +53,7 @@ describe("Organizations API Tests", function () {
     });
 
     // ❌ Required fields missing
-    it("should return 400, status FAILED, and a message when required fields are missing", async function () {
+    it("should return 400, status FAILED, and a message when required fields are missing", async function() {
       const res = await request(app)
         .post("/v1/organizations")
         .send({});
@@ -65,7 +65,7 @@ describe("Organizations API Tests", function () {
     });
 
     // ❌ Duplicate organization
-    it("should return 409, status FAILED, and a message when organization already exists", async function () {
+    it("should return 409, status FAILED, and a message when organization already exists", async function() {
       const res = await request(app)
         .post("/v1/organizations")
         .send(testOrg); // sending same org as before
@@ -77,7 +77,7 @@ describe("Organizations API Tests", function () {
     });
 
     // 🧹 Clean up using DELETE route
-    after(async function () {
+    after(async function() {
       if (createdOrgId) {
         const res = await request(app)
           .delete(`/v1/organizations/${createdOrgId}`);

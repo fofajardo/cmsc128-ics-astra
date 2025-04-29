@@ -6,12 +6,12 @@ import nationalities from "i18n-nationality";
 import { TestSignIn, TestSignOut, TestUsers } from "../auth/auth.common.js";
 const gAgent = request.agent(app);
 
-describe("Alumni API Tests", function () {
+describe("Alumni API Tests", function() {
   before(() => TestSignIn(gAgent, TestUsers.admin));
 
-  describe("PUT /v1/alumni-profiles/:userId", function () {
+  describe("PUT /v1/alumni-profiles/:userId", function() {
 
-    it("should return 200, status UPDATED, a message, and persist updated details", async function () {
+    it("should return 200, status UPDATED, a message, and persist updated details", async function() {
       const userId = "75b6e610-9d0b-4884-b405-1e682e3aa3de";
 
       // Confirm alumni profile exists before update
@@ -43,7 +43,7 @@ describe("Alumni API Tests", function () {
       expect(verifyRes.body.alumniProfile).to.include(validUpdateData);
     });
 
-    it("should return 403, status FORBIDDEN, and a message when trying to update birthdate or student_num", async function () {
+    it("should return 403, status FORBIDDEN, and a message when trying to update birthdate or student_num", async function() {
       const userId = "75b6e610-9d0b-4884-b405-1e682e3aa3de";
 
       const invalidUpdateData = {

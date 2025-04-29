@@ -3,8 +3,8 @@ import { expect } from "chai";
 import app from "../../index.js";
 import httpStatus from "http-status-codes";
 
-describe("Jobs API Tests", function () {
-  describe("DELETE /v1/jobs/:jobId", function () {
+describe("Jobs API Tests", function() {
+  describe("DELETE /v1/jobs/:jobId", function() {
     // Valid job IDs for testing (VARCHAR type)
     const validJobIds = [
       "job-12345",
@@ -15,7 +15,7 @@ describe("Jobs API Tests", function () {
     ];
 
     // Test case #1: Successful deletion with valid job ID
-    it("should return 200 with DELETED status for valid job ID", async function () {
+    it("should return 200 with DELETED status for valid job ID", async function() {
       // Using first valid ID format
       const testJobId = validJobIds[0];
       const res = await request(app)
@@ -33,7 +33,7 @@ describe("Jobs API Tests", function () {
 
     // Test case #2: Test various valid VARCHAR ID formats
     validJobIds.forEach((jobId, index) => {
-      it(`should handle valid VARCHAR job ID format ${index + 1}`, async function () {
+      it(`should handle valid VARCHAR job ID format ${index + 1}`, async function() {
         const res = await request(app)
           .delete(`/v1/jobs/${jobId}`);
 
@@ -44,7 +44,7 @@ describe("Jobs API Tests", function () {
     });
 
     // Test case #3: Empty job ID
-    it("should return 400 for empty job ID", async function () {
+    it("should return 400 for empty job ID", async function() {
       const res = await request(app)
         .delete("/v1/jobs/");
 
@@ -55,7 +55,7 @@ describe("Jobs API Tests", function () {
     });
 
     // Test case #4: Extremely long job ID
-    it("should handle maximum length VARCHAR job ID", async function () {
+    it("should handle maximum length VARCHAR job ID", async function() {
       const longJobId = "job-" + "x".repeat(255); // Creating a 255+ character ID
       const res = await request(app)
         .delete(`/v1/jobs/${longJobId}`);
@@ -68,7 +68,7 @@ describe("Jobs API Tests", function () {
     });
 
     // Test case #5: Special characters in job ID
-    it("should handle special characters in job ID", async function () {
+    it("should handle special characters in job ID", async function() {
       const specialId = "job-123$%^&*()";
       const res = await request(app)
         .delete(`/v1/jobs/${encodeURIComponent(specialId)}`);
@@ -79,7 +79,7 @@ describe("Jobs API Tests", function () {
     });
 
     // Test case #6: Non-existent but valid format job ID
-    it("should return proper response for non-existent job", async function () {
+    it("should return proper response for non-existent job", async function() {
       const nonExistentId = "job-999999";
       const res = await request(app)
         .delete(`/v1/jobs/${nonExistentId}`);

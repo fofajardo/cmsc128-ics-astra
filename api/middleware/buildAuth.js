@@ -2,11 +2,11 @@ export async function BuildAuth(aRequest, aResponse, aNext) {
   aRequest.rebuildUser = function (aUserResponse) {
     const {data, error} = aUserResponse;
 
-    aRequest.isAuthenticated = function () {
+    aRequest.isAuthenticated = function() {
       return !error && data !== null && data.user;
     };
 
-    aRequest.isUnauthenticated = function () {
+    aRequest.isUnauthenticated = function() {
       return error || !aRequest.isAuthenticated();
     };
 

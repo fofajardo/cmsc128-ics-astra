@@ -3,12 +3,12 @@ import { expect } from "chai";
 import app from "../../index.js";
 import httpStatus from "http-status-codes";
 
-describe("Organizations API Tests", function () {
-  describe("PUT /v1/organizations/:orgId", function () {
+describe("Organizations API Tests", function() {
+  describe("PUT /v1/organizations/:orgId", function() {
     let orgId = null;
 
     // ✅ Precondition: Create an org before running put tests
-    before(async function () {
+    before(async function() {
       const testOrg = {
         name: "Test Org",
         acronym: "TO",
@@ -24,7 +24,7 @@ describe("Organizations API Tests", function () {
       orgId = res.body.id;
     });
 
-    it("should return 200 and update valid org details", async function () {
+    it("should return 200 and update valid org details", async function() {
       const validUpdateData = {
         name: "Success Test",
         acronym: "ST",
@@ -49,7 +49,7 @@ describe("Organizations API Tests", function () {
       expect(verifyRes.body.organization).to.include(validUpdateData); // Ensures data is correctly updated
     });
 
-    // it('should not allow editing of name and role', async function () {
+    // it('should not allow editing of name and role', async function() {
     //     const invalidUpdateData = {
     //         first_name: "User",  // Attempt to change name
     //         middle_name: 'User',
@@ -68,7 +68,7 @@ describe("Organizations API Tests", function () {
     // });
 
     // 🧹 Clean up using DELETE route
-    after(async function () {
+    after(async function() {
       if (orgId) {
         const res = await request(app)
           .delete(`/v1/organizations/${orgId}`);

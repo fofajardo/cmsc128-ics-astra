@@ -4,7 +4,7 @@ import app from "../../index.js";
 import httpStatus from "http-status-codes";
 import { v4 as uuvidv4 } from "uuid";
 
-describe("Contents API - POST /v1/contents", function () {
+describe("Contents API - POST /v1/contents", function() {
 
   let contentId = uuvidv4(); // Generate a new UUID for the content ID
 
@@ -19,7 +19,7 @@ describe("Contents API - POST /v1/contents", function () {
     tags: ["tag1", "tag2"]
   };
 
-  it("should create a new content and return 201 with content object, then delete it", async function () {
+  it("should create a new content and return 201 with content object, then delete it", async function() {
     // Create content
     const createRes = await request(app)
       .post("/v1/contents")
@@ -40,7 +40,7 @@ describe("Contents API - POST /v1/contents", function () {
     expect(createRes.body.content.tags).to.deep.equal(validContent.tags);
   });
 
-  after(async function () {
+  after(async function() {
     const res = await request(app)
       .delete(`/v1/contents/${contentId}`);
 
@@ -52,7 +52,7 @@ describe("Contents API - POST /v1/contents", function () {
     }
   });
 
-  it("should return 400 when user_id is missing", async function () {
+  it("should return 400 when user_id is missing", async function() {
     const res = await request(app)
       .post("/v1/contents")
       .send({
@@ -65,7 +65,7 @@ describe("Contents API - POST /v1/contents", function () {
     expect(res.body.message).to.include("user_id");
   });
 
-  it("should return 400 when title is missing", async function () {
+  it("should return 400 when title is missing", async function() {
     const res = await request(app)
       .post("/v1/contents")
       .send({
@@ -77,7 +77,7 @@ describe("Contents API - POST /v1/contents", function () {
     expect(res.body.message).to.include("title");
   });
 
-  it("should return 400 when details is missing", async function () {
+  it("should return 400 when details is missing", async function() {
     const res = await request(app)
       .post("/v1/contents")
       .send({
@@ -89,7 +89,7 @@ describe("Contents API - POST /v1/contents", function () {
     expect(res.body.message).to.include("details");
   });
 
-  it("should return 400 for empty strings in title or details", async function () {
+  it("should return 400 for empty strings in title or details", async function() {
     const res = await request(app)
       .post("/v1/contents")
       .send({
@@ -102,7 +102,7 @@ describe("Contents API - POST /v1/contents", function () {
     expect(res.body.message).to.include("required");
   });
 
-  it("should return 400 when user_id is not a valid UUID", async function () {
+  it("should return 400 when user_id is not a valid UUID", async function() {
     const res = await request(app)
       .post("/v1/contents")
       .send({
@@ -119,7 +119,7 @@ describe("Contents API - POST /v1/contents", function () {
     expect(res.body.message).to.include("user_id");
   });
 
-  it("should reject unexpected extra fields", async function () {
+  it("should reject unexpected extra fields", async function() {
     const res = await request(app)
       .post("/v1/contents")
       .send({

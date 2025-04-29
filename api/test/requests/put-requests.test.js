@@ -8,16 +8,16 @@ import { response } from "express";
 const gAgent = request.agent(app);
 const kRoutePrefix = "/v1/requests";
 
-describe("Requests API Tests (PUT)", function () {
+describe("Requests API Tests (PUT)", function() {
   this.timeout(4000);
 
   before(() => TestSignIn(gAgent, TestUsers.admin));
 
-  describe(`PUT ${kRoutePrefix}/:requestId`, function () {
+  describe(`PUT ${kRoutePrefix}/:requestId`, function() {
     let requestId = null;
 
     // ✅ Precondition: Create a request before running put tests
-    before(async function () {
+    before(async function() {
       const testRequest = {
         user_id: "75b6e610-9d0b-4884-b405-1e682e3aa3de",
         content_id: "389517e7-4a0b-4c96-84f9-3a7080186892",
@@ -34,7 +34,7 @@ describe("Requests API Tests (PUT)", function () {
     });
 
     // try to update the request with valid data and for valid fields
-    it("should return 200 and update valid request details", async function () {
+    it("should return 200 and update valid request details", async function() {
       // Check if row exists before updating
       const preCheckRes = await gAgent
         .get(`${kRoutePrefix}/${requestId}`);
@@ -66,7 +66,7 @@ describe("Requests API Tests (PUT)", function () {
     });
 
     // Verify that the API returns 200 for partial updates
-    it("should return 200 and update some request details", async function () {
+    it("should return 200 and update some request details", async function() {
       // Check if row exists before updating
       const preCheckRes = await gAgent
         .get(`${kRoutePrefix}/${requestId}`);
@@ -99,7 +99,7 @@ describe("Requests API Tests (PUT)", function () {
     });
 
     // Invalid field values (status)
-    it("should return 400 for invalid status value", async function () {
+    it("should return 400 for invalid status value", async function() {
       const invalidUpdateData = {
         status: "invalid_status",
       };
@@ -116,7 +116,7 @@ describe("Requests API Tests (PUT)", function () {
     });
 
     // Try to update a restricted field (user_id)
-    it(`should return ${httpStatus.BAD_REQUEST} for updating restricted field (user_id)`, async function () {
+    it(`should return ${httpStatus.BAD_REQUEST} for updating restricted field (user_id)`, async function() {
       const restrictedUpdateData = {
         user_id: "00000000-0000-0000-0000-000000000000",
       };
@@ -133,7 +133,7 @@ describe("Requests API Tests (PUT)", function () {
     });
 
     // 🧹 Clean up using DELETE route
-    after(async function () {
+    after(async function() {
       const res = await gAgent.delete(`${kRoutePrefix}/${requestId}`);
 
       if (res.body.status === "DELETED") {

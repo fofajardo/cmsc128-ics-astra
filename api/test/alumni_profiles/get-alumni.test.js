@@ -6,11 +6,11 @@ import { isValidAlpha3Citizenship } from "../../utils/validators.js";
 import { TestSignIn, TestSignOut, TestUsers } from "../auth/auth.common.js";
 const gAgent = request.agent(app);
 
-describe("Alumni Profile API Tests", function () {
+describe("Alumni Profile API Tests", function() {
   before(() => TestSignIn(gAgent, TestUsers.admin));
 
-  describe("GET /v1/alumni-profiles", function () {
-    it("should return 200 and a list of alumni profiles", async function () {
+  describe("GET /v1/alumni-profiles", function() {
+    it("should return 200 and a list of alumni profiles", async function() {
       const res = await gAgent
         .get("/v1/alumni-profiles")
         .query({ page: 1, limit: 10 });
@@ -22,8 +22,8 @@ describe("Alumni Profile API Tests", function () {
     });
   });
 
-  describe("GET /v1/alumni-profiles/:userId", function () {
-    it("should return 200 and details of a single alumni profile", async function () {
+  describe("GET /v1/alumni-profiles/:userId", function() {
+    it("should return 200 and details of a single alumni profile", async function() {
       const userId = "75b6e610-9d0b-4884-b405-1e682e3aa3de"; // You might want to dynamically create/find a real ID
       const res = await gAgent.get(`/v1/alumni-profiles/${userId}`);
 

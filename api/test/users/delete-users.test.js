@@ -10,13 +10,13 @@ const gAgent = request.agent(app);
 // file instead.
 const kRoutePrefix = "/v1/users/";
 
-describe("Users API - Delete and Verify Deletion", function () {
+describe("Users API - Delete and Verify Deletion", function() {
   before(() => TestSignIn(gAgent, TestUsers.admin));
 
   let userId = null;
 
   // ✅ Precondition: Create a user before running delete tests
-  before(async function () {
+  before(async function() {
     const testUser = {
       username: "delete_test_user",
       email: "delete_test_user@example.com",
@@ -36,8 +36,8 @@ describe("Users API - Delete and Verify Deletion", function () {
     userId = res.body.id;
   });
 
-  describe(`DELETE ${kRoutePrefix}:userId (Soft Delete)`, function () {
-    it("should soft delete the user and return status DELETED", async function () {
+  describe(`DELETE ${kRoutePrefix}:userId (Soft Delete)`, function() {
+    it("should soft delete the user and return status DELETED", async function() {
       const res = await gAgent
         .delete(`${kRoutePrefix}${userId}`)
         .query({ hard: false });
@@ -48,8 +48,8 @@ describe("Users API - Delete and Verify Deletion", function () {
     });
   });
 
-  describe(`GET ${kRoutePrefix}:userId after soft deletion`, function () {
-    it("should return user data with deleted_at field set", async function () {
+  describe(`GET ${kRoutePrefix}:userId after soft deletion`, function() {
+    it("should return user data with deleted_at field set", async function() {
       const res = await gAgent.get(`${kRoutePrefix}${userId}`);
 
       expect(res.status).to.equal(httpStatus.OK);
@@ -58,8 +58,8 @@ describe("Users API - Delete and Verify Deletion", function () {
     });
   });
 
-  describe(`DELETE ${kRoutePrefix}:userId (Hard Delete)`, function () {
-    it("should hard delete the user and return status DELETED", async function () {
+  describe(`DELETE ${kRoutePrefix}:userId (Hard Delete)`, function() {
+    it("should hard delete the user and return status DELETED", async function() {
       const res = await gAgent
         .delete(`${kRoutePrefix}${userId}`)
         .query({ hard: true });
@@ -70,8 +70,8 @@ describe("Users API - Delete and Verify Deletion", function () {
     });
   });
 
-  describe(`GET ${kRoutePrefix}:userId after hard deletion`, function () {
-    it("should return 404 Not Found", async function () {
+  describe(`GET ${kRoutePrefix}:userId after hard deletion`, function() {
+    it("should return 404 Not Found", async function() {
       const res = await gAgent.get(`${kRoutePrefix}${userId}`);
 
       expect(res.status).to.equal(httpStatus.NOT_FOUND);

@@ -7,15 +7,15 @@ import { TestSignIn, TestSignOut, TestUsers } from "../auth/auth.common.js";
 const gAgent = request.agent(app);
 const kRoutePrefix = "/v1/requests";
 
-describe("Requests API Tests (GET)", function () {
+describe("Requests API Tests (GET)", function() {
   this.timeout(4000); // Set timeout to 10 seconds
 
   before(() => TestSignIn(gAgent, TestUsers.admin));
 
   // Gets all requests
   // Should return 200.
-  describe(`GET ${kRoutePrefix}`, function () {
-    it(`should return ${httpStatus.OK} for GET ${kRoutePrefix}`, async function () {
+  describe(`GET ${kRoutePrefix}`, function() {
+    it(`should return ${httpStatus.OK} for GET ${kRoutePrefix}`, async function() {
       const res = await gAgent
         .get(kRoutePrefix)
         .query({ page: 1, limit: 10 });
@@ -28,8 +28,8 @@ describe("Requests API Tests (GET)", function () {
   });
 
   // Gets the request with the given request ID
-  describe(`GET ${kRoutePrefix}/:requestId`, function () {
-    it(`should return ${httpStatus.OK} for GET ${kRoutePrefix}/:requestId`, async function () {
+  describe(`GET ${kRoutePrefix}/:requestId`, function() {
+    it(`should return ${httpStatus.OK} for GET ${kRoutePrefix}/:requestId`, async function() {
       const requestID = "21e869f5-5285-4d1f-8c4d-a49ed021dc92";
       const res = await gAgent.get(`${kRoutePrefix}/${requestID}`);
 
@@ -59,8 +59,8 @@ describe("Requests API Tests (GET)", function () {
   });
 
   // Gets the request with a valid request ID, but the ID is non-existent.
-  describe(`GET ${kRoutePrefix}/:requestId with non-existent ID`, function () {
-    it(`should return ${httpStatus.NOT_FOUND} for GET ${kRoutePrefix}/:requestId with non-existent ID`, async function () {
+  describe(`GET ${kRoutePrefix}/:requestId with non-existent ID`, function() {
+    it(`should return ${httpStatus.NOT_FOUND} for GET ${kRoutePrefix}/:requestId with non-existent ID`, async function() {
       const nonExistentRequestID = "00000000-0000-0000-0000-000000000000"; // Non-existent UUID
       const res = await gAgent.get(`${kRoutePrefix}/${nonExistentRequestID}`);
 
@@ -73,8 +73,8 @@ describe("Requests API Tests (GET)", function () {
 
   // Gets the request with the given request ID, but the ID is invalid.
   // Should return 400.
-  describe(`GET ${kRoutePrefix}/:requestId with invalid ID`, function () {
-    it(`should return ${httpStatus.BAD_REQUEST} for GET ${kRoutePrefix}/:requestId with invalid ID`, async function () {
+  describe(`GET ${kRoutePrefix}/:requestId with invalid ID`, function() {
+    it(`should return ${httpStatus.BAD_REQUEST} for GET ${kRoutePrefix}/:requestId with invalid ID`, async function() {
       const invalidRequestID = "0000"; // Invalid UUID
       const res = await gAgent.get(`${kRoutePrefix}/${invalidRequestID}`);
 
@@ -84,8 +84,8 @@ describe("Requests API Tests (GET)", function () {
 
   // Gets the requests of the given user ID
   // Should return 200.
-  describe(`GET ${kRoutePrefix}/alum/:userId`, function () {
-    it(`should return ${httpStatus.OK} for GET ${kRoutePrefix}/alum/:userId`, async function () {
+  describe(`GET ${kRoutePrefix}/alum/:userId`, function() {
+    it(`should return ${httpStatus.OK} for GET ${kRoutePrefix}/alum/:userId`, async function() {
       const userId = "b7085d72-f174-4b81-b106-ef68b27a48ee";
       const res = await gAgent.get(`${kRoutePrefix}/alum/${userId}`);
 
@@ -115,8 +115,8 @@ describe("Requests API Tests (GET)", function () {
   });
 
   // Gets the requests of the given user ID, but the user ID is non-existent.
-  describe(`GET ${kRoutePrefix}/alum/:userId with non-existent ID`, function () {
-    it(`should return ${httpStatus.NOT_FOUND} for GET ${kRoutePrefix}/alum/:userId with non-existent ID`, async function () {
+  describe(`GET ${kRoutePrefix}/alum/:userId with non-existent ID`, function() {
+    it(`should return ${httpStatus.NOT_FOUND} for GET ${kRoutePrefix}/alum/:userId with non-existent ID`, async function() {
       const nonExistentUserID = "00000000-0000-0000-0000-000000000000"; // Non-existent UUID
       const res = await gAgent.get(`${kRoutePrefix}/alum/${nonExistentUserID}`);
 
@@ -129,8 +129,8 @@ describe("Requests API Tests (GET)", function () {
 
   // Gets the requests of the given user ID, but the user ID is invalid.
   // Should return 400.
-  describe(`GET ${kRoutePrefix}/alum/:userId with invalid ID`, function () {
-    it(`should return ${httpStatus.BAD_REQUEST} for GET ${kRoutePrefix}/alum/:userId with invalid ID`, async function () {
+  describe(`GET ${kRoutePrefix}/alum/:userId with invalid ID`, function() {
+    it(`should return ${httpStatus.BAD_REQUEST} for GET ${kRoutePrefix}/alum/:userId with invalid ID`, async function() {
       const invalidUserID = "00000000-0000-0000-0000-00000000000"; // Invalid UUID
       const res = await gAgent.get(`${kRoutePrefix}/alum/${invalidUserID}`);
 
@@ -140,8 +140,8 @@ describe("Requests API Tests (GET)", function () {
 
   // Gets the requests of the given content ID
   // Should return 200.
-  describe(`GET ${kRoutePrefix}/content/:contentId`, function () {
-    it(`should return ${httpStatus.OK} for GET ${kRoutePrefix}/content/:contentId`, async function () {
+  describe(`GET ${kRoutePrefix}/content/:contentId`, function() {
+    it(`should return ${httpStatus.OK} for GET ${kRoutePrefix}/content/:contentId`, async function() {
       const contentId = "7f857ca0-fcca-4c5b-b619-d0612597dbb1";
       const res = await gAgent.get(`${kRoutePrefix}/content/${contentId}`);
 
@@ -154,8 +154,8 @@ describe("Requests API Tests (GET)", function () {
   });
 
   // Gets the requests of the given content ID, but the content ID is non-existent.
-  describe(`GET ${kRoutePrefix}/content/:contentId with non-existent ID`, function () {
-    it(`should return ${httpStatus.NOT_FOUND} for GET ${kRoutePrefix}/content/:contentId with non-existent ID`, async function () {
+  describe(`GET ${kRoutePrefix}/content/:contentId with non-existent ID`, function() {
+    it(`should return ${httpStatus.NOT_FOUND} for GET ${kRoutePrefix}/content/:contentId with non-existent ID`, async function() {
       const nonExistentContentID = "00000000-0000-0000-0000-000000000000"; // Non-existent UUID
       const res = await gAgent.get(`${kRoutePrefix}/content/${nonExistentContentID}`);
 
@@ -168,8 +168,8 @@ describe("Requests API Tests (GET)", function () {
 
   // Gets the requests of the given content ID, but the content ID is invalid.
   // Should return 400.
-  describe(`GET ${kRoutePrefix}/content/:contentId with invalid ID`, function () {
-    it(`should return ${httpStatus.BAD_REQUEST} for GET ${kRoutePrefix}/content/:contentId with invalid ID`, async function () {
+  describe(`GET ${kRoutePrefix}/content/:contentId with invalid ID`, function() {
+    it(`should return ${httpStatus.BAD_REQUEST} for GET ${kRoutePrefix}/content/:contentId with invalid ID`, async function() {
       const invalidContentID = "00000000-0000-0000-0000-00000000000"; // Invalid UUID
       const res = await gAgent.get(`${kRoutePrefix}/content/${invalidContentID}`);
 

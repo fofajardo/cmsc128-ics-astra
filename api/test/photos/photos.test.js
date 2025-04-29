@@ -6,11 +6,11 @@ import { TestSignIn, TestSignOut, TestUsers } from "../auth/auth.common.js";
 import path from "path";
 const gAgent = request.agent(app);
 
-describe("Photos API Tests", function () {
+describe("Photos API Tests", function() {
   let photoId;
 
   // Create a dummy photo for testing
-  before(async function () {
+  before(async function() {
 
     await TestSignIn(gAgent, TestUsers.admin);
     console.log("Signed in successfully.");
@@ -34,9 +34,9 @@ describe("Photos API Tests", function () {
     }
   });
 
-  describe("Authenticated Scenarios", function () {
-    describe("GET /v1/photos", function () {
-      it("should return 200 and a list of photos", async function () {
+  describe("Authenticated Scenarios", function() {
+    describe("GET /v1/photos", function() {
+      it("should return 200 and a list of photos", async function() {
         const res = await request(app).get("/v1/photos");
 
         expect(res.status).to.equal(httpStatus.OK);
@@ -45,8 +45,8 @@ describe("Photos API Tests", function () {
       });
     });
 
-    describe("GET /v1/photos/:id", function () {
-      it("should return 200 and the photo details", async function () {
+    describe("GET /v1/photos/:id", function() {
+      it("should return 200 and the photo details", async function() {
         const res = await request(app).get(`/v1/photos/${photoId}`);
 
         expect(res.status).to.equal(httpStatus.OK);
@@ -54,7 +54,7 @@ describe("Photos API Tests", function () {
         expect(res.body).to.have.property("photo").that.is.an("object");
       });
 
-      it("should return 404 when the photo does not exist", async function () {
+      it("should return 404 when the photo does not exist", async function() {
         const res = await request(app).get("/v1/photos/non-existent-id");
 
         expect(res.status).to.equal(httpStatus.NOT_FOUND);
@@ -62,15 +62,15 @@ describe("Photos API Tests", function () {
       });
     });
 
-    describe("DELETE /v1/photos/:id", function () {
-      it("should return 200 and delete the photo", async function () {
+    describe("DELETE /v1/photos/:id", function() {
+      it("should return 200 and delete the photo", async function() {
         const res = await request(app).delete(`/v1/photos/${photoId}`);
 
         expect(res.status).to.equal(httpStatus.OK);
         expect(res.body).to.have.property("status", "DELETED");
       });
 
-      it("should return 404 when trying to delete a non-existent photo", async function () {
+      it("should return 404 when trying to delete a non-existent photo", async function() {
         const res = await request(app).delete("/v1/photos/non-existent-id");
 
         expect(res.status).to.equal(httpStatus.NOT_FOUND);
@@ -83,8 +83,8 @@ describe("Photos API Tests", function () {
     TestSignOut(gAgent);
   });
 
-  describe("Unauthenticated Scenarios", function () {
-    it("should return 403 when accessing any endpoint without authentication", async function () {
+  describe("Unauthenticated Scenarios", function() {
+    it("should return 403 when accessing any endpoint without authentication", async function() {
       const res = await request(app).get("/v1/photos");
 
       expect(res.status).to.equal(httpStatus.FORBIDDEN);

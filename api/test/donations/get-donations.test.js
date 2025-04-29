@@ -5,11 +5,11 @@ import httpStatus from "http-status-codes";
 import {TestSignIn, TestSignOut, TestUsers} from "../auth/auth.common.js";
 const gAgent = request.agent(app);
 
-describe("Donations API Tests", function () {
+describe("Donations API Tests", function() {
   before(() => TestSignIn(gAgent, TestUsers.admin));
 
-  describe("GET /v1/donations", function () {
-    it("should return 200 and a list of donations", async function () {
+  describe("GET /v1/donations", function() {
+    it("should return 200 and a list of donations", async function() {
       const res = await gAgent
         .get("/v1/donations")
         .query({ page: 1, limit: 5, sort_by: "amount", order: "asc"});
@@ -23,8 +23,8 @@ describe("Donations API Tests", function () {
     });
   });
 
-  describe("GET /v1/donations/:donationId", function () {
-    it("should return 200 and details of a single donation", async function () {
+  describe("GET /v1/donations/:donationId", function() {
+    it("should return 200 and details of a single donation", async function() {
       const donationId = "39f817bf-7301-4a60-bb59-7f29c05d7f91";  // Actual donationId
       const res = await gAgent.get(`/v1/donations/${donationId}`);
 
@@ -55,7 +55,7 @@ describe("Donations API Tests", function () {
     });
 
     // Test case to verify that the API returns 400 if invalid donationId
-    it("should return 400, status FAILED, and a message when donationId is invalid", async function () {
+    it("should return 400, status FAILED, and a message when donationId is invalid", async function() {
       const invalidDonationId = "00000000-0000-0000-0000-000000000000"; // Invalid project ID
       const res = await gAgent.get(`/v1/donations/${invalidDonationId}`);
 
@@ -69,7 +69,7 @@ describe("Donations API Tests", function () {
     });
 
     // Test case to verify that the API returns 404 if the donationId does not exist in the system
-    it("should return 404, status FAILED, and a message when project does not exist", async function () {
+    it("should return 404, status FAILED, and a message when project does not exist", async function() {
       const notExistingDonationId = "39f817bf-7301-4a60-bb59-7f29c05d7f92"; // Non-existing donationId
       const res = await gAgent.post(`/v1/donations/${notExistingDonationId}`);
 

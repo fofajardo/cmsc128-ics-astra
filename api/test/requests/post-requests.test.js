@@ -23,7 +23,7 @@ describe("Requests API Tests (POST)", function() {
     let createdRequestId = null;
 
     // ✅ Successfully creates a request
-    it("should return 201, status CREATED, a message, and an id", async function () {
+    it("should return 201, status CREATED, a message, and an id", async function() {
       const res = await gAgent
         .post(kRoutePrefix)
         .send(testRequest);
@@ -38,7 +38,7 @@ describe("Requests API Tests (POST)", function() {
     });
 
     // ❌ Required fields missing
-    it(`should return ${httpStatus.BAD_REQUEST}, status FAILED, and a message when required fields are missing`, async function () {
+    it(`should return ${httpStatus.BAD_REQUEST}, status FAILED, and a message when required fields are missing`, async function() {
       const res = await gAgent
         .post(kRoutePrefix)
         .send({});
@@ -50,7 +50,7 @@ describe("Requests API Tests (POST)", function() {
     });
 
     // ❌ Unexpected fields present
-    it(`should return ${httpStatus.BAD_REQUEST}, status FAILED, and a message when unexpected fields are present`, async function () {
+    it(`should return ${httpStatus.BAD_REQUEST}, status FAILED, and a message when unexpected fields are present`, async function() {
       const res = await gAgent
         .post(kRoutePrefix)
         .send({
@@ -65,7 +65,7 @@ describe("Requests API Tests (POST)", function() {
     });
 
     // ❌ Invalid user_id
-    it(`should return ${httpStatus.BAD_REQUEST}, status FAILED, and a message when user_id is invalid`, async function () {
+    it(`should return ${httpStatus.BAD_REQUEST}, status FAILED, and a message when user_id is invalid`, async function() {
       const res = await gAgent
         .post(kRoutePrefix)
         .send({
@@ -80,7 +80,7 @@ describe("Requests API Tests (POST)", function() {
     });
 
     // ❌ Invalid content_id
-    it(`should return ${httpStatus.BAD_REQUEST}, status FAILED, and a message when content_id is invalid`, async function () {
+    it(`should return ${httpStatus.BAD_REQUEST}, status FAILED, and a message when content_id is invalid`, async function() {
       const res = await gAgent
         .post(kRoutePrefix)
         .send({
@@ -95,7 +95,7 @@ describe("Requests API Tests (POST)", function() {
     });
 
     // ❌ Invalid type
-    it(`should return ${httpStatus.BAD_REQUEST}, status FAILED, and a message when type is invalid`, async function () {
+    it(`should return ${httpStatus.BAD_REQUEST}, status FAILED, and a message when type is invalid`, async function() {
       const res = await gAgent
         .post(kRoutePrefix)
         .send({

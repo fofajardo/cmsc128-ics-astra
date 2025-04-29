@@ -8,11 +8,11 @@ import app from "../../index.js";
 // file instead.
 const kRoutePrefix = "/v1/organizations/";
 
-describe("Organizations API - Delete and Verify Deletion", function () {
+describe("Organizations API - Delete and Verify Deletion", function() {
   let orgId = null;
 
   // ✅ Precondition: Create a user before running delete tests
-  before(async function () {
+  before(async function() {
     const testOrg = {
       name: "UPLB University Student Council",
       acronym: "USC",
@@ -28,8 +28,8 @@ describe("Organizations API - Delete and Verify Deletion", function () {
     orgId = res.body.id;
   });
 
-  describe(`DELETE ${kRoutePrefix}:orgId `, function () {
-    it("should hard delete the user and return status DELETED", async function () {
+  describe(`DELETE ${kRoutePrefix}:orgId `, function() {
+    it("should hard delete the user and return status DELETED", async function() {
       const res = await request(app)
         .delete(`${kRoutePrefix}${orgId}`);
 
@@ -39,8 +39,8 @@ describe("Organizations API - Delete and Verify Deletion", function () {
     });
   });
 
-  describe(`GET ${kRoutePrefix}:orgId after hard deletion`, function () {
-    it("should return 404 Not Found", async function () {
+  describe(`GET ${kRoutePrefix}:orgId after hard deletion`, function() {
+    it("should return 404 Not Found", async function() {
       const res = await request(app).get(`${kRoutePrefix}${orgId}`);
 
       expect(res.status).to.equal(httpStatus.NOT_FOUND);

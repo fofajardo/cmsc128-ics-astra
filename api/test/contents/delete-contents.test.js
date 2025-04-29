@@ -4,12 +4,12 @@ import app from "../../index.js";
 import httpStatus from "http-status-codes";
 import { v4 as uuidv4 } from "uuid";
 
-describe("Contents API - DELETE /v1/contents/:contentId", function () {
+describe("Contents API - DELETE /v1/contents/:contentId", function() {
 
   let createdContentId = uuidv4();
 
   // Create a new dummy data for deletion test
-  before(async function () {
+  before(async function() {
     const createRes = await request(app)
       .post("/v1/contents")
       .send({
@@ -26,7 +26,7 @@ describe("Contents API - DELETE /v1/contents/:contentId", function () {
     // console.log(createRes.body);
   });
 
-  it("should delete an existing content and return 200", async function () {
+  it("should delete an existing content and return 200", async function() {
     const res = await request(app)
 
       .delete(`/v1/contents/${createdContentId}`);
@@ -36,7 +36,7 @@ describe("Contents API - DELETE /v1/contents/:contentId", function () {
     expect(res.body.message).to.include("successfully deleted");
   });
 
-  it("should return 404 when trying to delete non-existent content", async function () {
+  it("should return 404 when trying to delete non-existent content", async function() {
     const nonExistentId = "38c2ba8e-2202-4bb8-b0fd-87595d7eb6aa"; //currently not in the database
     const res = await request(app)
       .delete(`/v1/contents/${nonExistentId}`);
@@ -46,7 +46,7 @@ describe("Contents API - DELETE /v1/contents/:contentId", function () {
     expect(res.body.message).to.include("not found");
   });
 
-  it("should return 400 when contentId is not a valid UUID", async function () {
+  it("should return 400 when contentId is not a valid UUID", async function() {
     const res = await request(app)
       .delete("/v1/contents/not-a-valid-id");
 
@@ -55,7 +55,7 @@ describe("Contents API - DELETE /v1/contents/:contentId", function () {
     expect(res.body.message).to.include("contentId");
   });
 
-  it("should return 404 when trying to delete already-deleted content", async function () {
+  it("should return 404 when trying to delete already-deleted content", async function() {
     // First deletion
     await request(app).delete(`/v1/contents/${createdContentId}`);
 

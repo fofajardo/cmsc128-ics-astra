@@ -7,18 +7,18 @@ const gAgent = request.agent(app);
 
 const kRoutePrefix = "/v1/work-experiences";
 
-describe ("Work Experiences API Tests (PUT)", function () {
+describe ("Work Experiences API Tests (PUT)", function() {
 
   this.timeout(4000);
 
   before(() => TestSignIn(gAgent, TestUsers.admin));
 
-  describe(`PUT ${kRoutePrefix}/:workExperienceId`, function () {
+  describe(`PUT ${kRoutePrefix}/:workExperienceId`, function() {
 
     let workExperienceId = null;
 
     // ✅ Precondition: Create a work experience before running put tests
-    before(async function () {
+    before(async function() {
       const testWorkExperience = {
         user_id: "75b6e610-9d0b-4884-b405-1e682e3aa3de",
         title: "test title",
@@ -39,7 +39,7 @@ describe ("Work Experiences API Tests (PUT)", function () {
     });
 
     // try to update the work experience with valid data and for valid fields
-    it("should return 200 and update valid work experience details", async function () {
+    it("should return 200 and update valid work experience details", async function() {
 
       // Check if row exists before updating
       const preCheckRes = await gAgent.get(`${kRoutePrefix}/${workExperienceId}`);
@@ -79,7 +79,7 @@ describe ("Work Experiences API Tests (PUT)", function () {
     });
 
     // Test case to verify that the API returns 200 for partial update
-    it("should return 200 and update some work experience details", async function () {
+    it("should return 200 and update some work experience details", async function() {
       // Check if row exists before updating
       const preCheckRes = await gAgent.get(`${kRoutePrefix}/${workExperienceId}`);
 
@@ -112,7 +112,7 @@ describe ("Work Experiences API Tests (PUT)", function () {
     });
 
     // Invalid field values (year_started, year_ended, salary)
-    it("should return 400, status FAILED, and a message when invalid field values are provided", async function () {
+    it("should return 400, status FAILED, and a message when invalid field values are provided", async function() {
       // Check if row exists before updating
       const preCheckRes = await gAgent.get(`${kRoutePrefix}/${workExperienceId}`);
 
@@ -137,7 +137,7 @@ describe ("Work Experiences API Tests (PUT)", function () {
     });
 
     // try to update a restricted field (user_id)
-    it("should return 403 and not allow editing of restricted field user_id", async function () {
+    it("should return 403 and not allow editing of restricted field user_id", async function() {
       const invalidUpdateData = {
         user_id: "00000000-0000-0000-0000-000000000000",  // Attempt to change user_id
       };
@@ -154,7 +154,7 @@ describe ("Work Experiences API Tests (PUT)", function () {
     });
 
     // 🧹 Clean up using DELETE route
-    after(async function () {
+    after(async function() {
       if(workExperienceId) {
         const res = await gAgent
           .delete(`${kRoutePrefix}/${workExperienceId}`);

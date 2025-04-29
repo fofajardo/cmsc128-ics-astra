@@ -5,13 +5,13 @@ import httpStatus from "http-status-codes";
 import { TestSignIn, TestSignOut, TestUsers } from "../auth/auth.common.js";
 const gAgent = request.agent(app);
 
-describe("Projects API Tests", function () {
+describe("Projects API Tests", function() {
   before(() => TestSignIn(gAgent, TestUsers.moderator));
 
   const projectId = "389517e7-4a0b-4c96-84f9-3a7080186892"; // Actual projectId
 
   // Create a new dummy data for deletion test
-  before(async function () {
+  before(async function() {
     const res = await request(app)
       .post("/v1/projects")
       .send({
@@ -28,8 +28,8 @@ describe("Projects API Tests", function () {
       console.log("Failed to create dummy project");
   });
 
-  describe("DELETE /v1/projects/:projectId", function () {
-    it("should return 200, a status DELETED, and a message", async function () {
+  describe("DELETE /v1/projects/:projectId", function() {
+    it("should return 200, a status DELETED, and a message", async function() {
       const res = await gAgent
         .delete(`/v1/projects/${projectId}`);
 
@@ -41,13 +41,13 @@ describe("Projects API Tests", function () {
       expect(res.body).to.have.property("status", "DELETED");
     });
 
-    it("should return 404, status FAILED, and a message when fetching the deleted project", async function () {
+    it("should return 404, status FAILED, and a message when fetching the deleted project", async function() {
       const res = await gAgent.post(`/v1/projects/${projectId}`);
 
       expect(res.statusCode).to.equal(httpStatus.NOT_FOUND);
     });
 
-    it("should return 400 when projectId is not a valid UUID", async function () {
+    it("should return 400 when projectId is not a valid UUID", async function() {
       const res = await gAgent
         .delete("/v1/projects/not-a-valid-id");
 
@@ -58,7 +58,7 @@ describe("Projects API Tests", function () {
       expect(res.body).to.have.property("message").that.is.a("string");
     });
 
-    it("should return 404, a status FAILED, and a message when deleting a non-existing project", async function () {
+    it("should return 404, a status FAILED, and a message when deleting a non-existing project", async function() {
       const nonExistentId = "389517e7-4a0b-4c96-84f9-3a7080186892";   // non-existing id
       const res = await gAgent
         .delete(`/v1/projects/${nonExistentId}`);
@@ -70,7 +70,7 @@ describe("Projects API Tests", function () {
       expect(res.body).to.have.property("message").that.is.a("string");
     });
 
-    it("should return 404 when trying to delete already-deleted project", async function () {
+    it("should return 404 when trying to delete already-deleted project", async function() {
       // First deletion
       await gAgent.delete(`/v1/projects/${projectId}`);
 

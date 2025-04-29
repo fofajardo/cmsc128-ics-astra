@@ -3,10 +3,10 @@ import { expect } from "chai";
 import app from "../../index.js";
 import httpStatus from "http-status-codes";
 
-describe("Jobs API Tests", function () {
-  describe("POST /v1/jobs", function () {
+describe("Jobs API Tests", function() {
+  describe("POST /v1/jobs", function() {
     // Test case #1: Succesful Job Creation
-    it("should return 201 and a status", async function () {
+    it("should return 201 and a status", async function() {
       const res = await request(app)
         .post("/v1/jobs")
         .send({
@@ -28,7 +28,7 @@ describe("Jobs API Tests", function () {
     });
 
     // Test case #2: Failed Job Creation due to missing required fields
-    it("should return 400 if a field is missing", async function () {
+    it("should return 400 if a field is missing", async function() {
       const res = await request(app)
         .post("/v1/jobs")
         .send({
@@ -48,7 +48,7 @@ describe("Jobs API Tests", function () {
     });
 
     // Test case #3: Failed Job Creation due to invalid data type in fields
-    it("should return 400 if field/s have wrong data type", async function () {
+    it("should return 400 if field/s have wrong data type", async function() {
       const res = await request(app)
         .post("/v1/jobs")
         .send({

@@ -3,10 +3,10 @@ import { expect } from "chai";
 import app from "../../index.js";
 import httpStatus from "http-status-codes";
 
-describe("Organizations API Tests", function () {
+describe("Organizations API Tests", function() {
 
-  describe("GET /v1/organizations", function () {
-    it("should return 200 and a list of organizations", async function () {
+  describe("GET /v1/organizations", function() {
+    it("should return 200 and a list of organizations", async function() {
       const res = await request(app)
         .get("/v1/organizations")
         .query({ page: 1, limit: 10 });
@@ -18,8 +18,8 @@ describe("Organizations API Tests", function () {
     });
   });
 
-  describe("GET /v1/organizations/:id", function () {
-    it("should return 200 and details of a single project", async function () {
+  describe("GET /v1/organizations/:id", function() {
+    it("should return 200 and details of a single project", async function() {
       const id = "2ec78beb-da60-435d-bbe1-b48f25b29326"; // Actual id
       const res = await request(app).get(`/v1/organizations/${id}`);
       console.log(res.body);
@@ -39,7 +39,7 @@ describe("Organizations API Tests", function () {
 
 
     // Test case to verify that the API returns 404 if the id does not exist in the system
-    it("should return 404, status FAILED, and a message when organization does not exist", async function () {
+    it("should return 404, status FAILED, and a message when organization does not exist", async function() {
       const notExistingid = "7f857ca0-fcca-4c5b-b619-d0612597dbb2"; // Non-existing id
       const res = await request(app).get(`/v1/organizations/${notExistingid}`);
 
@@ -52,8 +52,8 @@ describe("Organizations API Tests", function () {
     });
   });
 
-  // describe('GET /v1/organizations/:id/alumni', function () {
-  //     it('should return 200 and a list of alumni affiliated to the organization', async function () {
+  // describe('GET /v1/organizations/:id/alumni', function() {
+  //     it('should return 200 and a list of alumni affiliated to the organization', async function() {
   //         const id = '7f857ca0-fcca-4c5b-b619-d0612597dbb1'; // Actual alumId
   //         const res = await request(app).get(`/v1/organizations/${id}/alumni`);
 

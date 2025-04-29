@@ -5,11 +5,11 @@ import httpStatus from "http-status-codes";
 import { TestSignIn, TestSignOut, TestUsers } from "../auth/auth.common.js";
 const gAgent = request.agent(app);
 
-describe("Users API Tests", function () {
+describe("Users API Tests", function() {
   before(() => TestSignIn(gAgent, TestUsers.admin));
 
-  describe("GET /v1/users", function () {
-    it("should return 200 for GET /v1/users", async function () {
+  describe("GET /v1/users", function() {
+    it("should return 200 for GET /v1/users", async function() {
       const res = await gAgent
         .get("/v1/users")
         .query({ page: 1, limit: 10 });
@@ -21,8 +21,8 @@ describe("Users API Tests", function () {
     });
   });
 
-  describe("GET /v1/users/:userId", function () {
-    it("should return 200 for GET /v1/users/userId", async function () {
+  describe("GET /v1/users/:userId", function() {
+    it("should return 200 for GET /v1/users/userId", async function() {
       const userId = "75b6e610-9d0b-4884-b405-1e682e3aa3de";
       const res = await gAgent.get(`/v1/users/${userId}`);
 

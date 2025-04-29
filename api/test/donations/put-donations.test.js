@@ -5,14 +5,14 @@ import httpStatus from "http-status-codes";
 import {TestSignIn, TestSignOut, TestUsers} from "../auth/auth.common.js";
 const gAgent = request.agent(app);
 
-describe("Donations API Tests", function () {
+describe("Donations API Tests", function() {
   before(() => TestSignIn(gAgent, TestUsers.admin));
 
   const userId = "b4a6b230-20b9-4137-af62-8b535841c391";
   const projectId = "7f857ca0-fcca-4c5b-b619-d0612597dbb1";
 
-  describe("PUT /v1/donations/:donationId", function () {
-    it("should return 200 and update valid donation details", async function () {
+  describe("PUT /v1/donations/:donationId", function() {
+    it("should return 200 and update valid donation details", async function() {
       const donationId = "39f817bf-7301-4a60-bb59-7f29c05d7f91"; // Actual donationId
 
       //Precondition: Ensure the row exists before updating
@@ -61,7 +61,7 @@ describe("Donations API Tests", function () {
     });
 
     // Test case to verify that the API returns 200 for partial updates
-    it("should return 200 and update donation modeOfPayment", async function () {
+    it("should return 200 and update donation modeOfPayment", async function() {
       const donationId = "39f817bf-7301-4a60-bb59-7f29c05d7f91"; // Actual donationId
 
       //Precondition: Ensure the row exists before updating
@@ -98,7 +98,7 @@ describe("Donations API Tests", function () {
     });
 
     // Test case to verify that the API returns 400 if invalid donationId
-    it("should return 400, status FAILED, and a message when invalid donationId", async function () {
+    it("should return 400, status FAILED, and a message when invalid donationId", async function() {
       const donationId = "invalid-donation-id";       // invalid donationId
 
       const dateString = "2025-04-13";
@@ -126,7 +126,7 @@ describe("Donations API Tests", function () {
     });
 
     // Test case to verify that the API returns 403 if trying to edit userId
-    it("should return 403, status FORBIDDEN, and a message when trying to edit userId", async function () {
+    it("should return 403, status FORBIDDEN, and a message when trying to edit userId", async function() {
       const donationId = "39f817bf-7301-4a60-bb59-7f29c05d7f91";
       const userId = "b7085d72-f174-4b81-b106-ef68b27a48ee";
 
@@ -155,7 +155,7 @@ describe("Donations API Tests", function () {
     });
 
     // Test case to verify that the API returns 403 if trying to edit projectId
-    it("should return 403, status FORBIDDEN, and a message when trying to edit projectId", async function () {
+    it("should return 403, status FORBIDDEN, and a message when trying to edit projectId", async function() {
       const donationId = "39f817bf-7301-4a60-bb59-7f29c05d7f91";
       const projectId = "f9b7efab-003c-44f9-bea7-c856fb1e73cd";
 
@@ -184,7 +184,7 @@ describe("Donations API Tests", function () {
     });
 
     // Test case to verify that the API returns 404 if non-existing donationId
-    it("should return 404, status FAILED, and a message when non-existing donationId", async function () {
+    it("should return 404, status FAILED, and a message when non-existing donationId", async function() {
       const donationId = "39f817bf-7301-4a60-bb59-7f29c05d7f92";  // non-existing donationId
       const userId = "b7085d72-f174-4b81-b106-ef68b27a48ee";
       const projectId = "f9b7efab-003c-44f9-bea7-c856fb1e73cd";
@@ -214,7 +214,7 @@ describe("Donations API Tests", function () {
     });
   });
 
-  after(async function () {
+  after(async function() {
     const donationId = "39f817bf-7301-4a60-bb59-7f29c05d7f91";
     const originalData = {
       user_id: userId,

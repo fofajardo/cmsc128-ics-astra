@@ -7,12 +7,12 @@ import { TestSignIn, TestSignOut, TestUsers } from "../auth/auth.common.js";
 const gAgent = request.agent(app);
 
 // Tests for POST method of ALUMNUS user
-describe("Event Interest API Tests", function () {
+describe("Event Interest API Tests", function() {
   before(() => TestSignIn(gAgent, TestUsers.alumnus));
 
-  describe("POST /v1/event-interests/", function () {
+  describe("POST /v1/event-interests/", function() {
     // Test case for succesful event interest creation
-    it("should return 201 and a status", async function () {
+    it("should return 201 and a status", async function() {
       const res = await gAgent
         .post("/v1/event-interests")
         .send({
@@ -27,7 +27,7 @@ describe("Event Interest API Tests", function () {
     });
 
     // Test case for failed event interests creation due to missing required fields
-    it("should return 400 if a field is missing", async function () {
+    it("should return 400 if a field is missing", async function() {
       const res = await gAgent
         .post("/v1/event-interests")
         .send({
@@ -42,7 +42,7 @@ describe("Event Interest API Tests", function () {
     });
 
     // Test case for failed event interests creation due to invalid data type in fields
-    it("should return 400 if field/s have wrong data type", async function () {
+    it("should return 400 if field/s have wrong data type", async function() {
       const res = await gAgent
         .post("/v1/event-interests")
         .send({
@@ -61,10 +61,10 @@ describe("Event Interest API Tests", function () {
 });
 
 // Test for POST method od UNLINKED user
-describe("Unlinked - POST /v1/event-interests/", function () {
+describe("Unlinked - POST /v1/event-interests/", function() {
   before(() => TestSignIn(gAgent, TestUsers.unlinked));
   // Test case for succesful event interest creation
-  it("should return 201 and a status", async function () {
+  it("should return 201 and a status", async function() {
     const res = await gAgent
       .post("/v1/event-interests")
       .send({

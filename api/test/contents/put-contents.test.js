@@ -3,12 +3,12 @@ import { expect } from "chai";
 import app from "../../index.js";
 import httpStatus from "http-status-codes";
 
-describe("Contents API - PUT /v1/contents/:contentId", function () {
+describe("Contents API - PUT /v1/contents/:contentId", function() {
 
   const contentId = "4b02a71e-8e52-42ce-b545-a2f0960f1d16";
   const userId = "75b6e610-9d0b-4884-b405-1e682e3aa3de";
 
-  it("should return 200 and update valid content fields", async function () {
+  it("should return 200 and update valid content fields", async function() {
     const updatePayload = {
       title: "Updated Test Title",
       details: "This is an updated version of the content."
@@ -29,7 +29,7 @@ describe("Contents API - PUT /v1/contents/:contentId", function () {
     expect(verifyRes.body.content.details).to.equal(updatePayload.details);
   });
 
-  it("should return 400 when title is empty", async function () {
+  it("should return 400 when title is empty", async function() {
     const res = await request(app)
       .put(`/v1/contents/${contentId}`)
       .send({
@@ -41,7 +41,7 @@ describe("Contents API - PUT /v1/contents/:contentId", function () {
     expect(res.body.message).to.include("Title cannot be empty");
   });
 
-  it("should return 400 when details is empty", async function () {
+  it("should return 400 when details is empty", async function() {
     const res = await request(app)
       .put(`/v1/contents/${contentId}`)
       .send({
@@ -53,7 +53,7 @@ describe("Contents API - PUT /v1/contents/:contentId", function () {
     expect(res.body.message).to.include("Details cannot be empty");
   });
 
-  it("should return 400 when user_id is included (not allowed to edit)", async function () {
+  it("should return 400 when user_id is included (not allowed to edit)", async function() {
     const res = await request(app)
       .put(`/v1/contents/${contentId}`)
       .send({
@@ -66,7 +66,7 @@ describe("Contents API - PUT /v1/contents/:contentId", function () {
     expect(res.body.message).to.include("Updating user_id is not allowed");
   });
 
-  it("should return 404 if contentId does not exist", async function () {
+  it("should return 404 if contentId does not exist", async function() {
     const fakeId = "e1ed08c9-7545-4572-bfed-968085897950"; //Currently not in database
     const res = await request(app)
       .put(`/v1/contents/${fakeId}`)
@@ -80,7 +80,7 @@ describe("Contents API - PUT /v1/contents/:contentId", function () {
     expect(res.body.message).to.include("not found");
   });
 
-  it("should return 400 if contentId is invalid UUID", async function () {
+  it("should return 400 if contentId is invalid UUID", async function() {
     const res = await request(app)
       .put("/v1/contents/invalid-id")
       .send({

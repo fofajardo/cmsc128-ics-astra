@@ -10,7 +10,7 @@ const gAgent = request.agent(app);
 const kRoutePrefix = "/v1/work-experiences";
 
 
-describe("Work Experiences API Tests (Delete and Verify)", function () {
+describe("Work Experiences API Tests (Delete and Verify)", function() {
 
   this.timeout(4000);
 
@@ -19,7 +19,7 @@ describe("Work Experiences API Tests (Delete and Verify)", function () {
   let workExperienceId = null;
 
   // ✅ Precondition: Create a work_experience before running delete tests
-  before(async function () {
+  before(async function() {
     const testWorkExperience = {
       user_id: "75b6e610-9d0b-4884-b405-1e682e3aa3de",
       title: "test title",
@@ -43,8 +43,8 @@ describe("Work Experiences API Tests (Delete and Verify)", function () {
   });
 
   // Delete the work experience
-  describe(`DELETE ${kRoutePrefix}/:workExperienceId`, function () {
-    it("should delete the work experience and return status DELETED", async function () {
+  describe(`DELETE ${kRoutePrefix}/:workExperienceId`, function() {
+    it("should delete the work experience and return status DELETED", async function() {
       const res = await gAgent
         .delete(`${kRoutePrefix}/${workExperienceId}`);
 
@@ -53,13 +53,13 @@ describe("Work Experiences API Tests (Delete and Verify)", function () {
       expect(res.body).to.have.property("status", "DELETED");
     });
 
-    it(`should return ${httpStatus.NOT_FOUND}, status FAILED, and a message when fetching a deleted work_experience`, async function () {
+    it(`should return ${httpStatus.NOT_FOUND}, status FAILED, and a message when fetching a deleted work_experience`, async function() {
       const res = await gAgent.get(`${kRoutePrefix}/${workExperienceId}`);
 
       expect(res.status).to.equal(httpStatus.NOT_FOUND);
     });
 
-    it(`should return ${httpStatus.BAD_REQUEST} when workExperienceId is not a valid UUID`, async function () {
+    it(`should return ${httpStatus.BAD_REQUEST} when workExperienceId is not a valid UUID`, async function() {
       const res = await gAgent
         .delete(`${kRoutePrefix}/not-a-valid-id`);
 
@@ -70,7 +70,7 @@ describe("Work Experiences API Tests (Delete and Verify)", function () {
       expect(res.body).to.have.property("message").that.is.a("string");
     });
 
-    it("should return an empty object when workExperienceId is not provided", async function () {
+    it("should return an empty object when workExperienceId is not provided", async function() {
 
       const res = await gAgent
         .delete(`${kRoutePrefix}`);
@@ -78,7 +78,7 @@ describe("Work Experiences API Tests (Delete and Verify)", function () {
       expect(res.body).to.be.empty;
     });
 
-    it(`should return ${httpStatus.NOT_FOUND}, status FAILED, and a message when deleting a non-existing work_experience`, async function () {
+    it(`should return ${httpStatus.NOT_FOUND}, status FAILED, and a message when deleting a non-existing work_experience`, async function() {
       const nonExistentId = workExperienceId;   // non-existing id
       const res = await gAgent
         .delete(`${kRoutePrefix}/${nonExistentId}`);
@@ -92,8 +92,8 @@ describe("Work Experiences API Tests (Delete and Verify)", function () {
   });
 
   // Verify deletion
-  describe(`GET ${kRoutePrefix}/:workExperienceId after deletion`, function () {
-    it(`should return ${httpStatus.NOT_FOUND} Not Found`, async function () {
+  describe(`GET ${kRoutePrefix}/:workExperienceId after deletion`, function() {
+    it(`should return ${httpStatus.NOT_FOUND} Not Found`, async function() {
       const res = await gAgent.get(`${kRoutePrefix}/${workExperienceId}`);
 
       expect(res.status).to.equal(httpStatus.NOT_FOUND);

@@ -3,10 +3,10 @@ import { expect } from "chai";
 import app from "../../index.js";
 import httpStatus from "http-status-codes";
 
-describe("Contents API Tests", function () {
+describe("Contents API Tests", function() {
 
-  describe("GET /v1/contents", function () {
-    it("should return 200 and a list of content items", async function () {
+  describe("GET /v1/contents", function() {
+    it("should return 200 and a list of content items", async function() {
       const res = await request(app)
         .get("/v1/contents")
         .query();
@@ -28,7 +28,7 @@ describe("Contents API Tests", function () {
       }
     });
 
-    it("should return filtered results based on created_at date range", async function () {
+    it("should return filtered results based on created_at date range", async function() {
       const dateFrom = "2025-01-01T00:00:00.000Z";
       const dateTo = "2025-01-31T23:59:59.999Z";
       const res = await request(app)
@@ -55,7 +55,7 @@ describe("Contents API Tests", function () {
       }
     });
 
-    it("should return filtered results based on title search", async function () {
+    it("should return filtered results based on title search", async function() {
       const titleSearch = "AMIS";
       const res = await request(app)
         .get("/v1/contents")
@@ -76,7 +76,7 @@ describe("Contents API Tests", function () {
       }
     });
 
-    it("should return filtered results based on tags", async function () {
+    it("should return filtered results based on tags", async function() {
       const tagSearch = "tag1";  // Example tag to filter by
       const res = await request(app)
         .get("/v1/contents")
@@ -97,7 +97,7 @@ describe("Contents API Tests", function () {
 
 
 
-    it("should return sorted results based on views", async function () {
+    it("should return sorted results based on views", async function() {
       const res = await request(app)
         .get("/v1/contents")
         .query({
@@ -121,8 +121,8 @@ describe("Contents API Tests", function () {
     });
   });
 
-  describe("GET /v1/contents/:contentId", function () {
-    it("should return 200 and details of a single content item", async function () {
+  describe("GET /v1/contents/:contentId", function() {
+    it("should return 200 and details of a single content item", async function() {
       const contentId = "7f857ca0-fcca-4c5b-b619-d0612597dbb1";
       const res = await request(app).get(`/v1/contents/${contentId}`);
 

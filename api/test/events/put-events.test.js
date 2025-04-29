@@ -6,9 +6,9 @@ import { TestSignIn, TestSignOut, TestUsers } from "../auth/auth.common.js";
 
 const gAgent = request.agent(app);
 
-describe("PUT /v1/events/:eventId", function () {
+describe("PUT /v1/events/:eventId", function() {
   before(() => TestSignIn(gAgent, TestUsers.admin));
-  it("should update an event successfully", async function () {
+  it("should update an event successfully", async function() {
     const eventId = "f9b7efab-003c-44f9-bea7-c856fb1e73cd"; // placeholders for eventId, replace with a valid one
 
     // replace the hardcoded values with user input
@@ -33,7 +33,7 @@ describe("PUT /v1/events/:eventId", function () {
     expect(response.body).to.have.property("message");
   });
 
-  it("should return FORBIDDEN if the user is not authorized", async function () {
+  it("should return FORBIDDEN if the user is not authorized", async function() {
     const eventId = "f9b7efab-003c-44f9-bea7-c856fb1e73cd"; // placeholders for eventId, replace with a valid one
 
     // replace the hardcoded values with user input
@@ -56,7 +56,7 @@ describe("PUT /v1/events/:eventId", function () {
     expect(response.body).to.have.property("message");
   });
 
-  it("should return FAILED if eventId is invalid", async function () {
+  it("should return FAILED if eventId is invalid", async function() {
     const eventId = "f9b7efab-003c-44f9-bea7-c856fb1e73c@";
 
     // replace the hardcoded values with user input
@@ -81,9 +81,9 @@ describe("PUT /v1/events/:eventId", function () {
 });
 
 
-describe("Alumnus PUT /v1/events/:eventId", function () {
+describe("Alumnus PUT /v1/events/:eventId", function() {
   before(() => TestSignIn(gAgent, TestUsers.alumnus));
-  it("should forbidden update of an event", async function () {
+  it("should forbidden update of an event", async function() {
     const eventId = "f9b7efab-003c-44f9-bea7-c856fb1e73cd"; // placeholders for eventId, replace with a valid one
 
     // replace the hardcoded values with user input
