@@ -6,7 +6,6 @@ import { ActionButton } from "@/components/Buttons";
 import { useTab } from "../../components/TabContext";
 import ConfirmModal from "@/components/ConfirmModal";
 import ToastNotification from "@/components/ToastNotification";
-// import { jobList }from "./dummy";
 import { Trash2, Eye } from "lucide-react";
 import axios from "axios";
 
@@ -16,6 +15,8 @@ export default function Jobs() {
   const { currTab, info } = useTab();
   const [toast, setToast] = useState(null);
   const [jobs, setJobs] = useState([]);
+  const [filteredJobs, setFilteredJobs] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const itemsPerPage = 5;
 
   const toggleFilter = () => {
@@ -33,33 +34,6 @@ export default function Jobs() {
   });
 
   useEffect(() => {
-    const total = jobs.length;
-    const lastPage = Math.max(1, Math.ceil(total / itemsPerPage));
-    const currPage = 1;
-
-    setPagination({
-      display: [1, Math.min(itemsPerPage, total)],
-      currPage,
-      lastPage,
-      numToShow: itemsPerPage,
-      total,
-      itemsPerPage
-    });
-  }, [jobs]);
-
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const handleSearch = (searchInput) => {
-    setSearchQuery(searchInput);
-
-    // put job search logic here
-  };
-
-  const handleApply = () => {
-    // put filtering and sorting logic here
-  };
-
-  useEffect(() => {
     const fetchJobs = async () => {
       try {
         const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs`);
@@ -74,6 +48,40 @@ export default function Jobs() {
     };
     fetchJobs();
   }, []);
+
+  useEffect(() => {
+    setFilteredJobs(jobs);
+  }, [jobs]);
+
+  useEffect(() => {
+    const total = filteredJobs.length;
+    const lastPage = Math.max(1, Math.ceil(total / itemsPerPage));
+
+    setPagination({
+      display: [1, Math.min(itemsPerPage, total)],
+      currPage: 1,
+      lastPage,
+      numToShow: itemsPerPage,
+      total,
+      itemsPerPage
+    });
+  }, [filteredJobs, searchQuery]);
+
+  const handleSearch = (searchInput) => {
+    setSearchQuery(searchInput);
+    const lower = (searchInput || "").toLowerCase();
+    const filtered = jobs.filter(job => (job.job_title || "").toLowerCase().includes(lower));
+    setFilteredJobs(filtered);
+  };
+
+  useEffect(() => {
+    handleSearch(searchQuery);
+  }, [searchQuery]); // Trigger when searchQuery changes
+
+
+  const handleApply = () => {
+    // put filtering and sorting logic here
+  };
 
   return (
     <div>
@@ -101,7 +109,7 @@ export default function Jobs() {
       <div className="bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24 flex flex-col">
         <div className='flex flex-col py-4 px-1 md:px-4 lg:px-8'>
           <TableHeader info={info} pagination={pagination} setPagination={setPagination} toggleFilter={toggleFilter} setSearchQuery={handleSearch} searchQuery={searchQuery} />
-          <Table cols={cols} data={createRows(selectedIds, setSelectedIds, currTab, jobs)} />
+          <Table cols={cols} data={createRows(selectedIds, setSelectedIds, currTab, filteredJobs)} />
           <PageTool pagination={pagination} setPagination={setPagination} />
         </div>
         <div className="flex flex-row justify-between md:pl-4 lg:pl-8">
@@ -243,8 +251,8 @@ const cols = [
   { label: "Quick Actions", justify: "center", visible: "all" },
 ];
 
-function createRows(selectedIds, setSelectedIds, currTab, jobs) {
-  return jobs.map((job) => ({
+function createRows(selectedIds, setSelectedIds, currTab, filteredJobs) {
+  return filteredJobs.map((job) => ({
     "Title": renderTitle(job.job_title),
     "Company": renderText(job.company_name),
     "Location": renderText(job.location),

@@ -52,12 +52,15 @@ export function SearchComponent({ placeholder, setSearchQuery, searchQuery }) {
     <div className='flex items-center bg-astrawhite rounded-xl border border-astradarkgray focus-within:border-astraprimary h-12'>
       <Search className='m-4 text-astradarkgray w-5 h-5' />
       <input
-        type="text"
-        className='outline-none'
-        placeholder={placeholder}
-        value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
-        onKeyDown={handleKeyDown}
+      type="text"
+      className='outline-none'
+      placeholder={placeholder}
+      value={inputValue}
+      onChange={(e) => {
+        const val = e.target.value;
+        setInputValue(val);
+        setSearchQuery(val);
+      }}
       />
     </div>
   );
