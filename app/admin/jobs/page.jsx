@@ -33,19 +33,20 @@ export default function Jobs() {
     itemsPerPage
   });
 
-  useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs`);
-        if (response.data.status === "OK") {
-          setJobs(response.data.list || []);
-        } else {
-          console.error("Unexpected response from server.");
-        }
-      } catch (error) {
-        console.error("Failed to fetch jobs. Please try again later.");
+  const fetchJobs = async () => {
+    try {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs`);
+      if (response.data.status === "OK") {
+        setJobs(response.data.list || []);
+      } else {
+        console.error("Unexpected response from server.");
       }
-    };
+    } catch (error) {
+      console.error("Failed to fetch jobs. Please try again later.");
+    }
+  };
+
+  useEffect(() => {
     fetchJobs();
   }, []);
 
@@ -141,7 +142,7 @@ export default function Jobs() {
       <div className="bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24 flex flex-col">
         <div className='flex flex-col py-4 px-1 md:px-4 lg:px-8'>
           <TableHeader info={info} pagination={pagination} setPagination={setPagination} toggleFilter={toggleFilter} setSearchQuery={handleSearch} searchQuery={searchQuery} />
-          <Table cols={cols} data={createRows(selectedIds, setSelectedIds, currTab, filteredJobs)} />
+          <Table cols={cols} data={createRows(selectedIds, setSelectedIds, currTab, filteredJobs, fetchJobs)} />
           <PageTool pagination={pagination} setPagination={setPagination} />
         </div>
         <div className="flex flex-row justify-between md:pl-4 lg:pl-8">
@@ -280,15 +281,15 @@ const cols = [
   { label: "Quick Actions", justify: "center", visible: "all" },
 ];
 
-function createRows(selectedIds, setSelectedIds, currTab, filteredJobs) {
+function createRows(selectedIds, setSelectedIds, currTab, filteredJobs, fetch) {
   return filteredJobs.map((job) => ({
     "Title": renderTitle(job.job_title),
     "Company": renderText(job.company_name),
     "Location": renderText(job.location),
     "Type": renderType(job.employment_type),
     "Posted": renderText(job.created_at),
-    "Status": renderStatus(job.expiresAt),
-    "Quick Actions": renderActions(job.job_id, job.job_title, currTab),
+    "Status": renderStatus(job.expires_at),
+    "Quick Actions": renderActions(job.job_id, job.job_title, currTab, fetch),
   }));
 }
 
@@ -337,10 +338,19 @@ function renderStatus(expiresAt) {
   return <div className={`text-center ${text === "Expired" ? "text-astrared" : "text-astragreen"} font-s`}>{text}</div>;
 }
 
-function renderActions(id, name) {
-  const handleDelete = () => {
-    // handle delete job id logic here
-
+function renderActions(id, name, currTab, onDeleteSuccess) {
+  const handleDelete = async () => {
+    try {
+      const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs/${id}`);
+      if (response.data.status === "DELETED") {
+        console.log("Successfully deleted");
+        onDeleteSuccess();
+      } else {
+        console.error("Failed to delete job.");
+      }
+    } catch (error) {
+      console.error("Error deleting job:", error);
+    }
   };
   return (
 

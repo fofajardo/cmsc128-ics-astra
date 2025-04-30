@@ -345,39 +345,49 @@ const deleteJob = async (req, res) => {
       });
     }
 
+    // Check if job exists
     const { data, error: findError } = await jobsService.fetchJobById(req.supabase, jobId);
-
     if (findError || !data) {
       return res.status(httpStatus.NOT_FOUND).json({
         status: "FAILED",
-        message: "Job not found"
+        message: "Job not found",
       });
     }
 
-
-    const { error: deleteError } = await jobsService.deleteJobData(req.supabase, jobId);
-
-    if (deleteError) {
-      console.error(`Error deleting job with ID ${jobId}:`, deleteError);
+    // 1. Delete from jobs table
+    const { error: deleteJobError } = await jobsService.deleteJobData(req.supabase, jobId);
+    if (deleteJobError) {
+      console.error(`Error deleting job with ID ${jobId}:`, deleteJobError);
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
         status: "FAILED",
-        message: deleteError.message
+        message: deleteJobError.message,
+      });
+    }
+
+    // 2. Delete from contents table
+    const { error: deleteContentError } = await contentsService.deleteContentData(req.supabase, jobId);
+    if (deleteContentError) {
+      console.error(`Error deleting content with ID ${jobId}:`, deleteContentError);
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: deleteContentError.message,
       });
     }
 
     return res.status(httpStatus.OK).json({
       status: "DELETED",
-      message: `Job with ID ${jobId} has been successfully deleted.`,
-      data: { jobId },  // Optionally return jobId for clarity
+      message: `Job and content with ID ${jobId} have been successfully deleted.`,
     });
+
   } catch (error) {
     console.error("Unexpected error during job deletion:", error);
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: "FAILED",
-      message: error.message || "An error occurred while deleting the job"
+      message: error.message || "An error occurred while deleting the job",
     });
   }
 };
+
 
 const jobsController = {
   getJobs,

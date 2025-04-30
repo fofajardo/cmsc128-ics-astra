@@ -12,7 +12,6 @@ export default function BigJobCardwDelete({ job = {}, content = {} }) {
 
   const handleDelete = async () => {
     try {
-      console.log(id)
       const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs/${id}`);
       if (response.data.status === "DELETED") {
         router.push("/admin/jobs"); // Redirect after successful deletion
