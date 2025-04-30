@@ -26,26 +26,27 @@ import organizationAffiliationsRouter from "./organizationAffiliationsRoutes.js"
 import reportsRouter from "./reportsRoutes.js";
 import requestsRouter from "./requestsRoutes.js";
 import jobsRouter from "./jobsRoutes.js";
+import {Routes} from "../../common/routes.js";
 
 const registerRoutes = (app) => {
   ensureDirectoriesExist(); // Ensure the directory exists before using it
 
-  app.use("/v1/users", usersRouter());
-  app.use("/v1/degree-programs", degreeProgramsRouter());
-  app.use("/v1/photos", photosRouter());
-  app.use("/v1/alumni-profiles", alumniProfilesRouter());
-  app.use("/v1/contents", contentsRouter());
-  app.use("/v1/work-experiences", workExperiencesRouter());
-  app.use("/v1/events", eventsRouter());
-  app.use("/v1/event-interests", eventInterestsRouter());
-  app.use("/v1/auth", authRouter());
-  app.use("/v1/projects", projectsRouter());
-  app.use("/v1/donations", donationsRouter());
-  app.use("/v1/organizations", organizationsRouter());
-  app.use("/v1/organization-affiliations", organizationAffiliationsRouter());
-  app.use("/v1/reports", reportsRouter());
-  app.use("/v1/requests", requestsRouter());
-  app.use("/v1/jobs", jobsRouter());
+  app.use(Routes.auth.base(), authRouter());
+  app.use(Routes.users.base(), usersRouter());
+  app.use(Routes.degreePrograms.base(), degreeProgramsRouter());
+  app.use(Routes.photos.base(), photosRouter());
+  app.use(Routes.alumniProfiles.base(), alumniProfilesRouter());
+  app.use(Routes.contents.base(), contentsRouter());
+  app.use(Routes.workExperiences.base(), workExperiencesRouter());
+  app.use(Routes.events.base(), eventsRouter());
+  app.use(Routes.eventInterests.base(), eventInterestsRouter());
+  app.use(Routes.projects.base(), projectsRouter());
+  app.use(Routes.donations.base(), donationsRouter());
+  app.use(Routes.organizations.base(), organizationsRouter());
+  app.use(Routes.organizationAffiliations.base(), organizationAffiliationsRouter());
+  app.use(Routes.reports.base(), reportsRouter());
+  app.use(Routes.requests.base(), requestsRouter());
+  app.use(Routes.jobs.base(), jobsRouter());
 };
 
 export default registerRoutes;
