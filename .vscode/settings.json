@@ -1,0 +1,7 @@
+{
+    "editor.tabSize": 2,
+    "editor.trimAutoWhitespace": true,
+    "diffEditor.ignoreTrimWhitespace": true,
+    "files.trimTrailingWhitespaceInRegexAndStrings": true,
+    "files.trimTrailingWhitespace": true
+}

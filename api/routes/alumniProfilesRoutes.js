@@ -2,14 +2,14 @@ import express from "express";
 import alumniProfilesController from "../controllers/alumniProfilesController.js";
 
 const alumniProfilesRouter = () => {
-    const router = express.Router();
+  const router = express.Router();
 
-    router.get("/", alumniProfilesController.getAlumniProfiles);
-    router.get("/:userId", alumniProfilesController.getAlumniProfileById);
-    router.post("/:userId", alumniProfilesController.createAlumniProfile);
-    router.put("/:userId", alumniProfilesController.updateAlumniProfile);
+  router.get("/", alumniProfilesController.getAlumniProfiles);
+  router.get("/:userId", alumniProfilesController.getAlumniProfileById);
+  router.post("/:userId", alumniProfilesController.createAlumniProfile);
+  router.put("/:userId", alumniProfilesController.updateAlumniProfile);
 
-    return router;
+  return router;
 };
 
 export default alumniProfilesRouter;

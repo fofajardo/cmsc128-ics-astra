@@ -16,7 +16,7 @@ gServer.use(express.json());
 gServer.use(express.urlencoded({ extended: false }));
 
 gServer.get("/", (req, res) => {
-    res.status(httpStatus.OK).json({ message: "API is working!" });
+  res.status(httpStatus.OK).json({ message: "API is working!" });
 });
 
 gServer.use(InferAbility);
@@ -29,5 +29,5 @@ export default gServer;
 
 const kPort = process.env.ICSA_API_PORT;
 gServer.listen(kPort, () => {
-    console.log(`Listening to port: ${kPort}`);
+  console.log(`Listening to port: ${kPort}`);
 });

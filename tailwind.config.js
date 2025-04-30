@@ -25,7 +25,7 @@ module.exports = {
         display: ["Inter", "sans-serif"],
       },
       fontSize: {
-        '5xl': '3rem', // Define custom size for text-5xl
+        "5xl": "3rem", // Define custom size for text-5xl
       },
     },
   },

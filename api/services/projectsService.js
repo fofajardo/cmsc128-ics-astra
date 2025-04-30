@@ -1,4 +1,4 @@
-import { applyFilter } from '../utils/applyFilter.js';
+import { applyFilter } from "../utils/applyFilter.js";
 
 /*
 Format /projects?query_key=query_value&query2_key=query2_value&...
@@ -16,63 +16,63 @@ sort_by
 order
 */
 const fetchProjects = async (supabase, filters) => {
-    let query = supabase
-        .from('projects')
-        .select('*');
+  let query = supabase
+    .from("projects")
+    .select("*");
 
-    query = applyFilter(query, filters, {
-        ilike: ['donation_link'],
-        range: {
-            // due_date: [filters.from_due_date, filters.to_due_date],
-            goal_amount: [filters.min_goal, filters.max_goal]       // e.g. /projects?min_goal=35000&max_goal=50000
-        },
-        sortBy: 'due_date',
-        defaultOrder: 'asc',
-        specialKeys: [
-            // 'from_due_date',
-            // 'to_due_date',
-            'min_goal',
-            'max_goal'
-        ]
-    });
+  query = applyFilter(query, filters, {
+    ilike: ["donation_link"],
+    range: {
+      // due_date: [filters.from_due_date, filters.to_due_date],
+      goal_amount: [filters.min_goal, filters.max_goal]       // e.g. /projects?min_goal=35000&max_goal=50000
+    },
+    sortBy: "due_date",
+    defaultOrder: "asc",
+    specialKeys: [
+      // 'from_due_date',
+      // 'to_due_date',
+      "min_goal",
+      "max_goal"
+    ]
+  });
 
-    return await query;
+  return await query;
 };
 
 const fetchProjectById = async (supabase, projectId) => {
-    return await supabase
-        .from('projects')
-        .select('*')
-        .eq('project_id', projectId)
-        .single();
+  return await supabase
+    .from("projects")
+    .select("*")
+    .eq("project_id", projectId)
+    .single();
 };
 
 const insertProject = async (supabase, projectData) => {
-    return await supabase
-        .from('projects')
-        .insert(projectData);
+  return await supabase
+    .from("projects")
+    .insert(projectData);
 };
 
 const updateProjectData = async (supabase, projectId, updateData) => {
-    return await supabase
-        .from('projects')
-        .update(updateData)
-        .eq('project_id', projectId);
+  return await supabase
+    .from("projects")
+    .update(updateData)
+    .eq("project_id", projectId);
 };
 
 const deleteProject = async (supabase, projectId) => {
-    return await supabase
-        .from('projects')
-        .delete()
-        .eq('project_id', projectId);
-}
+  return await supabase
+    .from("projects")
+    .delete()
+    .eq("project_id", projectId);
+};
 
 const projectsService = {
-    fetchProjects,
-    fetchProjectById,
-    insertProject,
-    updateProjectData,
-    deleteProject
+  fetchProjects,
+  fetchProjectById,
+  insertProject,
+  updateProjectData,
+  deleteProject
 };
 
 export default projectsService;

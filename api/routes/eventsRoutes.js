@@ -3,17 +3,17 @@ import eventsController from "../controllers/eventsController.js";
 import {RequireAuthenticated} from "../middleware/requireAuthenticated.js";
 
 const eventsRouter = () => {
-    const router = express.Router();
+  const router = express.Router();
 
-    router.use(RequireAuthenticated);
-    router.get("/", eventsController.getEvents);
-    router.get("/:eventId", eventsController.getEventById);
-    router.post("/", eventsController.createEvent);
-    router.put("/:eventId", eventsController.updateEvent);
-    router.delete("/",eventsController.deleteEmptyEvent);
-    router.delete("/:eventId",  eventsController.deleteEvent);
+  router.use(RequireAuthenticated);
+  router.get("/", eventsController.getEvents);
+  router.get("/:eventId", eventsController.getEventById);
+  router.post("/", eventsController.createEvent);
+  router.put("/:eventId", eventsController.updateEvent);
+  router.delete("/",eventsController.deleteEmptyEvent);
+  router.delete("/:eventId",  eventsController.deleteEvent);
 
-    return router;
+  return router;
 };
 
 export default eventsRouter;
