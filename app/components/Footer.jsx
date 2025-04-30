@@ -7,6 +7,7 @@ export default function Footer() {
     { text: "Home", link: "/home" },
     { text: "About", link: "/about" },
     { text: "Events", link: "/events" },
+    { text: "Jobs", link: "/jobs" },
     {text:"Request Alumni Info", link:"/whats-up/request-info"}
   ];
   const helpers = [
