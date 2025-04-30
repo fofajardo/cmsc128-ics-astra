@@ -68,20 +68,53 @@ export default function Jobs() {
   }, [filteredJobs, searchQuery]);
 
   const handleSearch = (searchInput) => {
-    setSearchQuery(searchInput);
     const lower = (searchInput || "").toLowerCase();
-    const filtered = jobs.filter(job => (job.job_title || "").toLowerCase().includes(lower));
+    const filtered = jobs.filter(job =>
+      (job.job_title || "").toLowerCase().includes(lower)
+    );
+
+    setSearchQuery(searchInput);
     setFilteredJobs(filtered);
   };
 
-  useEffect(() => {
-    handleSearch(searchQuery);
-  }, [searchQuery]); // Trigger when searchQuery changes
+  const handleApply = (filters = {}) => {
+    const {
+      companyName = "",
+      location = "",
+      jobType = "",
+      fromDate = "",
+      toDate = "",
+    } = filters;
 
+    const lowerCompany = companyName.toLowerCase();
+    const lowerLocation = location.toLowerCase();
+    const parsedJobType = jobType ? Number(jobType) : null;
+    const yearFrom = parseInt(fromDate, 10);
+    const yearTo = parseInt(toDate, 10);
 
-  const handleApply = () => {
-    // put filtering and sorting logic here
+    const filtered = jobs.filter(job => {
+      const jobCompany = (job.company_name || "").toLowerCase();
+      const jobLocation = (job.location || "").toLowerCase();
+      const jobTypeNum = Number(job.employment_type);
+      const jobYear = parseInt(job.created_at, 10);
+      const matchesCompany = !lowerCompany || jobCompany.includes(lowerCompany);
+      const matchesLocation = !lowerLocation || jobLocation.includes(lowerLocation);
+      const matchesType = parsedJobType === null || jobTypeNum === parsedJobType;
+      const matchesYearFrom = isNaN(yearFrom) || jobYear >= yearFrom;
+      const matchesYearTo = isNaN(yearTo) || jobYear <= yearTo;
+
+      return (
+        matchesCompany &&
+        matchesLocation &&
+        matchesType &&
+        matchesYearFrom &&
+        matchesYearTo
+      );
+    });
+
+    setFilteredJobs(filtered);
   };
+
 
   return (
     <div>
@@ -238,9 +271,6 @@ function BottomButtons({ selectedCount, currTab, setToast }) {
   );
 }
 
-
-
-
 const cols = [
   { label: "Title", justify: "start", visible: "all" },
   { label: "Company", justify: "center", visible: "sm" },
@@ -256,7 +286,7 @@ function createRows(selectedIds, setSelectedIds, currTab, filteredJobs) {
     "Title": renderTitle(job.job_title),
     "Company": renderText(job.company_name),
     "Location": renderText(job.location),
-    "Type": renderText(job.job_type),
+    "Type": renderType(job.employment_type),
     "Posted": renderText(job.created_at),
     "Status": renderStatus(job.status),
     "Quick Actions": renderActions(job.id, job.job_title, currTab),
@@ -275,6 +305,27 @@ function renderText(text) {
   return <div className="text-center text-astradarkgray font-s">{text}</div>;
 }
 
+function renderType(type) {
+  let text;
+
+  switch (type) {
+    case 0:
+      text = "Full-time";
+      break;
+    case 1:
+      text = "Part-time";
+      break;
+    case 2:
+      text = "Temporary";
+      break;
+    case 3:
+      text = "Freelance";
+      break;
+    default:
+      text = "Unknown";
+  }
+  return <div className="text-center text-astradarkgray font-s">{text}</div>;
+}
 
 function renderStatus(text) {
   return <div className={`text-center ${text === "Expired" ? "text-astrared" : "text-astragreen"} font-s`}>{text}</div>;
