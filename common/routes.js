@@ -11,8 +11,8 @@ export class Routes {
     base: () => `${Routes.BASE_URL}/auth`,
     signUp: () => `${Routes.BASE_URL}/auth/sign-up`,
     signIn: () => `${Routes.BASE_URL}/auth/sign-in`,
-    signInExternal: () => `${Routes.BASE_URL}/auth/sign-in-external`,
-    signInExternalCallback: () => `${Routes.BASE_URL}/auth/sign-in-external/callback`,
+    signInExternal: () => `${Routes.BASE_URL}/auth/sign-in/external`,
+    signInExternalCallback: () => `${Routes.BASE_URL}/auth/sign-in/external/callback`,
     signedInUser: () => `${Routes.BASE_URL}/auth/signed-in-user`,
     signOut: () => `${Routes.BASE_URL}/auth/sign-out`
   };

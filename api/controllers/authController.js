@@ -1,4 +1,5 @@
 import httpStatus from "http-status-codes";
+import {Routes} from "../../common/routes.js";
 
 async function signUp(aRequest, aResponse, aNext) {
   const {body} = aRequest;
@@ -22,7 +23,7 @@ async function signUp(aRequest, aResponse, aNext) {
     return aResponse.sendErrorUnauthenticated(error.message);
   }
 
-    return aResponse.sendOk(data);
+  return aResponse.sendOk(data);
 }
 
 async function signInSbLocal(aRequest, aResponse, aNext) {
@@ -39,6 +40,49 @@ async function signInSbLocal(aRequest, aResponse, aNext) {
     email: body.username,
     password: body.password,
   });
+
+  const {data, error} = authTokenResponse;
+
+  if (error) {
+    return aResponse.sendErrorUnauthenticated(error.message);
+  }
+
+  aRequest.rebuildUser(authTokenResponse);
+
+  return aNext();
+}
+
+async function signInSbExternal(aRequest, aResponse, aNext) {
+  const { provider } = aRequest.query;
+  if (provider === null || provider === undefined) {
+    return aResponse.sendErrorClient("Provider is missing");
+  }
+
+  const allowedProviders = ["google"];
+  if (!allowedProviders.includes(provider)) {
+    return aResponse.sendErrorClient("Unknown provider");
+  }
+
+  const { data, error } = await aRequest.supabase.auth.signInWithOAuth({
+    provider,
+    options: {
+      redirectTo: process.env.NEXT_PUBLIC_API_URL + Routes.auth.signInExternalCallback(),
+    },
+  });
+
+  if (data.url) {
+    aResponse.redirect(data.url);
+  }
+}
+
+async function signInSbExternalCallback(aRequest, aResponse, aNext) {
+  const { code } = aRequest.query;
+
+  if (!code) {
+    return aResponse.sendErrorClient("No code provided");
+  }
+
+  const authTokenResponse = await aRequest.supabase.auth.exchangeCodeForSession(code);
 
   const {data, error} = authTokenResponse;
 
@@ -82,6 +126,8 @@ async function signOut(aRequest, aResponse) {
 const authController = {
   signUp,
   signInSbLocal,
+  signInSbExternal,
+  signInSbExternalCallback,
   signInGate,
   signedInUser,
   signOut,
