@@ -5,15 +5,6 @@ import photosRouter from "./photosRoutes.js";
 
 import fs from "fs";
 import path from "path";
-
-const ensureDirectoriesExist = () => {
-  const photosDir = path.join("assets", "photos");
-  if (!fs.existsSync(photosDir)) {
-    fs.mkdirSync(photosDir, { recursive: true });
-    console.log(`Created directory: ${photosDir}`);
-  }
-};
-
 import contentsRouter from "./contentsRoutes.js";
 import workExperiencesRouter from "./workExperiencesRoutes.js";
 import eventsRouter from "./eventsRoutes.js";
@@ -27,6 +18,14 @@ import reportsRouter from "./reportsRoutes.js";
 import requestsRouter from "./requestsRoutes.js";
 import jobsRouter from "./jobsRoutes.js";
 import {Routes} from "../../common/routes.js";
+
+const ensureDirectoriesExist = () => {
+  const photosDir = path.join("assets", "photos");
+  if (!fs.existsSync(photosDir)) {
+    fs.mkdirSync(photosDir, {recursive: true});
+    console.log(`Created directory: ${photosDir}`);
+  }
+};
 
 const registerRoutes = (app) => {
   ensureDirectoriesExist(); // Ensure the directory exists before using it
