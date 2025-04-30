@@ -14,6 +14,7 @@ import {
   Calendar,
   Briefcase,
   Gift,
+  School,
   MessageCircle,
   ChevronDown,
   ChevronUp,
@@ -36,6 +37,7 @@ const menuItems = [
   { icon: <Briefcase size={18} />, label: "Jobs", path: "/admin/jobs" },
   { icon: <Gift size={18} />, label: "Projects", path: "/admin/projects" },
   { icon: <MessageCircle size={18} />, label: "What's up?", path: "/admin/whats-up" },
+  { icon: <School size={18} />, label: "Organizations", path: "/admin/organizations" },
 ];
 
 function Navbar({ toggleSidebar, isSidebarOpen, isScrolled }) {
