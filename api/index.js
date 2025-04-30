@@ -6,7 +6,6 @@ import { InferAbility } from "./middleware/inferAbility.js";
 import {BuildSupabaseClient} from "./middleware/buildSupabaseClient.js";
 import {BuildAuth} from "./middleware/buildAuth.js";
 import {ResponseHelper} from "./middleware/responseHelper.js";
-import cors from "cors";
 
 env.config({ path: [".env", "../.env"] });
 

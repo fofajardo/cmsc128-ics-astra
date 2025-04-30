@@ -40,7 +40,7 @@ const getDegreeProgramById = async (req, res) => {
 
       if (error || !data) {
           return res.status(httpStatus.NOT_FOUND).json({
-              status: "AS AS AILED",
+              status: "FAILED",
               message: "Degree program not found",
           });
       }
