@@ -44,18 +44,15 @@ export default function PersonalInfoPage() {
   return (
     <div className="min-h-screen flex bg-[var(--color-astratintedwhite)]">
       <div className="w-full md:w-1/2 relative flex items-center justify-center px-4 md:px-8">
-        <div className="absolute top-6 left-1/2 -translate-x-1/2">
-          <img
-            src="/astra-logo.png"
-            alt="ICS-ASTRA Logo"
-            width={70}
-            height={70}
-            className="mb-3 hidden sm:block" // Hide the image on small screens (mobile)
-          />
-        </div>
-
         <div className="max-w-md w-full mx-auto">
-          <form className="space-y-4 px-4 sm:px-6 md:px-8">
+          <form className="space-y-4 px-4 sm:px-6 sm:pt-4 md:px-8 md:pt-6">
+            <img
+              src="/astra-logo-w-name.png"
+              alt="ICS-ASTRA Logo"
+              height={30}
+              width={120}
+              className="w-auto mb-2"
+            />
             <h2 className="text-lg md:text-2xl font-semibold text-black mb-4">Personal Information</h2>
             <div>
               <label htmlFor="preferred-delegation" className="block text-sm font-medium text-[var(--color-astrablack)] mb-1">
