@@ -115,7 +115,6 @@ export default function Jobs() {
     setFilteredJobs(filtered);
   };
 
-
   return (
     <div>
       {/* Filter Modal */}
@@ -288,7 +287,7 @@ function createRows(selectedIds, setSelectedIds, currTab, filteredJobs) {
     "Location": renderText(job.location),
     "Type": renderType(job.employment_type),
     "Posted": renderText(job.created_at),
-    "Status": renderStatus(job.status),
+    "Status": renderStatus(job.expiresAt),
     "Quick Actions": renderActions(job.job_id, job.job_title, currTab),
   }));
 }
@@ -327,7 +326,14 @@ function renderType(type) {
   return <div className="text-center text-astradarkgray font-s">{text}</div>;
 }
 
-function renderStatus(text) {
+function renderStatus(expiresAt) {
+  const today = new Date();
+  const expiryDate = new Date(expiresAt);
+
+  const isExpired = isNaN(expiryDate) || expiryDate < today;
+
+  const text = isExpired ? "Expired" : "Active";
+  const color = isExpired ? "text-red-600" : "text-green-600";
   return <div className={`text-center ${text === "Expired" ? "text-astrared" : "text-astragreen"} font-s`}>{text}</div>;
 }
 
