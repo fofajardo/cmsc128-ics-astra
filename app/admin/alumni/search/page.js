@@ -52,22 +52,65 @@ export default function AlumniSearch() {
                         limit: pagination.numToShow
                     }
                 });
+
                 console.log('Fetched alumni:', response.data);
                 if (response.data.status === "OK") {
-                    updateAlumList(
-                        response.data.list.map(
-                            
-                            alum => ({
-                            id: alum.alum_id,
-                            image: "https://cdn-icons-png.flaticon.com/512/145/145974.png", // TODO: Jonz pa-implement nito
-                            alumname: capitalizeName(`${alum.first_name} ${alum.last_name}`),
-                            email: alum.email,
-                            graduationYear: alum.year_graduated?.split('-')[0], // TODO: Jonz pa-implement nito, fetch mo yung data from degree programs
-                            location: alum.location,
-                            fieldOfWork: alum.primary_work_experience?.field || "No Position Title", // TODO: FRG pa-implement nito
-                            skills: alum.skills ? alum.skills.split(',') : [],
-                        }))
+                                        // ...existing code...
+                    const updatedAlumList = await Promise.all(
+                        response.data.list.map(async (alum) => {
+                            // Create an object to hold our alumni data
+                            const alumData = {
+                                id: alum.alum_id,
+                                alumname: capitalizeName(`${alum.first_name} ${alum.last_name}`),
+                                email: alum.email,
+                                graduationYear: "N/A", // Default 
+                                location: alum.location,
+                                fieldOfWork: alum.primary_work_experience?.field || "No Position Title",
+                                skills: alum.skills ? alum.skills.split(',') : [],
+                                image: "https://cdn-icons-png.flaticon.com/512/145/145974.png", // Default
+                            };
+                    
+                            try {
+                                const photoResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/photos/alum/${alum.alum_id}`);
+                                console.log("Photo Response", photoResponse.data);
+                                
+                                if (photoResponse.data.status === "OK" && photoResponse.data.photo) {
+                                    alumData.image = photoResponse.data.photo;
+                                } 
+                            } catch (photoError) {
+                                console.error(`Failed to fetch photo for alum_id ${alum.alum_id}:`, photoError);
+                            }
+                    
+                            // Fetch graduation year - independent of photo fetch
+                            try {
+                                // Use user_id for degree program fetch if available
+                                const idForDegree = alum.user_id || alum.alum_id;
+                                
+                                if (idForDegree) {
+                                    const degreeResponse = await axios.get(
+                                        `${process.env.NEXT_PUBLIC_API_URL}/v1/degree-programs/alumni/${idForDegree}`
+                                    );
+                                    console.log("Degree Response", degreeResponse.data);
+                                    
+                                    if (degreeResponse.data.status === "OK" && degreeResponse.data.degreePrograms?.length > 0) {
+                                        const sortedPrograms = [...degreeResponse.data.degreePrograms].sort((a, b) => {
+                                            return new Date(b.year_graduated) - new Date(a.year_graduated);
+                                        });
+                                        alumData.graduationYear = new Date(sortedPrograms[0].year_graduated).getFullYear().toString();
+                                    }
+                                } else {
+                                    console.warn(`No ID found for alum to fetch degree programs: ${alum.alum_id}`);
+                                }
+                            } catch (degreeError) {
+                                console.error(`Failed to fetch degree programs for alum ${alum.alum_id}:`, degreeError);
+                                // Continue with default graduation year
+                            }
+                    
+                            return alumData;
+                        })
                     );
+    
+                    updateAlumList(updatedAlumList);
                 } else {
                     console.error('Unexpected response:', response.data);
                 }

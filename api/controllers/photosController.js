@@ -139,15 +139,15 @@ const updatePhoto = async (req, res) => {
     if (user_id) updates.user_id = user_id;
     if (content_id) updates.content_id = content_id;
     if (type !== undefined) updates.type = type; // Include the 'type' column
+    
     if (file) {
         // Generate a unique filename for the new file
         const uniqueFilename = `${Date.now()}-${file.originalname}`;
-        const oldPath = path.join(file.destination, file.filename);
-        const fileContent = fs.readFileSync(oldPath);
-
+        
+        // Upload directly from buffer
         const { data: storageData, error: storageError } = await req.supabase.storage
             .from("user-photos-bucket")
-            .upload(uniqueFilename, fileContent, {
+            .upload(uniqueFilename, file.buffer, {
                 contentType: file.mimetype,
             });
 
@@ -278,6 +278,51 @@ const getAllProfilePics = async (req, res) => {
   }
 };
 
+const getPhotoByAlumId = async (req, res) => {
+  try {
+    const { alum_id } = req.params;
+    console.log("Alum ID:", alum_id);
+
+    // Fetch the photo record from the database
+    const { data, error } = await req.supabase
+      .from("photos")
+      .select("image_key")
+      .eq("user_id", alum_id)
+      .eq("type", 0) // Assuming type 0 is for profile pictures
+      .single();
+
+    if (error || !data) {
+      return res.status(404).json({
+        status: "FAILED",
+        message: "Photo not found for the given Alum ID",
+      });
+    }
+
+    // Generate a signed URL for the photo
+    const { data: signedUrlData, error: signedUrlError } = await req.supabase
+      .storage
+      .from("user-photos-bucket")
+      .createSignedUrl(data.image_key, 60 * 60); // URL valid for 1 hour
+
+    if (signedUrlError) {
+      return res.status(500).json({
+        status: "FAILED",
+        message: "Failed to generate signed URL",
+      });
+    }
+
+    return res.status(200).json({
+      status: "OK",
+      photo: signedUrlData.signedUrl,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "FAILED",
+      message: error.message,
+    });
+  }
+};
+
 const photosController = {
   getAllPhotos,
   getPhotoById,
@@ -285,6 +330,7 @@ const photosController = {
   updatePhoto,
   deletePhoto,
   getAllProfilePics,
+  getPhotoByAlumId,
 };
 
 export default photosController;

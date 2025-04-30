@@ -10,15 +10,40 @@ import { capitalizeName, formatDate } from "../../../../utils/format.js";
 export default async function AlumniSearchProfile({ params }) {
     const { id } = await params
 
-    const [userRes, profileRes, workExperienceRes] = await Promise.all([
+    const [userRes, profileRes, workExperienceRes, photoRes, degreeRes] = await Promise.all([
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/users/${id}`),
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/${id}`),
-        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/work-experiences/alum/${id}`)
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/work-experiences/alum/${id}`),
+        
+        // fetch profile picture
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/photos/alum/${id}`),
+
+        // fetch alumni degree
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/degree-programs/alumni/${id}`)
     ]);
 
     const user = userRes.data.user;
     const profile = profileRes.data.alumniProfile;
     const workExperience = workExperienceRes.data.work_experiences;
+
+    let profileImage = "https://cdn-icons-png.flaticon.com/512/145/145974.png";
+
+    if (photoRes.data.status === "OK" && photoRes.data.photo) {
+        profileImage = photoRes.data.photo;
+    }
+
+    let graduationYear = "N/A";
+    if (degreeRes.data.status === "OK" && degreeRes.data.degreePrograms?.length > 0) {
+        // Sort by graduation date (newest first)
+        const sortedPrograms = [...degreeRes.data.degreePrograms].sort((a, b) => {
+            return new Date(b.year_graduated) - new Date(a.year_graduated);
+        });
+        graduationYear = new Date(sortedPrograms[0].year_graduated).getFullYear().toString();
+        
+        // Also get the degree name if available
+        const latestDegree = sortedPrograms[0];
+        profile.degreeName = latestDegree.name || "BS Computer Science";
+    }
 
     console.log(user);
     console.log(profile);
@@ -47,7 +72,7 @@ export default async function AlumniSearchProfile({ params }) {
                 <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 w-full md:w-auto">
                     {/* avatar placeholder */}
                     <img
-                        src={user.image || "https://cdn-icons-png.flaticon.com/512/145/145974.png"}
+                        src={profileImage}
                         alt={profile.first_name}
                         className="w-18 h-18 rounded-full bg-gray-200 mx-auto sm:mx-4"
                     />
@@ -79,6 +104,7 @@ export default async function AlumniSearchProfile({ params }) {
                             {/* TODO: FRG ikaw na rito */}
                             {/* <span> {degreeProgram.year_graduated} </span> */}
                             {/* <span>{new Date(profile.year_graduated).getFullYear()}</span> */}
+                            <span> {graduationYear} </span>
                         </span>
                     </div>
 
