@@ -25,24 +25,25 @@ export default function LoginPage() {
     <div className="min-h-screen flex bg-[var(--color-astratintedwhite)]">
       {/* Left Side */}
       <div className="w-full md:w-1/2 relative flex items-center justify-center px-4 md:px-8">
-        <div className="absolute top-6 left-1/2 -translate-x-1/2 flex flex-col items-center">
-          <img
-            src="/astra-logo.png"
-            alt="ICS-ASTRA Logo"
-            width={70}
-            height={70}
-            className="mb-3"
-          />
-          <Link
-            href="/"
-            className="flex items-center text-[var(--color-astrablack)] hover:text-[var(--color-astraprimary)] transition-colors text-sm md:text-base font-medium"
-          >
-            <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 mr-2" />
-            Back to Home
-          </Link>
-        </div>
-
         <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
+          {/* Logo and Back to Home inside form flex */}
+          <div className="flex flex-col items-center mb-4">
+            <img
+              src="/astra-logo-w-name.png"
+              alt="ICS-ASTRA Logo"
+              height={30}
+              width={120}
+              className="w-auto mb-2"
+            />
+            <Link
+              href="/"
+              className="flex items-center text-[var(--color-astrablack)] hover:text-[var(--color-astraprimary)] transition-colors text-sm md:text-base font-medium py-1 px-4"
+            >
+              <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 mr-2" />
+              Back to Home
+            </Link>
+          </div>
+
           <div className="mb-6 flex justify-between items-center">
             <h2 className="text-xl md:text-2xl font-semibold text-[var(--color-astrablack)]">Sign In</h2>
             <Link

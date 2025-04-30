@@ -74,18 +74,16 @@ export default function EducationalInfoPage() {
   return (
     <div className="min-h-screen flex bg-[var(--color-astratintedwhite)]">
       <div className="w-full md:w-1/2 relative flex items-center justify-center px-4 md:px-8">
-        <div className="absolute top-6 left-1/2 -translate-x-1/2">
-          <img
-            src="/astra-logo.png"
-            alt="ICS-ASTRA Logo"
-            width={70}
-            height={70}
-            className="mb-3 hidden md:block" // Hide the image on small screens (mobile)
-          />
-        </div>
-
         <div className="max-w-md w-full mx-auto">
-          {/* Mobile View for Notice */}
+          <div className="space-y-4 px-4 sm:px-6 sm:pt-10 md:px-8 md:pt-6">
+            <img
+              src="/astra-logo-w-name.png"
+              alt="ICS-ASTRA Logo"
+              height={30}
+              width={120}
+              className="w-auto mb-2 mt-8"
+            />
+          </div>
           <div className="mb-6 text-xs text-[var(--color-astrablack)] bg-white border border-gray-200 rounded-md p-4 md:hidden">
             <h2 className="font-semibold text-lg mb-3">Notice and Consent to Privacy</h2>
             <p className="mt-2">
@@ -200,7 +198,7 @@ export default function EducationalInfoPage() {
               </div>
             </div>
 
-            <div className="flex justify-center mt-6 space-x-2">
+            <div className="flex justify-center mt-6 mb-8 space-x-2">
               <div className="w-2 h-2 rounded-full bg-gray-300"></div>
               <div className="w-2 h-2 rounded-full bg-gray-300"></div>
               <div className="w-2 h-2 rounded-full bg-[var(--color-astraprimary)]"></div>
