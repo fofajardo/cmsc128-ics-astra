@@ -205,7 +205,45 @@ const getAlumniByYearGraduated = async (req, res) => {
   }
 };
 
+const getDegreeProgramsByUserId = async (req, res) => {
+  try {
+      // The param name should match your route definition /:id
+      const { id } = req.params; // Changed from userId to id to match your route
+
+      console.log("Fetching degree programs for user_id:", id);
+
+      if (!id) {
+          return res.status(httpStatus.BAD_REQUEST).json({
+              status: "FAILED",
+              message: "User ID is required",
+          });
+      }
+
+      const { data, error } = await degreeProgramService.fetchDegreeProgramsByUserId(req.supabase, id);
+
+      if (error) {
+          return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+              status: "FAILED",
+              message: error.message,
+          });
+      }
+
+      // Return empty array instead of error if no data found
+      return res.status(httpStatus.OK).json({
+          status: "OK",
+          degreePrograms: data || [],
+      });
+  }
+  catch (error) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+          status: "FAILED",
+          message: error.message,
+      });
+  }
+};
+
 const degreeProgramController = {
+  getDegreeProgramsByUserId,
   getAllDegreePrograms,
   getDegreeProgramById,
   createDegreeProgram,
