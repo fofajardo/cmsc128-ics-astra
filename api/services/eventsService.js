@@ -3,20 +3,29 @@ import { applyFilter } from "../utils/applyFilter.js";
 const fetchEvents = async (supabase, filters) => {
   let query = supabase
     .from("events")
-    .select("*");
+    .select("*", {count:"exact"});
 
-  query = applyFilter(query, filters,{
+  query = applyFilter(query, filters, {
     ilike: ["venue"],
     range: {
-      event_date: [filters.event_date_from,filters.event_date_to]
+      event_date: [filters.event_date_from, filters.event_date_to]
     },
     sortBy: "event_date",
     defaultOrder: "desc",
     specialKeys: [
       "event_date_from",
-      "event_date_to"
+      "event_date_to",
+      "limit",
+      "page"
     ]
   });
+
+  const limit = parseInt(filters.limit) || 10;
+  const page = parseInt(filters.page) || 1;
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
+
+  query = query.range(from, to);
 
   return await query;
 };

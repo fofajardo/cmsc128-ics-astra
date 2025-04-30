@@ -14,7 +14,7 @@ export default function HeaderTitleBar({
     <div className="mt-4 flex items-center justify-between flex-wrap">
       <h1 className="text-2xl font-bold text-astradarkgray">{title}</h1>
 
-      <AnimatePresence mode="wait">
+      {/* <AnimatePresence mode="wait">
         {!isEditMode ? (
           <motion.button
             key="viewMode"
@@ -59,7 +59,7 @@ export default function HeaderTitleBar({
             </button>
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence> */}
     </div>
   );
 }

@@ -57,7 +57,7 @@ const getContentById = async (req, res) => {
 
 const createContent = async (req, res) => {
   try {
-    const allowedFields = ["id", "user_id", "title", "details", "views", "created_at", "updated_at", "tags"];
+    const allowedFields = ["user_id", "title", "details", "views", "created_at", "updated_at", "tags"];
     const providedFields = Object.keys(req.body);
 
     // Check for unexpected fields
@@ -70,7 +70,6 @@ const createContent = async (req, res) => {
     }
 
     const requiredFields = [
-      "id",
       "user_id",
       "title",
       "details",
@@ -89,7 +88,6 @@ const createContent = async (req, res) => {
     }
 
     const {
-      id,
       user_id,
       title,
       details,
@@ -126,7 +124,6 @@ const createContent = async (req, res) => {
     }
 
     const { data, error } = await contentsService.insertContent(req.supabase, {
-      id,
       user_id,
       title,
       details,

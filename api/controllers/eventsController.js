@@ -5,8 +5,8 @@ import { Actions, Subjects } from "../../common/scopes.js";
 
 const getEvents = async (req, res) => {
   try {
-    console.log("User role:", req.user?.role);
-    console.log("Permissions check:", req.you.can(Actions.READ, Subjects.EVENT)); //Fix: alumnus permission results to false here
+  //  console.log("User role:", req.user?.role);
+    //console.log("Permissions check:", req.you.can(Actions.READ, Subjects.EVENT)); //Fix: alumnus permission results to false here
     const filters = req.query;
 
     if (req.you.cannot(Actions.READ, Subjects.EVENT)) {
@@ -16,7 +16,8 @@ const getEvents = async (req, res) => {
 
       });
     }
-    const { data, error } = await eventsService.fetchEvents(req.supabase, filters);
+
+    const { data, count, error } = await eventsService.fetchEvents(req.supabase, filters);
 
     if (error) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -28,6 +29,8 @@ const getEvents = async (req, res) => {
     return res.status(httpStatus.OK).json({
       status: "OK",
       list: data || [],
+      total: count || 0
+
     });
 
   } catch (error) {
@@ -132,10 +135,10 @@ const createEvent = async (req, res) => {
     const { data: existingEvents, error: checkError } = await eventsService.checkExistingEvent(req.supabase, datetime, venue);
 
     if (checkError && existingEvents.length > 0) {
-        return res.status(httpStatus.CONFLICT).json({
-            status: 'FAILED',
-            message: 'Event date and venue already exists'
-        });
+      return res.status(httpStatus.CONFLICT).json({
+        status: "FAILED",
+        message: "Event date and venue already exists"
+      });
     }
 
     if (checkError) {
