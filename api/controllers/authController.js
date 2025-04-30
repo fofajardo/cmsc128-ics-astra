@@ -22,8 +22,7 @@ async function signUp(aRequest, aResponse, aNext) {
     return aResponse.sendErrorUnauthenticated(error.message);
   }
 
-  console.log(data);
-  return aResponse.sendOk(data);
+    return aResponse.sendOk(data);
 }
 
 async function signInSbLocal(aRequest, aResponse, aNext) {
@@ -53,7 +52,6 @@ async function signInSbLocal(aRequest, aResponse, aNext) {
 }
 
 async function signInGate(aRequest, aResponse, aNext) {
-  console.log("signInGate: Checking request body:", aRequest.body);
   if (aRequest.isAuthenticated()) {
     return aResponse.status(httpStatus.BAD_REQUEST).json({
       status: "FAILED",
