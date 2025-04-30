@@ -289,7 +289,7 @@ function createRows(selectedIds, setSelectedIds, currTab, filteredJobs) {
     "Type": renderType(job.employment_type),
     "Posted": renderText(job.created_at),
     "Status": renderStatus(job.status),
-    "Quick Actions": renderActions(job.id, job.job_title, currTab),
+    "Quick Actions": renderActions(job.job_id, job.job_title, currTab),
   }));
 }
 
