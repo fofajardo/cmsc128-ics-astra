@@ -81,6 +81,13 @@ const fetchProjectRequests = async (supabase, filters) => {
   return await query;
 };
 
+const fetchProjectRequestById = async (supabase, requestId) => {
+  return await supabase
+    .from("requests")
+    .select("*")
+    .eq("id", requestId);
+};
+
 const insertRequest = async (supabase, requestData) => {
   return await supabase
     .from("requests")
@@ -108,6 +115,7 @@ const requestsService = {
   fetchRequestsByUserId,
   fetchRequestsByContentId,
   fetchProjectRequests,
+  fetchProjectRequestById,
   insertRequest,
   updateRequest,
   deleteRequest
