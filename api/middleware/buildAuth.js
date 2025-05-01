@@ -14,13 +14,14 @@ export async function BuildAuth(aRequest, aResponse, aNext) {
       return userError || !aRequest.isAuthenticated();
     };
 
-    aRequest.user = userData?.user;
-
-    const {data: publicUserData, error: publicUserError} =
-      await UsersService.fetchUserById(aRequest.supabase, userData?.user.id);
-    if (!publicUserError) {
-      publicUserData.scopes = await IdentityService.defineScopes(publicUserData);
-      aRequest.user.public_metadata = publicUserData;
+    if (userData?.user) {
+      aRequest.user = userData?.user;
+      const {data: publicUserData, error: publicUserError} =
+        await UsersService.fetchUserById(aRequest.supabase, userData?.user.id);
+      if (!publicUserError) {
+        publicUserData.scopes = await IdentityService.defineScopes(publicUserData);
+        aRequest.user.public_metadata = publicUserData;
+      }
     }
   };
 
