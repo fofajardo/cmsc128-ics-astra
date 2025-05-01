@@ -43,31 +43,87 @@ export default function AlumniSearch() {
       searchQuery,
     });
 
-    //refetch alum list
     const fetchAlumniProfiles = async () => {
       try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles`, {
-          params: {
-            page: pagination.currPage,
-            limit: pagination.numToShow
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles`,
+          {
+            params: {
+              page: pagination.currPage,
+              limit: pagination.numToShow,
+            },
           }
-        });
-        console.log("Fetched alumni:", response.data);
-        if (response.data.status === "OK") {
-          updateAlumList(
-            response.data.list.map(
+        );
 
-              alum => ({
+        if (response.data.status === "OK") {
+          const updatedAlumList = await Promise.all(
+            response.data.list.map(async (alum) => {
+              const alumData = {
                 id: alum.alum_id,
-                image: "https://cdn-icons-png.flaticon.com/512/145/145974.png", // TODO: Jonz pa-implement nito
                 alumname: capitalizeName(`${alum.first_name} ${alum.last_name}`),
                 email: alum.email,
-                graduationYear: alum.year_graduated?.split("-")[0], // TODO: Jonz pa-implement nito, fetch mo yung data from degree programs
+                graduationYear: "N/A",
                 location: alum.location,
-                fieldOfWork: alum.primary_work_experience?.field || "No Position Title", // TODO: FRG pa-implement nito
+                fieldOfWork:
+                  alum.primary_work_experience?.field || "No Position Title",
                 skills: alum.skills ? alum.skills.split(",") : [],
-              }))
+                image:
+                  "https://cdn-icons-png.flaticon.com/512/145/145974.png",
+              };
+
+              try {
+                const photoResponse = await axios.get(
+                  `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/alum/${alum.alum_id}`
+                );
+                if (
+                  photoResponse.data.status === "OK" &&
+                  photoResponse.data.photo
+                ) {
+                  alumData.image = photoResponse.data.photo;
+                }
+              } catch (photoError) {
+                console.error(
+                  `Failed to fetch photo for alum_id ${alum.alum_id}:`,
+                  photoError
+                );
+              }
+
+              try {
+                const idForDegree = alum.user_id || alum.alum_id;
+                if (idForDegree) {
+                  const degreeResponse = await axios.get(
+                    `${process.env.NEXT_PUBLIC_API_URL}/v1/degree-programs/alumni/${idForDegree}`
+                  );
+                  if (
+                    degreeResponse.data.status === "OK" &&
+                    degreeResponse.data.degreePrograms?.length > 0
+                  ) {
+                    const sortedPrograms = [
+                      ...degreeResponse.data.degreePrograms,
+                    ].sort(
+                      (a, b) =>
+                        new Date(b.year_graduated) -
+                        new Date(a.year_graduated)
+                    );
+                    alumData.graduationYear = new Date(
+                      sortedPrograms[0].year_graduated
+                    )
+                      .getFullYear()
+                      .toString();
+                  }
+                }
+              } catch (degreeError) {
+                console.error(
+                  `Failed to fetch degree programs for alum ${alum.alum_id}:`,
+                  degreeError
+                );
+              }
+
+              return alumData;
+            })
           );
+
+          updateAlumList(updatedAlumList);
         } else {
           console.error("Unexpected response:", response.data);
         }
@@ -77,8 +133,6 @@ export default function AlumniSearch() {
     };
 
     fetchAlumniProfiles();
-    //update pagination
-
   }, [appliedFilters, pagination, searchQuery]);
 
   return (

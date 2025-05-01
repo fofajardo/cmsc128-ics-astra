@@ -78,6 +78,7 @@ async function defineScopes(aUser) {
     can(Actions.CREATE, Subjects.REPORT);
     can(Actions.MANAGE, Subjects.REPORT, { reporter_id: user.id });
     can(Actions.READ, Subjects.CONTENT);
+    can(Actions.READ, Subjects.PROJECT);
 
     if (role === RoleName.ALUMNUS) {
       can(Actions.READ, Subjects.EVENT);

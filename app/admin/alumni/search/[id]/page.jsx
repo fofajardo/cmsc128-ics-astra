@@ -17,11 +17,15 @@ export default function AlumniSearchProfile({ params }) {
   const [profileRes, setProfileRes] = useState(null);
   const [workExperienceRes, setWorkExperienceRes] = useState(null);
   const [organizationAffiliationsRes, setOrganizationAffiliationsRes] = useState(null);
+  const [photoRes, setPhotoRes] = useState(null);
+  const [degreeRes, setDegreeRes] = useState(null);
 
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [workExperience, setWorkExperience] = useState(null);
   const [organizationAffiliations, setOrganizationAffiliations] = useState(null);
+  const [profileImage, setProfileImage] = useState(null);
+  const [graduationYear, setGraduationYear] = useState(null);
 
   const [missing, setMissing] = useState(false);
 
@@ -34,6 +38,25 @@ export default function AlumniSearchProfile({ params }) {
           setWorkExperienceRes(value);
           axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/organization-affiliations/${id}/organizations`).then((value) => {
             setOrganizationAffiliationsRes(value);
+            axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/photos/alum/${id}`).then((value) => {
+              setPhotoRes(value);
+              if (value.data.status === "OK" && value.data.photo) {
+                setProfileImage(value.data.photo);
+              }
+            }).catch((error) => {
+              console.log("No profile photo found:", error);
+            });
+            axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/degree-programs/alumni/${id}`).then((value) => {
+              setDegreeRes(value);
+              if (value.data.status === "OK" && value.data.degreePrograms?.length > 0) {
+                const sortedPrograms = [...value.data.degreePrograms].sort((a, b) => {
+                  return new Date(b.year_graduated) - new Date(a.year_graduated);
+                });
+                setGraduationYear(new Date(sortedPrograms[0].year_graduated).getFullYear().toString());
+              }
+            }).catch((error) => {
+              console.log("No degree Year Found:", error);
+            });
           }).catch(() => {
             console.log("No org affiliation");
             setMissing(true);
@@ -57,6 +80,7 @@ export default function AlumniSearchProfile({ params }) {
     const localProfile = profileRes?.data?.alumniProfile;
     const localWorkExperience = workExperienceRes?.data?.work_experiences;
     const localOrganizationAffiliations = organizationAffiliationsRes?.data?.affiliated_organizations;
+
 
     setUser(localUser);
     setProfile(localProfile);
@@ -96,7 +120,7 @@ export default function AlumniSearchProfile({ params }) {
         <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 w-full md:w-auto">
           {/* avatar placeholder */}
           <img
-            src={user?.image || "https://cdn-icons-png.flaticon.com/512/145/145974.png"}
+            src={profileImage || user?.image || "https://cdn-icons-png.flaticon.com/512/145/145974.png"}
             alt={profile.first_name}
             className="w-18 h-18 rounded-full bg-gray-200 mx-auto sm:mx-4"
           />
@@ -128,6 +152,7 @@ export default function AlumniSearchProfile({ params }) {
               {/* TODO: FRG ikaw na rito */}
               {/* <span> {degreeProgram.year_graduated} </span> */}
               {/* <span>{new Date(profile.year_graduated).getFullYear()}</span> */}
+              <span>{graduationYear}</span>
             </span>
           </div>
 

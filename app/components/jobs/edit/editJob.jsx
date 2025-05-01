@@ -7,9 +7,9 @@ import { useState } from "react";
 
 export default function JobForm({isEdit, close, job}){
   const [showPrompt, setPrompt] = useState(false);
-  const employmentOptions =[{value: "1", label: "Part-Time"},{value: "2", label: "Full-Time"}, {value: "3", label: "Temporary"}, {value: "4", label: "Freelance"}];
-  const locationOptions =[{value: "1", label: "Onsite"},{value: "2", label: "Remote"}, {value: "3", label: "Hybrid"}];
-  const statusOptions =[{value: "1", label: "Open"},{value: "2", label: "Closed"}];
+  const employmentOptions =[{value: "0", label: "Part-Time"},{value: "1", label: "Full-Time"}, {value: "2", label: "Temporary"}, {value: "3", label: "Freelance"}];
+  const locationOptions =[{value: "0", label: "Onsite"},{value: "1", label: "Remote"}, {value: "2", label: "Hybrid"}];
+  const statusOptions =[{value: "0", label: "Open"},{value: "1", label: "Closed"}];
   const [errors, setErrors] = useState({});
 
   const [formData, setFormData] = useState({...job, job_requirements: "", hiring_manager: ""});

@@ -79,6 +79,11 @@ function SignedInUserProvider({children}) {
 }
 
 function fetchData(aUser, aContext) {
+  if (aUser === null || aUser === undefined || aUser === "") {
+    aContext.actions.setInitialized(true);
+    return;
+  }
+
   if (aUser) {
     if (aUser.public_metadata) {
       const authUser = aUser;
@@ -121,7 +126,7 @@ function useRefetchUser(aContext, aUserId = null) {
     ? axios.get(clientRoutes.auth.signedInUser())
     : axios.get(clientRoutes.users.base(`/${aUserId}`));
 
-  user.then(function (aUser) {
+  return user.then(function (aUser) {
     return fetchData(aUser?.data, aContext);
   }).catch(function (e) {
     // User likely has a bad internet connection, has already signed
