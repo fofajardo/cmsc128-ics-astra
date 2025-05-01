@@ -18,8 +18,8 @@ const getProjects = async (req, res) => {
 
     if (projectError) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-          status: 'FAILED',
-          message: projectError.message
+        status: 'FAILED',
+        message: projectError.message
       });
     }
 
@@ -29,8 +29,8 @@ const getProjects = async (req, res) => {
 
     if (contentError) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-          status: 'FAILED',
-          message: contentError.message
+        status: 'FAILED',
+        message: contentError.message
       });
     }
 
