@@ -303,7 +303,7 @@ const getProjectRequestById = async (req, res) => {
     const requestData = requestsData[0];
 
     // get name and role from alumni profiles table
-    const { data: alumsData, error: alumError } = await alumniService.fetchAlumniProfileById(req.supabase, requestData.user_id);
+    const { data: alumData, error: alumError } = await alumniService.fetchAlumniProfileById(req.supabase, requestData.user_id);
 
     if (alumError) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -312,7 +312,7 @@ const getProjectRequestById = async (req, res) => {
       });
     };
 
-    let alumData = Array.isArray(alumsData) ? alumsData[0] : alumsData;
+    // let alumData = Array.isArray(alumsData) ? alumsData[0] : alumsData;
 
     // get email from Users table
     // const { data: userData, error: userError } = await usersService.fetchUserById(req.supabase, alumData.id);
