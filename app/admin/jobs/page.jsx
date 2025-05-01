@@ -7,6 +7,7 @@ import { useTab } from "../../components/TabContext";
 import ConfirmModal from "@/components/ConfirmModal";
 import ToastNotification from "@/components/ToastNotification";
 import { Trash2, Eye } from "lucide-react";
+import { jobTypeMap } from "@/components/jobs/mappings";
 import axios from "axios";
 
 export default function Jobs() {
@@ -169,7 +170,7 @@ function createRows(selectedIds, setSelectedIds, currTab, filteredJobs, fetch) {
     "Title": renderTitle(job.job_title),
     "Company": renderText(job.company_name),
     "Location": renderText(job.location),
-    "Type": renderType(job.employment_type),
+    "Type": renderType(jobTypeMap[job.employment_type]),
     "Posted": renderText(job.created_at),
     "Status": renderStatus(job.expires_at),
     "Quick Actions": renderActions(job.job_id, job.job_title, currTab, fetch),
