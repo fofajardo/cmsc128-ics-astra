@@ -1,10 +1,9 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TableHeader, Table, PageTool } from "@/components/TableBuilder";
-import { ActionButton } from "@/components/Buttons";
-import ToastNotification from "@/components/ToastNotification";
 import { Eye, BarChart2 } from "lucide-react";
-import Link from "next/link";
+import ToastNotification from "@/components/ToastNotification";
+import {GoBackButton} from "@/components/Buttons";
 
 export default function ProjectFunds() {
   const [showFilter, setShowFilter] = useState(false);
@@ -12,6 +11,7 @@ export default function ProjectFunds() {
   const [toast, setToast] = useState(null);
   const [tempSelectedStatus, setTempSelectedStatus] = useState("All");
   const [selectedStatus, setSelectedStatus] = useState("All");
+  const [totalFundsRaised, setTotalFundsRaised] = useState(0);
 
   // Information for the table header
   const [info, setInfo] = useState({
@@ -60,6 +60,22 @@ export default function ProjectFunds() {
     pagination.currPage * pagination.itemsPerPage
   );
 
+  // Calculate total funds raised whenever filtered projects change
+  useEffect(() => {
+    const total = filteredProjects.reduce((sum, project) => {
+      // Extract numerical value from string like "₱350,000"
+      const raisedValue = parseInt(project.raised.replace(/[₱,]/g, ""));
+      return sum + raisedValue;
+    }, 0);
+
+    setTotalFundsRaised(total);
+  }, [filteredProjects]);
+
+  // Format number as currency
+  const formatCurrency = (amount) => {
+    return "₱" + amount.toLocaleString();
+  };
+
   return (
     <div>
       {/* Toast notification */}
@@ -70,7 +86,6 @@ export default function ProjectFunds() {
           onClose={() => setToast(null)}
         />
       )}
-
       {/* Filter Modal */}
       {showFilter && (
         <div
@@ -136,8 +151,13 @@ export default function ProjectFunds() {
         </div>
       </div>
 
+
+
       {/* Table section */}
       <div className="bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24 flex flex-col">
+        <div className="max-w-6xl px-4 mt-4">
+          <GoBackButton />
+        </div>
         <div className="flex flex-col py-4 px-1 md:px-4 lg:px-8">
           <TableHeader
             info={info}
@@ -149,21 +169,34 @@ export default function ProjectFunds() {
           />
           <Table cols={cols} data={createRows(currentProjects, selectedIds, setSelectedIds, setToast)} />
           <PageTool pagination={pagination} setPagination={setPagination} />
+
+          {/* Total Funds Raised Section */}
+          <div className="mt-6 bg-astrawhite rounded-lg p-6 shadow-sm">
+            <div className="flex flex-col items-center">
+              <h3 className="text-xl font-semibold text-astradarkgray mb-2">Total Funds Raised</h3>
+              <p className="text-3xl font-bold text-astrablue">
+                {formatCurrency(totalFundsRaised)}
+              </p>
+              <p className="text-sm text-astragray mt-2">
+                {selectedStatus === "All"
+                  ? "Across all projects"
+                  : `From ${selectedStatus.toLowerCase()} projects only`}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-// Table columns definition
+// Table columns definition - removed Progress and Quick Actions columns
 const cols = [
   { label: "Project", justify: "start", visible: "all" },
   { label: "Type", justify: "center", visible: "md" },
   { label: "Goal", justify: "center", visible: "lg" },
   { label: "Raised", justify: "center", visible: "sm" },
-  { label: "Progress", justify: "center", visible: "lg" },
   { label: "Status", justify: "center", visible: "md" },
-  { label: "Quick Actions", justify: "center", visible: "all" },
 ];
 
 // Function to create table rows
@@ -173,9 +206,7 @@ function createRows(projects, selectedIds, setSelectedIds, setToast) {
     "Type": renderType(project.type),
     "Goal": renderAmount(project.goal),
     "Raised": renderAmount(project.raised),
-    "Progress": renderProgress(project.raised, project.goal),
     "Status": renderStatus(project.status),
-    "Quick Actions": renderActions(project.id, project.title, setToast),
   }));
 }
 
@@ -202,25 +233,6 @@ function renderAmount(amount) {
   return <div className="text-center text-astradarkgray font-s">{amount}</div>;
 }
 
-function renderProgress(raised, goal) {
-  // Extract numerical values from strings like "₱350,000"
-  const raisedValue = parseInt(raised.replace(/[₱,]/g, ""));
-  const goalValue = parseInt(goal.replace(/[₱,]/g, ""));
-  const percentage = Math.round((raisedValue / goalValue) * 100);
-
-  return (
-    <div className="flex flex-col items-center">
-      <div className="w-full bg-astralightgray rounded-full h-2.5">
-        <div
-          className="bg-astrablue h-2.5 rounded-full"
-          style={{ width: `${percentage}%` }}
-        ></div>
-      </div>
-      <div className="text-xs text-astradarkgray mt-1">{percentage}%</div>
-    </div>
-  );
-}
-
 function renderStatus(status) {
   return (
     <div className="text-center">
@@ -229,49 +241,6 @@ function renderStatus(status) {
       }`}>
         {status}
       </span>
-    </div>
-  );
-}
-
-function renderActions(id, title, setToast) {
-  const handleViewAnalytics = () => {
-    // Analytics viewing logic
-    setToast({
-      type: "success",
-      message: `Viewing analytics for ${title}`
-    });
-  };
-
-  return (
-    <div className="flex justify-center gap-3 md:pr-4 lg:pr-2">
-      <div className="hidden md:block">
-        <ActionButton
-          label="View"
-          color="gray"
-          route={`/admin/projects/${id}`}
-        />
-      </div>
-      <div className="block md:hidden">
-        <ActionButton
-          label={<Eye size={20}/>}
-          color="gray"
-          route={`/admin/projects/${id}`}
-        />
-      </div>
-      <div className="hidden md:block">
-        <ActionButton
-          label="Analytics"
-          color="blue"
-          onClick={handleViewAnalytics}
-        />
-      </div>
-      <div className="block md:hidden">
-        <ActionButton
-          label={<BarChart2 size={20}/>}
-          color="blue"
-          onClick={handleViewAnalytics}
-        />
-      </div>
     </div>
   );
 }
