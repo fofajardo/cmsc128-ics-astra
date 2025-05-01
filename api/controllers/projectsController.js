@@ -14,23 +14,49 @@ const getProjects = async (req, res) => {
 
   try {
     const filters = req.query;
-    const { data, error } = await projectsService.fetchProjects(req.supabase, filters);
+    const { data: projectData, error: projectError } = await projectsService.fetchProjects(req.supabase, filters);
 
-    if (error) {
+    if (projectError) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-        status: "FAILED",
-        message: error.message
+          status: 'FAILED',
+          message: projectError.message
       });
     }
 
+    const projectIds = projectData.map(project => project.project_id);
+    const contentFilter = { id: projectIds };
+    const { data: contentData, error: contentError } = await contentsService.fetchContents(req.supabase, contentFilter);
+
+    if (contentError) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+          status: 'FAILED',
+          message: contentError.message
+      });
+    }
+
+    const contentMap = new Map();
+    contentData.forEach(content => {
+      contentMap.set(content.id, content);
+    });
+
+    const combinedData = projectData.map(project => {
+      const content = contentMap.get(project.project_id);
+      const { id, ...contentWithoutId } = content || {};  // Destructure and omit the 'id' field
+      return {
+        ...project,  // Include all project fields
+        ...contentWithoutId,  // Include all content fields except 'id'
+        tags: content ? content['tags'] : null,  // If tags exist, include them
+      };
+    })
+
     return res.status(httpStatus.OK).json({
-      status: "OK",
-      projects: data || [],
+      status: 'OK',
+      projects: combinedData || [],
     });
 
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-      status: "FAILED",
+      status: 'FAILED',
       message: error.message
     });
   }
@@ -56,12 +82,30 @@ const getProjectById = async (req, res) => {
 
     const { data, error } = await projectsService.fetchProjectById(req.supabase, projectId);
 
-    if (error) {
-      return res.status(httpStatus.NOT_FOUND).json({
-        status: "FAILED",
-        message: "Project not found"
+    if (!isValidUUID(projectId)) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: 'FAILED',
+        message: 'Invalid projectId format'
       });
     }
+
+    const { data: projectData, error: projectError } = await projectsService.fetchProjectById(req.supabase, projectId);
+
+    if (projectError) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: 'FAILED',
+        message: 'Project not found'
+      });
+    }
+
+    const { data: contentData, error: contentError } = await contentsService.fetchContentById(req.supabase, projectData.project_id);
+
+    const { id, ...contentWithoutId } = contentData || {};  // Destructure and omit the 'id' field
+    const combinedData = {
+      ...projectData,  // Include all project fields
+      ...contentWithoutId,  // Include all content fields except 'id'
+      tags: contentData['tags'] ? contentData['tags'] : null,  // If tags exist, include them
+    };
 
     return res.status(httpStatus.OK).json({
       status: "OK",
