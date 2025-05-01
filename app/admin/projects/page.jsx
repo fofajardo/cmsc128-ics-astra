@@ -285,7 +285,7 @@ export default function ProjectsAdmin() {
                     strokeWidth={1.5}
                   />
                 }
-                route="/admin/projects/contributors"
+                route="/admin/projects/funds"
               />
 
               {/*contributors card */}
@@ -299,7 +299,7 @@ export default function ProjectsAdmin() {
                     strokeWidth={1.5}
                   />
                 }
-                route="/admin/projects/funds"
+                route="/admin/projects/contributors"
               />
             </div>
           </div>

@@ -1,11 +1,11 @@
 import "../styles/globals.css";
 import "../styles/styles.css";
-import NavbarUser from "../components/NavbarUser";
+import HeaderUser from "../components/HeaderUser.jsx";
 
 export default function RootLayout({ children }) {
   return (
     <>
-      <NavbarUser />
+      <HeaderUser />
       <main>{children}</main>
     </>
   );

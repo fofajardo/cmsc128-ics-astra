@@ -5,6 +5,7 @@ import Image from "next/image";
 import ConfirmationPrompt from "./edit/confirmation";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { jobTypeMap, locationTypeMap } from "@/components/jobs/mappings";
 
 export default function JobEditCard({job}) {
   const [showPrompt, setPrompt] = useState(false);
@@ -62,8 +63,8 @@ export default function JobEditCard({job}) {
       </div>
 
       <div className="flex gap-2 items-center py-3">
-        <div className="border-1 border-astradarkgray bg-astratintedwhite rounded-3xl py-0.5 px-3"><p className="text-astrablack text-sm">{job.employment_type}</p></div>
-        <div className="border-1 border-astradarkgray bg-astratintedwhite rounded-3xl py-0.5 px-3"><p className="text-astrablack text-sm">{job.location_type}</p></div>
+        <div className="border-1 border-astradarkgray bg-astratintedwhite rounded-3xl py-0.5 px-3"><p className="text-astrablack text-sm">{jobTypeMap[job.employment_type]}</p></div>
+        <div className="border-1 border-astradarkgray bg-astratintedwhite rounded-3xl py-0.5 px-3"><p className="text-astrablack text-sm">{locationTypeMap[job.location_type]}</p></div>
       </div>
 
       <div className="flex gap-2 items-center py-2.5 justify-center">

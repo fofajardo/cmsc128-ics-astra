@@ -3,9 +3,12 @@
  * Provides structured endpoints for various API resources relative to a base URL.
  */
 class BaseRoutes {
-  constructor(baseUrl) {
-    this.BASE_URL = baseUrl;
+  constructor() {
     this.buildEndpoints();
+  }
+
+  get BASE_URL() {
+    return "";
   }
 
   /**
@@ -22,7 +25,7 @@ class BaseRoutes {
       base: (append = "") => `${this.BASE_URL}/auth${append}`,
       signUp: () => `${this.BASE_URL}/auth/sign-up`,
       signIn: () => `${this.BASE_URL}/auth/sign-in`,
-      signInExternal: () => `${this.BASE_URL}/auth/sign-in/external`,
+      signInExternal: (aProvider) => `${this.BASE_URL}/auth/sign-in/external?provider=${aProvider}`,
       signInExternalCallback: () => `${this.BASE_URL}/auth/sign-in/external/callback`,
       signedInUser: () => `${this.BASE_URL}/auth/signed-in-user`,
       signOut: () => `${this.BASE_URL}/auth/sign-out`
@@ -95,7 +98,11 @@ class BaseRoutes {
  */
 class ServerRoutes extends BaseRoutes {
   constructor() {
-    super("/v1");
+    super();
+  }
+
+  get BASE_URL() {
+    return "/v1";
   }
 }
 
@@ -104,7 +111,11 @@ class ServerRoutes extends BaseRoutes {
  */
 class ClientRoutes extends BaseRoutes {
   constructor() {
-    super(process.env.NEXT_PUBLIC_API_URL + "/v1");
+    super();
+  }
+
+  get BASE_URL() {
+    return process.env.NEXT_PUBLIC_API_URL + "/v1";
   }
 }
 

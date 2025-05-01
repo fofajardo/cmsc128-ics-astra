@@ -11,26 +11,26 @@ const dummyJobs = [
 ];
 
 const dummyMyJobs = [
-  { job_id: 0, salary: 270000, job_title: "Google Cloud Engineer", company_name: "Google Philippines", location: "Taguig City, Philippines", expires_at: new Date(), employment_type: "Full-Time", location_type: "Onsite",
+  { job_id: 0, salary: 270000, job_title: "Google Cloud Engineer", company_name: "Google Philippines", location: "Taguig City, Philippines", expires_at: new Date(), employment_type: "0", location_type: "0",
     details: `As a Cloud Engineer at Google Cloud, you'll design,  build, and optimize scalable cloud solutions that help businesses  transform and innovate. You'll work with cutting-edge technologies like Kubernetes, BigQuery, and AI/ML tools to architect secure, high-performance infrastructure. Partnering with customers and internal  teams, you’ll solve complex technical challenges and drive cloud adoption worldwide.
-    
+
         Key Responsibilities:
         Design and deploy secure, scalable cloud architectures on Google Cloud Platform (GCP).
         Automate infrastructure using Terraform, Ansible, or other IaC tools.
         Troubleshoot performance issues and optimize cost-efficiency.
         Collaborate with customers and internal teams to implement best practices.
-    
+
         Requirements:
         Bachelor’s degree in Computer Science, Engineering, or related field (or equivalent experience).
         Hands-on experience with GCP, AWS, or Azure (certifications a plus).
         Proficiency in Python, Go, or scripting languages.
         Strong knowledge of networking, security, and DevOps practices.
-    
+
         Why Join? Work on the forefront of cloud innovation, shape the future of enterprise tech, and grow with a global leader in  cloud computing.
-    
+
         Interested? Explore openings at careers.google.com. 🚀`,  created_at: new Date(new Date().setDate(new Date().getDate() - 29)) },
-  { job_id: 1, salary: 270000, job_title: "Google Cloud Engineer", company_name: "Google Philippines", location: "Taguig City, Philippines", expires_at: new Date(), employment_type: "Full-Time", location_type: "Onsite",  created_at: new Date(new Date().setDate(new Date().getDate() - 15)) },
-  { job_id: 2, salary: 270000, job_title: "Project Manager", company_name: "Google Philippines", location: "Taguig City, Philippines", expires_at: new Date(), employment_type: "Full-Time", location_type: "Onsite", created_at: new Date(new Date().setMonth(new Date().getMonth() - 2)) },
+  { job_id: 1, salary: 270000, job_title: "Google Cloud Engineer", company_name: "Google Philippines", location: "Taguig City, Philippines", expires_at: new Date(), employment_type: "1", location_type: "2",  created_at: new Date(new Date().setDate(new Date().getDate() - 15)) },
+  { job_id: 2, salary: 270000, job_title: "Project Manager", company_name: "Google Philippines", location: "Taguig City, Philippines", expires_at: new Date(), employment_type: "0", location_type: "1", created_at: new Date(new Date().setMonth(new Date().getMonth() - 2)) },
 ];
 
 const job = {
@@ -40,26 +40,26 @@ const job = {
   company_name: "Google Philippines",
   location: "38th Floor, Seven NEO, Building 5th Ave, Manila, 1016 Metro Manila",
   expires_at: new Date(),
-  employment_type: "Full-Time",
-  location_type: "Onsite",
+  employment_type: "1",
+  location_type: "2",
   details: `As a Cloud Engineer at Google Cloud, you'll design, build, and optimize scalable cloud solutions that help businesses transform and innovate. You'll work with cutting-edge technologies like Kubernetes, BigQuery, and AI/ML tools to architect secure, high-performance infrastructure. Partnering with customers and internal teams, you’ll solve complex technical challenges and drive cloud adoption worldwide.
-  
+
   Key Responsibilities:
   - Design and deploy secure, scalable cloud architectures on Google Cloud Platform (GCP).
   - Automate infrastructure using Terraform, Ansible, or other IaC tools.
   - Troubleshoot performance issues and optimize cost-efficiency.
   - Collaborate with customers and internal teams to implement best practices.
-  
+
   Requirements:
   - Bachelor’s degree in Computer Science, Engineering, or related field (or equivalent experience).
   - Hands-on experience with GCP, AWS, or Azure (certifications a plus).
   - Proficiency in Python, Go, or scripting languages.
   - Strong knowledge of networking, security, and DevOps practices.
-  
-  Why Join? 
+
+  Why Join?
   Work on the forefront of cloud innovation, shape the future of enterprise tech, and grow with a global leader in cloud computing.
-  
-  Interested? 
+
+  Interested?
   Explore openings at careers.google.com. 🚀`,
   apply_link: "https://amis.uplb.edu.ph",
   job_requirements:

@@ -43,13 +43,21 @@ const fetchAlumniByYearGraduated = async (supabase, yearGraduated) => {
     .eq("year_graduated", yearGraduated);
 };
 
+const fetchDegreeProgramsByUserId = async (supabase, userId) => {
+  return await supabase
+    .from("degree_programs")
+    .select("*")
+    .eq("user_id", userId);
+};
+
 const degreeProgramService = {
   fetchAllDegreePrograms,
   fetchDegreeProgramById,
   insertDegreeProgram,
   updateDegreeProgramById,
   deleteDegreeProgramById,
-  fetchAlumniByYearGraduated
+  fetchAlumniByYearGraduated,
+  fetchDegreeProgramsByUserId,
 };
 
 export default degreeProgramService;
