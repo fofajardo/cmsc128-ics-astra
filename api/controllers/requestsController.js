@@ -5,6 +5,7 @@ import contentsService from "../services/contentsService.js";
 
 import { isValidUUID, isValidDate } from "../utils/validators.js";
 import { Actions, Subjects } from "../../common/scopes.js";
+import projectsService from "../services/projectsService.js";
 
 const getRequests = async (req, res) => {
   if (req.you.cannot(Actions.READ, Subjects.Requests)) {
@@ -172,6 +173,71 @@ const getRequestsByContentId = async (req, res) => {
     });
   }
 };
+
+const getProjectRequests = async (req, res) => {
+  if (req.you.cannot(Actions.READ, Subjects.Requests)) {
+    return res.status(httpStatus.FORBIDDEN).json({
+      status: "FAILED",
+      message: "You do not have permission to access this resource.",
+    });
+  }
+
+  if (req.you.cannot(Actions.READ, Subjects.Requests)) {
+    return res.status(httpStatus.FORBIDDEN).json({
+      status: "FAILED",
+      message: "You do not have permission to access this resource.",
+    });
+  }
+
+  try {
+    const filters = {
+      type: [0, 1],
+    };
+    const { data: requestData, error: requestError } = await requestsService.fetchProjectRequests(req.supabase, filters);
+
+    if (requestError) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: requestError.message,
+      });
+    }
+
+    const projectIds = requestData.map(request => request.content_id);
+    const projectFilter = { project_id: projectIds };
+    const { data: projectData, error: projectError } = await projectsService.fetchProjects(req.supabase, projectFilter);
+
+    if (projectError) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: 'FAILED',
+        message: projectError.message
+      });
+    }
+
+    const statusMap = new Map();
+    requestData.forEach(request => {
+      statusMap.set(request.content_id, request.status);
+    });
+
+    // combine with status from requestData
+    const combinedData = projectData.map(project => {
+      const request_status = statusMap.get(project.project_id);
+      return {
+        ...project,  // Include all project fields
+        request_status,
+      };
+    })
+
+    return res.status(httpStatus.OK).json({
+      status: "OK",
+      list: combinedData || [],
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message,
+    });
+  }
+}
 
 const createRequest = async (req, res) => {
   if (req.you.cannot(Actions.CREATE, Subjects.Requests)) {
@@ -519,6 +585,7 @@ const requestsController = {
   getRequestById,
   getRequestsByUserId,
   getRequestsByContentId,
+  getProjectRequests,
   createRequest,
   updateRequest,
   deleteRequest,
