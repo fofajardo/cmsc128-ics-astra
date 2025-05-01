@@ -57,7 +57,7 @@ const fetchPhotoIdbyAlum = async (supabase, alum_id) => {
     .eq("user_id", alum_id)
     .eq("type", 0) // Assuming type 0 is for profile pictures
     .single();
-}
+};
 
 const photosService = {
   fetchAllPhotos,

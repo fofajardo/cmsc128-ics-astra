@@ -66,8 +66,8 @@ export default function EventsPage() {
 
   const fetchAttendees = async (id) => {
     try{
-        if( user?.state?.isAlumnus || user?.state?.isAdmin||user?.state?.isModerator){
-          console.log('fetchingg attendees...');
+      if( user?.state?.isAlumnus || user?.state?.isAdmin||user?.state?.isModerator){
+        console.log("fetchingg attendees...");
         const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/content/${id}`);
 
         //console.log("fetched attendees:", response);
@@ -83,7 +83,7 @@ export default function EventsPage() {
         }
       }
     }catch(error){
-      console.log('error at fetching attendees', error);
+      console.log("error at fetching attendees", error);
     }
     return [];
   };

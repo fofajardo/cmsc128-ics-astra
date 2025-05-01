@@ -44,9 +44,9 @@ export default function EventDetailPage() {
     try {
       console.log("id: ", id);
       console.log("id interest: ", id);
-      const ID = id
+      const ID = id;
       console.log("id fetch:", ID);
-      if(isValidUUID(id)) console.log('valid');
+      if(isValidUUID(id)) console.log("valid");
       const [eventRes, contentRes,interestStatsRes,interestRes] = await Promise.all([
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/${id}`),
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`),
@@ -62,11 +62,11 @@ export default function EventDetailPage() {
 
         console.log("event: ", event);
         console.log("content: ", content);
-        console.log('interests:', interests);
-        console.log('intereststat', interestStats.interest_count);
-        let interestedUsers = []
+        console.log("interests:", interests);
+        console.log("intereststat", interestStats.interest_count);
+        let interestedUsers = [];
         if( user?.state?.isAlumnus || user?.state?.isAdmin||user?.state?.isModerator){
-          console.log('signed in');
+          console.log("signed in");
           const isCurrentUserInterested = interests.some(user => user.user_id === user_id);
           setIsInterested(isCurrentUserInterested);
           interestedUsers = await Promise.all(
@@ -94,7 +94,7 @@ export default function EventDetailPage() {
         };
 
         setEvent(mergedEvent);
-        setNumOfInterested(interestStats.interest_count)
+        setNumOfInterested(interestStats.interest_count);
       }
     } catch (error) {
       console.error("Failed fetching event, content, or interests:", error);
@@ -153,7 +153,7 @@ export default function EventDetailPage() {
   const addDeleteInterest = async (newIsInterested) => {
     try{
 
-      console.log('user:', user?.state?.user);
+      console.log("user:", user?.state?.user);
 
       if (!user?.state?.isAlumnus ||!user?.state?.isAdmin||!user?.state?.isModerator ){
         return;
@@ -161,13 +161,13 @@ export default function EventDetailPage() {
       const interest = {
         user_id: user_id,
         content_id: event.id
-      }
+      };
       console.log("s interested: ",newIsInterested);
       if(newIsInterested){
         const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests`, interest);
 
         if(response.status === "CREATED"){
-          console.log("successfully created event interest")
+          console.log("successfully created event interest");
         }
       } else {
         console.log("interest: ", interest);
@@ -178,7 +178,7 @@ export default function EventDetailPage() {
       }
 
     } catch (error){
-      console.log('error at addDeleteInterest: ', error.message);
+      console.log("error at addDeleteInterest: ", error.message);
     }
   };
 
@@ -189,31 +189,31 @@ export default function EventDetailPage() {
   };
 
   const [isInterestedLoading, setIsInterestedLoading] = useState(false);
-const [isGoingLoading, setIsGoingLoading] = useState(false);
+  const [isGoingLoading, setIsGoingLoading] = useState(false);
 
-const handleInterestClick = async () => {
-  if (isInterestedLoading || isGoingLoading) return;
+  const handleInterestClick = async () => {
+    if (isInterestedLoading || isGoingLoading) return;
 
-  try {
-    setIsInterestedLoading(true);
-    const newIsInterested = !isInterested;
-    setIsInterested(newIsInterested);
+    try {
+      setIsInterestedLoading(true);
+      const newIsInterested = !isInterested;
+      setIsInterested(newIsInterested);
 
 
-    if (isGoing && newIsInterested) {
-      setIsGoing(false);
+      if (isGoing && newIsInterested) {
+        setIsGoing(false);
+      }
+
+      await addDeleteInterest(newIsInterested);
+
+      await fetchEvent();
+    } catch (error) {
+      console.error("Failed to update interest:", error);
+      setIsInterested(!isInterested);
+    } finally {
+      setIsInterestedLoading(false);
     }
-
-    await addDeleteInterest(newIsInterested);
-
-    await fetchEvent();
-  } catch (error) {
-    console.error("Failed to update interest:", error);
-    setIsInterested(!isInterested);
-  } finally {
-    setIsInterestedLoading(false);
-  }
-};
+  };
 
   if (!event) {
     return <div className="p-10 text-center text-xl">Event not found.</div>;

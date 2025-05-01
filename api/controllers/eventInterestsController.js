@@ -96,7 +96,7 @@ const getEventInterestByContentId = async (req, res) => {
     }
     const { data, error } = await eventInterestsService.fetchEventInterestByContentId(req.supabase, contentId);
 
-    if (error && error.code !== 'RESOURCE_NOT_FOUND') {
+    if (error && error.code !== "RESOURCE_NOT_FOUND") {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
         status: "FAILED",
         message: error.message

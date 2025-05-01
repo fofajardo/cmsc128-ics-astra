@@ -9,7 +9,7 @@ export default function EventImage({ src, title }) {
         // layout="fill"
         // objectFit="cover"
         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-        style={{ width: '100%', height: '100%' }}
+        style={{ width: "100%", height: "100%" }}
       />
     </div>
   );

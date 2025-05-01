@@ -19,7 +19,7 @@ const fetchEventInterestStat = async (supabase, eventId)=> {
     .from("event_interest_stats")
     .select("interest_count")
     .eq("event_id", eventId);
-}
+};
 const fetchEventInterestByContentId = async (supabase, contentId) => {
   return await supabase
     .from("event_interests")

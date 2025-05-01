@@ -198,7 +198,7 @@ export default function Events() {
       active: totalEvents - result.length,
       total: totalEvents
     });
-  }
+  };
 
   const fetchInterest = async (id) => {
     try{
@@ -211,7 +211,7 @@ export default function Events() {
         console.error("Unexpected interest:", interest.data);
       }
     }catch(error){
-
+      console.log(error);
     }
   };
   const fetchContentName = async (id) => {
@@ -468,10 +468,14 @@ export default function Events() {
         setToast({ type: "success", message: "Event edited successfully!" });
         console.log("here at 2nd condition");
 
-      } else if ((eventRes?.data?.status ===("FAILED"||"FORBIDDEN") && eventOnly===2)||(contentRes?.data?.status ===("FAILED"||"FORBIDDEN") && eventOnly===2)){
+      } else if (
+        ((eventRes?.data?.status === "FAILED" || eventRes?.data?.status === "FORBIDDEN") && eventOnly === 2) ||
+        ((contentRes?.data?.status === "FAILED" || contentRes?.data?.status === "FORBIDDEN") && eventOnly === 2)
+      ) {
         setToast({ type: "error", message: "Failed to edit event." });
         console.log("here at 3rd condition");
       }
+
     }catch(error){
       console.log("error",error);
       setToast({ type: "error", message: "Failed to edit event." });

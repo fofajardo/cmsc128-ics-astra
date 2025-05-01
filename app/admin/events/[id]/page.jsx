@@ -269,8 +269,8 @@ export default function EventAdminDetailPage() {
         const interests = interestRes.data.list;
         const interestStats = interestStatsRes.data.list;
 
-        console.log('interests:', interests);
-        console.log('intereststat', interestStats.interest_count);
+        console.log("interests:", interests);
+        console.log("intereststat", interestStats.interest_count);
 
         const interestedUsers = await Promise.all(
           interests.map(async (user) => ({
