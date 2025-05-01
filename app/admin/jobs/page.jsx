@@ -7,6 +7,7 @@ import { useTab } from "../../components/TabContext";
 import ConfirmModal from "@/components/ConfirmModal";
 import ToastNotification from "@/components/ToastNotification";
 import { Trash2, Eye } from "lucide-react";
+import { jobTypeMap } from "@/components/jobs/mappings";
 import axios from "axios";
 
 export default function Jobs() {
@@ -282,8 +283,6 @@ const cols = [
 ];
 
 function createRows(selectedIds, setSelectedIds, currTab, filteredJobs, fetch) {
-  const jobTypeMap = {"0": "Part-Time", "1": "Full-time", "2": "Temporary", "3": "Freelance"};
-
   return filteredJobs.map((job) => ({
     "Title": renderTitle(job.job_title),
     "Company": renderText(job.company_name),

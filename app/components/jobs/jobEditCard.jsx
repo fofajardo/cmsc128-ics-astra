@@ -5,11 +5,9 @@ import Image from "next/image";
 import ConfirmationPrompt from "./edit/confirmation";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { jobTypeMap, locationTypeMap } from "@/components/jobs/mappings";
 
 export default function JobEditCard({job}) {
-  const jobTypeMap = {"0": "Part-Time", "1": "Full-time", "2": "Temporary", "3": "Freelance"};
-  const locationTypeMap = {"0": "Onsite", "1": "Remote", "2": "Hybrid"};
-
   const [showPrompt, setPrompt] = useState(false);
   const router = useRouter();
 

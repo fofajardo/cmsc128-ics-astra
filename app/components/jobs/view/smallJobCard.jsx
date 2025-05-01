@@ -1,11 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
+import { jobTypeMap, locationTypeMap } from "@/components/jobs/mappings";
 import { Clock } from "lucide-react";
 
 export default function SmallJobCard({job, showApply}) {
-  const jobTypeMap = {"0": "Part-Time", "1": "Full-time", "2": "Temporary", "3": "Freelance"};
-  const locationTypeMap = {"0": "Onsite", "1": "Remote", "2": "Hybrid"};
-
   const isOpen = true;
 
   const formatSalary = (num) => {

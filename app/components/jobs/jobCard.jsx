@@ -4,11 +4,10 @@ import { Clock } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { jobTypeMap, locationTypeMap } from "@/components/jobs/mappings";
 
 export default function JobCard({job}) {
   const router = useRouter();
-  const jobTypeMap = {"0": "Part-Time", "1": "Full-time", "2": "Temporary", "3": "Freelance"};
-  const locationTypeMap = {"0": "Onsite", "1": "Remote", "2": "Hybrid"};
 
   const viewPost = () => {
     console.log(job.job_id);
