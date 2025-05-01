@@ -20,9 +20,6 @@ import venue2 from "../../../assets/venue2.jpeg";
 export default function EventAdminDetailPage() {
   const router = useRouter();
   const { id } = useParams();
-  //const eventId = parseInt(id);
-  //const originalEvent = eventList.find((e) => e.id === eventId);
-
   const [event, setEvent] = useState(null);
   const [selectedOption, setSelectedOption] = useState("Everyone");
   const [message, setMessage] = useState("");
@@ -62,7 +59,6 @@ export default function EventAdminDetailPage() {
       console.log("edit event - delete:", response.data);
       if (response.data.status === "DELETED") {
         handleDeleteContent(id);
-        //setToastData({ type: "success", message: `${name} deleted successfully!` });
       }
     }catch{
       setToastData({ type: "error", message: "Failed to delete event!" });
@@ -70,8 +66,6 @@ export default function EventAdminDetailPage() {
       setShowDeleteModal(false);
       router.push("/admin/events");
     }
-
-
   };
 
   const handleEdit = async (updatedEvent) => {
@@ -241,6 +235,21 @@ export default function EventAdminDetailPage() {
     return "Unknown";
   };
 
+  const fetchEventPhoto = async (contentId) => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/event/${contentId}`
+      );
+
+      if (response.data.status === "OK" && response.data.photo) {
+        return response.data.photo;
+      }
+    } catch (error) {
+      console.log(`Failed to fetch photo for event_id ${contentId}:`, error);
+    }
+    return venue2;
+  };
+
   const fetchEvent = async () =>{
     try {
       console.log("id: ", id);
@@ -275,10 +284,13 @@ export default function EventAdminDetailPage() {
         console.log("event: ", eventResponse.event.event_id);
         console.log("content: ", contentResponse.content.id);
 
+        const photoUrl = await fetchEventPhoto(eventResponse.event.event_id);
+
+
         const mergedEvent = {
           id: eventResponse.event.event_id,
           event_id: eventResponse.event.event_id,
-          imageSrc: contentResponse?.imageSrc || venue2, // fetch this on photo entity;
+          imageSrc: photoUrl || venue2, // fetch this on photo entity;
           title: contentResponse.content.title || "Untitled",
           description: contentResponse?.content.details || "No description",
           date: new Date(eventResponse.event.event_date).toDateString(),

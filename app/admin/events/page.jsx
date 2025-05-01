@@ -114,76 +114,39 @@ export default function Events() {
   // FOR BACKEND PEEPS
   useEffect(() => {
     fetchEvents();
-    fetchContents();
+    //fetchContents();
     console.log(eventList);
-  }, [pagination.currPage,pagination.numToShow]);
+  }, []);
 
 
 
   useEffect(() => {
-    if (!eventList || !Array.isArray(eventList) || !contentList || !Array.isArray(contentList)) {
-      console.log("Data not ready yet:", { eventList, contentList });
-      return;
-    }
+    if (!Array.isArray(eventList)) return;
 
-    // Create a Fuse instance with all content items
-    const fuse = new Fuse(contentList, {
-      keys: ["title"],
-      threshold: 0.3,
-    });
+    const filtered = eventList.filter(event =>
+      event?.event_name?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
-    if (searchQuery) {
-      console.log("searching for: ", searchQuery);
-      console.log("contents:", contentList);
-
-      const result = fuse.search(searchQuery);
-      console.log("search results:", result);
-
-
-      const matchingContentIds = result.map(r => r.item.id);
-      console.log("matchingContentIds:", matchingContentIds);
-
-      const filtered = eventList.filter(event =>
-        matchingContentIds.includes(event.event_id)
-      );
-
-      console.log("Filtered Events:", filtered);
-      setFilteredEvents(filtered);
-    } else {
-      setFilteredEvents(eventList);
-    }
-  }, [searchQuery, eventList, contentList]);
+    setFilteredEvents(filtered);
+    setPagination((prev) => ({ ...prev, currPage: 1 }));
+  }, [searchQuery, eventList]);
 
   useEffect(() => {
-    // Use filteredEvents.length instead of eventList.length
     const total = filteredEvents.length;
-    const numToShow = pagination.numToShow;
-    const lastPage = Math.max(1, Math.ceil(total / numToShow));
+    const lastPage = Math.max(1, Math.ceil(total / pagination.numToShow));
 
-    console.log("Recalculating pagination based on filtered events:", {
-      filteredEventsLength: total,
-      numToShow,
-      lastPage
-    });
+    setPagination((prev) => ({
+      ...prev,
+      currPage: Math.min(prev.currPage, lastPage),
+      total,
+      lastPage,
+      display: [
+        total === 0 ? 0 : (prev.currPage - 1) * pagination.numToShow + 1,
+        Math.min(prev.currPage * pagination.numToShow, total),
+      ],
+    }));
+  }, [filteredEvents,pagination.numToShow]);
 
-
-
-    setPagination((prev) => {
-      // Ensure current page doesn't exceed the last page
-      const newCurrPage = Math.min(prev.currPage, lastPage) || 1;
-
-      return {
-        ...prev,
-        currPage: newCurrPage,
-        total: total,
-        lastPage: lastPage,
-        display: [
-          total === 0 ? 0 : (newCurrPage - 1) * numToShow + 1,
-          Math.min(newCurrPage * numToShow, total),
-        ],
-      };
-    });
-  }, [filteredEvents]);
 
   const currentPageData = useMemo(() => {
     const startIndex = (pagination.currPage - 1) * pagination.numToShow;
@@ -196,6 +159,7 @@ export default function Events() {
       setFilteredEvents(eventList);
     }
   }, [eventList]);
+
   const toggleAddModal = () => {
     setShowAddModal((prev) => !prev);
   };
@@ -295,8 +259,6 @@ export default function Events() {
         );
 
         setEvents(eventList);
-        // setEventCounts({total: response.data.total });
-
         console.log("list: ", response.data.list.length);
 
         getActivePastEvents(eventList,response.data.total);
@@ -326,37 +288,6 @@ export default function Events() {
     }
   };
 
-  const fetchContents= async () =>{
-    try{
-      if (!process.env.NEXT_PUBLIC_API_URL) {
-        console.error("API URL is not defined in environment variables");
-        setEvents([]);
-        return;
-      }
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents`);
-      console.log("Fetched contents:", response.data);
-
-      if (response.data.status === "OK") {
-        setContents(
-          response.data.list.map(content => ({
-            id: content.id,
-            title: content.title?? "unknown",
-            details: content.details,
-          }))
-        );
-      } else {
-        console.error("Unexpected response:", response.data);
-      }
-    } catch (error) {
-      console.error("Failed to fetch contents:", error);
-      setToast({
-        type: "error",
-        message: "An unexpected error occurred. Please try again later."
-      });
-      setContents([]);
-    }
-  };
-  // prompt for deletion
   const confirmDelete = (id, name) => {
     setEventToDelete({ id, name });
     setShowDeleteModal(true);
@@ -504,7 +435,6 @@ export default function Events() {
         eventRes = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/${toEditId}`, eventUpdateData);
         eventOnly += 1;
         console.log("entered event update");
-
       }
 
       if (Object.keys(contentUpdateData).length > 0) {
@@ -536,7 +466,6 @@ export default function Events() {
       console.log("error",error);
       setToast({ type: "error", message: "Failed to edit event." });
     } finally{
-
       setShowEditModal(false);
       resetForm;
       fetchEvents();
@@ -616,12 +545,12 @@ export default function Events() {
       {/* Table Section */}
       <div className="bg-astradirtyastrawhite w-full px-4 py-8 md:px-12 lg:px-24 flex flex-col">
         <div className="flex flex-col py-4 px-1 md:px-4 lg:px-8">
-          <TableHeader
+          <TableHeader //info, pagination, toggleFilter, setPagination, searchQuery, setSearchQuery
             info={info}
-            setPagination={setPagination}
             pagination={pagination}
-            searchQuery={searchQuery}
             toggleFilter={toggleAddModal}
+            setPagination={setPagination}
+            searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
           />
           <Table
