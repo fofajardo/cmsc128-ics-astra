@@ -119,7 +119,7 @@ export default function EventsPage() {
         const eventsPromises = eventsRes.data.list.map(async (event) => {
           console.log(event);
           const matchedContent = contentMap.get(event.event_id) || {};
-          console.lo
+          const photoUrl = await fetchEventPhoto(event.event_id);
           return {
             id: event.event_id,
             event_id: event.event_id,
