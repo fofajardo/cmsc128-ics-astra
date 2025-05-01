@@ -47,7 +47,7 @@ export default function InactiveProjectDetail({ params }) {
               date: donation.donation_date,
             }));
           } else {
-              console.error('Unexpected response:', donationData);
+            console.error("Unexpected response:", donationData);
           }
 
           setProjectData({
@@ -73,12 +73,12 @@ export default function InactiveProjectDetail({ params }) {
             eligibilityCriteria: "NA",
             fundDistribution: "NA",
             transactions: formattedDonations,
-          })
+          });
         } else {
-            console.error('Unexpected response:', projectData);
+          console.error("Unexpected response:", projectData);
         }
       } catch (error) {
-        console.error('Failed to fetch projects and donations:', error);
+        console.error("Failed to fetch projects and donations:", error);
       } finally {
         setLoading(false);
       }

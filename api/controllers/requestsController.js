@@ -203,7 +203,7 @@ const getProjectRequests = async (req, res) => {
 
     if (alumError) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-        status: 'FAILED',
+        status: "FAILED",
         message: alumError.message
       });
     };
@@ -213,7 +213,7 @@ const getProjectRequests = async (req, res) => {
 
     if (userError) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-        status: 'FAILED',
+        status: "FAILED",
         message: userError.message
       });
     };
@@ -225,7 +225,7 @@ const getProjectRequests = async (req, res) => {
 
     if (projectError) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-        status: 'FAILED',
+        status: "FAILED",
         message: projectError.message
       });
     };
@@ -254,7 +254,7 @@ const getProjectRequests = async (req, res) => {
 
       const full_name = [alum.first_name, alum.middle_name, alum.last_name]
         .filter(Boolean) // remove undefined/null/empty values
-        .join(' ');
+        .join(" ");
 
       return {
         request_id: request.id,
@@ -278,7 +278,7 @@ const getProjectRequests = async (req, res) => {
       message: error.message,
     });
   }
-}
+};
 
 const getProjectRequestById = async (req, res) => {
   if (req.you.cannot(Actions.READ, Subjects.Requests)) {
@@ -286,7 +286,7 @@ const getProjectRequestById = async (req, res) => {
       status: "FAILED",
       message: "You do not have permission to access this resource.",
     });
-}
+  };
 
   try {
     const { requestId } = req.params;
@@ -307,7 +307,7 @@ const getProjectRequestById = async (req, res) => {
 
     if (alumError) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-        status: 'FAILED',
+        status: "FAILED",
         message: alumError.message
       });
     };
@@ -319,7 +319,7 @@ const getProjectRequestById = async (req, res) => {
 
     // if (userError) {
     //   return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-    //     status: 'FAILED',
+    //     status: "FAILED",
     //     message: userError.message
     //   });
     // };
@@ -330,7 +330,7 @@ const getProjectRequestById = async (req, res) => {
 
     if (projectError) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-        status: 'FAILED',
+        status: "FAILED",
         message: projectError.message
       });
     };
@@ -338,7 +338,7 @@ const getProjectRequestById = async (req, res) => {
 
     const full_name = [alumData.first_name, alumData.middle_name, alumData.last_name]
       .filter(Boolean) // remove undefined/null/empty values
-      .join(' ');
+      .join(" ");
 
     // Combine everything
     const combinedData = {
@@ -363,7 +363,7 @@ const getProjectRequestById = async (req, res) => {
       message: error.message,
     });
   }
-}
+};
 
 const createRequest = async (req, res) => {
   if (req.you.cannot(Actions.CREATE, Subjects.Requests)) {

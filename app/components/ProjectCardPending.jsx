@@ -19,7 +19,7 @@ export default function ProjectCardPending({
   const STATUS = {
     APPROVE: 1,
     DECLINE: 2
-  }
+  };
 
   const updateProjectRequest = async (updatedStatus) => {
     try {
@@ -27,15 +27,15 @@ export default function ProjectCardPending({
         status: updatedStatus
       });
       if (response.data.status === "UPDATED") {
-        console.log('Successfully updated project request with id:', id);
+        console.log("Successfully updated project request with id:", id);
         if (typeof onUpdate === "function") {
           onUpdate(id, updatedStatus);
         }
       } else {
-          console.error('Unexpected response:', response);
+        console.error("Unexpected response:", response);
       }
     } catch (error) {
-      console.error('Failed to approve project request:', error);
+      console.error("Failed to approve project request:", error);
     }
   };
 

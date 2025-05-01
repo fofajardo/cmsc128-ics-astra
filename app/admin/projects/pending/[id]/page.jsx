@@ -28,7 +28,7 @@ export default function PendingProjectDetail({ params }) {
   const STATUS = {
     APPROVE: 1,
     DECLINE: 2
-  }
+  };
 
   useEffect(() => {
     const fetchProjectRequest = async () => {
@@ -60,12 +60,12 @@ export default function PendingProjectDetail({ params }) {
             project_status: projectData.list.projectData.project_status,
             type: projectData.list.projectData.type,
             donationLink: projectData.list.projectData.donation_link,
-          })
+          });
         } else {
-            console.error('Unexpected response:', projectData);
+          console.error("Unexpected response:", projectData);
         }
       } catch (error) {
-        console.error('Failed to fetch project:', error);
+        console.error("Failed to fetch project:", error);
       } finally {
         setLoading(false);
       }
@@ -74,7 +74,7 @@ export default function PendingProjectDetail({ params }) {
     fetchProjectRequest();
   }, []);
 
-  const project = projectData
+  const project = projectData;
   // {
   //   id,
   //   title: "Women in Tech Scholarship",
@@ -103,12 +103,12 @@ export default function PendingProjectDetail({ params }) {
         response: updatedResponse,
       });
       if (response.data.status === "UPDATED") {
-        console.log('Successfully updated project request with id:', id);
+        console.log("Successfully updated project request with id:", id);
       } else {
-          console.error('Unexpected response:', response);
+        console.error("Unexpected response:", response);
       }
     } catch (error) {
-      console.error('Failed to approve project request:', error);
+      console.error("Failed to approve project request:", error);
     }
   };
 

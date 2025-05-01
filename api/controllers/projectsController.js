@@ -20,7 +20,7 @@ const getProjects = async (req, res) => {
 
     if (projectError) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-        status: 'FAILED',
+        status: "FAILED",
         message: projectError.message
       });
     }
@@ -31,7 +31,7 @@ const getProjects = async (req, res) => {
 
     if (contentError) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-        status: 'FAILED',
+        status: "FAILED",
         message: contentError.message
       });
     }
@@ -43,22 +43,22 @@ const getProjects = async (req, res) => {
 
     const combinedData = projectData.map(project => {
       const content = contentMap.get(project.project_id);
-      const { id, ...contentWithoutId } = content || {};  // Destructure and omit the 'id' field
+      const { id, ...contentWithoutId } = content || {};  // Destructure and omit the "id" field
       return {
         ...project,  // Include all project fields
-        ...contentWithoutId,  // Include all content fields except 'id'
-        tags: content ? content['tags'] : null,  // If tags exist, include them
+        ...contentWithoutId,  // Include all content fields except "id"
+        tags: content ? content["tags"] : null,  // If tags exist, include them
       };
-    })
+    });
 
     return res.status(httpStatus.OK).json({
-      status: 'OK',
+      status: "OK",
       projects: combinedData || [],
     });
 
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-      status: 'FAILED',
+      status: "FAILED",
       message: error.message
     });
   }
@@ -86,8 +86,8 @@ const getProjectById = async (req, res) => {
 
     if (!isValidUUID(projectId)) {
       return res.status(httpStatus.BAD_REQUEST).json({
-        status: 'FAILED',
-        message: 'Invalid projectId format'
+        status: "FAILED",
+        message: "Invalid projectId format"
       });
     }
 
@@ -95,18 +95,18 @@ const getProjectById = async (req, res) => {
 
     if (projectError) {
       return res.status(httpStatus.NOT_FOUND).json({
-        status: 'FAILED',
-        message: 'Project not found'
+        status: "FAILED",
+        message: "Project not found"
       });
     }
 
     const { data: contentData, error: contentError } = await contentsService.fetchContentById(req.supabase, projectData.project_id);
 
-    const { id, ...contentWithoutId } = contentData || {};  // Destructure and omit the 'id' field
+    const { id, ...contentWithoutId } = contentData || {};  // Destructure and omit the "id" field
     const combinedData = {
       ...projectData,  // Include all project fields
-      ...contentWithoutId,  // Include all content fields except 'id'
-      tags: contentData['tags'] ? contentData['tags'] : null,  // If tags exist, include them
+      ...contentWithoutId,  // Include all content fields except "id"
+      tags: contentData["tags"] ? contentData["tags"] : null,  // If tags exist, include them
     };
 
     return res.status(httpStatus.OK).json({
@@ -148,7 +148,7 @@ const createProject = async (req, res) => {
       "project_id",
       "project_status",
       "due_date",
-      'date_completed',
+      "date_completed",
       "goal_amount",
       "donation_link",
       "type",
@@ -172,7 +172,7 @@ const createProject = async (req, res) => {
       "project_id",
       // "project_status",
       "due_date",
-      // 'date_completed',
+      // "date_completed",
       "goal_amount",
       "donation_link",
       "type",
@@ -261,7 +261,7 @@ const createProject = async (req, res) => {
       });
     }
     isRequestCreated = true;
-    requestId = requestData[0].id
+    requestId = requestData[0].id;
 
     // Create project
     const { data: projectData, projectError } = await projectsService.insertProject(req.supabase, {
@@ -331,11 +331,11 @@ const updateProject = async (req, res) => {
 
     // TODO: Clarify if disallow edits to donation_link
     // if (
-    //     ('donation_link' in req.body && req.body.donation_link !== projectData.donation_link)
+    //     ("donation_link" in req.body && req.body.donation_link !== projectData.donation_link)
     // ) {
     //     return res.status(httpStatus.FORBIDDEN).json({
-    //         status: 'FORBIDDEN',
-    //         message: 'Editing donation_link is not allowed'
+    //         status: "FORBIDDEN",
+    //         message: "Editing donation_link is not allowed"
     //     });
     // }
 

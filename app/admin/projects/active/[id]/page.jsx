@@ -68,7 +68,7 @@ export default function ActiveProjectDetail({ params }) {
               date: donation.donation_date,
             }));
           } else {
-              console.error('Unexpected response:', donationData);
+            console.error("Unexpected response:", donationData);
           }
 
           setProjectData({
@@ -94,12 +94,12 @@ export default function ActiveProjectDetail({ params }) {
             eligibilityCriteria: "NA",
             fundDistribution: "NA",
             transactions: formattedDonations,
-          })
+          });
         } else {
-            console.error('Unexpected response:', projectData);
+          console.error("Unexpected response:", projectData);
         }
       } catch (error) {
-        console.error('Failed to fetch projects and donations:', error);
+        console.error("Failed to fetch projects and donations:", error);
       } finally {
         setLoading(false);
       }
@@ -167,12 +167,12 @@ export default function ActiveProjectDetail({ params }) {
         response: "Project was deleted by admin"
       });
       if (response.data.status === "UPDATED") {
-        console.log('Successfully updated project request with id:', id)
+        console.log("Successfully updated project request with id:", id);
       } else {
-          console.error('Unexpected response:', response);
+        console.error("Unexpected response:", response);
       }
     } catch (error) {
-      console.error('Failed to approve project request:', error);
+      console.error("Failed to approve project request:", error);
     }
   };
 
