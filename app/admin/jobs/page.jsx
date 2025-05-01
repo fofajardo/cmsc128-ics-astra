@@ -284,7 +284,7 @@ const cols = [
 function createRows(selectedIds, setSelectedIds, currTab, filteredJobs, fetch) {
   const jobTypeMap = {"0": "Part-Time", "1": "Full-time", "2": "Temporary", "3": "Freelance"};
 
-  return jobList.map((job) => ({
+  return filteredJobs.map((job) => ({
     "Title": renderTitle(job.job_title),
     "Company": renderText(job.company_name),
     "Location": renderText(job.location),
