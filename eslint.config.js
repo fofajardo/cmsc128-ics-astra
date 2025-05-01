@@ -4,6 +4,7 @@ import globals from "globals";
 import jsPlugin from "@eslint/js";
 import reactPlugin from "eslint-plugin-react";
 import stylisticJsPlugin from "@stylistic/eslint-plugin-js";
+import nextJsPlugin from "@next/eslint-plugin-next";
 
 export default defineConfig([
   {
@@ -61,7 +62,15 @@ export default defineConfig([
   },
   {
     files: ["**/*.{jsx,mjsx,tsx,mtsx}"],
+    plugins: {
+      "@next/next": nextJsPlugin,
+    },
     rules: {
+      ...nextJsPlugin.configs.recommended.rules,
+      ...nextJsPlugin.configs["core-web-vitals"].rules,
+      // FIXME: temporarily disable warnings for non-usage of
+      // the better image component provided by Next.js.
+      "@next/next/no-img-element": "off",
       "react/prop-types": "off",
       "react/no-unknown-property": [
         "error",

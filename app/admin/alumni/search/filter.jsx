@@ -123,7 +123,7 @@ export default function SearchFilter({ onClose, initialFilters, updateFilters })
           onChange={(e) => setFilters({ ...filters, field: e.target.value })}
           className="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white font-r"
         >
-          <option value="">Select alumni's field of work</option>
+          <option value="">Select alumni&apos;s field of work</option>
           <option>Frontend Developer</option>
           <option>Backend Developer</option>
           <option>Database Developer</option>

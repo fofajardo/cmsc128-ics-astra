@@ -87,8 +87,6 @@ const eventList = [
     imageSrc: venue2,
     type: "In-Person",
     date: "May 15, 2025",
-    going: 120,
-    interested: 45,
     description: "Join industry leaders as they talk latest tech trends.",
     going: 10,
     interested: 90,

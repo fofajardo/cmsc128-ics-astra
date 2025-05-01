@@ -410,7 +410,7 @@ export default function ActiveProjectDetail({ params }) {
           <div className="bg-astrawhite p-6 rounded-xl w-96 max-w-full mx-4">
             <h3 className="font-lb text-xl mb-2">Confirm Deletion</h3>
             <p className="text-astradarkgray mb-6">
-              Are you sure you want to delete "{projectData.title}"? This action
+              Are you sure you want to delete <strong>{projectData.title}</strong>? This action
               cannot be undone.
             </p>
             <div className="flex justify-end gap-3">

@@ -69,7 +69,7 @@ export default function WhatsUpPage() {
           <p className="mt-6 text-lg leading-7 text-slate-500 max-md:mt-4 max-md:mr-2.5 max-md:max-w-full">
             Stay updated with the latest happenings, announcements, and
             achievements from our vibrant community. From academic milestones to
-            student success stories, discover what's making headlines.
+            student success stories, discover what&apos;s making headlines.
           </p>
 
           <div className="mt-12 w-full max-md:mt-8 max-md:max-w-full">

@@ -99,7 +99,7 @@ export default function RequestInstructionsPage() {
             <p>Current Email: [Your Email Address]</p>
             <br />
             <p>Information Requested:</p>
-            <p>[Specify the information you're looking for]</p>
+            <p>[Specify the information you&apos;re looking for]</p>
             <br />
             <p>Purpose of Request:</p>
             <p>[Briefly explain why you need this information]</p>

@@ -1,4 +1,5 @@
-import env from "dotenv";
+import dotenv from "dotenv";
+import dotenvExpand from "dotenv-expand";
 import express from "express";
 import httpStatus from "http-status-codes";
 import registerRoutes from "./routes/loadRoutes.js";
@@ -7,7 +8,8 @@ import {BuildSupabaseClient} from "./middleware/buildSupabaseClient.js";
 import {BuildAuth} from "./middleware/buildAuth.js";
 import {ResponseHelper} from "./middleware/responseHelper.js";
 
-env.config({ path: [".env", "../.env"] });
+const envConfig = dotenv.config({ path: [".env", "../.env"] });
+dotenvExpand.expand(envConfig);
 
 const gServer = express();
 

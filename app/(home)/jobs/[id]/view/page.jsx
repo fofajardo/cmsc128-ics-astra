@@ -3,6 +3,7 @@
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import SideJobCard from "@/components/jobs/view/sideJobCard";
 import BigJobCard from "../../../../components/jobs/view/bigJobCard";
 import SmallJobCard from "../../../../components/jobs/view/smallJobCard";
 import Back from "../../../../components/jobs/view/back";
@@ -77,10 +78,9 @@ export default function JobsPage() {
         {
           job && content &&
             <>
-              <BigJobCard job={job} content={content} />
-              {/* FIXME: restore sidejob card. */}
-              {/* <SideJobCard {...job} /> */}
+              <BigJobCard job={job} content={content}/> <SideJobCard {...job}/>
             </>
+
         }
       </div>
 

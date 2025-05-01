@@ -9,9 +9,9 @@ import { v4 as uuvidv4 } from "uuid";
 
 export default function JobForm({isEdit, close}){
   const [showPrompt, setPrompt] = useState(false);
-  const employmentOptions =[{value: "1", label: "Part-Time"},{value: "2", label: "Full-time"}, {value: "3", label: "Temporary"}, {value: "4", label: "Freelance"}];
-  const locationOptions =[{value: "1", label: "Onsite"},{value: "2", label: "Remote"}, {value: "3", label: "Hybrid"}];
-  const statusOptions =[{value: "1", label: "Open"},{value: "2", label: "Closed"}];
+  const employmentOptions =[{value: "0", label: "Part-Time"},{value: "1", label: "Full-time"}, {value: "2", label: "Temporary"}, {value: "3", label: "Freelance"}];
+  const locationOptions =[{value: "0", label: "Onsite"},{value: "1", label: "Remote"}, {value: "2", label: "Hybrid"}];
+  const statusOptions =[{value: "0", label: "Open"},{value: "1", label: "Closed"}];
   const [errors, setErrors] = useState({});
 
   const [formData, setFormData] = useState({company_name: "", job_title: "", location: "", salary: "", apply_link: "", details: "", expires_at: "", job_requirements: "", hiring_manager: ""});
@@ -37,7 +37,6 @@ export default function JobForm({isEdit, close}){
     }));
   };
 
-
   const handleAdd = async () => {
     const payload = {
       company_name: formData.company_name,
@@ -50,9 +49,11 @@ export default function JobForm({isEdit, close}){
       expires_at: formData.expires_at,
       apply_link: formData.apply_link,
       details: formData.details,
+      requirements: formData.job_requirements,
       user_id: "05a4762d-29ef-4543-824b-9d16f77c6946",
     };
-
+    console.log(formData.job_requirements);
+    console.log(payload.requirments);
     try {
       console.log("Sending payload:", payload);
 

@@ -79,21 +79,21 @@ export default function InactiveProjectDetail({ params }) {
   };
 
   //Open edit modal with current project data
-  const handleEdit = () => {
-    const cleanedGoal = parseInt(projectData.goal.replace(/[^0-9]/g, ""), 10);
-    const cleanedRaised = parseInt(
-      projectData.raised.replace(/[^0-9]/g, ""),
-      10
-    );
-
-    setEditFormData({
-      ...projectData,
-      goal: cleanedGoal,
-      raised: cleanedRaised,
-    });
-    setErrors({});
-    setShowEditModal(true);
-  };
+  // const handleEdit = () => {
+  //   const cleanedGoal = parseInt(projectData.goal.replace(/[^0-9]/g, ""), 10);
+  //   const cleanedRaised = parseInt(
+  //     projectData.raised.replace(/[^0-9]/g, ""),
+  //     10
+  //   );
+  //
+  //   setEditFormData({
+  //     ...projectData,
+  //     goal: cleanedGoal,
+  //     raised: cleanedRaised,
+  //   });
+  //   setErrors({});
+  //   setShowEditModal(true);
+  // };
 
   //handle send message button click
   //placeholder

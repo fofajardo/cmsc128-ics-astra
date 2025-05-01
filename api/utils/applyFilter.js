@@ -17,6 +17,9 @@ const applyFilter = (query, filters, config = {}) => {
       query = query.ilike(key, `%${value}%`);
     } else if (key === "limit" || key === "page" || key === "sort_by" || key === "order" || specialKeys.includes(key)) {
       continue; // skip pagination/sorting here
+    } else if (Array.isArray(value)) {
+      // If value is an array, use .in query
+      query = query.in(key, value);
     } else {
       query = query.eq(key, value);
     }

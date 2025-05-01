@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import NavbarUser from "../../components/NavbarUser";
+import HeaderUser from "../../components/HeaderUser.jsx";
 import ProjectCard from "../../components/projects/ProjectCard";
 import Link from "next/link";
 import { Icon } from "@iconify/react";
@@ -539,7 +539,7 @@ export default function ProjectsPage({ projects }) {
             Completed Fundraisers
           </h2>
           <p className="text-astrablack font-r mb-10">
-            See the fundraisers and scholarships we've brought to life together.
+            See the fundraisers and scholarships we&apos;ve brought to life together.
           </p>
 
           <div className="relative">

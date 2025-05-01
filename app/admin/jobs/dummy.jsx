@@ -4,7 +4,7 @@ const jobList = [
     job_title: "Backend Developer",
     company_name: "TechNova Inc.",
     location: "New York, NY",
-    job_type: "Full-time",
+    job_type: "0",
     created_at: "2025-04-20",
     status: "Open"
   },
@@ -13,7 +13,7 @@ const jobList = [
     job_title: "Civil Engineering Consultant",
     company_name: "UrbanStructures Ltd.",
     location: "San Francisco, CA",
-    job_type: "Freelance",
+    job_type: "1",
     created_at: "2025-04-18",
     status: "Expired"
   },
@@ -22,7 +22,7 @@ const jobList = [
     job_title: "Frontend Developer",
     company_name: "Creative Pixels",
     location: "Chicago, IL",
-    job_type: "Part-time",
+    job_type: "2",
     created_at: "2025-04-22",
     status: "Open"
   },
@@ -31,7 +31,7 @@ const jobList = [
     job_title: "DevOps Engineer",
     company_name: "CloudForge",
     location: "Austin, TX",
-    job_type: "Full-time",
+    job_type: "2",
     created_at: "2025-04-21",
     status: "Open"
   },
@@ -40,7 +40,7 @@ const jobList = [
     job_title: "iOS Developer",
     company_name: "AppNation",
     location: "Seattle, WA",
-    job_type: "Temporary",
+    job_type: "3",
     created_at: "2025-04-19",
     status: "Expired"
   },
@@ -49,7 +49,7 @@ const jobList = [
     job_title: "Full Stack Developer",
     company_name: "NextGen Web",
     location: "Miami, FL",
-    job_type: "Full-time",
+    job_type: "2",
     created_at: "2025-04-20",
     status: "Open"
   },
@@ -58,7 +58,7 @@ const jobList = [
     job_title: "Cloud Engineer",
     company_name: "SkyLayer",
     location: "Denver, CO",
-    job_type: "Part-time",
+    job_type: "0",
     created_at: "2025-04-23",
     status: "Open"
   },
@@ -67,7 +67,7 @@ const jobList = [
     job_title: "Security Analyst",
     company_name: "SecureNet",
     location: "Boston, MA",
-    job_type: "Full-time",
+    job_type: "2",
     created_at: "2025-04-17",
     status: "Expired"
   },
@@ -76,7 +76,7 @@ const jobList = [
     job_title: "AI Researcher",
     company_name: "NeuroTech Labs",
     location: "Los Angeles, CA",
-    job_type: "Full-time",
+    job_type: "0",
     created_at: "2025-04-22",
     status: "Open"
   },
@@ -85,7 +85,7 @@ const jobList = [
     job_title: "Database Administrator",
     company_name: "DataCore Solutions",
     location: "Atlanta, GA",
-    job_type: "Freelance",
+    job_type: "1",
     created_at: "2025-04-18",
     status: "Expired"
   }
@@ -98,8 +98,8 @@ const job = {
   company_name:"Google Philippines",
   location:"38th Floor, Seven NEO, Building 5th Ave, Manila, 1016 Metro Manila",
   expires_at: new Date(),
-  employment_type: "Full-Time",
-  location_type: "Onsite",
+  employment_type: "1",
+  location_type: "2",
   details:
     `As a Cloud Engineer at Google Cloud, you'll design,  build, and optimize scalable cloud solutions that help businesses  transform and innovate. You'll work with cutting-edge technologies like Kubernetes, BigQuery, and AI/ML tools to architect secure, high-performance infrastructure. Partnering with customers and internal  teams, you’ll solve complex technical challenges and drive cloud adoption worldwide.
 

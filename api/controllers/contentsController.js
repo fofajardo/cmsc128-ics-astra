@@ -106,7 +106,7 @@ const createContent = async (req, res) => {
       });
     }
 
-    const { data: existingContents, error: checkError } = await contentsService.checkExistingContent(req.supabase, title);
+    const { data: existingContents, error: checkError } = await contentsService.checkExistingContent(req.supabase);
 
     if (checkError) {
       console.error("Create Content Error:", checkError);

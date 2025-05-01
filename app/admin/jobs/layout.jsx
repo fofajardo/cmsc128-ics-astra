@@ -13,38 +13,6 @@ export default function AdminAlumniLayout({ children }) {
     search: "Search for a job post",
   });
 
-  const handleTabChange = (newTab) => {
-    setCurrTab(newTab);
-
-    setInfo((prev) => ({
-      ...prev,
-      title: `${newTab} Accounts`,
-    }));
-
-    // Reset Filters and Pagination
-    // Then refetch alumList
-
-  };
-
-  // main tab switcher for the list page
-  const handleGoToTab = (newTab) => {
-    setCurrTab(newTab);
-    setInfo((prev) => ({
-      ...prev,
-      title: `${newTab} Accounts`,
-    }));
-    router.push("/admin/alumni/manage-access");
-  };
-
-  //if from profile page, go back and set tab
-  const dynamicTabClick = (tabName) => {
-    if (pathname === "/admin/alumni/manage-access"){
-      handleTabChange(tabName);
-    }else {
-      handleGoToTab(tabName);
-    }
-  };
-
   return (
     <>
       {/* Header with background */}

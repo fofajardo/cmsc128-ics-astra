@@ -16,14 +16,6 @@ const fetchUserById = async (supabase, userId) => {
     .single();
 };
 
-const fetchUserByEmail = async (supabase, email) => {
-  return await supabase
-    .from("users")
-    .select("*")
-    .eq("email", email)
-    .single();
-};
-
 const checkExistingUser = async (supabase, username, email) => {
   return await supabase
     .from("users")
@@ -70,7 +62,6 @@ const fetchUserInLegacy = async (supabase, userId) => {
 const usersService = {
   fetchUsers,
   fetchUserById,
-  fetchUserByEmail,
   fetchUserInLegacy,
   checkExistingUser,
   insertUser,

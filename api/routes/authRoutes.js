@@ -12,6 +12,17 @@ const authRouter = () => {
     controller.signedInUser
   ]);
 
+  router.get("/sign-in/external", [
+    controller.signInGate,
+    controller.signInSbExternal
+  ]);
+
+  router.get("/sign-in/external/callback", [
+    controller.signInGate,
+    controller.signInSbExternalCallback,
+    controller.signedInUser
+  ]);
+
   router.get("/signed-in-user", controller.signedInUser);
 
   router.post("/sign-out", controller.signOut);

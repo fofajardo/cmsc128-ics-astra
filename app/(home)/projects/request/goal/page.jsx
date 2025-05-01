@@ -101,7 +101,7 @@ const RequestFundraiserGoal = () => {
         <div className="flex flex-col items-start space-y-6 pl-10 pt-60 ml-6">
           {/* Header text */}
           <h2 className="text-5xl text-astrablack text-left">
-            Tell us how much you'd like to raise
+            Tell us how much you&apos;d like to raise
           </h2>
           <p className="font-r text-astrablack text-left tracking-wide">
             Give a rough estimate of your <br />

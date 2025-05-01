@@ -6,7 +6,7 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "dev": "next dev",
+        "dev": "next dev --turbopack",
         "build": "next build",
         "start": "next start",
         "lint": "next lint",
@@ -50,6 +50,7 @@
         "lucide-react": "^0.484.0",
         "multer": "^1.4.5-lts.2",
         "next": "^15.2.4",
+        "prop-types": "^15.8.1",
         "react": "^19.0.0",
         "react-datepicker": "^8.3.0",
         "react-dom": "^19.0.0",
@@ -68,6 +69,7 @@
         ]
     },
     "devDependencies": {
+        "@next/eslint-plugin-next": "^15.3.1",
         "@tailwindcss/postcss": "^4.0.17",
         "chai": "^5.2.0",
         "eslint": "^9.25.1",

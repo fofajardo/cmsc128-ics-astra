@@ -1,4 +1,5 @@
 import httpStatus from "http-status-codes";
+import {clientRoutes} from "../../common/routes.js";
 
 async function signUp(aRequest, aResponse, aNext) {
   const {body} = aRequest;
@@ -22,7 +23,6 @@ async function signUp(aRequest, aResponse, aNext) {
     return aResponse.sendErrorUnauthenticated(error.message);
   }
 
-  console.log(data);
   return aResponse.sendOk(data);
 }
 
@@ -47,13 +47,55 @@ async function signInSbLocal(aRequest, aResponse, aNext) {
     return aResponse.sendErrorUnauthenticated(error.message);
   }
 
-  aRequest.rebuildUser(authTokenResponse);
+  aRequest.fetchAuthState(authTokenResponse);
+
+  return aNext();
+}
+
+async function signInSbExternal(aRequest, aResponse, aNext) {
+  const { provider } = aRequest.query;
+  if (provider === null || provider === undefined) {
+    return aResponse.sendErrorClient("Provider is missing");
+  }
+
+  const allowedProviders = ["google"];
+  if (!allowedProviders.includes(provider)) {
+    return aResponse.sendErrorClient("Unknown provider");
+  }
+
+  const { data, error } = await aRequest.supabase.auth.signInWithOAuth({
+    provider,
+    options: {
+      redirectTo: clientRoutes.auth.signInExternalCallback(),
+    },
+  });
+
+  if (data.url) {
+    aResponse.redirect(data.url);
+  }
+}
+
+async function signInSbExternalCallback(aRequest, aResponse, aNext) {
+  const { code } = aRequest.query;
+
+  if (!code) {
+    return aResponse.sendErrorClient("No code provided");
+  }
+
+  const authTokenResponse = await aRequest.supabase.auth.exchangeCodeForSession(code);
+
+  const {data, error} = authTokenResponse;
+
+  if (error) {
+    return aResponse.sendErrorUnauthenticated(error.message);
+  }
+
+  aRequest.fetchAuthState(authTokenResponse);
 
   return aNext();
 }
 
 async function signInGate(aRequest, aResponse, aNext) {
-  console.log("signInGate: Checking request body:", aRequest.body);
   if (aRequest.isAuthenticated()) {
     return aResponse.status(httpStatus.BAD_REQUEST).json({
       status: "FAILED",
@@ -84,6 +126,8 @@ async function signOut(aRequest, aResponse) {
 const authController = {
   signUp,
   signInSbLocal,
+  signInSbExternal,
+  signInSbExternalCallback,
   signInGate,
   signedInUser,
   signOut,

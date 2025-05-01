@@ -56,8 +56,11 @@ export function SearchComponent({ placeholder, setSearchQuery, searchQuery }) {
         className='outline-none'
         placeholder={placeholder}
         value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
-        onKeyDown={handleKeyDown}
+        onChange={(e) => {
+          const val = e.target.value;
+          setInputValue(val);
+          setSearchQuery(val);
+        }}
       />
     </div>
   );
