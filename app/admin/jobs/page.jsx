@@ -6,16 +6,18 @@ import { ActionButton } from "@/components/Buttons";
 import { useTab } from "../../components/TabContext";
 import ConfirmModal from "@/components/ConfirmModal";
 import ToastNotification from "@/components/ToastNotification";
-import { jobList }from "./dummy";
 import { Trash2, Eye } from "lucide-react";
-
+import axios from "axios";
 
 export default function Jobs() {
   const [showFilter, setShowFilter] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
   const { currTab, info } = useTab();
   const [toast, setToast] = useState(null);
-  // console.log("Current tab from layout:", info);
+  const [jobs, setJobs] = useState([]);
+  const [filteredJobs, setFilteredJobs] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const itemsPerPage = 5;
 
   const toggleFilter = () => {
     console.log("Toggling filter modal:", !showFilter);
@@ -23,24 +25,95 @@ export default function Jobs() {
   };
 
   const [pagination, setPagination] = useState({
-    display: [1, 10],
+    display: [1, itemsPerPage],
     currPage: 1,
-    lastPage: 10,
-    numToShow: 10,
-    total: 999,
-    itemsPerPage: 5
+    lastPage: 1,
+    numToShow: itemsPerPage,
+    total: 0,
+    itemsPerPage
   });
 
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const handleSearch = (searchInput) => {
-    setSearchQuery(searchInput);
-
-    // put job search logic here
+  const fetchJobs = async () => {
+    try {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs`);
+      if (response.data.status === "OK") {
+        setJobs(response.data.list || []);
+      } else {
+        console.error("Unexpected response from server.");
+      }
+    } catch (error) {
+      console.error("Failed to fetch jobs. Please try again later.");
+    }
   };
 
-  const handleApply = () => {
-    // put filtering and sorting logic here
+  useEffect(() => {
+    fetchJobs();
+  }, []);
+
+  useEffect(() => {
+    setFilteredJobs(jobs);
+  }, [jobs]);
+
+  useEffect(() => {
+    const total = filteredJobs.length;
+    const lastPage = Math.max(1, Math.ceil(total / itemsPerPage));
+
+    setPagination({
+      display: [1, Math.min(itemsPerPage, total)],
+      currPage: 1,
+      lastPage,
+      numToShow: itemsPerPage,
+      total,
+      itemsPerPage
+    });
+  }, [filteredJobs, searchQuery]);
+
+  const handleSearch = (searchInput) => {
+    const lower = (searchInput || "").toLowerCase();
+    const filtered = jobs.filter(job =>
+      (job.job_title || "").toLowerCase().includes(lower)
+    );
+
+    setSearchQuery(searchInput);
+    setFilteredJobs(filtered);
+  };
+
+  const handleApply = (filters = {}) => {
+    const {
+      companyName = "",
+      location = "",
+      jobType = "",
+      fromDate = "",
+      toDate = "",
+    } = filters;
+
+    const lowerCompany = companyName.toLowerCase();
+    const lowerLocation = location.toLowerCase();
+    const parsedJobType = jobType ? Number(jobType) : null;
+    const yearFrom = parseInt(fromDate, 10);
+    const yearTo = parseInt(toDate, 10);
+
+    const filtered = jobs.filter(job => {
+      const jobCompany = (job.company_name || "").toLowerCase();
+      const jobLocation = (job.location || "").toLowerCase();
+      const jobTypeNum = Number(job.employment_type);
+      const jobYear = parseInt(job.created_at, 10);
+      const matchesCompany = !lowerCompany || jobCompany.includes(lowerCompany);
+      const matchesLocation = !lowerLocation || jobLocation.includes(lowerLocation);
+      const matchesType = parsedJobType === null || jobTypeNum === parsedJobType;
+      const matchesYearFrom = isNaN(yearFrom) || jobYear >= yearFrom;
+      const matchesYearTo = isNaN(yearTo) || jobYear <= yearTo;
+
+      return (
+        matchesCompany &&
+        matchesLocation &&
+        matchesType &&
+        matchesYearFrom &&
+        matchesYearTo
+      );
+    });
+
+    setFilteredJobs(filtered);
   };
 
   return (
@@ -69,7 +142,7 @@ export default function Jobs() {
       <div className="bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24 flex flex-col">
         <div className='flex flex-col py-4 px-1 md:px-4 lg:px-8'>
           <TableHeader info={info} pagination={pagination} setPagination={setPagination} toggleFilter={toggleFilter} setSearchQuery={handleSearch} searchQuery={searchQuery} />
-          <Table cols={cols} data={createRows(selectedIds, setSelectedIds, currTab)} />
+          <Table cols={cols} data={createRows(selectedIds, setSelectedIds, currTab, filteredJobs, fetchJobs)} />
           <PageTool pagination={pagination} setPagination={setPagination} />
         </div>
         <div className="flex flex-row justify-between md:pl-4 lg:pl-8">
@@ -198,9 +271,6 @@ function BottomButtons({ selectedCount, currTab, setToast }) {
   );
 }
 
-
-
-
 const cols = [
   { label: "Title", justify: "start", visible: "all" },
   { label: "Company", justify: "center", visible: "sm" },
@@ -211,17 +281,17 @@ const cols = [
   { label: "Quick Actions", justify: "center", visible: "all" },
 ];
 
-function createRows(selectedIds, setSelectedIds, currTab) {
+function createRows(selectedIds, setSelectedIds, currTab, filteredJobs, fetch) {
   const jobTypeMap = {"0": "Part-Time", "1": "Full-time", "2": "Temporary", "3": "Freelance"};
 
   return jobList.map((job) => ({
     "Title": renderTitle(job.job_title),
     "Company": renderText(job.company_name),
     "Location": renderText(job.location),
-    "Type": renderText(jobTypeMap[job.job_type]),
+    "Type": renderType(jobTypeMap[job.employment_type]),
     "Posted": renderText(job.created_at),
-    "Status": renderStatus(job.status),
-    "Quick Actions": renderActions(job.id, job.job_title, currTab),
+    "Status": renderStatus(job.expires_at),
+    "Quick Actions": renderActions(job.job_id, job.job_title, currTab, fetch),
   }));
 }
 
@@ -237,15 +307,52 @@ function renderText(text) {
   return <div className="text-center text-astradarkgray font-s">{text}</div>;
 }
 
+function renderType(type) {
+  let text;
 
-function renderStatus(text) {
+  switch (type) {
+  case 1:
+    text = "Part-time";
+    break;
+  case 2:
+    text = "Full-time";
+    break;
+  case 3:
+    text = "Temporary";
+    break;
+  case 4:
+    text = "Freelance";
+    break;
+  default:
+    text = "Unknown";
+  }
+  return <div className="text-center text-astradarkgray font-s">{text}</div>;
+}
+
+function renderStatus(expiresAt) {
+  const today = new Date();
+  const expiryDate = new Date(expiresAt);
+
+  const isExpired = isNaN(expiryDate) || expiryDate < today;
+
+  const text = isExpired ? "Expired" : "Active";
+  const color = isExpired ? "text-red-600" : "text-green-600";
   return <div className={`text-center ${text === "Expired" ? "text-astrared" : "text-astragreen"} font-s`}>{text}</div>;
 }
 
-function renderActions(id, name) {
-  const handleDelete = () => {
-    // handle delete job id logic here
-
+function renderActions(id, name, currTab, onDeleteSuccess) {
+  const handleDelete = async () => {
+    try {
+      const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs/${id}`);
+      if (response.data.status === "DELETED") {
+        console.log("Successfully deleted");
+        onDeleteSuccess();
+      } else {
+        console.error("Failed to delete job.");
+      }
+    } catch (error) {
+      console.error("Error deleting job:", error);
+    }
   };
   return (
 
@@ -287,5 +394,3 @@ function renderActions(id, name) {
     </div>
   );
 }
-
-

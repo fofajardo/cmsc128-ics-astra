@@ -13,6 +13,7 @@ import { Eye, EyeOff } from "lucide-react";
 
 export default function JobsPage() {
   const [jobs, setJobs] = useState([]);
+  const [filteredJobs, setFilteredJobs] = useState([]);
   const [myJobs, setMyJobs] = useState(dummyMyJobs);
   const [jobCards, setJobCards] = useState(6); // limit / no. of cards to show
   const [myJobCards, setMyJobCards] = useState(6); // limit / no. of cards owned to show
@@ -57,14 +58,18 @@ export default function JobsPage() {
 
       <HiringPrompt/>
 
-      <SearchBar/>
+      <SearchBar onSearch={(query) => {
+        const lower = query.toLowerCase();
+        const filtered = jobs.filter(job =>
+          (job.job_title || "").toLowerCase().includes(lower));
+        setFilteredJobs(filtered);}}/>
 
       <Filter/>
 
       {jobs.length == 0 ? <Image src="/jobs/empty.png" width={181} height={224} alt='empty' className="shrink-0 col-span-3"/>
         : <div className="grid grid-cols-[351px] lg:grid-cols-[351px_351px_351px] md:grid-cols-[351px_351px] gap-5 justify-items-center justify-center mx-30">
           <h1 className="text-astrablack font-bold text-2xl ml-2 lg:col-span-3 md:col-span-2 justify-self-start">Recommended Jobs</h1>
-          {jobs.slice(0,jobCards).map((job) => {
+          {(filteredJobs.length > 0 ? filteredJobs : jobs).slice(0, jobCards).map((job) => {
             return (
               <JobCard key={job.job_id} job={job}/>
             );})}

@@ -30,6 +30,7 @@ export default function JobCard({job}) {
     });
   };
 
+
   return (
     <div className="bg-astrawhite w-[351px] h-[308px] rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] hover:-translate-y-0.5 p-6 transition-all duration-100ms ease-in">
 
