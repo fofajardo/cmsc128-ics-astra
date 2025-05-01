@@ -223,7 +223,7 @@ export default function ProjectFunds() {
               <p className="text-sm text-astragray mt-2">
                 {searchQuery ? `From search results for "${searchQuery}"` :
                   selectedStatus === "All" ? "Across all projects" :
-                  `From ${selectedStatus.toLowerCase()} projects only`}
+                    `From ${selectedStatus.toLowerCase()} projects only`}
               </p>
             </div>
           </div>
