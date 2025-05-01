@@ -72,10 +72,12 @@ export default function EventDetailPage() {
           }))
         );
 
+        const photoUrl = await fetchEventPhoto(event.event.event_id);
+
         const mergedEvent = {
           id: event.event.event_id,
           event_id: event.event.event_id,
-          imageSrc: content?.content.imageSrc || venue2,   //TODO: fetch the image from the photo,
+          imageSrc: photoUrl || venue2,
           title: content.content.title || "Untitled",
           description: content?.content.details || "No description",
           date: new Date(event.event.event_date).toDateString(),
@@ -113,6 +115,20 @@ export default function EventDetailPage() {
     return "Unknown";
   };
 
+  const fetchEventPhoto = async (contentId) => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/event/${contentId}`
+      );
+
+      if (response.data.status === "OK" && response.data.photo) {
+        return response.data.photo;
+      }
+    } catch (error) {
+      console.log(`Failed to fetch photo for event_id ${contentId}:`, error);
+    }
+    return venue2;
+  };
 
   useEffect(() => {
     fetchEvent();
