@@ -539,7 +539,7 @@ export default function ProjectsPage({ projects }) {
             Completed Fundraisers
           </h2>
           <p className="text-astrablack font-r mb-10">
-            See the fundraisers and scholarships we've brought to life together.
+            See the fundraisers and scholarships we&apos;ve brought to life together.
           </p>
 
           <div className="relative">

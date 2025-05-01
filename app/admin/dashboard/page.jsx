@@ -24,7 +24,7 @@ export default function Dashboard() {
         <div className="absolute inset-2 flex flex-col items-center justify-evenly text-astrawhite z-20">
           <div className="text-center pt-6">
             <h1 className="font-h1">Welcome Back, ICS Admin!</h1>
-            <p className="font-s">Here's a quick overview of what’s happening today</p>
+            <p className="font-s">Here&apos;s a quick overview of what’s happening today</p>
           </div>
           <div className="pt-6 pb-4 overflow-y-scroll w-full scrollbar-hide">
             <div className="flex flex-row gap-3 min-w-max px-4 justify-center">

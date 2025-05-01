@@ -65,7 +65,7 @@ export function HeroSection() {
           {/* Text Section - Now Second */}
           <div className={`max-w-[600px] space-y-6 text-center lg:text-right order-1 lg:order-2 ${animations.fadeSlideUp}`}>
             <h1 className="text-[60px] font-extrabold leading-[1.1] hover:scale-105 transition-transform">
-              What's Up
+              What&apos;s Up
             </h1>
             <p className="text-lg font-medium hover:text-blue-200 transition-colors">
               Stay connected and informed with the latest updates and stories.

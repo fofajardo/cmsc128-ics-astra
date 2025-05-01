@@ -2,7 +2,7 @@ import { SignedInUserFetcher, SignedInUserProvider } from "./components/UserCont
 
 export const metadata = {
   title: {
-    template: "%s - ICS- ASTRA",
+    template: "%s - ICS-ASTRA",
     default: "ICS-ASTRA",
   },
 };
