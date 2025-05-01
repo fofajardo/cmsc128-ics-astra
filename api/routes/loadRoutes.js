@@ -17,6 +17,7 @@ import organizationAffiliationsRouter from "./organizationAffiliationsRoutes.js"
 import reportsRouter from "./reportsRoutes.js";
 import requestsRouter from "./requestsRoutes.js";
 import jobsRouter from "./jobsRoutes.js";
+import statisticsRouter from "./statisticsRoutes.js";
 import {serverRoutes} from "../../common/routes.js";
 
 const ensureDirectoriesExist = () => {
@@ -46,6 +47,7 @@ const registerRoutes = (app) => {
   app.use(serverRoutes.reports.base(), reportsRouter());
   app.use(serverRoutes.requests.base(), requestsRouter());
   app.use(serverRoutes.jobs.base(), jobsRouter());
+  app.use(serverRoutes.statistics.base(), statisticsRouter());
 };
 
 export default registerRoutes;
