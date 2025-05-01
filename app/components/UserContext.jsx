@@ -89,18 +89,18 @@ function fetchData(aUser, aContext) {
       // Ignore missing profile.
     });
     switch (aUser.role) {
-      case RoleName.UNLINKED:
-        aContext.actions.setIsUnlinked(true);
-        break;
-      case RoleName.ALUMNUS:
-        aContext.actions.setIsAlumnus(true);
-        break;
-      case RoleName.MODERATOR:
-        aContext.actions.setIsModerator(true);
-        break;
-      case RoleName.ADMIN:
-        aContext.actions.setIsAdmin(true);
-        break;
+    case RoleName.UNLINKED:
+      aContext.actions.setIsUnlinked(true);
+      break;
+    case RoleName.ALUMNUS:
+      aContext.actions.setIsAlumnus(true);
+      break;
+    case RoleName.MODERATOR:
+      aContext.actions.setIsModerator(true);
+      break;
+    case RoleName.ADMIN:
+      aContext.actions.setIsAdmin(true);
+      break;
     }
   }
   if (aUser.scopes) {
