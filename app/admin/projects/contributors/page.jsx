@@ -3,8 +3,9 @@ import { useState } from "react";
 import { TableHeader, Table, PageTool } from "@/components/TableBuilder";
 import { ActionButton } from "@/components/Buttons";
 import ToastNotification from "@/components/ToastNotification";
-import { Eye, Mail } from "lucide-react";
+// Removed lucide icon imports
 import Link from "next/link";
+import {GoBackButton} from "@/components/Buttons";
 
 export default function Contributors() {
   const [showFilter, setShowFilter] = useState(false);
@@ -40,7 +41,7 @@ export default function Contributors() {
 
   const handleSearch = (searchInput) => {
     setSearchQuery(searchInput);
-    // Logic for filtering contributors by search query
+    // Reset pagination when searching
     setPagination(prev => ({
       ...prev,
       currPage: 1,
@@ -48,11 +49,42 @@ export default function Contributors() {
     }));
   };
 
-  // Filter contributors by project
-  const filteredContributors =
-    selectedProject === "All"
-      ? contributorsData
-      : contributorsData.filter((contributor) => contributor.project === selectedProject);
+  // Filter contributors by search query and project
+  const filteredContributors = contributorsData
+    .filter(contributor => {
+      // First filter by project if not "All"
+      if (selectedProject !== "All" && contributor.project !== selectedProject) {
+        return false;
+      }
+
+      // Then filter by search query if there is one
+      if (searchQuery.trim() === "") {
+        return true; // No search query, keep all items that matched project filter
+      }
+
+      // Case-insensitive search across multiple fields
+      const query = searchQuery.toLowerCase();
+      return (
+        contributor.name.toLowerCase().includes(query) ||
+        contributor.email.toLowerCase().includes(query) ||
+        contributor.project.toLowerCase().includes(query) ||
+        contributor.amount.toLowerCase().includes(query) ||
+        contributor.date.toLowerCase().includes(query)
+      );
+    });
+
+  // Update pagination based on filtered results
+  const totalFilteredItems = filteredContributors.length;
+  const lastPageNumber = Math.ceil(totalFilteredItems / pagination.itemsPerPage) || 1;
+
+  // Ensure current page is valid after filtering
+  if (pagination.currPage > lastPageNumber) {
+    setPagination(prev => ({
+      ...prev,
+      currPage: lastPageNumber,
+      display: [(lastPageNumber - 1) * prev.itemsPerPage + 1, Math.min(lastPageNumber * prev.itemsPerPage, totalFilteredItems)]
+    }));
+  }
 
   // Get current page contributors
   const currentContributors = filteredContributors.slice(
@@ -106,6 +138,7 @@ export default function Contributors() {
                   className="blue-button"
                   onClick={() => {
                     setSelectedProject(tempSelectedProject); // apply the filter
+                    setSearchQuery(""); // Clear search when applying new filter
                     setPagination((prev) => ({
                       ...prev,
                       currPage: 1,
@@ -139,17 +172,37 @@ export default function Contributors() {
 
       {/* Table section */}
       <div className="bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24 flex flex-col">
+        <div className="max-w-6xl px-4 mt-4">
+          <GoBackButton />
+        </div>
         <div className="flex flex-col py-4 px-1 md:px-4 lg:px-8">
           <TableHeader
             info={info}
-            pagination={pagination}
+            pagination={{
+              ...pagination,
+              total: totalFilteredItems,
+              lastPage: lastPageNumber
+            }}
             setPagination={setPagination}
             toggleFilter={toggleFilter}
             setSearchQuery={handleSearch}
             searchQuery={searchQuery}
           />
-          <Table cols={cols} data={createRows(currentContributors, selectedIds, setSelectedIds, setToast)} />
-          <PageTool pagination={pagination} setPagination={setPagination} />
+          {currentContributors.length > 0 ? (
+            <Table cols={cols} data={createRows(currentContributors, selectedIds, setSelectedIds, setToast)} />
+          ) : (
+            <div className="py-8 text-center text-astradarkgray">
+              No contributors found matching your search criteria.
+            </div>
+          )}
+          <PageTool
+            pagination={{
+              ...pagination,
+              total: totalFilteredItems,
+              lastPage: lastPageNumber
+            }}
+            setPagination={setPagination}
+          />
         </div>
       </div>
     </div>
@@ -163,7 +216,6 @@ const cols = [
   { label: "Project", justify: "center", visible: "lg" },
   { label: "Donation", justify: "center", visible: "sm" },
   { label: "Date", justify: "center", visible: "lg" },
-  { label: "Quick Actions", justify: "center", visible: "all" },
 ];
 
 // Function to create table rows
@@ -174,7 +226,6 @@ function createRows(contributors, selectedIds, setSelectedIds, setToast) {
     "Project": renderText(contributor.project),
     "Donation": renderAmount(contributor.amount),
     "Date": renderText(contributor.date),
-    "Quick Actions": renderActions(contributor.id, contributor.name, contributor.email, setToast),
   }));
 }
 
@@ -193,48 +244,7 @@ function renderAmount(amount) {
   return <div className="text-center text-astragreen font-s font-semibold">{amount}</div>;
 }
 
-function renderActions(id, name, email, setToast) {
-  const handleSendEmail = () => {
-    // Logic for sending email
-    setToast({
-      type: "success",
-      message: `Email sent to ${name}`
-    });
-  };
-
-  return (
-    <div className="flex justify-center gap-3 md:pr-4 lg:pr-2">
-      <div className="hidden md:block">
-        <ActionButton
-          label="View"
-          color="gray"
-          route={`/admin/contributors/${id}`}
-        />
-      </div>
-      <div className="block md:hidden">
-        <ActionButton
-          label={<Eye size={20}/>}
-          color="gray"
-          route={`/admin/contributors/${id}`}
-        />
-      </div>
-      <div className="hidden md:block">
-        <ActionButton
-          label="Contact"
-          color="blue"
-          onClick={handleSendEmail}
-        />
-      </div>
-      <div className="block md:hidden">
-        <ActionButton
-          label={<Mail size={20}/>}
-          color="blue"
-          onClick={handleSendEmail}
-        />
-      </div>
-    </div>
-  );
-}
+// Action rendering function removed
 
 // Sample contributor data
 const contributorsData = [
