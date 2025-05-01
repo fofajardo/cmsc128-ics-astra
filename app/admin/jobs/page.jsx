@@ -309,20 +309,20 @@ function renderType(type) {
   let text;
 
   switch (type) {
-    case 1:
-      text = "Part-time";
-      break;
-    case 2:
-      text = "Full-time";
-      break;
-    case 3:
-      text = "Temporary";
-      break;
-    case 4:
-      text = "Freelance";
-      break;
-    default:
-      text = "Unknown";
+  case 1:
+    text = "Part-time";
+    break;
+  case 2:
+    text = "Full-time";
+    break;
+  case 3:
+    text = "Temporary";
+    break;
+  case 4:
+    text = "Freelance";
+    break;
+  default:
+    text = "Unknown";
   }
   return <div className="text-center text-astradarkgray font-s">{text}</div>;
 }

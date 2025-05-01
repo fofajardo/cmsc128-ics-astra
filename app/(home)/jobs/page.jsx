@@ -13,7 +13,7 @@ import { Eye, EyeOff } from "lucide-react";
 
 export default function JobsPage() {
   const [jobs, setJobs] = useState([]);
-  const [filteredJobs, setFilteredJobs] = useState([])
+  const [filteredJobs, setFilteredJobs] = useState([]);
   const [myJobs, setMyJobs] = useState(dummyMyJobs);
   const [jobCards, setJobCards] = useState(6); // limit / no. of cards to show
   const [myJobCards, setMyJobCards] = useState(6); // limit / no. of cards owned to show
@@ -62,7 +62,7 @@ export default function JobsPage() {
         const lower = query.toLowerCase();
         const filtered = jobs.filter(job =>
           (job.job_title || "").toLowerCase().includes(lower));
-          setFilteredJobs(filtered);}}/>
+        setFilteredJobs(filtered);}}/>
 
       <Filter/>
 

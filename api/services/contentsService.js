@@ -40,7 +40,7 @@ const fetchContentById = async (supabase, contentId) => {
 const checkExistingContent = async (supabase) => {
   return await supabase
     .from("contents")
-    .select("id")
+    .select("id");
 };
 
 const insertContent = async (supabase, contentData) => {
