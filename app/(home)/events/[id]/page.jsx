@@ -10,6 +10,7 @@ import axios from "axios";
 import { isValidUUID } from "../../../../api/utils/validators";
 
 import venue2 from "../../../assets/venue2.jpeg";
+import { ChartColumnStackedIcon } from "lucide-react";
 
 
 
@@ -22,6 +23,7 @@ export default function EventDetailPage() {
   // const [currentEvents, setCurrentEvents] = useState([]);
   // const [currentPage, setCurrentPage] = useState(1);
   const [numOfInterested, setNumOfInterested] = useState(0);
+  const user_id = "38f98c8d-af8d-4cef-ab9b-8a5d80e9c8b1"; //Only using this since userid is needed
 
 
   // const fetchInterest = async (id) => {
@@ -61,6 +63,8 @@ export default function EventDetailPage() {
         console.log('interests:', interests);
         console.log('intereststat', interestStats.interest_count);
 
+        const isCurrentUserInterested = interests.some(user => user.user_id === user_id);
+        setIsInterested(isCurrentUserInterested);
         const interestedUsers = await Promise.all(
           interests.map(async (user) => ({
             id: user.user_id,
@@ -69,18 +73,17 @@ export default function EventDetailPage() {
         );
 
         const mergedEvent = {
-          id: event.event_id,
-          event_id: event.event_id,
-          imageSrc: content?.imageSrc || venue2,
-          title: contentRes.title || "Untitled",
-          description: content?.details || "No description",
-          date: new Date(event.event_date).toDateString(),
-          location: event.venue,
+          id: event.event.event_id,
+          event_id: event.event.event_id,
+          imageSrc: content?.content.imageSrc || venue2,   //TODO: fetch the image from the photo,
+          title: content.content.title || "Untitled",
+          description: content?.content.details || "No description",
+          date: new Date(event.event.event_date).toDateString(),
+          location: event.event.venue,
           attendeesList: interestedUsers,
-          status: event.online ? "Online" : "Offline",
+          status: event.event.online ? "Online" : "Offline",
           avatars: [],
         };
-
 
         setEvent(mergedEvent);
         setNumOfInterested(interestStats.interest_count)
@@ -118,7 +121,6 @@ export default function EventDetailPage() {
 
   useEffect(()=>{
     setEvent(eventList.find((e) => e.id === id));
-
   },[eventList]);
 
 
@@ -126,14 +128,45 @@ export default function EventDetailPage() {
     setEvent(updatedEvent);
   };
 
+  const addDeleteInterest = async (newIsInterested) => {
+    try{
+
+      const interest = {
+        user_id: user_id,
+        content_id: event.id
+      }
+      console.log("s interested: ",newIsInterested);
+      if(newIsInterested){
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests`, interest);
+
+        if(response.status === "CREATED"){
+          console.log("successfully created event interest")
+        }
+      } else {
+        console.log("interest: ", interest);
+        const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/${interest.user_id}/${interest.content_id}`);
+        if(response.status === "DELETED"){
+          console.log("successfully deleted event interest");
+        }
+      }
+
+    } catch (error){
+      console.log('error at addDeleteInterest: ', error.message);
+    }
+  };
+
   const handleInterestClick = () => {
-    setIsInterested((prev) => !prev);
+    const newIsInterested = !isInterested;
+    setIsInterested(newIsInterested);
+    addDeleteInterest(newIsInterested); // pass the updated value
     if (isGoing) setIsGoing(false); // Optional: disable "Going" when "Interested" is clicked
+    fetchEvent();
   };
 
   const handleGoingClick = () => {
     setIsGoing((prev) => !prev);
     if (isInterested) setIsInterested(false); // Optional: disable "Interested" when "Going" is clicked
+    fetchEvent();
   };
 
   if (!event) {

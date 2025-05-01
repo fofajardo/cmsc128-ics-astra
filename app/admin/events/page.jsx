@@ -5,7 +5,7 @@ import ToastNotification from "@/components/ToastNotification";
 import EventModal from "./EventModal";
 import eventListDummy from "./eventDummy";
 import { Trash2, Eye, Pencil } from "lucide-react";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useMemo } from "react";
 import { TabContext } from "@/components/TabContext";
 import { isValidDate,isValidUUID } from "../../../api/utils/validators";
 import axios from "axios";
@@ -119,25 +119,29 @@ export default function Events() {
   }, [pagination.currPage,pagination.numToShow]);
 
 
+
   useEffect(() => {
-    if (!eventList || !Array.isArray(eventList)) {
-      console.log("eventList not ready yet:", eventList);
+    if (!eventList || !Array.isArray(eventList) || !contentList || !Array.isArray(contentList)) {
+      console.log("Data not ready yet:", { eventList, contentList });
       return;
     }
+
+    // Create a Fuse instance with all content items
     const fuse = new Fuse(contentList, {
       keys: ["title"],
       threshold: 0.3,
     });
 
     if (searchQuery) {
-      console.log("searching for: ",searchQuery);
+      console.log("searching for: ", searchQuery);
       console.log("contents:", contentList);
-      const result = fuse.search(searchQuery);
-      console.log("results:" , result);
-      const matchingContentIds = result.map(r => r.item.id);
 
+      const result = fuse.search(searchQuery);
+      console.log("search results:", result);
+
+
+      const matchingContentIds = result.map(r => r.item.id);
       console.log("matchingContentIds:", matchingContentIds);
-      console.log("eventList:", eventList.map(e => ({ event_id: e.event_id, content_id: e.content_id })));
 
       const filtered = eventList.filter(event =>
         matchingContentIds.includes(event.event_id)
@@ -150,9 +154,9 @@ export default function Events() {
     }
   }, [searchQuery, eventList, contentList]);
 
-
   useEffect(() => {
-    const total = eventList.length;
+    // Use filteredEvents.length instead of eventList.length
+    const total = filteredEvents.length;
     const numToShow = pagination.numToShow;
     const lastPage = Math.max(1, Math.ceil(total / numToShow));
 
@@ -162,17 +166,36 @@ export default function Events() {
       lastPage
     });
 
-    setPagination((prev) => ({
-      ...prev,
-      total: total,
-      lastPage: lastPage,
-      display: [
-        (prev.currPage - 1) * numToShow + 1,
-        Math.min(prev.currPage * numToShow, total),
-      ],
-    }));
-  }, [eventList]);
 
+
+    setPagination((prev) => {
+      // Ensure current page doesn't exceed the last page
+      const newCurrPage = Math.min(prev.currPage, lastPage) || 1;
+
+      return {
+        ...prev,
+        currPage: newCurrPage,
+        total: total,
+        lastPage: lastPage,
+        display: [
+          total === 0 ? 0 : (newCurrPage - 1) * numToShow + 1,
+          Math.min(newCurrPage * numToShow, total),
+        ],
+      };
+    });
+  }, [filteredEvents]);
+
+  const currentPageData = useMemo(() => {
+    const startIndex = (pagination.currPage - 1) * pagination.numToShow;
+    const endIndex = startIndex + pagination.numToShow;
+    return filteredEvents.slice(startIndex, endIndex);
+  }, [filteredEvents, pagination.currPage, pagination.numToShow]);
+
+  useEffect(() => {
+    if (eventList && Array.isArray(eventList)) {
+      setFilteredEvents(eventList);
+    }
+  }, [eventList]);
   const toggleAddModal = () => {
     setShowAddModal((prev) => !prev);
   };
@@ -299,14 +322,7 @@ export default function Events() {
         setEvents([]);
         return;
       }
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents`
-        , {
-          params: {
-            page: pagination.currPage,
-            limit: pagination.numToShow
-          }
-        }
-      );
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents`);
       console.log("Fetched contents:", response.data);
 
       if (response.data.status === "OK") {
@@ -516,6 +532,8 @@ export default function Events() {
     }
   };
 
+
+
   return (
     <div>
       {/* Add Event Modal */}
@@ -597,7 +615,7 @@ export default function Events() {
           />
           <Table
             cols={cols}
-            data={createRows(filteredEvents, confirmDelete, toggleEditModal)}
+            data={createRows(currentPageData, confirmDelete, toggleEditModal)}
           />
           <PageTool pagination={pagination} setPagination={setPagination} />
         </div>

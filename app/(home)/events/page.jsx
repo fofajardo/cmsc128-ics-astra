@@ -28,8 +28,6 @@ export default function EventsPage() {
   });
 
 
-
-
   const [pagination, setPagination] = useState({
     display: [1, 10],
     currPage: 1,
@@ -43,51 +41,51 @@ export default function EventsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const [eventsRes, contentsRes] = await Promise.all([
-          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events`, {
-            params: { page: 1, limit: 100 },
-          }),
-          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents`, {
-            params: { page: 1, limit: 100 },
-          }),
-        ]);
+  const fetchData = async () => {
+    try {
+      const [eventsRes, contentsRes] = await Promise.all([
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events`, {
+          params: { page: 1, limit: 100 },
+        }),
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents`, {
+          params: { page: 1, limit: 100 },
+        }),
+      ]);
 
-        if (eventsRes.data.status === "OK" && contentsRes.data.status === "OK") {
-          const contentMap = new Map();
-          contentsRes.data.list.forEach(content => {
-            contentMap.set(content.id, content);
-          });
+      if (eventsRes.data.status === "OK" && contentsRes.data.status === "OK") {
+        const contentMap = new Map();
+        contentsRes.data.list.forEach(content => {
+          contentMap.set(content.id, content);
+        });
 
-          const mergedEvents = eventsRes.data.list.map(event => {
-            const matchedContent = contentMap.get(event.event_id) || {};
-            return {
-              id: event.event_id,
-              event_id: event.event_id,
-              imageSrc: matchedContent.imageSrc || venue2,
-              title: matchedContent.title || "Untitled",
-              description: matchedContent.details || "No description",
-              date: new Date(event.event_date).toDateString(),
-              location: event.venue,
-              attendees: event.going ?? [],
-              status: event.online ? "Online" : "Offline",
-              avatars: [],
-            };
-          });
+        const mergedEvents = eventsRes.data.list.map(event => {
+          const matchedContent = contentMap.get(event.event_id) || {};
+          return {
+            id: event.event_id,
+            event_id: event.event_id,
+            imageSrc: matchedContent.imageSrc || venue2,
+            title: matchedContent.title || "Untitled",
+            description: matchedContent.details || "No description",
+            date: new Date(event.event_date).toDateString(),
+            location: event.venue,
+            attendees: event.going ?? [],
+            status: new Date(event.event_date)< new Date() ? "Closed" : "Open",
+            avatars: [],
+          };
+        });
 
-          setEventList(mergedEvents);
-          setTotalPages(Math.ceil(mergedEvents.length / itemsPerPage));
-        }
-      } catch (error) {
-        console.error("Failed fetching events or contents:", error);
-        setEventList([]);
+        setEventList(mergedEvents);
+        setTotalPages(Math.ceil(mergedEvents.length / itemsPerPage));
       }
+    } catch (error) {
+      console.error("Failed fetching events or contents:", error);
+      setEventList([]);
     }
+  };
 
+  useEffect(() => {
     fetchData();
-  }, []);
+  }, [eventList]);
 
   useEffect(() => {
     setCurrentEvents(eventList.slice(

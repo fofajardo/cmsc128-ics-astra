@@ -3,13 +3,13 @@ import eventInterestsService from "../services/eventInterestsService.js";
 import { isValidUUID } from "../utils/validators.js";
 import { Actions, Subjects } from "../../common/scopes.js";
 
-const user_id = "38f98c8d-af8d-4cef-ab9b-8a5d80e9c8b1"; //Only using this since userid is needed
+const userId = "38f98c8d-af8d-4cef-ab9b-8a5d80e9c8b1"; //Only using this since userid is needed
 
 const getEventInterests = async (req, res) => {
   try {
     const { page = 1, limit = 10 } = req.query;
     //const currentUserId = req.user.data.id;
-    const currentUserId = user_id;
+    const currentUserId = userId;
     console.log("current userId: ",currentUserId);
 
     if (req.you.cannotAs(Actions.MANAGE, Subjects.EVENT_INTEREST,{alum_id:currentUserId})) {
@@ -44,7 +44,7 @@ const getEventInterestByAlumnId = async (req, res) => {
   try {
     const { alumnId } = req.params;
     //const currentUserId = req.user.data.id;
-    const currentUserId = user_id;
+    const currentUserId = userId;
 
 
     console.log("current userId: ",currentUserId);
@@ -84,7 +84,7 @@ const getEventInterestByContentId = async (req, res) => {
   try {
     const { contentId } = req.params;
     //const currentUserId = req.user?.data?.id;
-    const currentUserId = user_id;
+    const currentUserId = userId;
 
     console.log("current userId: ",currentUserId);
 
@@ -122,7 +122,7 @@ const getEventInterestStats = async(req,res)=>{
     const { contentId } = req.params;
 
     //const currentUserId = req.user?.data?.id;
-    const currentUserId = user_id;
+    const currentUserId = userId;
     if (!isValidUUID(currentUserId)) {
       return res.status(httpStatus.BAD_REQUEST).json({
         status: "FAILED",
@@ -169,7 +169,7 @@ const getEventInterestStats = async(req,res)=>{
 const createEventInterest = async (req, res) => {
   try {
     //const currentUserId = req.user.data.id;
-    const currentUserId = user_id;
+    const currentUserId = userId;
 
     console.log("current userId: ",currentUserId);
     if (req.you.cannotAs(Actions.MANAGE, Subjects.EVENT_INTEREST, {alum_id:currentUserId})) {
@@ -216,7 +216,7 @@ const createEventInterest = async (req, res) => {
     if (checkError) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
         status: "FAILED",
-        message: checkError
+        message: `error after checking existing Event Interst: ${checkError}`
       });
     }
 
@@ -248,7 +248,7 @@ const createEventInterest = async (req, res) => {
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: "FAILED",
-      message: error.message || error
+      message: `at catch ${error.message}`
     });
   }
 };
@@ -260,6 +260,7 @@ const deleteEmptyEventInterest = async (req, res) => {
       message: "You do not have permission to delete event interests"
     });
   }
+
   return res.status(httpStatus.BAD_REQUEST).json({
     status: "FAILED",
     message: "Invalid deletion. AlumId and contentId parameters are missing"
