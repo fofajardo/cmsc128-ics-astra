@@ -7,6 +7,8 @@ import Link from "next/link";
 
 export default function JobCard({job}) {
   const router = useRouter();
+  const jobTypeMap = {"0": "Part-Time", "1": "Full-time", "2": "Temporary", "3": "Freelance"};
+  const locationTypeMap = {"0": "Onsite", "1": "Remote", "2": "Hybrid"};
 
   const viewPost = () => {
     console.log(job.job_id);
@@ -18,10 +20,13 @@ export default function JobCard({job}) {
   };
 
   const formatDate = (date) => {
-    return date.toLocaleDateString("en-US", {
+    const parsedDate = new Date(date);
+    if (isNaN(parsedDate)) return "Invalid Date";
+
+    return parsedDate.toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
-      day: "numeric",
+      day: "numeric"
     });
   };
 
@@ -44,8 +49,8 @@ export default function JobCard({job}) {
       </div>
 
       <div className="flex gap-2 items-center py-3">
-        <div className="border-1 border-astradarkgray bg-astratintedwhite rounded-3xl py-0.5 px-3"><p className="text-astrablack text-sm">{job.employment_type}</p></div>
-        <div className="border-1 border-astradarkgray bg-astratintedwhite rounded-3xl py-0.5 px-3"><p className="text-astrablack text-sm">{job.location_type}</p></div>
+        <div className="border-1 border-astradarkgray bg-astratintedwhite rounded-3xl py-0.5 px-3"><p className="text-astrablack text-sm">{jobTypeMap[job.employment_type]}</p></div>
+        <div className="border-1 border-astradarkgray bg-astratintedwhite rounded-3xl py-0.5 px-3"><p className="text-astrablack text-sm">{locationTypeMap[job.location_type]}</p></div>
       </div>
 
       <div className="flex gap-2 items-center py-2.5 justify-center">

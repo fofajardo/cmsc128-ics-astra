@@ -3,6 +3,8 @@ import Link from "next/link";
 import { Clock } from "lucide-react";
 
 export default function SmallJobCard({job, showApply}) {
+  const jobTypeMap = {"0": "Part-Time", "1": "Full-time", "2": "Temporary", "3": "Freelance"};
+  const locationTypeMap = {"0": "Onsite", "1": "Remote", "2": "Hybrid"};
 
   const isOpen = true;
 
@@ -38,8 +40,8 @@ export default function SmallJobCard({job, showApply}) {
         {/* Tags */}
         <div className="flex flex-wrap gap-2 my-3">
           <div className={`border-1 ${isOpen ? "border-[#045600] bg-[#ECFFED] text-[#045600]" : "text-[#E8403C] bg-[#FFF0EC] border-[#E8403C]"} rounded-lg py-2 px-4.5`}><p className="text-sm">{isOpen ? "Open": "Close"}</p></div>
-          <div className={`border-1 bg-astratintedwhite ${isOpen ? "text-astrablack border-astradarkgray" : "text-astralightgray border-astralightgray"} rounded-lg py-2 px-4.5`}><p className="text-sm">{job.employment_type}</p></div>
-          <div className={`border-1 bg-astratintedwhite ${isOpen ? "text-astrablack border-astradarkgray" : "text-astralightgray border-astralightgray"} rounded-lg py-2 px-4.5`}><p className="text-sm">{job.location_type}</p></div>
+          <div className={`border-1 bg-astratintedwhite ${isOpen ? "text-astrablack border-astradarkgray" : "text-astralightgray border-astralightgray"} rounded-lg py-2 px-4.5`}><p className="text-sm">{jobTypeMap[job.employment_type]}</p></div>
+          <div className={`border-1 bg-astratintedwhite ${isOpen ? "text-astrablack border-astradarkgray" : "text-astralightgray border-astralightgray"} rounded-lg py-2 px-4.5`}><p className="text-sm">{locationTypeMap[job.location_type]}</p></div>
         </div>
 
         <div className="flex flex-col items-center w-full md:w-7/10">

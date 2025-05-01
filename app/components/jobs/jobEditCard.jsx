@@ -7,6 +7,9 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function JobEditCard({job}) {
+  const jobTypeMap = {"0": "Part-Time", "1": "Full-time", "2": "Temporary", "3": "Freelance"};
+  const locationTypeMap = {"0": "Onsite", "1": "Remote", "2": "Hybrid"};
+
   const [showPrompt, setPrompt] = useState(false);
   const router = useRouter();
 
@@ -62,8 +65,8 @@ export default function JobEditCard({job}) {
       </div>
 
       <div className="flex gap-2 items-center py-3">
-        <div className="border-1 border-astradarkgray bg-astratintedwhite rounded-3xl py-0.5 px-3"><p className="text-astrablack text-sm">{job.employment_type}</p></div>
-        <div className="border-1 border-astradarkgray bg-astratintedwhite rounded-3xl py-0.5 px-3"><p className="text-astrablack text-sm">{job.location_type}</p></div>
+      <div className="border-1 border-astradarkgray bg-astratintedwhite rounded-3xl py-0.5 px-3"><p className="text-astrablack text-sm">{jobTypeMap[job.employment_type]}</p></div>
+      <div className="border-1 border-astradarkgray bg-astratintedwhite rounded-3xl py-0.5 px-3"><p className="text-astrablack text-sm">{locationTypeMap[job.location_type]}</p></div>
       </div>
 
       <div className="flex gap-2 items-center py-2.5 justify-center">

@@ -212,11 +212,13 @@ const cols = [
 ];
 
 function createRows(selectedIds, setSelectedIds, currTab) {
+  const jobTypeMap = {"0": "Part-Time", "1": "Full-time", "2": "Temporary", "3": "Freelance"};
+
   return jobList.map((job) => ({
     "Title": renderTitle(job.job_title),
     "Company": renderText(job.company_name),
     "Location": renderText(job.location),
-    "Type": renderText(job.job_type),
+    "Type": renderText(jobTypeMap[job.job_type]),
     "Posted": renderText(job.created_at),
     "Status": renderStatus(job.status),
     "Quick Actions": renderActions(job.id, job.job_title, currTab),
