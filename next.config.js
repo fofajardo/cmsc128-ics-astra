@@ -5,7 +5,9 @@ const nextConfig = {
     return [
       {
         source: "/api/v1/:path*",
-        destination: `${process.env.ICSA_API_URL}/v1/:path*`
+        destination: process.env.ICSA_API_URL
+          ? `${process.env.ICSA_API_URL}/v1/:path*`
+          : "http://localhost:3001/v1/:path*"
       }
     ];
   },
