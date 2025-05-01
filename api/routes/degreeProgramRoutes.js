@@ -3,18 +3,19 @@ import degreeProgramController from "../controllers/degreeProgramController.js";
 import {RequireAuthenticated} from "../middleware/requireAuthenticated.js";
 
 const degreeProgramsRouter = (supabase) => {
-  const router = express.Router();
+    const router = express.Router();
 
-  router.use(RequireAuthenticated);
+    router.use(RequireAuthenticated);
+    
+    router.get("/alumni/:id", degreeProgramController.getDegreeProgramsByUserId);
+    // router.get("/alumni/:year_graduated", degreeProgramController.getAlumniByYearGraduated);
+    router.get("/:id", degreeProgramController.getDegreeProgramById);
+    router.get("/", degreeProgramController.getAllDegreePrograms);
+    router.post("/", degreeProgramController.createDegreeProgram);
+    router.put("/:id", degreeProgramController.updateDegreeProgram);
+    router.delete("/:id", degreeProgramController.deleteDegreeProgram);
 
-  router.get("/alumni/:year_graduated", degreeProgramController.getAlumniByYearGraduated); // Add this route
-  router.get("/", degreeProgramController.getAllDegreePrograms);
-  router.get("/:id", degreeProgramController.getDegreeProgramById);
-  router.post("/", degreeProgramController.createDegreeProgram);
-  router.put("/:id", degreeProgramController.updateDegreeProgram);
-  router.delete("/:id", degreeProgramController.deleteDegreeProgram);
-
-  return router;
+    return router;
 };
 
 export default degreeProgramsRouter;
