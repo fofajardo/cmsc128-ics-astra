@@ -79,6 +79,11 @@ function SignedInUserProvider({children}) {
 }
 
 function fetchData(aUser, aContext) {
+  if (aUser === null || aUser === undefined || aUser === "") {
+    aContext.actions.setInitialized(true);
+    return;
+  }
+
   if (aUser) {
     if (aUser.public_metadata) {
       const authUser = aUser;
