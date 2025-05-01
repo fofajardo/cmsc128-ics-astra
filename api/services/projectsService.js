@@ -16,9 +16,9 @@ sort_by
 order
 */
 const fetchProjects = async (supabase, filters) => {
-  let query = supabase
-    .from("projects")
-    .select("*");
+    let query = supabase
+        .from('project_donation_summary')
+        .select('*');
 
   query = applyFilter(query, filters, {
     ilike: ["donation_link"],
@@ -40,11 +40,11 @@ const fetchProjects = async (supabase, filters) => {
 };
 
 const fetchProjectById = async (supabase, projectId) => {
-  return await supabase
-    .from("projects")
-    .select("*")
-    .eq("project_id", projectId)
-    .single();
+    return await supabase
+        .from('project_donation_summary')
+        .select('*')
+        .eq('project_id', projectId)
+        .single();
 };
 
 const insertProject = async (supabase, projectData) => {
