@@ -75,6 +75,7 @@ const createJob = async (req, res) => {
       "details",
       "views",
       "tags",
+      "requirements",
       "user_id",
     ];
 
@@ -96,6 +97,7 @@ const createJob = async (req, res) => {
       "location_type",
       "expires_at",
       "details" ,
+      "requirements",
       "user_id"
     ];
     const missingFields = requiredFields.filter(field => req.body[field] == null);
@@ -120,6 +122,7 @@ const createJob = async (req, res) => {
       details,
       views = 0,
       tags = [],
+      requirements,
       user_id,
     } = req.body;
 
@@ -188,6 +191,7 @@ const createJob = async (req, res) => {
       location,
       location_type,
       employment_type,
+      requirements,
       created_at,
       expires_at,
     });
