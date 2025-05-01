@@ -11,10 +11,12 @@ import { isValidUUID } from "../../../../api/utils/validators";
 
 import venue2 from "../../../assets/venue2.jpeg";
 import { ChartColumnStackedIcon } from "lucide-react";
+import { useSignedInUser } from "@/components/UserContext";
 
 
 
 export default function EventDetailPage() {
+  const user = useSignedInUser();
   const { id } = useParams();
   const [event, setEvent] = useState(null);
   const [isInterested, setIsInterested] = useState(false);
@@ -62,15 +64,19 @@ export default function EventDetailPage() {
         console.log("content: ", content);
         console.log('interests:', interests);
         console.log('intereststat', interestStats.interest_count);
+        let interestedUsers = []
+        if( user?.state?.isAlumnus || user?.state?.isAdmin||user?.state?.isModerator){
+          console.log('signed in');
+          const isCurrentUserInterested = interests.some(user => user.user_id === user_id);
+          setIsInterested(isCurrentUserInterested);
+          interestedUsers = await Promise.all(
+            interests.map(async (user) => ({
+              id: user.user_id,
+              name: await fetchUserName(user.user_id),
+            }))
+          );
+        }
 
-        const isCurrentUserInterested = interests.some(user => user.user_id === user_id);
-        setIsInterested(isCurrentUserInterested);
-        const interestedUsers = await Promise.all(
-          interests.map(async (user) => ({
-            id: user.user_id,
-            name: await fetchUserName(user.user_id),
-          }))
-        );
 
         const photoUrl = await fetchEventPhoto(event.event.event_id);
 
@@ -147,6 +153,11 @@ export default function EventDetailPage() {
   const addDeleteInterest = async (newIsInterested) => {
     try{
 
+      console.log('user:', user?.state?.user);
+
+      if (!user?.state?.isAlumnus ||!user?.state?.isAdmin||!user?.state?.isModerator ){
+        return;
+      }
       const interest = {
         user_id: user_id,
         content_id: event.id
@@ -170,14 +181,6 @@ export default function EventDetailPage() {
       console.log('error at addDeleteInterest: ', error.message);
     }
   };
-
-  // const handleInterestClick = () => {
-  //   const newIsInterested = !isInterested;
-  //   setIsInterested(newIsInterested);
-  //   addDeleteInterest(newIsInterested); // pass the updated value
-  //   if (isGoing) setIsGoing(false); // Optional: disable "Going" when "Interested" is clicked
-  //   fetchEvent();
-  // };
 
   const handleGoingClick = () => {
     setIsGoing((prev) => !prev);
@@ -224,8 +227,8 @@ const handleInterestClick = async () => {
         <HeaderEvent event={event} onSave={handleSave} />
         <EventDetails event={event} isInterested={isInterested} handleInterestClick={handleInterestClick} isGoing={isGoing} handleGoingClick={handleGoingClick}/>
       </div>
+      {((user?.state?.isUnlinked || user?.state?.isUnlinked || user?.state?.isAdmin)) && <AttendeesSection event={event} /> }
 
-      <AttendeesSection event={event} />
     </div>
   );
 }

@@ -17,8 +17,10 @@ import UPLBImageCollage from "@/components/events/GroupedEvents/UPLBImageCollage
 import events from "../../data/events";
 import eventsVector from "../../assets/events-vector.png";
 import venue2 from "../../assets/venue2.jpeg";
+import { useSignedInUser } from "@/components/UserContext";
 
 export default function EventsPage() {
+  const user =useSignedInUser();
   const itemsPerPage = 4;
   const [contentList, setContents] = useState([]);
   const [eventCounts, setEventCounts] = useState({
@@ -64,18 +66,21 @@ export default function EventsPage() {
 
   const fetchAttendees = async (id) => {
     try{
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/content/${id}`);
+        if( user?.state?.isAlumnus || user?.state?.isAdmin||user?.state?.isModerator){
+          console.log('fetchingg attendees...');
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/content/${id}`);
 
-      //console.log("fetched attendees:", response);
-      if (response.data.status === "OK"){
-        const interestedUserNames = await Promise.all(
-          response.data.list.map(async (user) => {
-            const name = await fetchUserName(user.user_id);
-            return name;
-          })
-        );
+        //console.log("fetched attendees:", response);
+        if (response.data.status === "OK"){
+          const interestedUserNames = await Promise.all(
+            response.data.list.map(async (user) => {
+              const name = await fetchUserName(user.user_id);
+              return name;
+            })
+          );
 
-        return interestedUserNames;
+          return interestedUserNames;
+        }
       }
     }catch(error){
       console.log('error at fetching attendees', error);

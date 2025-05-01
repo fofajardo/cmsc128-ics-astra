@@ -10,8 +10,18 @@ import { TabContext } from "@/components/TabContext";
 import { isValidDate,isValidUUID } from "../../../api/utils/validators";
 import axios from "axios";
 import Fuse from "fuse.js";
+import { useSignedInUser } from "@/components/UserContext";
 
 export default function Events() {
+
+  const user = useSignedInUser();
+
+  const isAllowed =
+    user?.state?.role === "admin" || user?.state?.role === "moderator";
+
+  if (!isAllowed) {
+    return <div>FORBIDDEN</div>;
+  }
   const { setEventCounts } = useContext(TabContext);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -326,7 +336,7 @@ export default function Events() {
   const handleAdd = async () => {   // add content -> get the newly created content_id -> add event
     try{
       let contentId;
-      let user_id = "19a54ed6-5a0e-4850-8193-e013140d6111";  //manually added; TODO: change after user auth implemented
+      let user_id = "ee4d48d3-53b7-4b6f-a7c4-f93aab061b4c";  //manually added; TODO: change after user auth implemented
       console.log("event_id: ",selectedContentId);
       if(!isValidDate(addFormData.event_date)){
         console.log("invalid date format");
