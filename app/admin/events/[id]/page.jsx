@@ -76,9 +76,7 @@ export default function EventAdminDetailPage() {
 
   const handleEdit = async (updatedEvent) => {
     try{
-
       const toEditId = id;
-
       console.log("event id in ", toEditId);
       console.log(event);
       console.log(new Date(event.date));

@@ -26,24 +26,29 @@ export default function EventsPage() {
     past: 0,
     total: 0
   });
+
+
+  const [pagination, setPagination] = useState({
+    display: [1, 10],
+    currPage: 1,
+    lastPage: 10,
+    numToShow: 10,
+    total: 0,
+  });
+
   const [eventList, setEventList] = useState([]);
   const [currentEvents, setCurrentEvents] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const [filteredEvents, setFilteredEvents] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filters, setFilters] = useState({
-    location: '',
-    status: '',
-    startDate: null,
-    endDate: null,
-    sort: '',
-  });
+  const [filteredEvents, setFilteredEvents] = useState([]);
+
   const fetchUserName = async (id) => {
     try{
       const response = await axios
         .get(`${process.env.NEXT_PUBLIC_API_URL}/v1/users/users-legacy/${id}`);
-      //console.log(response);
+
+      console.log(response);
       if (response.data.status === "OK") {
         const selectEventName = response.data.user.username;
         console.log("select event name:",selectEventName, "type", typeof(selectEventName));
@@ -60,6 +65,7 @@ export default function EventsPage() {
   const fetchAttendees = async (id) => {
     try{
       const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/content/${id}`);
+
       //console.log("fetched attendees:", response);
       if (response.data.status === "OK"){
         const interestedUserNames = await Promise.all(
@@ -68,6 +74,7 @@ export default function EventsPage() {
             return name;
           })
         );
+
         return interestedUserNames;
       }
     }catch(error){
@@ -79,29 +86,33 @@ export default function EventsPage() {
   const fetchData = async () => {
     try {
       const [eventsRes, contentsRes,] = await Promise.all([
-        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events`),
-        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents`),
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events`, {
+          params: { page: 1, limit: 100 },
+        }),
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents`, {
+          params: { page: 1, limit: 100 },
+        }),
       ]);
+
       if (eventsRes.data.status === "OK" && contentsRes.data.status === "OK") {
         const contentMap = new Map();
         contentsRes.data.list.forEach(content => {
           contentMap.set(content.id, content);
         });
+
         const mergedEvents = eventsRes.data.list.map(event => {
-          console.log(event)
           const matchedContent = contentMap.get(event.event_id) || {};
-          console.lo
           return {
             id: event.event_id,
             event_id: event.event_id,
-            imageSrc: matchedContent.imageSrc || venue2,  // TODO: fetch photo from the phoo entity
+            imageSrc: matchedContent.imageSrc || venue2,
             title: matchedContent.title || "Untitled",
             description: matchedContent.details || "No description",
             date: new Date(event.event_date).toDateString(),
             location: event.venue,
             attendees: fetchAttendees(event.event_id),
             status: new Date(event.event_date)< new Date() ? "Closed" : "Open",
-            avatars: [], // // TODO: fetch photo from the phoo entity
+            avatars: [],
           };
         });
 
@@ -116,108 +127,32 @@ export default function EventsPage() {
 
   useEffect(() => {
     fetchData();
-  }, []); //eventList
-  useEffect(()=>{
-    setFilteredEvents(eventList);
-  },[eventList]);
+  }, []);
 
-  const handleSearch = (e) => {
-    setSearchQuery(e.target.value);
-  };
-
-  const handleFilterChange = (key, value) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
-  };
   useEffect(() => {
-    setTotalPages(Math.ceil(filteredEvents.length / itemsPerPage));
-    setCurrentEvents(filteredEvents.slice(
-      (currentPage - 1) * itemsPerPage,
-      currentPage * itemsPerPage
-    ));
-  }, [currentPage, filteredEvents]);
+    const source = filteredEvents.length > 0 || searchQuery !== ""
+      ? filteredEvents
+      : eventList;
 
-  const handleApply = () => {
+    setCurrentEvents(
+      source.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+      )
+    );
+  }, [currentPage, eventList, filteredEvents, searchQuery]);
 
-    let results = [...eventList];
+  useEffect(() => {
+    console.log("eventList", eventList);
+    console.log(searchQuery);
+    const filtered = eventList.filter(event =>
+      event.title && event.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      results = results.filter(event =>
-        event.title?.toLowerCase().includes(query) ||
-        event.description?.toLowerCase().includes(query) ||
-        event.location?.toLowerCase().includes(query)
-      );
-    }
-    if (filters.location) {
-      results = results.filter(event => {
-        if (filters.location === "Online") {
-          return event.isOnline || event.location?.toLowerCase().includes('online');
-        } else if (filters.location === "In-person") {
-          return !event.isOnline && !event.location?.toLowerCase().includes('online');
-        }
-        return true;
-      });
-    }
-
-    if (filters.status) {
-      const today = new Date();
-
-      results = results.filter(event => {
-        const eventDate = new Date(event.date || event.event_date);
-
-        if (filters.status === "Upcoming") {
-          return eventDate > today;
-        } else if (filters.status === "Ongoing") {
-          return eventDate.toDateString() === today.toDateString();
-        } else if (filters.status === "Completed") {
-          return eventDate < today;
-        }
-        return true;
-      });
-    }
-
-    if (filters.startDate) {
-      const startDate = new Date(filters.startDate);
-      results = results.filter(event => {
-        const eventDate = new Date(event.date || event.event_date);
-        return eventDate >= startDate;
-      });
-    }
-
-    if (filters.endDate) {
-      const endDate = new Date(filters.endDate);
-      results = results.filter(event => {
-        const eventDate = new Date(event.date || event.event_date);
-        return eventDate <= endDate;
-      });
-    }
-
-    if (filters.sort) {
-      results = [...results];
-
-      if (filters.sort === "Most Recent") {
-        results.sort((a, b) => new Date(b.date || b.event_date) - new Date(a.date || a.event_date));
-      } else if (filters.sort === "Oldest") {
-        results.sort((a, b) => new Date(a.date || a.event_date) - new Date(b.date || b.event_date));
-      } else if (filters.sort === "Popular") {
-        results.sort((a, b) => (b.attendees?.length || 0) - (a.attendees?.length || 0));
-      }
-    }
-
-
-    setFilteredEvents(results);
+    setFilteredEvents(filtered);
     setCurrentPage(1);
+  }, [searchQuery]);
 
-    console.log("Applied filters:", {
-      searchQuery,
-      ...filters,
-      resultCount: results.length
-    });
-  };
-
-  // useEffect(() => {
-  //   handleApply();
-  // }, [searchQuery, filters]);
 
   return (
     <div className="w-full bg-astradirtywhite">
@@ -259,12 +194,12 @@ export default function EventsPage() {
               <input
                 type="text"
                 placeholder="Search for event"
-                onChange={handleSearch}
-
                 className="flex-grow py-4 pl-6 focus:outline-none text-base text-astradark"
+                value={searchQuery}
+                onChange={(e)=>setSearchQuery(e.target.value)}
               />
               <button className="px-6 bg-astraprimary hover:bg-astradark text-astrawhite font-semibold transition flex items-center gap-2 cursor-pointer"
-                onClick={handleApply}
+
               >
                 Search
               </button>
@@ -279,7 +214,6 @@ export default function EventsPage() {
                 { label: "In-person", icon: "mdi:account-group" },
               ]}
               placeholder="Location"
-              onChange={(value) => handleFilterChange('location', value)}
             />
             <FilterDropdown
               icon="fluent:status-20-filled"
@@ -289,16 +223,9 @@ export default function EventsPage() {
                 { label: "Completed", icon: "mdi:check-circle-outline" },
               ]}
               placeholder="Status"
-              onChange={(value) => handleFilterChange('status', value)}
             />
-            <DateFilter
-              placeholder="Start Date"
-              onChange={(date) => handleFilterChange('startDate', date)}
-            />
-            <DateFilter
-              placeholder="End Date"
-              onChange={(date)=>handleFilterChange('endDate', date)}
-            />
+            <DateFilter placeholder="Start Date" />
+            <DateFilter placeholder="End Date" />
             <FilterDropdown
               icon="material-symbols:sort"
               options={[
@@ -307,7 +234,6 @@ export default function EventsPage() {
                 { label: "Popular", icon: "mdi:star-outline" },
               ]}
               placeholder="Sort"
-              onChange={(value) => handleFilterChange('sort', value)}
             />
           </div>
         </div>
