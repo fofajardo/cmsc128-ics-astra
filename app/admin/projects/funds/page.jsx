@@ -40,7 +40,7 @@ export default function ProjectFunds() {
 
   const handleSearch = (searchInput) => {
     setSearchQuery(searchInput);
-    // Logic for filtering projects by search query
+    // Reset pagination when searching
     setPagination(prev => ({
       ...prev,
       currPage: 1,
@@ -48,11 +48,37 @@ export default function ProjectFunds() {
     }));
   };
 
-  // Filter projects by status
-  const filteredProjects =
-    selectedStatus === "All"
-      ? projectFundsData
-      : projectFundsData.filter((project) => project.status === selectedStatus);
+  // Apply both search and status filters to the projects
+  const filteredProjects = projectFundsData
+    .filter(project => {
+      // Apply status filter
+      if (selectedStatus !== "All" && project.status !== selectedStatus) {
+        return false;
+      }
+
+      // Apply search filter (case insensitive)
+      if (searchQuery.trim() !== "") {
+        const query = searchQuery.toLowerCase();
+        return (
+          project.title.toLowerCase().includes(query) ||
+          project.type.toLowerCase().includes(query)
+        );
+      }
+
+      return true;
+    });
+
+  // Update pagination based on filtered results
+  useEffect(() => {
+    const totalPages = Math.ceil(filteredProjects.length / pagination.itemsPerPage) || 1;
+
+    setPagination(prev => ({
+      ...prev,
+      total: filteredProjects.length,
+      lastPage: totalPages,
+      currPage: prev.currPage > totalPages ? 1 : prev.currPage
+    }));
+  }, [filteredProjects.length, pagination.itemsPerPage]);
 
   // Get current page projects
   const currentProjects = filteredProjects.slice(
@@ -151,8 +177,6 @@ export default function ProjectFunds() {
         </div>
       </div>
 
-
-
       {/* Table section */}
       <div className="bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24 flex flex-col">
         <div className="max-w-6xl px-4 mt-4">
@@ -167,8 +191,27 @@ export default function ProjectFunds() {
             setSearchQuery={handleSearch}
             searchQuery={searchQuery}
           />
-          <Table cols={cols} data={createRows(currentProjects, selectedIds, setSelectedIds, setToast)} />
-          <PageTool pagination={pagination} setPagination={setPagination} />
+
+          {/* Show message when no results found */}
+          {filteredProjects.length === 0 ? (
+            <div className="bg-astrawhite rounded-lg p-8 text-center my-4">
+              <p className="text-astradarkgray">No projects found matching your criteria</p>
+              {searchQuery && (
+                <button
+                  className="text-astrablue mt-2 underline"
+                  onClick={() => handleSearch("")}
+                >
+                  Clear search
+                </button>
+              )}
+            </div>
+          ) : (
+            <Table cols={cols} data={createRows(currentProjects, selectedIds, setSelectedIds, setToast)} />
+          )}
+
+          {filteredProjects.length > 0 && (
+            <PageTool pagination={pagination} setPagination={setPagination} />
+          )}
 
           {/* Total Funds Raised Section */}
           <div className="mt-6 bg-astrawhite rounded-lg p-6 shadow-sm">
@@ -178,9 +221,9 @@ export default function ProjectFunds() {
                 {formatCurrency(totalFundsRaised)}
               </p>
               <p className="text-sm text-astragray mt-2">
-                {selectedStatus === "All"
-                  ? "Across all projects"
-                  : `From ${selectedStatus.toLowerCase()} projects only`}
+                {searchQuery ? `From search results for "${searchQuery}"` :
+                  selectedStatus === "All" ? "Across all projects" :
+                  `From ${selectedStatus.toLowerCase()} projects only`}
               </p>
             </div>
           </div>
@@ -336,4 +379,5 @@ const projectFundsData = [
     raised: "₱120,000",
     donors: 19,
     status: "Inactive",
-  }];
+  },
+];
