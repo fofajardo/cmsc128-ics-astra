@@ -5,7 +5,7 @@ import { useEffect, useState, useRef } from "react";
 import logo from "../assets/logo.png"; // Use your logo (Rocket logo as per your request)
 import { Menu, X } from "lucide-react"; // Using lucide-react for icons
 
-export default function NavbarUser() {
+export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeLink, setActiveLink] = useState("/");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State for sidebar menu
@@ -58,7 +58,7 @@ export default function NavbarUser() {
               key={link.href}
               href={link.href}
               onClick={() => setActiveLink(link.href)}
-              className={`relative transition-all duration-300 ease-in-out text-astrablack hover:text-astraprimary 
+              className={`relative transition-all duration-300 ease-in-out text-astrablack hover:text-astraprimary
               ${activeLink === link.href ? "text-astraprimary" : ""}
               group`}
             >
