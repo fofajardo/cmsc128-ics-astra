@@ -126,7 +126,7 @@ function useRefetchUser(aContext, aUserId = null) {
     ? axios.get(clientRoutes.auth.signedInUser())
     : axios.get(clientRoutes.users.base(`/${aUserId}`));
 
-  user.then(function (aUser) {
+  return user.then(function (aUser) {
     return fetchData(aUser?.data, aContext);
   }).catch(function (e) {
     // User likely has a bad internet connection, has already signed

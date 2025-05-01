@@ -20,6 +20,12 @@ const authRouter = () => {
   router.get("/sign-in/external/callback", [
     controller.signInGate,
     controller.signInSbExternalCallback,
+    controller.signInRedirectFe
+  ]);
+
+  router.get("/sign-in/external/callback/raw", [
+    controller.signInGate,
+    controller.signInSbExternalCallback,
     controller.signedInUser
   ]);
 
