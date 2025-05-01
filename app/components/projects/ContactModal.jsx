@@ -94,7 +94,7 @@ export default function ContactModal({ requester, message, setMessage, onClose, 
 
             <div className="flex justify-between mt-2 text-xs text-astragray">
               <p>Be professional and clear about your intent</p>
-              <p id="char-counter" className={`${message.length > 500 ? 'text-red-500 font-medium' : ''}`}>
+              <p id="char-counter" className={`${message.length > 500 ? "text-red-500 font-medium" : ""}`}>
                 {message.length}/1000 characters
               </p>
             </div>
@@ -137,8 +137,8 @@ export default function ContactModal({ requester, message, setMessage, onClose, 
             <button
               className={`px-6 py-2.5 rounded-lg font-sb flex items-center transition-all ${
                 !message.trim()
-                  ? 'bg-astragray/50 text-astradarkgray/50 cursor-not-allowed'
-                  : 'bg-astraprimary text-astrawhite hover:bg-astraprimary/90 shadow-md shadow-astraprimary/20'
+                  ? "bg-astragray/50 text-astradarkgray/50 cursor-not-allowed"
+                  : "bg-astraprimary text-astrawhite hover:bg-astraprimary/90 shadow-md shadow-astraprimary/20"
               }`}
               onClick={onSend}
               disabled={!message.trim()}
