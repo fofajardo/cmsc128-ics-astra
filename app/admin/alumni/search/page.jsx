@@ -82,7 +82,7 @@ export default function AlumniSearch() {
                   alumData.image = photoResponse.data.photo;
                 }
               } catch (photoError) {
-                console.error(
+                console.log(
                   `Failed to fetch photo for alum_id ${alum.alum_id}:`,
                   photoError
                 );
