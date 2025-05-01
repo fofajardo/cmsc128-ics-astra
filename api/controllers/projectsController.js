@@ -270,7 +270,8 @@ const createProject = async (req, res) => {
       due_date,
       date_completed,
       goal_amount,
-      donation_link: clean_donation_link
+      donation_link: clean_donation_link,
+      type,
     });
 
     if (projectError) {
