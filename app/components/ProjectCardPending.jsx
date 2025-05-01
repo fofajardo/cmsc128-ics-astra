@@ -1,6 +1,8 @@
 "use client";
 import { GraduationCap, HeartHandshake } from "lucide-react";
 import Link from "next/link";
+import { formatCurrency } from "@/utils/format";
+import axios from "axios";
 
 export default function ProjectCardPending({
   id,
@@ -10,13 +12,38 @@ export default function ProjectCardPending({
   requester,
   goal,
   description,
-  setToast
+  setToast,
+  onUpdate,
 }) {
+
+  const STATUS = {
+    APPROVE: 1,
+    DECLINE: 2
+  }
+
+  const updateProjectRequest = async (updatedStatus) => {
+    try {
+      const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/requests/${id}`, {
+        status: updatedStatus
+      });
+      if (response.data.status === "UPDATED") {
+        console.log('Successfully updated project request with id:', id);
+        if (typeof onUpdate === "function") {
+          onUpdate(id, updatedStatus);
+        }
+      } else {
+          console.error('Unexpected response:', response);
+      }
+    } catch (error) {
+      console.error('Failed to approve project request:', error);
+    }
+  };
 
   //Function to handle approve, placeholder pa lang
   const handleApprove = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    updateProjectRequest(STATUS.APPROVE);
     setToast({
       type: "success",
       message: `${title} has been approved!`
@@ -27,6 +54,7 @@ export default function ProjectCardPending({
   const handleDecline = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    updateProjectRequest(STATUS.DECLINE);
     setToast({
       type: "fail",
       message: `${title} has been declined!`
@@ -60,7 +88,7 @@ export default function ProjectCardPending({
             <span className="font-sb">Requested by:</span> {requester}
           </p>
           <p className="text-astradarkgray font-s mt-1">
-            <span className="font-sb">Goal:</span> {goal}
+            <span className="font-sb">Goal:</span> {formatCurrency(goal)}
           </p>
           <p className="text-astradarkgray font-s mt-2 line-clamp-2">{description}</p>
 

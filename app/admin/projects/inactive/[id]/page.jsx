@@ -1,10 +1,12 @@
 "use client";
-import { useState, use } from "react";
+import { useState, use, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { GoBackButton, ActionButton } from "@/components/Buttons";
 import { GraduationCap, HeartHandshake, Calendar, User, Goal, FileText, Phone, Mail, Share2, Users, MessageSquare } from "lucide-react";
 import ToastNotification from "@/components/ToastNotification";
 import Link from "next/link";
+import axios from "axios";
+import { formatCurrency, formatDate } from "@/utils/format";
 
 //for admin/projects/inactive/[id]
 export default function InactiveProjectDetail({ params }) {
@@ -15,49 +17,79 @@ export default function InactiveProjectDetail({ params }) {
   const [showContactModal, setShowContactModal] = useState(false);
   const [message, setMessage] = useState("");
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  //dummy data
-  const project = {
-    id: id,
-    title: "Research Excellence Scholarship",
-    type: "Scholarship",
-    image: "/projects/assets/Donation.jpg",
-    urlLink: "https://example.com/project/12345",
-    description: "Supporting promising students in their final year research projects with funding for equipment, materials, and conference attendance.",
-    longDescription: "The Research Excellence Scholarship was created to support exceptional students in their final year of study who are working on innovative research projects in computer science and information technology. Recipients received funding to cover the costs of specialized equipment, research materials, data access, and travel expenses for presenting their work at academic conferences. The scholarship committee selected candidates based on the originality and potential impact of their research proposals, academic performance, and faculty recommendations. By providing this support, we helped nurture the next generation of researchers and innovators in the field.",
-    goal: "₱250,000",
-    raised: "₱175,000",
-    donors: 12,
-    requester: {
-      name: "Mr. John Paul Minoc",
-      email: "ecruz@example.edu.ph",
-      phone: "+63 915 678 9012",
-      position: "Faculty Member"
-    },
-    submissionDate: "2024-07-15",
-    startDate: "2024-08-01",
-    endDate: "2024-12-31",
-    eligibilityCriteria: "Final year undergraduate or graduate students pursuing degrees in Computer Science or related fields. Must have a research proposal approved by a faculty advisor and maintain at least a 2.0 GPA.",
-    fundDistribution: "60% for equipment and materials, 25% for conference travel, 15% for publication fees",
-    transactions: [
-      { id: 1, donor: "Computer Systems Corporation", amount: "₱50,000", date: "2024-08-12" },
-      { id: 2, donor: "ICS Alumni Fund", amount: "₱75,000", date: "2024-09-05" },
-      { id: 3, donor: "Anonymous", amount: "₱10,000", date: "2024-09-17" },
-      { id: 4, donor: "Dr. Antonio Reyes", amount: "₱15,000", date: "2024-10-02" },
-      { id: 5, donor: "Tech Research Foundation", amount: "₱25,000", date: "2024-11-10" },
-      { id: 6, donor: "Tech Research Foundation", amount: "₱25,000", date: "2024-11-10" },
-      { id: 7, donor: "Tech Research Foundation", amount: "₱25,000", date: "2024-11-10" },
-      { id: 8, donor: "Tech Research Foundation", amount: "₱25,000", date: "2024-11-10" },
-      { id: 9, donor: "Tech Research Foundation", amount: "₱25,000", date: "2024-11-10" },
-      { id: 10, donor: "Tech Research Foundation", amount: "₱25,000", date: "2024-11-10" },
-      { id: 11, donor: "Tech Research Foundation", amount: "₱25,000", date: "2024-11-10" },
-      { id: 12, donor: "Tech Research Foundation", amount: "₱25,000", date: "2024-11-10" },
-    ]
-  };
+  const [projectData, setProjectData] = useState(null);
+
+  useEffect(() => {
+    const fetchProjectRequest = async () => {
+      try {
+        setLoading(true);
+        const projectResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/requests/projects/${id}`);
+        const projectData = projectResponse.data;
+        console.log(projectData);
+        if (projectData.status === "OK") {
+          const projectId = projectData.list.projectData.project_id;
+
+          const donationsResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations`, {
+            params: {
+              project_id: projectId
+            }
+          });
+          const donationData = donationsResponse.data;
+          console.log(donationData);
+          let formattedDonations;
+          if (donationData.status === "OK") {
+            formattedDonations = donationData.donations.map(donation => ({
+              id: donation.id,
+              donor: donation.user_id,
+              amount: donation.amount,
+              date: donation.donation_date,
+            }));
+          } else {
+              console.error('Unexpected response:', donationData);
+          }
+
+          setProjectData({
+            id: projectId,
+            title: projectData.list.projectData.title,
+            type: projectData.list.projectData.type,
+            image: "/projects/assets/Donation.jpg",
+            urlLink: projectData.list.projectData.donation_link,
+            description: projectData.list.projectData.details,
+            longDescription: projectData.list.projectData.details,
+            goal: projectData.list.projectData.goal_amount.toString(),
+            raised: projectData.list.projectData.total_donations.toString(),
+            donors: projectData.list.projectData.number_of_donors.toString(),
+            requester: {
+              name: projectData.list.requesterData.full_name,
+              email: "NA",
+              phone: "NA",
+              position: projectData.list.requesterData.role || "NA",
+            },
+            submissionDate: projectData.list.date_requested,
+            startDate: "1999-01-01",
+            endDate: projectData.list.projectData.due_date,
+            eligibilityCriteria: "NA",
+            fundDistribution: "NA",
+            transactions: formattedDonations,
+          })
+        } else {
+            console.error('Unexpected response:', projectData);
+        }
+      } catch (error) {
+        console.error('Failed to fetch projects and donations:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjectRequest();
+  }, []);
 
   //for progress bar percentage
-  const goalValue = parseInt(project.goal.replace(/[^0-9]/g, ""));
-  const raisedValue = parseInt(project.raised.replace(/[^0-9]/g, ""));
+  const goalValue = parseInt(projectData?.goal.replace(/[^0-9]/g, ""));
+  const raisedValue = parseInt(projectData?.raised.replace(/[^0-9]/g, ""));
   const progressPercentage = Math.min(Math.round((raisedValue / goalValue) * 100), 100);
 
   //progress bar color based on percentage
@@ -120,29 +152,29 @@ export default function InactiveProjectDetail({ params }) {
       {/* Project image and title section */}
       <div className="relative h-64">
         <img
-          src={project.image}
-          alt={project.title}
+          src={projectData?.image}
+          alt={projectData?.title}
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
           <div className="p-6 text-astrawhite w-full">
             <div className="flex items-center mt-4">
-              <h1 className="font-h1 text-astrawhite text-shadow shadow-black">{project.title}</h1>
+              <h1 className="font-h1 text-astrawhite text-shadow shadow-black">{projectData?.title}</h1>
               <span className="ml-4 bg-astrared text-astrawhite px-3 py-1 rounded-lg font-sb">Inactive</span>
             </div>
             <div className="flex items-center mt-2">
               <div className="bg-astrawhite text-astradark px-3 py-1 rounded-lg text-sm font-s flex items-center gap-1">
-                {project.type === "Scholarship" ? (
+                {projectData?.type === "Scholarship" ? (
                   <GraduationCap className="w-4 h-4" />
                 ) : (
                   <HeartHandshake className="w-4 h-4" />
                 )}
-                {project.type}
+                {projectData?.type}
               </div>
 
               <div className="ml-4 bg-astrawhite text-astradark px-3 py-1 rounded-lg text-sm font-s flex items-center gap-1">
                 <Calendar className="w-4 h-4" />
-                <span>Ended: {new Date(project.endDate).toLocaleDateString("en-PH")}</span>
+                <span>Ended: {new Date(projectData?.endDate).toLocaleDateString("en-PH")}</span>
               </div>
             </div>
           </div>
@@ -161,8 +193,8 @@ export default function InactiveProjectDetail({ params }) {
             <div className="flex justify-between items-end mb-2">
               <h2 className="font-lb text-xl">Final Results</h2>
               <div className="text-right">
-                <div className="text-2xl font-lb">{project.raised}</div>
-                <div className="text-astradarkgray text-sm">of {project.goal} goal</div>
+                <div className="text-2xl font-lb">{formatCurrency(projectData?.raised)}</div>
+                <div className="text-astradarkgray text-sm">of {formatCurrency(projectData?.goal)} goal</div>
               </div>
             </div>
 
@@ -176,7 +208,7 @@ export default function InactiveProjectDetail({ params }) {
             <div className="flex justify-between mt-4 text-astradarkgray">
               <div className="flex items-center gap-1">
                 <Users className="w-5 h-5" />
-                <span>{project.donors} donors</span>
+                <span>{projectData?.donors} donors</span>
               </div>
               <div>{progressPercentage}% of goal</div>
             </div>
@@ -188,7 +220,7 @@ export default function InactiveProjectDetail({ params }) {
 
             <div className="space-y-6">
               <div>
-                <p className="mt-2 text-astradarkgray text-justify">{project.longDescription}</p>
+                <p className="mt-2 text-astradarkgray text-justify">{projectData?.longDescription}</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -196,7 +228,7 @@ export default function InactiveProjectDetail({ params }) {
                   <Goal className="w-8 h-8  text-astraprimary mt-1" />
                   <div>
                     <p className="font-sb">Funding Goal</p>
-                    <p className="text-astradarkgray">{project.goal}</p>
+                    <p className="text-astradarkgray">{formatCurrency(projectData?.goal)}</p>
                   </div>
                 </div>
 
@@ -205,30 +237,30 @@ export default function InactiveProjectDetail({ params }) {
                   <div>
                     <p className="font-sb">Project Duration</p>
                     <p className="text-astradarkgray">
-                      {new Date(project.startDate).toLocaleDateString("en-PH")} to {new Date(project.endDate).toLocaleDateString("en-PH")}
+                      {new Date(projectData?.startDate).toLocaleDateString("en-PH")} to {new Date(projectData?.endDate).toLocaleDateString("en-PH")}
                     </p>
                   </div>
                 </div>
               </div>
 
-              {project.type === "Scholarship" && (
+              {projectData?.type === "Scholarship" && (
                 <>
                   <div>
                     <h3 className="font-sb text-lg">Eligibility Criteria</h3>
-                    <p className="mt-2 text-astradarkgray">{project.eligibilityCriteria}</p>
+                    <p className="mt-2 text-astradarkgray">{projectData?.eligibilityCriteria}</p>
                   </div>
 
                   <div>
                     <h3 className="font-sb text-lg">Fund Distribution</h3>
-                    <p className="mt-2 text-astradarkgray">{project.fundDistribution}</p>
+                    <p className="mt-2 text-astradarkgray">{projectData?.fundDistribution}</p>
                   </div>
                 </>
               )}
 
-              {project.type === "Fundraiser" && (
+              {projectData?.type === "Fundraiser" && (
                 <div>
                   <h3 className="font-sb text-lg">Fund Utilization</h3>
-                  <p className="mt-2 text-astradarkgray">{project.fundDistribution}</p>
+                  <p className="mt-2 text-astradarkgray">{projectData?.fundDistribution}</p>
                 </div>
               )}
             </div>
@@ -248,7 +280,7 @@ export default function InactiveProjectDetail({ params }) {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-astralightgray/50">
-                  {project.transactions.map((transaction) => (
+                  {projectData?.transactions.map((transaction) => (
                     <tr key={transaction.id} className="hover:bg-astralightgray/10 transition-colors">
                       <td className="py-3 px-4">{transaction.donor}</td>
                       <td className="py-3 px-4 text-right font-sb text-astraprimary">{transaction.amount}</td>
@@ -259,7 +291,7 @@ export default function InactiveProjectDetail({ params }) {
                 <tfoot>
                   <tr className="bg-astralightgray/30 border-t-2 border-astralightgray">
                     <td className="py-3 px-4 font-sb">Total</td>
-                    <td className="py-3 px-4 text-right font-sb text-astraprimary">{project.raised}</td>
+                    <td className="py-3 px-4 text-right font-sb text-astraprimary">{formatCurrency(projectData?.raised)}</td>
                     <td className="py-3 px-4"></td>
                   </tr>
                 </tfoot>
@@ -278,22 +310,22 @@ export default function InactiveProjectDetail({ params }) {
               <div className="flex gap-2 items-start">
                 <User className="w-10 h-10 text-astraprimary" />
                 <div>
-                  <p className="text-astradarkgray">{project.requester.name}</p>
-                  <p className="text-astralightgray text-sm">{project.requester.position}</p>
+                  <p className="text-astradarkgray">{projectData?.requester.name}</p>
+                  <p className="text-astralightgray text-sm">{projectData?.requester.position}</p>
                 </div>
               </div>
 
               <div className="flex gap-2 items-start">
                 <Mail className="w-6 h-6 text-astraprimary mr-2" />
                 <div>
-                  <p className="text-astradarkgray">{project.requester.email}</p>
+                  <p className="text-astradarkgray">{projectData?.requester.email}</p>
                 </div>
               </div>
 
               <div className="flex gap-2 items-start">
                 <Phone className="w-6 h-6 text-astraprimary mr-2" />
                 <div>
-                  <p className="text-astradarkgray">{project.requester.phone}</p>
+                  <p className="text-astradarkgray">{projectData?.requester.phone}</p>
                 </div>
               </div>
 
@@ -368,7 +400,7 @@ export default function InactiveProjectDetail({ params }) {
                 <input
                   type="text"
                   readOnly
-                  value={project.urlLink}
+                  value={projectData?.urlLink}
                   className="w-full text-sm py-1 bg-transparent focus:outline-none text-gray-700 overflow-hidden text-ellipsis"
                 />
               </div>
@@ -377,7 +409,7 @@ export default function InactiveProjectDetail({ params }) {
             <div className="mt-6 flex justify-center">
               <button
                 onClick={() => {
-                  navigator.clipboard.writeText(project.urlLink);
+                  navigator.clipboard.writeText(projectData?.urlLink);
 
                   // Show success animation in button
                   const btn = document.getElementById("copyBtn");
@@ -413,7 +445,7 @@ export default function InactiveProjectDetail({ params }) {
                 <p className="text-xs text-gray-500 mb-3">Or share directly to</p>
                 <div className="flex space-x-4 justify-center">
                   <a
-                    href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(project.urlLink)}`}
+                    href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(projectData?.urlLink)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition-colors"
@@ -423,7 +455,7 @@ export default function InactiveProjectDetail({ params }) {
                     </svg>
                   </a>
                   <a
-                    href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(project.urlLink)}&text=Check out this project!`}
+                    href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(projectData?.urlLink)}&text=Check out this project!`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-blue-400 text-white p-2 rounded-full hover:bg-blue-500 transition-colors"
@@ -433,7 +465,7 @@ export default function InactiveProjectDetail({ params }) {
                     </svg>
                   </a>
                   <a
-                    href={`https://api.whatsapp.com/send?text=Check out this project! ${encodeURIComponent(project.urlLink)}`}
+                    href={`https://api.whatsapp.com/send?text=Check out this project! ${encodeURIComponent(projectData?.urlLink)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-green-500 text-white p-2 rounded-full hover:bg-green-600 transition-colors"
@@ -443,7 +475,7 @@ export default function InactiveProjectDetail({ params }) {
                     </svg>
                   </a>
                   <a
-                    href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(project.urlLink)}`}
+                    href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(projectData?.urlLink)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition-colors"
@@ -464,16 +496,16 @@ export default function InactiveProjectDetail({ params }) {
     from { opacity: 0; }
     to { opacity: 1; }
   }
-  
+
   @keyframes scaleIn {
     from { transform: scale(0.95); opacity: 0; }
     to { transform: scale(1); opacity: 1; }
   }
-  
+
   .animate-fadeIn {
     animation: fadeIn 0.3s ease-out forwards;
   }
-  
+
   .animate-scaleIn {
     animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
@@ -500,20 +532,20 @@ export default function InactiveProjectDetail({ params }) {
 
               <div className="flex items-center space-x-4">
                 <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-astraprimary shadow-md">
-                  {project.requester.profilePic ? (
+                  {projectData?.requester.profilePic ? (
                     <img
-                      src={project.requester.profilePic}
-                      alt={project.requester.name}
+                      src={projectData?.requester.profilePic}
+                      alt={projectData?.requester.name}
                       className="w-full h-full rounded-full object-cover"
                     />
                   ) : (
                     <span className="text-lg font-bold">
-                      {project.requester.name.charAt(0)}
+                      {projectData?.requester.name.charAt(0)}
                     </span>
                   )}
                 </div>
                 <div>
-                  <h3 className="font-lb text-xl text-white mb-1">Message {project.requester.name}</h3>
+                  <h3 className="font-lb text-xl text-white mb-1">Message {projectData?.requester.name}</h3>
                   <p className="text-white/70 text-sm">
                     Typically responds within 24 hours
                   </p>
@@ -617,16 +649,16 @@ export default function InactiveProjectDetail({ params }) {
     from { opacity: 0; }
     to { opacity: 1; }
   }
-  
+
   @keyframes slideUp {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  
+
   .animate-fadeIn {
     animation: fadeIn 0.3s ease-out forwards;
   }
-  
+
   .animate-slideUp {
     animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
