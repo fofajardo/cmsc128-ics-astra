@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import ReactMapGL, { Marker } from 'react-map-gl/maplibre'; // Use 'react-map-gl' but with Maplibre styles
-import 'maplibre-gl/dist/maplibre-gl.css'; // Required for Maplibre
+import React, { useEffect, useState } from "react";
+import ReactMapGL, { Marker } from "react-map-gl/maplibre"; // Use 'react-map-gl' but with Maplibre styles
+import "maplibre-gl/dist/maplibre-gl.css"; // Required for Maplibre
 import Image from "next/image";
-import axios from 'axios';
+import axios from "axios";
 
 const JobMap = ({ address }) => {
   const [coords, setCoords] = useState([0, 0]); // Coordinates for the map [longitude, latitude]
@@ -18,14 +18,14 @@ const JobMap = ({ address }) => {
 
       try {
         // fetch coordinates of address using geocoding API (nominatim, open-sourced)
-        const response = await axios.get('https://nominatim.openstreetmap.org/search', {
+        const response = await axios.get("https://nominatim.openstreetmap.org/search", {
           params: {
             q: address,
-            format: 'json',
+            format: "json",
             limit: 1
           },
           headers: {
-            'User-Agent': 'ICS-ASTRA (cmsc128a22l@gmail.com)'
+            "User-Agent": "ICS-ASTRA (cmsc128a22l@gmail.com)"
           }
         });
 
@@ -35,10 +35,10 @@ const JobMap = ({ address }) => {
           // update coordinates state
           setCoords([parseFloat(result.lon), parseFloat(result.lat)]);
         } else {
-          setError('Location not found.');
+          setError("Location not found.");
         }
       } catch (err) {
-        setError('Geocoding failed.');
+        setError("Geocoding failed.");
       } finally {
         setLoading(false);
       }
@@ -81,10 +81,10 @@ const JobMap = ({ address }) => {
             )}
           </Marker>
           {error ?
-          <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-full pointer-events-none z-10">
-            <p className='text-astrared'>{error}</p>
-          </div> : <></>
-        }
+            <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-full pointer-events-none z-10">
+              <p className='text-astrared'>{error}</p>
+            </div> : <></>
+          }
         </ReactMapGL>
       )}
     </div>
