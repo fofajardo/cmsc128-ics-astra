@@ -8,6 +8,7 @@ import ToastNotification from "@/components/ToastNotification";
 import ContactModal from "@/components/projects/ContactModal";
 import ProjectDetails from "@/components/projects/ProjectDetails";
 import RequesterActions from "@/components/projects/RequesterActions";
+import DeclineModal from "@/components/projects/DeclineModal";
 
 export default function PendingProjectDetail({ params }) {
   const id = use(params).id;
@@ -16,6 +17,8 @@ export default function PendingProjectDetail({ params }) {
   const [toast, setToast] = useState(null);
   const [showContactModal, setShowContactModal] = useState(false);
   const [message, setMessage] = useState("");
+  const [showDeclineModal, setShowDeclineModal] = useState(false);
+  const [declineReason, setDeclineReason] = useState("");
 
   const project = {
     id,
@@ -45,6 +48,13 @@ export default function PendingProjectDetail({ params }) {
 
   const handleDecline = () => {
     setToast({ type: "fail", message: `${project.title} has been declined!` });
+    setTimeout(() => router.push("/admin/projects"), 2000);
+  };
+
+  const handleFinalDecline = () => {
+    setToast({ type: "fail", message: `${project.title} has been declined. Reason: ${declineReason}` });
+    setShowDeclineModal(false);
+    setDeclineReason("");
     setTimeout(() => router.push("/admin/projects"), 2000);
   };
 
@@ -98,6 +108,7 @@ export default function PendingProjectDetail({ params }) {
           onApprove={handleApprove}
           onDecline={handleDecline}
           onContact={() => setShowContactModal(true)}
+          onTriggerDeclineModal={() => setShowDeclineModal(true)}
         />
       </div>
 
@@ -109,6 +120,15 @@ export default function PendingProjectDetail({ params }) {
           setMessage={setMessage}
           onClose={() => setShowContactModal(false)}
           onSend={handleSendMessage}
+        />
+      )}
+
+      {showDeclineModal && (
+        <DeclineModal
+          reason={declineReason}
+          setReason={setDeclineReason}
+          onClose={() => setShowDeclineModal(false)}
+          onSubmit={handleFinalDecline}
         />
       )}
     </div>

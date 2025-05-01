@@ -1,7 +1,7 @@
 "use client";
 import { User, Mail, Phone, MessageSquare } from "lucide-react";
 
-export default function RequesterActions({ project, onApprove, onDecline, onContact }) {
+export default function RequesterActions({ project, onApprove, onTriggerDeclineModal, onContact }) {
   return (
     <div className="space-y-6 lg:sticky lg:top-24 self-start">
       <div className="bg-astrawhite p-6 rounded-xl shadow">
@@ -42,7 +42,7 @@ export default function RequesterActions({ project, onApprove, onDecline, onCont
             Approve Project
           </button>
           <button
-            onClick={onDecline}
+            onClick={onTriggerDeclineModal}
             className="bg-astrared text-astrawhite py-3 px-6 rounded-lg font-sb hover:bg-astrared/90 shadow-md"
           >
             Decline Project
