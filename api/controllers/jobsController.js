@@ -285,7 +285,7 @@ const updateJob =  async (req, res) => {
     }
 
     // Prevent modification of created_at
-    if (req.body.hasOwnProperty("created_at")) {
+    if ("created_at" in req.body) {
       return res.status(httpStatus.FORBIDDEN).json({
         status: "FORBIDDEN",
         message: "Cannot update created_at field"
