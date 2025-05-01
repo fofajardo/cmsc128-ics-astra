@@ -47,7 +47,7 @@ async function signInSbLocal(aRequest, aResponse, aNext) {
     return aResponse.sendErrorUnauthenticated(error.message);
   }
 
-  aRequest.rebuildUser(authTokenResponse);
+  aRequest.fetchAuthState(authTokenResponse);
 
   return aNext();
 }
@@ -90,7 +90,7 @@ async function signInSbExternalCallback(aRequest, aResponse, aNext) {
     return aResponse.sendErrorUnauthenticated(error.message);
   }
 
-  aRequest.rebuildUser(authTokenResponse);
+  aRequest.fetchAuthState(authTokenResponse);
 
   return aNext();
 }
