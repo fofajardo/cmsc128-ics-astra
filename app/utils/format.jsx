@@ -30,3 +30,10 @@ export function formatSalary(salary) {
   }
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "PHP" }).format(salary);
 }
+
+export function formatCurrency(amount) {
+    return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'PHP',
+    }).format(amount);
+}
