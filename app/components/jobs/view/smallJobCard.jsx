@@ -38,9 +38,8 @@ export default function SmallJobCard({job, showApply}) {
         {/* Tags */}
         <div className="flex flex-wrap gap-2 my-3">
           <div className={`border-1 ${isOpen ? "border-[#045600] bg-[#ECFFED] text-[#045600]" : "text-[#E8403C] bg-[#FFF0EC] border-[#E8403C]"} rounded-lg py-2 px-4.5`}><p className="text-sm">{isOpen ? "Open": "Close"}</p></div>
-          <div className={`border-1 bg-astratintedwhite ${isOpen ? "text-astrablack border-astradarkgray" : "text-astralightgray border-astralightgray"} rounded-lg py-2 px-4.5`}><p className="text-sm">{job.employment_type}</p></div>
-          <div className={`border-1 bg-astratintedwhite ${isOpen ? "text-astrablack border-astradarkgray" : "text-astralightgray border-astralightgray"} rounded-lg py-2 px-4.5`}><p className="text-sm">{job.location_type}</p></div>
-        </div>
+          <div className={`border-1 bg-astratintedwhite ${isOpen ? "text-astrablack border-astradarkgray" : "text-astralightgray border-astralightgray"} rounded-lg py-2 px-4.5`}><p className="text-sm">{{1: "Part-time",2: "Full-time",3: "Temporary",4: "Freelance"}[job.employment_type] || "Unknown"}</p></div>
+          <div className={`border-1 bg-astratintedwhite ${isOpen ? "text-astrablack border-astradarkgray" : "text-astralightgray border-astralightgray"} rounded-lg py-2 px-4.5`}><p className="text-sm">{{1: "Onsite",2: "Remote",3: "Hybrid"}[job.location_type] || "Unknown"}</p></div>        </div>
 
         <div className="flex flex-col items-center w-full md:w-7/10">
           <Link href={job.apply_link} target="_blank" className={`hover:bg-astradark text-center transition-all duration-150 ease-in-out text-astrawhite font-semibold w-full py-2 rounded-lg mt-2 ${isOpen ? "text-astrawhite bg-astraprimary"  : "text-[#E8403C] bg-[#FFF0EC]"} ${showApply ? "" : "hidden"}`}>Apply Now</Link>

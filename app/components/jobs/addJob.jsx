@@ -37,7 +37,6 @@ export default function JobForm({isEdit, close}){
     }));
   };
 
-
   const handleAdd = async () => {
     const payload = {
       company_name: formData.company_name,
@@ -50,9 +49,11 @@ export default function JobForm({isEdit, close}){
       expires_at: formData.expires_at,
       apply_link: formData.apply_link,
       details: formData.details,
+      requirements: formData.job_requirements,
       user_id: "05a4762d-29ef-4543-824b-9d16f77c6946",
     };
-
+    console.log(formData.job_requirements);
+    console.log(payload.requirments);
     try {
       console.log("Sending payload:", payload);
 

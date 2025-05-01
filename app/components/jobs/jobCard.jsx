@@ -18,12 +18,16 @@ export default function JobCard({job}) {
   };
 
   const formatDate = (date) => {
-    return date.toLocaleDateString("en-US", {
+    const parsedDate = new Date(date);
+    if (isNaN(parsedDate)) return "Invalid Date";
+
+    return parsedDate.toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
-      day: "numeric",
+      day: "numeric"
     });
   };
+
 
   return (
     <div className="bg-astrawhite w-[351px] h-[308px] rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] hover:-translate-y-0.5 p-6 transition-all duration-100ms ease-in">
