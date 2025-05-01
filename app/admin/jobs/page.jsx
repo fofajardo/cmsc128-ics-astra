@@ -309,16 +309,16 @@ function renderType(type) {
   let text;
 
   switch (type) {
-    case 0:
-      text = "Full-time";
-      break;
     case 1:
       text = "Part-time";
       break;
     case 2:
-      text = "Temporary";
+      text = "Full-time";
       break;
     case 3:
+      text = "Temporary";
+      break;
+    case 4:
       text = "Freelance";
       break;
     default:
