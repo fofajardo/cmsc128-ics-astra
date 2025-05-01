@@ -251,7 +251,7 @@ export default function EventAdminDetailPage() {
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`),
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/${id}`),
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/content/${id}`)
-        //fetch the photo
+        //TODO: fetch the photo
 
       ]);
 
