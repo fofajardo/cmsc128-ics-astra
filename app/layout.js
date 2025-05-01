@@ -1,4 +1,5 @@
 import { SignedInUserFetcher, SignedInUserProvider } from "./components/UserContext";
+import PropTypes from "prop-types";
 
 export const metadata = {
   title: {
@@ -27,3 +28,6 @@ export default function RootLayout({ children }) {
   );
 }
 
+RootLayout.propTypes = {
+  children: PropTypes.node.isRequired,
+};
