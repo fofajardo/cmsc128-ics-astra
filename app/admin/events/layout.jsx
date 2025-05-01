@@ -48,7 +48,7 @@ export default function AdminEventsLayout({ children }) {
               <AdminStatCard
                 delay={0.0}
                 title="Active Events"
-                value={17}
+                value={eventCounts.active}
                 icon={<CalendarCheck2 className="size-13 text-astrawhite" strokeWidth={3} />}
                 route={false}
                 onClick={() => {}}
@@ -56,7 +56,7 @@ export default function AdminEventsLayout({ children }) {
               <AdminStatCard
                 delay={0.1}
                 title="Past Events"
-                value={42}
+                value={eventCounts.past}
                 icon={<CalendarRange className="size-13 text-astrawhite" strokeWidth={3} />}
                 route={false}
                 onClick={() => {}}

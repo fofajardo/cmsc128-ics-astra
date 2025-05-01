@@ -106,7 +106,7 @@ const createContent = async (req, res) => {
       });
     }
 
-    const { data: existingContents, error: checkError } = await contentsService.checkExistingContent(req.supabase);
+    const { data: existingContents, error: checkError } = await contentsService.checkExistingContent(req.supabase,title);
 
     if (checkError) {
       console.error("Create Content Error:", checkError);
@@ -119,7 +119,7 @@ const createContent = async (req, res) => {
     if (existingContents?.length > 0) {
       return res.status(httpStatus.CONFLICT).json({
         status: "FAILED",
-        message: "Content already exists"
+        message: `Content already exists, ${existingContents?.length}`
       });
     }
 

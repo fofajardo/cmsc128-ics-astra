@@ -217,6 +217,15 @@ export default function Events() {
 
   };
 
+  const getActivePastEvents = (listOfEvents, totalEvents) =>{
+    const result = listOfEvents.filter((event) => new Date(event.date) < new Date());
+    setEventCounts({
+      past: result.length,
+      active: totalEvents - result.length,
+      total: totalEvents
+    });
+  }
+
   const fetchInterest = async (id) => {
     try{
       const interest = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/${id}`);
@@ -286,9 +295,11 @@ export default function Events() {
         );
 
         setEvents(eventList);
-        setEventCounts({ total: response.data.total });
+        // setEventCounts({total: response.data.total });
 
         console.log("list: ", response.data.list.length);
+
+        getActivePastEvents(eventList,response.data.total);
 
       } else {
         console.error("Unexpected response:", response.data);
