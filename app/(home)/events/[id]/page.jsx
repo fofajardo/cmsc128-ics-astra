@@ -155,19 +155,46 @@ export default function EventDetailPage() {
     }
   };
 
-  const handleInterestClick = () => {
-    const newIsInterested = !isInterested;
-    setIsInterested(newIsInterested);
-    addDeleteInterest(newIsInterested); // pass the updated value
-    if (isGoing) setIsGoing(false); // Optional: disable "Going" when "Interested" is clicked
-    fetchEvent();
-  };
+  // const handleInterestClick = () => {
+  //   const newIsInterested = !isInterested;
+  //   setIsInterested(newIsInterested);
+  //   addDeleteInterest(newIsInterested); // pass the updated value
+  //   if (isGoing) setIsGoing(false); // Optional: disable "Going" when "Interested" is clicked
+  //   fetchEvent();
+  // };
 
   const handleGoingClick = () => {
     setIsGoing((prev) => !prev);
     if (isInterested) setIsInterested(false); // Optional: disable "Interested" when "Going" is clicked
     fetchEvent();
   };
+
+  const [isInterestedLoading, setIsInterestedLoading] = useState(false);
+const [isGoingLoading, setIsGoingLoading] = useState(false);
+
+const handleInterestClick = async () => {
+  if (isInterestedLoading || isGoingLoading) return;
+
+  try {
+    setIsInterestedLoading(true);
+    const newIsInterested = !isInterested;
+    setIsInterested(newIsInterested);
+
+
+    if (isGoing && newIsInterested) {
+      setIsGoing(false);
+    }
+
+    await addDeleteInterest(newIsInterested);
+
+    await fetchEvent();
+  } catch (error) {
+    console.error("Failed to update interest:", error);
+    setIsInterested(!isInterested);
+  } finally {
+    setIsInterestedLoading(false);
+  }
+};
 
   if (!event) {
     return <div className="p-10 text-center text-xl">Event not found.</div>;

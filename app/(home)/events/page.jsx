@@ -41,9 +41,51 @@ export default function EventsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
 
+
+
+  const fetchUserName = async (id) => {
+    try{
+      const response = await axios
+        .get(`${process.env.NEXT_PUBLIC_API_URL}/v1/users/users-legacy/${id}`);
+
+      console.log(response);
+      if (response.data.status === "OK") {
+        const selectEventName = response.data.user.username;
+        console.log("select event name:",selectEventName, "type", typeof(selectEventName));
+        return selectEventName;
+      } else {
+        console.error("Unexpected response:", response.data);
+      }
+    }catch(error){
+      console.error("Failed to get content:", error);
+    }
+    return "Unknown";
+  };
+
+  const fetchAttendees = async (id) => {
+    try{
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/content/${id}`);
+
+      //console.log("fetched attendees:", response);
+      if (response.data.status === "OK"){
+        const interestedUserNames = await Promise.all(
+          response.data.list.map(async (user) => {
+            const name = await fetchUserName(user.user_id);
+            return name;
+          })
+        );
+
+        return interestedUserNames;
+      }
+    }catch(error){
+      console.log('error at fetching attendees', error);
+    }
+    return [];
+  };
+
   const fetchData = async () => {
     try {
-      const [eventsRes, contentsRes] = await Promise.all([
+      const [eventsRes, contentsRes,] = await Promise.all([
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events`, {
           params: { page: 1, limit: 100 },
         }),
@@ -58,6 +100,8 @@ export default function EventsPage() {
           contentMap.set(content.id, content);
         });
 
+
+
         const mergedEvents = eventsRes.data.list.map(event => {
           const matchedContent = contentMap.get(event.event_id) || {};
           return {
@@ -68,7 +112,7 @@ export default function EventsPage() {
             description: matchedContent.details || "No description",
             date: new Date(event.event_date).toDateString(),
             location: event.venue,
-            attendees: event.going ?? [],
+            attendees: fetchAttendees(event.event_id),
             status: new Date(event.event_date)< new Date() ? "Closed" : "Open",
             avatars: [],
           };
