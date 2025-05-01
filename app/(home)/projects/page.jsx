@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import NavbarUser from "../../components/NavbarUser";
+import HeaderUser from "../../components/HeaderUser.jsx";
 import ProjectCard from "../../components/projects/ProjectCard";
 import Link from "next/link";
 import { Icon } from "@iconify/react";
