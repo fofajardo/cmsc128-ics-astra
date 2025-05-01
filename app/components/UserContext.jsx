@@ -7,6 +7,7 @@ import axios from "axios";
 import {clientRoutes} from "../../common/routes.js";
 
 function buildUserContext() {
+  const [initialized, setInitialized] = useState(false);
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
 
@@ -21,6 +22,7 @@ function buildUserContext() {
 
   return {
     state: {
+      initialized,
       user,
       authUser,
       profile,
@@ -32,6 +34,7 @@ function buildUserContext() {
       isAdmin
     },
     actions: {
+      setInitialized,
       setUser,
       setAuthUser,
       setProfile,
@@ -110,6 +113,7 @@ function fetchData(aUser, aContext) {
   aContext.actions.setRules(aUser.scopes);
   delete aUser.scopes;
   aContext.actions.setUser(aUser);
+  aContext.actions.setInitialized(true);
 }
 
 function useRefetchUser(aContext, aUserId = null) {
