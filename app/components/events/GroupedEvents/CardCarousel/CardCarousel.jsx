@@ -31,7 +31,7 @@ export default function CardCarousel({ event }) {
     >
       {/* Event Image */}
       <div className="w-full h-[180px]">
-        <Image
+        <img
           src={event.imageSrc?.src || event.imageSrc}
           alt={event.title}
           width={300}

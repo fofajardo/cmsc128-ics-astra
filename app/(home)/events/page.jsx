@@ -76,6 +76,21 @@ export default function EventsPage() {
     return [];
   };
 
+  const fetchEventPhoto = async (contentId) => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/event/${contentId}`
+      );
+
+      if (response.data.status === "OK" && response.data.photo) {
+        return response.data.photo;
+      }
+    } catch (error) {
+      console.log(`Failed to fetch photo for event_id ${contentId}:`, error);
+    }
+    return venue2; // Return default image if fetch fails
+  };
+
   const fetchData = async () => {
     try {
       const [eventsRes, contentsRes,] = await Promise.all([
@@ -87,23 +102,27 @@ export default function EventsPage() {
         contentsRes.data.list.forEach(content => {
           contentMap.set(content.id, content);
         });
-        const mergedEvents = eventsRes.data.list.map(event => {
-          console.log(event)
+
+        // array of promises to fetch event photos
+        const eventsPromises = eventsRes.data.list.map(async (event) => {
+          console.log(event);
           const matchedContent = contentMap.get(event.event_id) || {};
-          console.lo
+          const photoUrl = await fetchEventPhoto(event.event_id);
           return {
             id: event.event_id,
             event_id: event.event_id,
-            imageSrc: matchedContent.imageSrc || venue2,  // TODO: fetch photo from the phoo entity
+            imageSrc: photoUrl || venue2,  // Use fetched photo or default
             title: matchedContent.title || "Untitled",
             description: matchedContent.details || "No description",
             date: new Date(event.event_date).toDateString(),
             location: event.venue,
-            attendees: fetchAttendees(event.event_id),
-            status: new Date(event.event_date)< new Date() ? "Closed" : "Open",
-            avatars: [], // // TODO: fetch photo from the phoo entity
+            attendees: await fetchAttendees(event.event_id),
+            status: new Date(event.event_date) < new Date() ? "Closed" : "Open",
+            avatars: [],
           };
         });
+
+        const mergedEvents = await Promise.all(eventsPromises);
 
         setEventList(mergedEvents);
         setTotalPages(Math.ceil(mergedEvents.length / itemsPerPage));
