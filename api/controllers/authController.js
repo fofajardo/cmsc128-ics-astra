@@ -1,5 +1,5 @@
 import httpStatus from "http-status-codes";
-import {Routes} from "../../common/routes.js";
+import {clientRoutes} from "../../common/routes.js";
 
 async function signUp(aRequest, aResponse, aNext) {
   const {body} = aRequest;
@@ -66,7 +66,7 @@ async function signInSbExternal(aRequest, aResponse, aNext) {
   const { data, error } = await aRequest.supabase.auth.signInWithOAuth({
     provider,
     options: {
-      redirectTo: process.env.NEXT_PUBLIC_API_URL + Routes.auth.signInExternalCallback(),
+      redirectTo: clientRoutes.auth.signInExternalCallback(),
     },
   });
 

@@ -17,7 +17,7 @@ import organizationAffiliationsRouter from "./organizationAffiliationsRoutes.js"
 import reportsRouter from "./reportsRoutes.js";
 import requestsRouter from "./requestsRoutes.js";
 import jobsRouter from "./jobsRoutes.js";
-import {Routes} from "../../common/routes.js";
+import {serverRoutes} from "../../common/routes.js";
 
 const ensureDirectoriesExist = () => {
   const photosDir = path.join("assets", "photos");
@@ -30,22 +30,22 @@ const ensureDirectoriesExist = () => {
 const registerRoutes = (app) => {
   ensureDirectoriesExist(); // Ensure the directory exists before using it
 
-  app.use(Routes.auth.base(), authRouter());
-  app.use(Routes.users.base(), usersRouter());
-  app.use(Routes.degreePrograms.base(), degreeProgramsRouter());
-  app.use(Routes.photos.base(), photosRouter());
-  app.use(Routes.alumniProfiles.base(), alumniProfilesRouter());
-  app.use(Routes.contents.base(), contentsRouter());
-  app.use(Routes.workExperiences.base(), workExperiencesRouter());
-  app.use(Routes.events.base(), eventsRouter());
-  app.use(Routes.eventInterests.base(), eventInterestsRouter());
-  app.use(Routes.projects.base(), projectsRouter());
-  app.use(Routes.donations.base(), donationsRouter());
-  app.use(Routes.organizations.base(), organizationsRouter());
-  app.use(Routes.organizationAffiliations.base(), organizationAffiliationsRouter());
-  app.use(Routes.reports.base(), reportsRouter());
-  app.use(Routes.requests.base(), requestsRouter());
-  app.use(Routes.jobs.base(), jobsRouter());
+  app.use(serverRoutes.auth.base(), authRouter());
+  app.use(serverRoutes.users.base(), usersRouter());
+  app.use(serverRoutes.degreePrograms.base(), degreeProgramsRouter());
+  app.use(serverRoutes.photos.base(), photosRouter());
+  app.use(serverRoutes.alumniProfiles.base(), alumniProfilesRouter());
+  app.use(serverRoutes.contents.base(), contentsRouter());
+  app.use(serverRoutes.workExperiences.base(), workExperiencesRouter());
+  app.use(serverRoutes.events.base(), eventsRouter());
+  app.use(serverRoutes.eventInterests.base(), eventInterestsRouter());
+  app.use(serverRoutes.projects.base(), projectsRouter());
+  app.use(serverRoutes.donations.base(), donationsRouter());
+  app.use(serverRoutes.organizations.base(), organizationsRouter());
+  app.use(serverRoutes.organizationAffiliations.base(), organizationAffiliationsRouter());
+  app.use(serverRoutes.reports.base(), reportsRouter());
+  app.use(serverRoutes.requests.base(), requestsRouter());
+  app.use(serverRoutes.jobs.base(), jobsRouter());
 };
 
 export default registerRoutes;

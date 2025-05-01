@@ -1,136 +1,126 @@
 /**
- * URL Builder utility for API endpoints
+ * Represents a class for defining base routes used in an application.
+ * Provides structured endpoints for various API resources relative to a base URL.
  */
-export class Routes {
-  static BASE_URL = "/v1";
+class BaseRoutes {
+  constructor(baseUrl) {
+    this.BASE_URL = baseUrl;
+    this.buildEndpoints();
+  }
 
   /**
-   *  Authentication URLs
+   * Initializes and constructs endpoint-related functions for various resources,
+   * categorized into groups such as authentication, users, events, and more.
+   * Each group contains a `base` method and additional resource-specific methods
+   * as applicable for constructing URLs dynamically.
+   *
+   * @return {void} This method does not return a value; it populates dynamically
+   * constructed endpoint functions as properties on the instance.
    */
-  static auth = {
-    base: () => `${Routes.BASE_URL}/auth`,
-    signUp: () => `${Routes.BASE_URL}/auth/sign-up`,
-    signIn: () => `${Routes.BASE_URL}/auth/sign-in`,
-    signInExternal: () => `${Routes.BASE_URL}/auth/sign-in/external`,
-    signInExternalCallback: () => `${Routes.BASE_URL}/auth/sign-in/external/callback`,
-    signedInUser: () => `${Routes.BASE_URL}/auth/signed-in-user`,
-    signOut: () => `${Routes.BASE_URL}/auth/sign-out`
-  };
+  buildEndpoints() {
+    this.auth = {
+      base: (append = "") => `${this.BASE_URL}/auth${append}`,
+      signUp: () => `${this.BASE_URL}/auth/sign-up`,
+      signIn: () => `${this.BASE_URL}/auth/sign-in`,
+      signInExternal: () => `${this.BASE_URL}/auth/sign-in/external`,
+      signInExternalCallback: () => `${this.BASE_URL}/auth/sign-in/external/callback`,
+      signedInUser: () => `${this.BASE_URL}/auth/signed-in-user`,
+      signOut: () => `${this.BASE_URL}/auth/sign-out`
+    };
 
-  /**
-   * Work Experiences URLs
-   */
-  static workExperiences = {
-    base: () => `${Routes.BASE_URL}/work-experiences`,
-    getAll: (page, limit) => {
-      const url = `${Routes.BASE_URL}/work-experiences`;
-      const params = new URLSearchParams();
-      if (page) params.append("page", page);
-      if (limit) params.append("limit", limit);
-      return params.toString() ? `${url}?${params.toString()}` : url;
-    },
-    getById: (id) => `${Routes.BASE_URL}/work-experiences/${id}`,
-    getByUserId: (userId) => `${Routes.BASE_URL}/work-experiences/alum/${userId}`,
-    create: () => `${Routes.BASE_URL}/work-experiences`,
-    update: (id) => `${Routes.BASE_URL}/work-experiences/${id}`,
-    delete: (id) => `${Routes.BASE_URL}/work-experiences/${id}`
-  };
+    this.workExperiences = {
+      base: (append = "") => `${this.BASE_URL}/work-experiences${append}`,
+    };
 
-  /**
-   * Users URLs
-   */
-  static users = {
-    base: () => `${Routes.BASE_URL}/users`
-  };
+    this.users = {
+      base: (append = "") => `${this.BASE_URL}/users${append}`,
+    };
 
-  /**
-   * Degree Programs URLs
-   */
-  static degreePrograms = {
-    base: () => `${Routes.BASE_URL}/degree-programs`
-  };
+    this.degreePrograms = {
+      base: (append = "") => `${this.BASE_URL}/degree-programs${append}`,
+    };
 
-  /**
-   * Photos URLs
-   */
-  static photos = {
-    base: () => `${Routes.BASE_URL}/photos`
-  };
+    this.photos = {
+      base: (append = "") => `${this.BASE_URL}/photos${append}`,
+    };
 
-  /**
-   * Alumni Profiles URLs
-   */
-  static alumniProfiles = {
-    base: () => `${Routes.BASE_URL}/alumni-profiles`
-  };
+    this.alumniProfiles = {
+      base: (append = "") => `${this.BASE_URL}/alumni-profiles${append}`,
+    };
 
-  /**
-   * Contents URLs
-   */
-  static contents = {
-    base: () => `${Routes.BASE_URL}/contents`
-  };
+    this.contents = {
+      base: (append = "") => `${this.BASE_URL}/contents${append}`,
+    };
 
-  /**
-   * Events URLs
-   */
-  static events = {
-    base: () => `${Routes.BASE_URL}/events`
-  };
+    this.events = {
+      base: (append = "") => `${this.BASE_URL}/events${append}`,
+    };
 
-  /**
-   * Event Interests URLs
-   */
-  static eventInterests = {
-    base: () => `${Routes.BASE_URL}/event-interests`
-  };
+    this.eventInterests = {
+      base: (append = "") => `${this.BASE_URL}/event-interests${append}`,
+    };
 
-  /**
-   * Projects URLs
-   */
-  static projects = {
-    base: () => `${Routes.BASE_URL}/projects`
-  };
+    this.projects = {
+      base: (append = "") => `${this.BASE_URL}/projects${append}`,
+    };
 
-  /**
-   * Donations URLs
-   */
-  static donations = {
-    base: () => `${Routes.BASE_URL}/donations`
-  };
+    this.donations = {
+      base: (append = "") => `${this.BASE_URL}/donations${append}`,
+    };
 
-  /**
-   * Organizations URLs
-   */
-  static organizations = {
-    base: () => `${Routes.BASE_URL}/organizations`
-  };
+    this.organizations = {
+      base: (append = "") => `${this.BASE_URL}/organizations${append}`,
+    };
 
-  /**
-   * Organization Affiliations URLs
-   */
-  static organizationAffiliations = {
-    base: () => `${Routes.BASE_URL}/organization-affiliations`
-  };
+    this.organizationAffiliations = {
+      base: (append = "") => `${this.BASE_URL}/organization-affiliations${append}`,
+    };
 
-  /**
-   * Reports URLs
-   */
-  static reports = {
-    base: () => `${Routes.BASE_URL}/reports`
-  };
+    this.reports = {
+      base: (append = "") => `${this.BASE_URL}/reports${append}`,
+    };
 
-  /**
-   * Requests URLs
-   */
-  static requests = {
-    base: () => `${Routes.BASE_URL}/requests`
-  };
+    this.requests = {
+      base: (append = "") => `${this.BASE_URL}/requests${append}`,
+    };
 
-  /**
-   * Jobs URLs
-   */
-  static jobs = {
-    base: () => `${Routes.BASE_URL}/jobs`
-  };
+    this.jobs = {
+      base: (append = "") => `${this.BASE_URL}/jobs${append}`,
+    };
+  }
 }
+
+/**
+ * Server Routes for back-end use.
+ */
+class ServerRoutes extends BaseRoutes {
+  constructor() {
+    super("/v1");
+  }
+}
+
+/**
+ * Client Routes for front-end use.
+ */
+class ClientRoutes extends BaseRoutes {
+  constructor() {
+    super(process.env.NEXT_PUBLIC_API_URL + "/v1");
+  }
+}
+
+/**
+ * Client Routes for tests use.
+ */
+class TestRoutes extends BaseRoutes {
+  constructor() {
+    super(process.env.ICSA_API_URL + "/v1");
+  }
+}
+
+export const serverRoutes = new ServerRoutes();
+export const clientRoutes = new ClientRoutes();
+export const testRoutes = new TestRoutes();
+
+Object.freeze(serverRoutes);
+Object.freeze(clientRoutes);
+Object.freeze(testRoutes);
