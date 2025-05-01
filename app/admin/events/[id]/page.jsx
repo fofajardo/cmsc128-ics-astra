@@ -84,10 +84,6 @@ export default function EventAdminDetailPage() {
       console.log(new Date(event.date));
       console.log(updatedEvent);
 
-      // const ndate = new Date(event.date);
-      // const formatted = ndate.toISOString().slice(0, 10);
-      // console.log(formatted);
-
       const eventDefaults = {
         event_date: "",
         venue: "",
@@ -119,24 +115,21 @@ export default function EventAdminDetailPage() {
       let eventRes, contentRes, eventOnly = 0;
       if (Object.keys(eventUpdateData).length > 0) {
         eventRes = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/${toEditId}`, eventUpdateData);
-        eventOnly += 1
-        console.log('entered event update');
+        eventOnly += 1;
+        console.log("entered event update");
 
       }
 
       if (Object.keys(contentUpdateData).length > 0) {
         contentRes = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${toEditId}`,contentUpdateData);
-        eventOnly += 1 // 2 -> event,content updated; 1->onlyevent
-        console.log('entered content update');
+        eventOnly += 1; // 2 -> event,content updated; 1->onlyevent
+        console.log("entered content update");
       }
-      // create photos - post/put
-      // if (Object.keys(contentUpdateData).length > 0) {
-      //   contentRes = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${toEditId}`,contentUpdateData);
-      //   eventOnly += 1 // 2 -> event,content updated; 1->onlyevent
-      //   console.log('entered content update');
-      // }
+      // TODO: POST/PUT photo
+      //
+      //
 
-      console.log('eventOnly: ', eventOnly);
+      console.log("eventOnly: ", eventOnly);
       console.log(eventRes);
       console.log(contentRes);
       console.log(contentRes.data.status);
@@ -160,12 +153,11 @@ export default function EventAdminDetailPage() {
         console.log("here at 3rd condition");
       }
     }catch(error){
-      console.log('error',error);
+      console.log("error",error);
       setToastData({ type: "error", message: "Failed to edit event." });
     } finally{
-    //setEvent({...updatedEvent});
-    setShowEditModal(false);
-    fetchEvent();
+      setShowEditModal(false);
+      fetchEvent();
     }
   };
 
@@ -204,85 +196,88 @@ export default function EventAdminDetailPage() {
     });
   };
 
-  const fetchInterest = async (id) => {
-    try{
-      const interests = [];
-      const interest = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/content/${id}`);
-      if (interest.data.status === "OK") {
-        interests = interest.data|| [];
-      }
-    }catch(error){
-      console.error("Failed fetching interests:", error);
-    }
-
-  };
-
   const getChangedFields = (current, defaults) => {
     const changed = {};
     for (const key in current) {
-    const currentValue = current[key];
-    const defaultValue = defaults[key];
+      const currentValue = current[key];
+      const defaultValue = defaults[key];
 
-    const isArray = Array.isArray(currentValue);
-    const isString = typeof currentValue === "string";
+      const isArray = Array.isArray(currentValue);
+      const isString = typeof currentValue === "string";
 
-    let isDifferent;
+      let isDifferent;
 
-    if (isArray) {
-      isDifferent = JSON.stringify(currentValue) !== JSON.stringify(defaultValue);
-    } else if (isString) {
-      const trimmed = currentValue.trim();
-      isDifferent = trimmed !== defaultValue.trim();
-      if (trimmed === "") continue;
-    } else {
-      isDifferent = currentValue !== defaultValue;
+      if (isArray) {
+        isDifferent = JSON.stringify(currentValue) !== JSON.stringify(defaultValue);
+      } else if (isString) {
+        const trimmed = currentValue.trim();
+        isDifferent = trimmed !== defaultValue.trim();
+        if (trimmed === "") continue;
+      } else {
+        isDifferent = currentValue !== defaultValue;
+      }
+
+      if (isDifferent) {
+        changed[key] = currentValue;
+      }
     }
-
-    if (isDifferent) {
-      changed[key] = currentValue;
-    }
-  }
-  return changed;
+    return changed;
   };
 
+  const fetchUserName = async (id) => {
+    try{
+      const response = await axios
+        .get(`${process.env.NEXT_PUBLIC_API_URL}/v1/users/users-legacy/${id}`);
+
+      console.log(response);
+      if (response.data.status === "OK") {
+        const selectUserName = response.data.user.username;
+        console.log("select event name:",selectUserName, "type", typeof(selectUserName));
+        return selectUserName;
+      } else {
+        console.error("Unexpected response:", response.data);
+      }
+    }catch(error){
+      console.error("Failed to get content:", error);
+    }
+    return "Unknown";
+  };
 
   const fetchEvent = async () =>{
-    let mergedEvent;
     try {
       console.log("id: ", id);
-      const [eventRes, contentRes] = await Promise.all([
+      const [eventRes, contentRes,interestStatsRes,interestRes] = await Promise.all([
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/${id}`),
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`),
-        //fetch the interests
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/${id}`),
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/content/${id}`)
         //fetch the photo
+
       ]);
 
-      // let interests = [];
-      // try {
-      //   console.log("id interest: ", id);
-      //   if(isValidUUID(id)) console.log('valid');
-
-      //   const interestRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/content/${id}`);
-      //   if (interestRes.data.status === "OK") {
-      //     interests = interestRes.data.data || [];
-      //   }
-      // } catch (interestError) {
-      //   console.warn('Failed to fetch interests, continuing with empty array:', interestError);&& interestRes.data.status === "OK"
-      // }
-      console.log('eventResponse:',eventRes);
+      console.log("eventResponse:",eventRes);
       if (eventRes.data.status === "OK" && contentRes.data.status === "OK" ) {
         const eventResponse = eventRes.data;
         const contentResponse = contentRes.data;
-        //const interests = interestRes.data.data || [];
+        const interests = interestRes.data.list;
+        const interestStats = interestStatsRes.data.list;
+
+        console.log('interests:', interests);
+        console.log('intereststat', interestStats.interest_count);
+
+        const interestedUsers = await Promise.all(
+          interests.map(async (user) => ({
+            id: user.user_id,
+            name: await fetchUserName(user.user_id),
+          }))
+        );
 
         console.log("event: ", eventResponse);
         console.log("content: ", contentResponse);
-        //  console.log('interests:', interests);
-
         console.log("event: ", eventResponse.event.event_id);
         console.log("content: ", contentResponse.content.id);
 
-        mergedEvent = {
+        const mergedEvent = {
           id: eventResponse.event.event_id,
           event_id: eventResponse.event.event_id,
           imageSrc: contentResponse?.imageSrc || venue2, // fetch this on photo entity;
@@ -290,7 +285,7 @@ export default function EventAdminDetailPage() {
           description: contentResponse?.content.details || "No description",
           date: new Date(eventResponse.event.event_date).toDateString(),
           location: eventResponse.event.venue,
-          //attendees: interests, //
+          attendees: interestedUsers, //
           status: eventResponse.online ? "Online" : "Offline",
           avatars: [],
         };
@@ -301,27 +296,11 @@ export default function EventAdminDetailPage() {
       console.error("Failed fetching event, content, or interests:", error);
       setEvent(null);
     }
-    setEvent(mergedEvent);
-    console.log("event after fetch:", event);
   };
 
   useEffect(() => {
-     fetchEvent();
+    fetchEvent();
   }, [id]);
-
-  // useEffect(()=>{
-  //   setEvent(eventList.find((e) => e.id === id));
-  // },[eventList]);
-
-  const handleInterestClick = () => {
-    setIsInterested((prev) => !prev);
-    if (isGoing) setIsGoing(false); // Optional: disable "Going" when "Interested" is clicked
-  };
-
-  const handleGoingClick = () => {
-    setIsGoing((prev) => !prev);
-    if (isInterested) setIsInterested(false); // Optional: disable "Interested" when "Going" is clicked
-  };
 
   if (!event) {
     return <div className="p-10 text-center text-xl">Event not found.</div>;
@@ -368,7 +347,7 @@ export default function EventAdminDetailPage() {
       <div className="bg-astrawhite mt-10 p-6 rounded-2xl shadow-md">
         <AttendeesTabs
           attendees={event.attendeesList || []}
-          interested={event.interestedList || []}
+          interested={event.attendees || []}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           setCurrentPage={setCurrentPage}
@@ -376,7 +355,7 @@ export default function EventAdminDetailPage() {
 
         <AttendeesList
           attendees={event.attendeesList || []}
-          interested={event.interestedList || []}
+          interested={event.attendees || []}
           activeTab={activeTab}
           itemsPerPage={itemsPerPage}
           currentPage={currentPage}

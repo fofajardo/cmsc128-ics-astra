@@ -14,7 +14,12 @@ const fetchEventInterestByAlumnId = async (supabase, alumnId) => {
     .select("content_id")
     .eq("user_id", alumnId);
 };
-
+const fetchEventInterestStat = async (supabase, eventId)=> {
+  return await supabase
+    .from("event_interest_stats")
+    .select("interest_count")
+    .eq("event_id", eventId);
+}
 const fetchEventInterestByContentId = async (supabase, contentId) => {
   return await supabase
     .from("event_interests")
@@ -56,6 +61,7 @@ const eventInterestsService = {
   fetchEventInterests,
   fetchEventInterestByAlumnId,
   fetchEventInterestByContentId,
+  fetchEventInterestStat,
   checkExistingEventInterest,
   insertEventInterest,
   findEventInterests,

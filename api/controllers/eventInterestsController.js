@@ -2,11 +2,14 @@ import httpStatus from "http-status-codes";
 import eventInterestsService from "../services/eventInterestsService.js";
 import { isValidUUID } from "../utils/validators.js";
 import { Actions, Subjects } from "../../common/scopes.js";
+
+const user_id = "38f98c8d-af8d-4cef-ab9b-8a5d80e9c8b1"; //Only using this since userid is needed
+
 const getEventInterests = async (req, res) => {
   try {
     const { page = 1, limit = 10 } = req.query;
-    const currentUserId = req.user.data.id;
-
+    //const currentUserId = req.user.data.id;
+    const currentUserId = user_id;
     console.log("current userId: ",currentUserId);
 
     if (req.you.cannotAs(Actions.MANAGE, Subjects.EVENT_INTEREST,{alum_id:currentUserId})) {
@@ -40,7 +43,9 @@ const getEventInterests = async (req, res) => {
 const getEventInterestByAlumnId = async (req, res) => {
   try {
     const { alumnId } = req.params;
-    const currentUserId = req.user.data.id;
+    //const currentUserId = req.user.data.id;
+    const currentUserId = user_id;
+
 
     console.log("current userId: ",currentUserId);
 
@@ -78,7 +83,8 @@ const getEventInterestByAlumnId = async (req, res) => {
 const getEventInterestByContentId = async (req, res) => {
   try {
     const { contentId } = req.params;
-    const currentUserId = req.user.data.id;
+    //const currentUserId = req.user?.data?.id;
+    const currentUserId = user_id;
 
     console.log("current userId: ",currentUserId);
 
@@ -90,15 +96,16 @@ const getEventInterestByContentId = async (req, res) => {
     }
     const { data, error } = await eventInterestsService.fetchEventInterestByContentId(req.supabase, contentId);
 
-    if (error) {
-      return res.status(httpStatus.NOT_FOUND).json({
+    if (error && error.code !== 'RESOURCE_NOT_FOUND') {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
         status: "FAILED",
-        message: "Event interests not found"
+        message: error.message
       });
     }
 
     return res.status(httpStatus.OK).json({
       status: "OK",
+      message: "Successfully fetched the user interested",
       list: data || []
     });
 
@@ -110,9 +117,59 @@ const getEventInterestByContentId = async (req, res) => {
   }
 };
 
+const getEventInterestStats = async(req,res)=>{
+  try {
+    const { contentId } = req.params;
+
+    //const currentUserId = req.user?.data?.id;
+    const currentUserId = user_id;
+    if (!isValidUUID(currentUserId)) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "Invalid alumnId format."
+      });
+    }
+    if (!isValidUUID(contentId)) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: `Invalid eventId format.${contentId}, ${req?.params}`
+      });
+    }
+    console.log("current userId: ",currentUserId);
+    if (req.you.cannotAs(Actions.MANAGE, Subjects.EVENT_INTEREST, {alum_id:currentUserId})) {
+      console.log("dont have permission");
+      return res.status(httpStatus.FORBIDDEN).json({
+        status: "FORBIDDEN",
+        message: "You do not have permission to view event interests"
+      });
+    }
+
+    const { data, error } = await eventInterestsService.fetchEventInterestStat(req.supabase, contentId);
+
+    if (error) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error.message
+      });
+    }
+    return res.status(httpStatus.OK).json({
+      status: "OK",
+      message: "Successfully fetched the user interested",
+      list: data[0] || []
+    });
+
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: `${error.message}, at catch`
+    });
+  }
+};
+
 const createEventInterest = async (req, res) => {
   try {
-    const currentUserId = req.user.data.id;
+    //const currentUserId = req.user.data.id;
+    const currentUserId = user_id;
 
     console.log("current userId: ",currentUserId);
     if (req.you.cannotAs(Actions.MANAGE, Subjects.EVENT_INTEREST, {alum_id:currentUserId})) {
@@ -268,6 +325,7 @@ const eventInterestsController = {
   getEventInterests,
   getEventInterestByAlumnId,
   getEventInterestByContentId,
+  getEventInterestStats,
   createEventInterest,
   deleteEmptyEventInterest,
   deleteEventInterest

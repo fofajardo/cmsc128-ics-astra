@@ -208,7 +208,7 @@ export default function EventsPage() {
 
       {/* Carousel */}
       <div className="max-w-[1440px] mx-auto px-12 mt-24 pb-20 bg-astradirtywhite">
-        <EventCarousel events={events} />
+        <EventCarousel events={eventList} />
       </div>
 
       {/* Explore UPLB Section */}

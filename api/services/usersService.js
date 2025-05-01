@@ -59,10 +59,19 @@ const hardDeleteUser = async (supabase, userId) => {
     .eq("id", userId);
 };
 
+const fetchUserInLegacy = async (supabase, userId) => {
+  return await supabase
+    .from("users_legacy")
+    .select("username")
+    .eq("id", userId)
+    .single();
+};
+
 const usersService = {
   fetchUsers,
   fetchUserById,
   fetchUserByEmail,
+  fetchUserInLegacy,
   checkExistingUser,
   insertUser,
   updateUserData,

@@ -86,32 +86,32 @@ export default function Events() {
   const getChangedFields = (current, defaults) => {
     const changed = {};
     for (const key in current) {
-    const currentValue = current[key];
-    const defaultValue = defaults[key];
+      const currentValue = current[key];
+      const defaultValue = defaults[key];
 
-    const isArray = Array.isArray(currentValue);
-    const isString = typeof currentValue === "string";
+      const isArray = Array.isArray(currentValue);
+      const isString = typeof currentValue === "string";
 
-    let isDifferent;
+      let isDifferent;
 
-    if (isArray) {
-      isDifferent = JSON.stringify(currentValue) !== JSON.stringify(defaultValue);
-    } else if (isString) {
-      const trimmed = currentValue.trim();
-      isDifferent = trimmed !== defaultValue.trim();
-      if (trimmed === "") continue;
-    } else {
-      isDifferent = currentValue !== defaultValue;
+      if (isArray) {
+        isDifferent = JSON.stringify(currentValue) !== JSON.stringify(defaultValue);
+      } else if (isString) {
+        const trimmed = currentValue.trim();
+        isDifferent = trimmed !== defaultValue.trim();
+        if (trimmed === "") continue;
+      } else {
+        isDifferent = currentValue !== defaultValue;
+      }
+
+      if (isDifferent) {
+        changed[key] = currentValue;
+      }
     }
-
-    if (isDifferent) {
-      changed[key] = currentValue;
-    }
-  }
-  return changed;
+    return changed;
   };
 
-    // FOR BACKEND PEEPS
+  // FOR BACKEND PEEPS
   useEffect(() => {
     fetchEvents();
     fetchContents();
@@ -130,10 +130,10 @@ export default function Events() {
     });
 
     if (searchQuery) {
-      console.log('searching for: ',searchQuery);
-      console.log('contents:', contentList);
+      console.log("searching for: ",searchQuery);
+      console.log("contents:", contentList);
       const result = fuse.search(searchQuery);
-      console.log("results:" , result)
+      console.log("results:" , result);
       const matchingContentIds = result.map(r => r.item.id);
 
       console.log("matchingContentIds:", matchingContentIds);
@@ -161,13 +161,6 @@ export default function Events() {
       numToShow,
       lastPage
     });
-
-    // // Make sure current page is valid
-    // const validCurrentPage = Math.min(pagination.currPage, lastPage);
-
-    // // Calculate correct display values
-    // const start = total > 0 ? (validCurrentPage - 1) * numToShow + 1 : 0;
-    // const end = total > 0 ? Math.min(validCurrentPage * numToShow, total) : 0;
 
     setPagination((prev) => ({
       ...prev,
@@ -201,6 +194,20 @@ export default function Events() {
 
   };
 
+  const fetchInterest = async (id) => {
+    try{
+      const interest = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/${id}`);
+      if (interest.data.status === "OK") {
+        const selectEventName = interest.data.list.interest_count;
+        console.log("select event name:",selectEventName, "type", typeof(selectEventName));
+        return selectEventName;
+      } else {
+        console.error("Unexpected interest:", interest.data);
+      }
+    }catch(error){
+
+    }
+  };
   const fetchContentName = async (id) => {
     try {
       const response = await axios
@@ -210,8 +217,6 @@ export default function Events() {
       if (response.data.status === "OK") {
 
         const selectEventName = response.data.content.title;
-        // setEventName(selectEventName);
-        // console.log('event name: ', eventName);
         console.log("select event name:",selectEventName, "type", typeof(selectEventName));
         return selectEventName;
       } else {
@@ -220,7 +225,7 @@ export default function Events() {
     }catch(error){
       console.error("Failed to get content:", error);
     }
-    return -1;
+    return "unknown";
   };
 
   const fetchEvents = async () => {
@@ -232,12 +237,12 @@ export default function Events() {
       }
       const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events`
         , {
-        params: {
-          page: pagination.currPage,
-          limit: pagination.numToShow
+          params: {
+            page: pagination.currPage,
+            limit: pagination.numToShow
+          }
         }
-      }
-    );
+      );
       console.log("Fetched events:", response.data);
 
       if (response.data.status === "OK") {
@@ -248,12 +253,12 @@ export default function Events() {
             id: event.event_id,
             event_id: event.event_id,
             content_id: event.event_id,
-            event_name: await fetchContentName(event.event_id), // awaits properly here
+            event_name: await fetchContentName(event.event_id),
             location: event.venue,
             type: event.online === true ? "Online" : "In-Person",
             date: new Date(event.event_date).toDateString(),
-            going: event.going ?? 10,
-            interested: event.interested
+            going: event.going ?? 10, // TODO: implement the
+            interested:await fetchInterest(event.event_id)
           }))
         );
 
@@ -296,19 +301,19 @@ export default function Events() {
       }
       const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents`
         , {
-        params: {
-          page: pagination.currPage,
-          limit: pagination.numToShow
+          params: {
+            page: pagination.currPage,
+            limit: pagination.numToShow
+          }
         }
-     }
-    );
+      );
       console.log("Fetched contents:", response.data);
 
       if (response.data.status === "OK") {
         setContents(
           response.data.list.map(content => ({
             id: content.id,
-            title: content.title?? "unknown",    //TODO: fetch event title from contents
+            title: content.title?? "unknown",
             details: content.details,
           }))
         );
@@ -374,7 +379,7 @@ export default function Events() {
         setToast({ type: "error", message: "Failed to create event." });
         return -1;
       }
-      console.log('form:',addFormData);
+      console.log("form:",addFormData);
       const contentToAdd = {
         user_id: user_id,
         title: addFormData.title,
@@ -470,18 +475,18 @@ export default function Events() {
       let eventRes, contentRes, eventOnly = 0;
       if (Object.keys(eventUpdateData).length > 0) {
         eventRes = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/${toEditId}`, eventUpdateData);
-        eventOnly += 1
-        console.log('entered event update');
+        eventOnly += 1;
+        console.log("entered event update");
 
       }
 
       if (Object.keys(contentUpdateData).length > 0) {
         contentRes = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${toEditId}`,contentUpdateData);
-        eventOnly += 1 // 2 -> event,content updated; 1->onlyevent
-        console.log('entered content update');
+        eventOnly += 1; // 2 -> event,content updated; 1->onlyevent
+        console.log("entered content update");
       }
 
-      console.log('eventOnly: ', eventOnly);
+      console.log("eventOnly: ", eventOnly);
       console.log(eventRes);
       console.log(contentRes);
       console.log(contentRes.data.status);
@@ -501,13 +506,13 @@ export default function Events() {
         console.log("here at 3rd condition");
       }
     }catch(error){
-      console.log('error',error);
+      console.log("error",error);
       setToast({ type: "error", message: "Failed to edit event." });
     } finally{
 
-    setShowEditModal(false);
-    resetForm
-    fetchEvents();
+      setShowEditModal(false);
+      resetForm;
+      fetchEvents();
     }
   };
 
@@ -624,7 +629,7 @@ function renderText(text) {
 
 function renderActions(event, confirmDelete, toggleEditModal) {
   const { id, event_name } = event;
- // console.log("event in renderaction:",event);
+  // console.log("event in renderaction:",event);
   return (
     <div className="flex justify-center items-center gap-3 py-4">
       <div className="hidden md:flex gap-2">

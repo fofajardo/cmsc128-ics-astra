@@ -18,14 +18,14 @@ export default function AdminEventsLayout({ children }) {
   });
 
 
-  const handleTabChange = (newTab) => {
-    setCurrTab(newTab);
-    setInfo((prev) => ({
-      ...prev,
-      title: `${newTab} Events`,
-    }));
-    // Reset Filters and Pagination logic can go here
-  };
+  // const handleTabChange = (newTab) => {
+  //   setCurrTab(newTab);
+  //   setInfo((prev) => ({
+  //     ...prev,
+  //     title: `${newTab} Events`,
+  //   }));
+  //   // Reset Filters and Pagination logic can go here
+  // };
 
   return (
     <>
