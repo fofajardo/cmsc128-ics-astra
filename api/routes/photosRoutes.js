@@ -19,6 +19,7 @@ const photosRouter = () => {
 
   router.use(RequireAuthenticated);
 
+  router.get("/project/:project_id", photosController.getProjectPhotoByContentId);
   router.get("/event/:content_id", photosController.getEventPhotoByContentId);
   router.get("/alum/:alum_id", photosController.getPhotoByAlumId);
   router.get("/profile-pics", photosController.getAllProfilePics);

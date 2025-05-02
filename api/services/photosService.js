@@ -59,6 +59,15 @@ const fetchPhotoIdbyAlum = async (supabase, alum_id) => {
     .single();
 };
 
+const fetchProjectPhotos = async (supabase, project_id) => {
+  return await supabase
+    .from("photos")
+    .select("image_key")
+    .eq("content_id", project_id)
+    .eq("type", 5) // Type 5 is for project_pic
+    .single();
+};
+
 const photosService = {
   fetchAllPhotos,
   fetchPhotoById,
@@ -67,7 +76,8 @@ const photosService = {
   deletePhotoById,
   fetchAllProfilePics,
   fetchEventPhotos,
-  fetchPhotoIdbyAlum
+  fetchPhotoIdbyAlum,
+  fetchProjectPhotos,
 };
 
 export default photosService;
