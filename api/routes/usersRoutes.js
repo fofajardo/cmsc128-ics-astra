@@ -6,7 +6,7 @@ const usersRouter = () => {
   const router = express.Router();
 
   router.use(RequireAuthenticated); // Applies to all routes below
-  router.get("/users-legacy/:userId", usersController.getUserInLegacy);
+
   router.get("/", usersController.getUsers);
   router.get("/:userId", usersController.getUserById);
   router.post("/", usersController.createUser);

@@ -68,39 +68,6 @@ const getUserById = async (req, res) => {
 };
 
 
-const getUserInLegacy = async (req, res) => {
-  try {
-    const { userId } = req.params;
-
-    const { data, error } = await usersService.fetchUserInLegacy(req.supabase, userId);
-
-    if (error) {
-      return res.status(httpStatus.NOT_FOUND).json({
-        status: "FAILED",
-        message: `User not found${userId}`
-      });
-    }
-
-    if (req.you.cannotAs(Actions.READ, Subjects.USER, data)) {
-      return res.status(httpStatus.FORBIDDEN).json({
-        status: "FORBIDDEN",
-        message: "You are not allowed to access this resource."
-      });
-    }
-
-    return res.status(httpStatus.OK).json({
-      status: "OK",
-      user: data
-    });
-
-  } catch (error) {
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-      status: "FAILED",
-      message: error.message
-    });
-  }
-};
-
 const createUser = async (req, res) => {
   if (req.you.cannot(Actions.CREATE, Subjects.USER)) {
     return res.status(httpStatus.FORBIDDEN).json({
@@ -314,7 +281,6 @@ const deleteUser = async (req, res) => {
 const usersController = {
   getUsers,
   getUserById,
-  getUserInLegacy,
   createUser,
   updateUser,
   deleteUser
