@@ -27,7 +27,7 @@ export default function SmallJobCard({job, showApply}) {
 
         <h1 className="text-astrablack text-xl font-bold mt-5">{formatSalary(job.salary)}<span className="text-xl font-normal">/month</span></h1>
 
-        <div className="flex gap-2 items-start pt-3 pb-2">
+        <div className="flex gap-2 items-center pt-3 pb-2">
           <Image src="/icons/marker.svg" width={20} height={28.5} alt='loc' className="shrink-0"></Image>
           <p className="text-black text-sm leading-4">{job.location}</p>
         </div>
@@ -51,7 +51,7 @@ export default function SmallJobCard({job, showApply}) {
       </div>
 
       {/* Map */}
-      <div className="w-full md:w-2/3 md:h-60 h-40 flex items-center rounded-sm">
+      <div className="w-full md:w-2/3 md:h-70 h-40 flex items-center rounded-sm">
         {/* <Image src="/map.jpg" width={600} height={275} alt='loc' className="shrink-0"></Image> */}
         <JobMap address={job.location}/>
       </div>

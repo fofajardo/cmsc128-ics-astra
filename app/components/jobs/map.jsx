@@ -35,10 +35,10 @@ const JobMap = ({ address }) => {
           // update coordinates state
           setCoords([parseFloat(result.lon), parseFloat(result.lat)]);
         } else {
-          setError("Location not found.");
+          setError("Location not found");
         }
       } catch (err) {
-        setError("Geocoding failed.");
+        setError("Geocoding failed");
       } finally {
         setLoading(false);
       }
@@ -50,10 +50,10 @@ const JobMap = ({ address }) => {
   }, [address]);
 
   return (
-    <div className="w-full h-full relative z-0 border border-astradarkgray rounded-sm overflow-hidden">
+    <div className="w-full h-full relative z-0 rounded-sm overflow-hidden">
       {loading ? (
         <div className="flex items-center justify-center h-full">
-          <div className="animate-pulse w-6 h-6 bg-astraprimary rounded-full animate-throb" />
+          <div className="animate-pulse w-full h-full bg-astralight rounded-xl animate-throb" />
         </div>
       ) : (
         <ReactMapGL
@@ -82,7 +82,9 @@ const JobMap = ({ address }) => {
           </Marker>
           {error ?
             <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-full pointer-events-none z-10">
-              <p className='text-astrared'>{error}</p>
+              <div className="bg-astratintedwhite/50 backdrop-blur-[2px] shadow-[0_2px_2px_rgba(0,0,0,0.25)] p-3 rounded-xl">
+                <p className="text-astrared text-sm">{error}</p>
+              </div>
             </div> : <></>
           }
         </ReactMapGL>
