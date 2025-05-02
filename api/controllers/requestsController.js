@@ -5,6 +5,9 @@ import contentsService from "../services/contentsService.js";
 
 import { isValidUUID, isValidDate } from "../utils/validators.js";
 import { Actions, Subjects } from "../../common/scopes.js";
+import projectsService from "../services/projectsService.js";
+import usersService from "../services/usersService.js";
+import { request } from "needle";
 
 const getRequests = async (req, res) => {
   if (req.you.cannot(Actions.READ, Subjects.Requests)) {
@@ -164,6 +167,195 @@ const getRequestsByContentId = async (req, res) => {
     return res.status(httpStatus.OK).json({
       status: "OK",
       list: data,
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message,
+    });
+  }
+};
+
+const getProjectRequests = async (req, res) => {
+  if (req.you.cannot(Actions.READ, Subjects.Requests)) {
+    return res.status(httpStatus.FORBIDDEN).json({
+      status: "FAILED",
+      message: "You do not have permission to access this resource.",
+    });
+  }
+
+  try {
+    // get requests from Requests table
+    const filters = {
+      type: [0, 1],
+    };
+    const { data: requestData, error: requestError } = await requestsService.fetchProjectRequests(req.supabase, filters);
+
+    if (requestError) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: requestError.message,
+      });
+    };
+
+    // get name and role from alumni profiles table
+    const { data: alumData, error: alumError } = await alumniService.fetchAlumniProfiles(req.supabase);
+
+    if (alumError) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: alumError.message
+      });
+    };
+
+    // get emails from Users table
+    const { data: userData, error: userError } = await usersService.fetchUsers(req.supabase);
+
+    if (userError) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: userError.message
+      });
+    };
+
+    // get project details from Projects table
+    const projectIds = requestData.map(request => request.content_id);
+    const projectFilter = { project_id: projectIds };
+    const { data: projectData, error: projectError } = await projectsService.fetchProjects(req.supabase, projectFilter);
+
+    if (projectError) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: projectError.message
+      });
+    };
+
+    // Create lookup maps
+    const alumMap = {};
+    alumData.forEach(alum => {
+      alumMap[alum.alum_id] = alum;
+    });
+
+    const userMap = {};
+    userData.forEach(user => {
+      userMap[user.id] = user;
+    });
+
+    const projectMap = {};
+    projectData.forEach(project => {
+      projectMap[project.project_id] = project;
+    });
+
+    // Combine everything
+    const combinedData = requestData.map(request => {
+      const alum = alumMap[request.user_id] || {};
+      const user = userMap[request.user_id] || {};
+      const project = projectMap[request.content_id] || {};
+
+      const full_name = [alum.first_name, alum.middle_name, alum.last_name]
+        .filter(Boolean) // remove undefined/null/empty values
+        .join(" ");
+
+      return {
+        request_id: request.id,
+        status: request.status,
+        projectData: project,
+        requesterData: {
+          full_name,
+          role: user.role || null,
+          email: user.email || null,
+        },
+      };
+    });
+
+    return res.status(httpStatus.OK).json({
+      status: "OK",
+      list: combinedData || [],
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message,
+    });
+  }
+};
+
+const getProjectRequestById = async (req, res) => {
+  if (req.you.cannot(Actions.READ, Subjects.Requests)) {
+    return res.status(httpStatus.FORBIDDEN).json({
+      status: "FAILED",
+      message: "You do not have permission to access this resource.",
+    });
+  };
+
+  try {
+    const { requestId } = req.params;
+
+    const { data: requestsData, error: requestError } = await requestsService.fetchProjectRequestById(req.supabase, requestId);
+
+    if (requestError) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: requestError.message,
+      });
+    };
+
+    const requestData = requestsData[0];
+
+    // get name and role from alumni profiles table
+    const { data: alumData, error: alumError } = await alumniService.fetchAlumniProfileById(req.supabase, requestData.user_id);
+
+    if (alumError) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: alumError.message
+      });
+    };
+
+    // let alumData = Array.isArray(alumsData) ? alumsData[0] : alumsData;
+
+    // get email from Users table
+    // const { data: userData, error: userError } = await usersService.fetchUserById(req.supabase, alumData.id);
+
+    // if (userError) {
+    //   return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+    //     status: "FAILED",
+    //     message: userError.message
+    //   });
+    // };
+    // console.log(userData)
+
+    // get project details from Projects table
+    const { data: projectData, error: projectError } = await projectsService.fetchProjectById(req.supabase, requestData.content_id);
+
+    if (projectError) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: projectError.message
+      });
+    };
+
+
+    const full_name = [alumData.first_name, alumData.middle_name, alumData.last_name]
+      .filter(Boolean) // remove undefined/null/empty values
+      .join(" ");
+
+    // Combine everything
+    const combinedData = {
+      request_id: requestData.id,
+      date_requested: requestData.date_requested,
+      status: requestData.status,
+      projectData: projectData,
+      requesterData: {
+        full_name,
+        role: null,
+        email: null,
+      },
+    };
+
+    return res.status(httpStatus.OK).json({
+      status: "OK",
+      list: combinedData || [],
     });
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -519,6 +711,8 @@ const requestsController = {
   getRequestById,
   getRequestsByUserId,
   getRequestsByContentId,
+  getProjectRequests,
+  getProjectRequestById,
   createRequest,
   updateRequest,
   deleteRequest,

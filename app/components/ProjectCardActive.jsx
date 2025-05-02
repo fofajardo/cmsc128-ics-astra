@@ -1,6 +1,7 @@
 "use client";
 import { GraduationCap, HeartHandshake, Users, Calendar } from "lucide-react";
 import Link from "next/link";
+import { formatCurrency } from "@/utils/format";
 
 export default function ProjectCardActive({
   id,
@@ -61,8 +62,8 @@ export default function ProjectCardActive({
           {/* Progress bar */}
           <div className="mt-3">
             <div className="flex justify-between text-xs font-s mb-1 line-clamp-1">
-              <span>{raised} raised</span>
-              <span>Goal: {goal}</span>
+              <span>{formatCurrency(raised)} raised</span>
+              <span>Goal: {formatCurrency(goal)}</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div

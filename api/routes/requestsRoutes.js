@@ -5,6 +5,8 @@ const requestsRouter = () => {
   const router = express.Router();
 
   router.get("/", requestsController.getRequests);
+  router.get("/projects", requestsController.getProjectRequests);
+  router.get("/projects/:requestId", requestsController.getProjectRequestById);
   router.get("/:requestId", requestsController.getRequestById);
   router.get("/alum/:userId", requestsController.getRequestsByUserId);
   router.get("/content/:contentId", requestsController.getRequestsByContentId);

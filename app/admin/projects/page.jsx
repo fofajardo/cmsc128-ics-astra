@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TableHeader, Table, PageTool } from "@/components/TableBuilder";
 import { Check, Wallet, Users, HeartHandshake } from "lucide-react";
 import AdminStatCard from "@/components/AdminStatCard";
@@ -8,13 +8,98 @@ import AdminTabs from "@/components/AdminTabs";
 import ToastNotification from "@/components/ToastNotification";
 import ProjectCardPending from "@/components/ProjectCardPending";
 import ProjectCardActive from "@/components/ProjectCardActive";
+import { formatCurrency } from "@/utils/format";
 import Link from "next/link";
+import axios from "axios";
 
 export default function ProjectsAdmin() {
   const [showFilter, setShowFilter] = useState(false);
   const [selectedType, setSelectedType] = useState("All");
   const [toast, setToast] = useState(null);
   const [tempSelectedType, setTempSelectedType] = useState(selectedType);
+
+  const [projects, setProjects] = useState([]);
+  const [donationsSummary, setDonationsSummary] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProjectRequests = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/requests/projects`);
+        const projectData = response.data;
+        if (projectData.status === "OK") {
+          console.log("Fetched projects:", projectData);
+          setProjects(
+            projectData.list.map(
+              project => ({
+                status: project.status,
+                request_id: project.request_id,
+                id: project.projectData.project_id,
+                image: "/projects/assets/Donation.jpg",
+                project_status: project.projectData.project_status,
+                title: project.projectData.title,
+                description: project.projectData.details,
+                goal: project.projectData.goal_amount.toString(),
+                raised: project.projectData.total_donations.toString(),
+                donors: project.projectData.number_of_donors,
+                type: project.projectData.type,
+                endDate: project.projectData.due_date,
+                dateCompleted: project.projectData.date_complete,
+                donationLink: project.projectData.donation_link,
+                requester: project.requesterData.full_name,
+              })
+            )
+          );
+        } else {
+          console.error("Unexpected response:", projectData);
+        }
+      } catch (error) {
+        console.error("Failed to fetch projects:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchDonationsSummary = async () => {
+      try {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations/summary`);
+        const donationSummaryData = response.data;
+        if (donationSummaryData.status === "OK") {
+          console.log("Fetched donation summary:", donationSummaryData);
+          setDonationsSummary({
+            total_raised: donationSummaryData.summary.total_raised,
+            contributors: donationSummaryData.summary.contributors
+          });
+        } else {
+          console.error("Unexpected response:", donationSummaryData);
+        }
+      } catch (error) {
+        console.error("Failed to fetch donation summary:", error);
+      }
+    };
+
+    fetchDonationsSummary();
+    fetchProjectRequests();
+  }, []);
+
+  const handleUpdateCallback = (requestId, updatedStatus) => {
+    setProjects((prevProjects) =>
+      prevProjects.map((project) =>
+        project.request_id === requestId
+          ? { ...project, status: updatedStatus }
+          : project
+      )
+    );
+  };
+
+  const projectsData = projects;
+
+  const statusToTab = {
+    0: "Pending",
+    1: "Active",
+    2: "Inactive",
+  };
 
   //for searching a project
   const [info, setInfo] = useState({
@@ -23,11 +108,12 @@ export default function ProjectsAdmin() {
   });
 
   //tabs for different projects
-  const tabs = {
-    Pending: 5,
-    Active: 8,
-    Inactive: 3,
-  };
+  const tabs = Object.values(projectsData).reduce((acc, project) => {
+    if (project.status === 0) acc.Pending++;
+    else if (project.status === 1) acc.Active++;
+    else if (project.status === 2) acc.Inactive++;
+    return acc;
+  }, { Pending: 0, Active: 0, Inactive: 0 });
 
   //this is for the current showed tab
   const [currTab, setCurrTab] = useState("Pending");
@@ -67,11 +153,32 @@ export default function ProjectsAdmin() {
   const filteredProjects =
     selectedType === "All"
       ? projectsData
-      : projectsData.filter((project) => project.type === selectedType);
+      : projectsData.filter((project) => project.type === selectedType.toLowerCase());
+
+  //for filtering projects by status
+  const filteredByTabProjects = filteredProjects.filter(
+    (project) => statusToTab[project.status].toLowerCase() === currTab.toLowerCase()
+  );
+
+  // Update pagination total and lastPage
+  useEffect(() => {
+    const totalItems = filteredByTabProjects.length;
+    const lastPage = Math.max(1, Math.ceil(totalItems / pagination.numToShow));
+    setPagination((prev) => ({
+      ...prev,
+      total: totalItems,
+      lastPage: lastPage,
+      currPage: Math.min(prev.currPage, lastPage), // Avoid invalid page
+      display: [
+        (Math.min(prev.currPage, lastPage) - 1) * prev.numToShow + 1,
+        Math.min(totalItems, Math.min(prev.currPage, lastPage) * prev.numToShow),
+      ],
+    }));
+  }, [filteredProjects, currTab, pagination.numToShow]);
 
   //this is for getting the projects for current page and handling the tab status
   const currentProjects = filteredProjects
-    .filter((project) => project.status.toLowerCase() === currTab.toLowerCase())
+    .filter((project) => statusToTab[project.status].toLowerCase() === currTab.toLowerCase())
     .slice(
       (pagination.currPage - 1) * pagination.numToShow,
       pagination.currPage * pagination.numToShow
@@ -152,11 +259,11 @@ export default function ProjectsAdmin() {
           </div>
           <div className="pt-6 pb-4 overflow-y-scroll w-full scrollbar-hide">
             <div className="flex flex-row gap-3 min-w-max px-4 justify-center">
-              {/*active drives card */}
+              {/*active projects card */}
               <AdminStatCard
                 delay={0.0}
-                title="Active Drives"
-                value={8}
+                title="Active Projects"
+                value={tabs["Active"]}
                 icon={
                   <HeartHandshake
                     className="size-13 text-astrawhite"
@@ -171,7 +278,7 @@ export default function ProjectsAdmin() {
               <AdminStatCard
                 delay={0.1}
                 title="Total Raised"
-                value="₱1.2M"
+                value={formatCurrency(donationsSummary.total_raised)}
                 icon={
                   <Wallet
                     className="size-13 text-astrawhite"
@@ -185,7 +292,7 @@ export default function ProjectsAdmin() {
               <AdminStatCard
                 delay={0.2}
                 title="Contributors"
-                value={258}
+                value={donationsSummary.contributors}
                 icon={
                   <Users
                     className="size-13 text-astrawhite"
@@ -221,7 +328,7 @@ export default function ProjectsAdmin() {
                 currentProjects.map((project) => (
                   <ProjectCardPending
                     key={project.id}
-                    id={project.id}
+                    id={project.request_id}
                     image={project.image}
                     title={project.title}
                     type={project.type}
@@ -229,6 +336,7 @@ export default function ProjectsAdmin() {
                     goal={project.goal}
                     description={project.description}
                     setToast={setToast}
+                    onUpdate={handleUpdateCallback}
                   />
                 ))}
 
@@ -236,7 +344,7 @@ export default function ProjectsAdmin() {
                 currentProjects.map((project) => (
                   <ProjectCardActive
                     key={project.id}
-                    id={project.id}
+                    id={project.request_id}
                     image={project.image}
                     title={project.title}
                     type={project.type}
@@ -270,231 +378,3 @@ export default function ProjectsAdmin() {
     </div>
   );
 }
-
-// Sample project data
-const projectsData = [
-  {
-    id: 1,
-    title: "Computer Science Scholarship Fund",
-    type: "Scholarship",
-    image: "/projects/assets/Donation.jpg",
-    description:
-      "Supporting underprivileged students pursuing Computer Science degrees with full tuition coverage and stipend for books and materials.",
-    goal: "₱500,000",
-    raised: "₱350,000",
-    donors: 45,
-    requester: "Prof. Maria Santos",
-    endDate: "2025-12-31",
-    status: "Active",
-  },
-  {
-    id: 2,
-    title: "Programming Lab Equipment Drive",
-    type: "Fundraiser",
-    image: "/projects/assets/Donation.jpg",
-    description:
-      "Raising funds to upgrade the programming laboratory with new computers, software licenses, and modern teaching equipment.",
-    goal: "₱750,000",
-    raised: "₱420,000",
-    donors: 67,
-    requester: "ICS Student Council",
-    endDate: "2025-06-30",
-    status: "Active",
-  },
-  {
-    id: 3,
-    title: "ICS Building Renovation Fund",
-    type: "Fundraiser",
-    image: "/projects/assets/Donation.jpg",
-    description:
-      "Help us renovate the aging ICS building with modern facilities, air conditioning, and student collaboration spaces.",
-    goal: "₱1,200,000",
-    raised: "₱185,000",
-    donors: 29,
-    requester: "Dr. Roberto Aquino",
-    endDate: "2025-08-15",
-    status: "Active",
-  },
-  {
-    id: 4,
-    title: "Women in Tech Scholarship",
-    type: "Scholarship",
-    image: "/projects/assets/Donation.jpg",
-    description:
-      "Supporting female students pursuing degrees in computer science and information technology to increase representation in tech.",
-    goal: "₱300,000",
-    raised: "₱0",
-    donors: 0,
-    requester: "ICS Women's Society",
-    endDate: "2025-09-30",
-    status: "Pending",
-  },
-  {
-    id: 5,
-    title: "Alumni Mentorship Program",
-    type: "Fundraiser",
-    image: "/projects/assets/Donation.jpg",
-    description:
-      "Creating a structured mentorship program connecting alumni with current students for career guidance and professional development.",
-    goal: "₱100,000",
-    raised: "₱0",
-    donors: 0,
-    requester: "ICS Alumni Association",
-    endDate: "2025-07-31",
-    status: "Pending",
-  },
-  {
-    id: 6,
-    title: "Research Excellence Scholarship",
-    type: "Scholarship",
-    image: "/projects/assets/Donation.jpg",
-    description:
-      "Supporting promising students in their final year research projects with funding for equipment, materials, and conference attendance.",
-    goal: "₱250,000",
-    raised: "₱175,000",
-    donors: 12,
-    requester: "Dr. Elena Cruz",
-    endDate: "2024-12-31",
-    status: "Inactive",
-  },
-  {
-    id: 7,
-    title: "CS Library Enhancement Fund",
-    type: "Fundraiser",
-    image: "/projects/assets/Donation.jpg",
-    description:
-      "Expanding our digital and physical library resources with the latest textbooks, journals, and access to premium online learning platforms.",
-    goal: "₱200,000",
-    raised: "₱76,000",
-    donors: 31,
-    requester: "ICS Library Committee",
-    endDate: "2025-05-30",
-    status: "Active",
-  },
-  {
-    id: 8,
-    title: "Hackathon Sponsorship Fund",
-    type: "Fundraiser",
-    image: "/projects/assets/Donation.jpg",
-    description:
-      "Supporting our annual hackathon event with prizes, food, equipment, and guest speakers from the tech industry.",
-    goal: "₱150,000",
-    raised: "₱84,000",
-    donors: 23,
-    requester: "ICS Tech Club",
-    endDate: "2025-03-15",
-    status: "Active",
-  },
-  {
-    id: 9,
-    title: "First-Gen CS Student Scholarship",
-    type: "Scholarship",
-    image: "/projects/assets/Donation.jpg",
-    description:
-      "Supporting first-generation college students pursuing computer science degrees with financial aid and mentoring support.",
-    goal: "₱350,000",
-    raised: "₱0",
-    donors: 0,
-    requester: "Dr. Paulo Hernandez",
-    endDate: "2025-08-30",
-    status: "Pending",
-  },
-  {
-    id: 10,
-    title: "CS Department 25th Anniversary Fund",
-    type: "Fundraiser",
-    image: "/projects/assets/Donation.jpg",
-    description:
-      "Celebrating 25 years of excellence with an alumni gathering, commemorative book, and establishment of new student programs.",
-    goal: "₱500,000",
-    raised: "₱125,000",
-    donors: 87,
-    requester: "CS Department",
-    endDate: "2024-11-15",
-    status: "Inactive",
-  },
-  {
-    id: 11,
-    title: "Game Development Lab Fund",
-    type: "Fundraiser",
-    image: "/projects/assets/Donation.jpg",
-    description:
-      "Creating a dedicated game development laboratory with high-performance workstations, VR equipment, and industry-standard software.",
-    goal: "₱800,000",
-    raised: "₱0",
-    donors: 0,
-    requester: "Game Dev Student Group",
-    endDate: "2025-12-01",
-    status: "Pending",
-  },
-  {
-    id: 12,
-    title: "International Exchange Scholarship",
-    type: "Scholarship",
-    image: "/projects/assets/Donation.jpg",
-    description:
-      "Providing financial support for ICS students participating in international exchange programs with partner universities.",
-    goal: "₱400,000",
-    raised: "₱320,000",
-    donors: 28,
-    requester: "International Programs Office",
-    endDate: "2025-04-15",
-    status: "Active",
-  },
-  {
-    id: 13,
-    title: "IT Career Conference Fund",
-    type: "Fundraiser",
-    image: "/projects/assets/Donation.jpg",
-    description:
-      "Hosting an annual career conference bringing together alumni, industry leaders, and students for networking and job opportunities.",
-    goal: "₱120,000",
-    raised: "₱35,000",
-    donors: 14,
-    requester: "ICS Career Services",
-    endDate: "2025-02-28",
-    status: "Active",
-  },
-  {
-    id: 14,
-    title: "Indigenous CS Education Fund",
-    type: "Scholarship",
-    image: "/projects/assets/Donation.jpg",
-    description:
-      "Supporting indigenous students pursuing computer science education with comprehensive scholarships and cultural support programs.",
-    goal: "₱275,000",
-    raised: "₱120,000",
-    donors: 19,
-    requester: "Indigenous Student Association",
-    endDate: "2024-10-15",
-    status: "Inactive",
-  },
-  {
-    id: 15,
-    title: "Technology Innovation Scholarship",
-    type: "Scholarship",
-    image: "/projects/assets/Donation.jpg",
-    description:
-      "Rewarding students who demonstrate exceptional innovation and creativity in their technology projects and academic work.",
-    goal: "₱200,000",
-    raised: "₱0",
-    donors: 0,
-    requester: "Dr. Antonio Reyes",
-    endDate: "2025-07-15",
-    status: "Pending",
-  },
-  {
-    id: 16,
-    title: "Alumni Network Infrastructure Fund",
-    type: "Fundraiser",
-    image: "/projects/assets/Donation.jpg",
-    description:
-      "Developing a robust digital platform to connect alumni, facilitate mentorship, share job opportunities, and strengthen our community.",
-    goal: "₱180,000",
-    raised: "₱65,000",
-    donors: 42,
-    requester: "Alumni Relations Office",
-    endDate: "2025-04-30",
-    status: "Active",
-  },
-];
