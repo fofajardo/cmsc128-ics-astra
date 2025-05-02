@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { jobTypeMap, locationTypeMap } from "@/components/jobs/mappings";
 import { Clock } from "lucide-react";
+import JobMap from "../map";
 
 export default function SmallJobCard({job, showApply}) {
   const isOpen = true;
@@ -21,12 +22,12 @@ export default function SmallJobCard({job, showApply}) {
   return (
     <div className="flex flex-col items-center md:flex-row gap-5 bg-astrawhite max-w-[1250px] w-19/20 min-h-[308px] h-auto rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] p-10 pb-7">
       {/* Details */}
-      <div className="md:w-1/3">
+      <div className="w-full md:w-1/3">
         <h1 className="text-astrablack text-2xl font-bold">Job Details</h1>
 
         <h1 className="text-astrablack text-xl font-bold mt-5">{formatSalary(job.salary)}<span className="text-xl font-normal">/month</span></h1>
 
-        <div className="flex gap-2 items-start pt-3 pb-2">
+        <div className="flex gap-2 items-center pt-3 pb-2">
           <Image src="/icons/marker.svg" width={20} height={28.5} alt='loc' className="shrink-0"></Image>
           <p className="text-black text-sm leading-4">{job.location}</p>
         </div>
@@ -49,9 +50,10 @@ export default function SmallJobCard({job, showApply}) {
 
       </div>
 
-      {/* Google Maps */}
-      <div className="w-2/3 h-full flex items-center rounded-xl">
-        <Image src="/map.jpg" width={600} height={275} alt='loc' className="shrink-0"></Image>
+      {/* Map */}
+      <div className="w-full md:w-2/3 md:h-70 h-40 flex items-center rounded-sm">
+        {/* <Image src="/map.jpg" width={600} height={275} alt='loc' className="shrink-0"></Image> */}
+        <JobMap address={job.location}/>
       </div>
     </div>
   );}
