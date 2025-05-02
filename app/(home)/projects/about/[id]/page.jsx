@@ -32,6 +32,8 @@ export default function ProjectDetails({ params }) {
   const [message, setMessage] = useState("");
   const [toast, setToast] = useState(null);
 
+
+
   // Dummy project data
   const project = {
     id: use(params).id,
@@ -58,7 +60,7 @@ export default function ProjectDetails({ params }) {
     recentDonator: { name: "maam mira cute", amount: "₱5,000" },
     firstDonator: { name: "Anonymous", amount: "₱1,000" },
   };
-
+  const title = project.title;
   const goalValue = parseInt(project.goal.replace(/[^\d]/g, ""));
   const raisedValue = parseInt(project.raised.replace(/[^\d]/g, ""));
   const progressPercentage = Math.min(
@@ -233,7 +235,7 @@ export default function ProjectDetails({ params }) {
               </button>
               {project.status === 0 && (
                 <button
-                  onClick={() => router.push(`/projects/donate/${id}`)}
+                  onClick={() => router.push(`/projects/donate/${id}?title=${encodeURIComponent(title)}`)}
                   className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-astraprimary text-white rounded-lg hover:bg-astraprimary/90 transition-colors font-medium"
                 >
                   <HeartHandshake className="w-5 h-5" />
