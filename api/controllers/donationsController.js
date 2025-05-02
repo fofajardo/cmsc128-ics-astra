@@ -75,6 +75,37 @@ const getDonationById = async (req, res) => {
   }
 };
 
+const getDonationsSummary = async (req, res) => {
+  try {
+    const { data, error } = await donationsService.fetchDonationsSummary(req.supabase);
+
+    if (error) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: "FAILED",
+        message: "Donation summary not found",
+      });
+    }
+
+    if (req.you.cannotAs(Actions.READ, Subjects.DONATION, data)) {
+      return res.status(httpStatus.FORBIDDEN).json({
+        status: "FORBIDDEN",
+        message: "You are not allowed to access this resource."
+      });
+    }
+
+    return res.status(httpStatus.OK).json({
+      status: "OK",
+      summary: data
+    });
+
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
+
 const createDonation = async (req, res) => {
   if (req.you.cannot(Actions.CREATE, Subjects.DONATION)) {
     return res.status(httpStatus.FORBIDDEN).json({
@@ -451,6 +482,7 @@ const deleteDonation = async (req, res) => {
 const donationsController = {
   getDonations,
   getDonationById,
+  getDonationsSummary,
   createDonation,
   updateDonation,
   deleteDonation

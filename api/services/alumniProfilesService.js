@@ -35,7 +35,9 @@ const fetchAlumniProfileById = async (supabase, userId) => {
             )
         `)
     .eq("alum_id", userId)
-    .single();
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .single();    // In case of duplicates, fetch latest created alumni profile
 };
 
 const insertAlumniProfile = async (supabase, alumniProfileData) => {

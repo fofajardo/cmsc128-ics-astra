@@ -19,6 +19,9 @@ import {
   X,
 } from "lucide-react";
 import ToastNotification from "@/components/ToastNotification";
+import axios from "axios";
+import { formatCurrency, formatDate } from "@/utils/format";
+
 //for admin/projects/active/[id]
 export default function ActiveProjectDetail({ params }) {
   const id = use(params).id;
@@ -29,63 +32,80 @@ export default function ActiveProjectDetail({ params }) {
   const [showContactModal, setShowContactModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+
   const [projectData, setProjectData] = useState(null);
+
   const [editFormData, setEditFormData] = useState({});
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
-  //dummy data
-  const initialProject = {
-    id: id,
-    title: "Computer Science Scholarship Fund",
-    type: "Scholarship",
-    image: "/projects/assets/Donation.jpg",
-    urlLink: "https://example.com/project/12345",
-    description:
-      "Supporting underprivileged students pursuing Computer Science degrees with full tuition coverage and stipend for books and materials.",
-    longDescription:
-      "This scholarship aims to provide comprehensive financial support to academically gifted but financially challenged students who wish to pursue a degree in Computer Science. Selected recipients will receive full tuition coverage, a monthly stipend for living expenses, and additional allowances for books, materials, and technology requirements. The scholarship committee will select candidates based on academic excellence, demonstrated financial need, and a passion for computing. By removing financial barriers, we hope to enable talented students to focus on their studies and achieve their full potential in the field of computer science.",
-    goal: "₱500,000",
-    raised: "₱480,000",
-    donors: 45,
-    requester: {
-      name: "Prof. Maria Santos",
-      email: "msantos@example.edu.ph",
-      phone: "+63 912 345 6789",
-      position: "Faculty Member",
-    },
-    submissionDate: "2024-12-05",
-    startDate: "2025-01-15",
-    endDate: "2025-12-31",
-    eligibilityCriteria:
-      "Undergraduate students majoring in Computer Science with at least a 2.0 GPA. Must demonstrate financial need and submit a personal statement about their interest in computer science.",
-    fundDistribution:
-      "75% for tuition fees, 15% for books and study materials, 10% for stipend",
-    transactions: [
-      { id: 1, donor: "Anonymous", amount: "₱25,000", date: "2025-01-20" },
-      { id: 2, donor: "Juan Dela Cruz", amount: "₱15,000", date: "2025-01-25" },
-      {
-        id: 3,
-        donor: "ICS Alumni Association",
-        amount: "₱100,000",
-        date: "2025-02-05",
-      },
-      {
-        id: 4,
-        donor: "Tech Company Inc.",
-        amount: "₱150,000",
-        date: "2025-02-28",
-      },
-      { id: 5, donor: "Anonymous", amount: "₱10,000", date: "2025-03-10" },
-      { id: 6, donor: "Maria Reyes", amount: "₱50,000", date: "2025-03-22" },
-      { id: 7, donor: "Maria Reyes", amount: "₱50,000", date: "2025-03-22" },
-      { id: 8, donor: "Maria Reyes", amount: "₱50,000", date: "2025-03-22" },
-      { id: 9, donor: "Maria Reyes", amount: "₱50,000", date: "2025-03-22" },
-    ],
-  };
+  const STATUS = { DECLINE: 2 };
 
   // Initialize project data
   useEffect(() => {
-    setProjectData(initialProject);
+    const fetchProjectRequest = async () => {
+      try {
+        setLoading(true);
+        const projectResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/requests/projects/${id}`);
+        const projectData = projectResponse.data;
+        console.log(projectData);
+        if (projectData.status === "OK") {
+          const projectId = projectData.list.projectData.project_id;
+
+          const donationsResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations`, {
+            params: {
+              project_id: projectId
+            }
+          });
+          const donationData = donationsResponse.data;
+          console.log(donationData);
+          let formattedDonations;
+          if (donationData.status === "OK") {
+            formattedDonations = donationData.donations.map(donation => ({
+              id: donation.id,
+              donor: donation.user_id,
+              amount: donation.amount,
+              date: donation.donation_date,
+            }));
+          } else {
+            console.error("Unexpected response:", donationData);
+          }
+
+          setProjectData({
+            id: projectId,
+            title: projectData.list.projectData.title,
+            type: projectData.list.projectData.type,
+            image: "/projects/assets/Donation.jpg",
+            urlLink: projectData.list.projectData.donation_link,
+            description: projectData.list.projectData.details,
+            longDescription: projectData.list.projectData.details,
+            goal: projectData.list.projectData.goal_amount.toString(),
+            raised: projectData.list.projectData.total_donations.toString(),
+            donors: projectData.list.projectData.number_of_donors.toString(),
+            requester: {
+              name: projectData.list.requesterData.full_name,
+              email: "NA",
+              phone: "NA",
+              position: projectData.list.requesterData.role || "NA",
+            },
+            submissionDate: projectData.list.date_requested,
+            startDate: "1999-01-01",
+            endDate: projectData.list.projectData.due_date,
+            eligibilityCriteria: "NA",
+            fundDistribution: "NA",
+            transactions: formattedDonations,
+          });
+        } else {
+          console.error("Unexpected response:", projectData);
+        }
+      } catch (error) {
+        console.error("Failed to fetch projects and donations:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjectRequest();
   }, []);
 
   // If project data is not loaded yet, show loading state
@@ -140,6 +160,22 @@ export default function ActiveProjectDetail({ params }) {
     setShowEditModal(true);
   };
 
+  const softDeleteProject = async () => {
+    try {
+      const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/requests/${id}`, {
+        status: STATUS.DECLINE,
+        response: "Project was deleted by admin"
+      });
+      if (response.data.status === "UPDATED") {
+        console.log("Successfully updated project request with id:", id);
+      } else {
+        console.error("Unexpected response:", response);
+      }
+    } catch (error) {
+      console.error("Failed to approve project request:", error);
+    }
+  };
+
   //show the delete modal
   const handleDelete = () => {
     setShowDeleteModal(true);
@@ -149,6 +185,8 @@ export default function ActiveProjectDetail({ params }) {
   //connect to backend to delete
   const confirmDelete = () => {
     setShowDeleteModal(false);
+
+    softDeleteProject();
 
     setToast({
       type: "success",
@@ -293,7 +331,7 @@ export default function ActiveProjectDetail({ params }) {
                 <input
                   type="text"
                   readOnly
-                  value={initialProject.urlLink}
+                  value={projectData.urlLink}
                   className="w-full text-sm py-1 bg-transparent focus:outline-none text-gray-700 overflow-hidden text-ellipsis"
                 />
               </div>
@@ -302,7 +340,7 @@ export default function ActiveProjectDetail({ params }) {
             <div className="mt-6 flex justify-center">
               <button
                 onClick={() => {
-                  navigator.clipboard.writeText(initialProject.urlLink);
+                  navigator.clipboard.writeText(projectData.urlLink);
 
                   // Show success animation in button
                   const btn = document.getElementById("copyBtn");
@@ -338,7 +376,7 @@ export default function ActiveProjectDetail({ params }) {
                 <p className="text-xs text-gray-500 mb-3">Or share directly to</p>
                 <div className="flex space-x-4 justify-center">
                   <a
-                    href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(initialProject.urlLink)}`}
+                    href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(projectData.urlLink)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition-colors"
@@ -348,7 +386,7 @@ export default function ActiveProjectDetail({ params }) {
                     </svg>
                   </a>
                   <a
-                    href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(initialProject.urlLink)}&text=Check out this project!`}
+                    href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(projectData.urlLink)}&text=Check out this project!`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-blue-400 text-white p-2 rounded-full hover:bg-blue-500 transition-colors"
@@ -358,7 +396,7 @@ export default function ActiveProjectDetail({ params }) {
                     </svg>
                   </a>
                   <a
-                    href={`https://api.whatsapp.com/send?text=Check out this project! ${encodeURIComponent(initialProject.urlLink)}`}
+                    href={`https://api.whatsapp.com/send?text=Check out this project! ${encodeURIComponent(projectData.urlLink)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-green-500 text-white p-2 rounded-full hover:bg-green-600 transition-colors"
@@ -368,7 +406,7 @@ export default function ActiveProjectDetail({ params }) {
                     </svg>
                   </a>
                   <a
-                    href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(initialProject.urlLink)}`}
+                    href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(projectData.urlLink)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition-colors"
@@ -389,16 +427,16 @@ export default function ActiveProjectDetail({ params }) {
     from { opacity: 0; }
     to { opacity: 1; }
   }
-  
+
   @keyframes scaleIn {
     from { transform: scale(0.95); opacity: 0; }
     to { transform: scale(1); opacity: 1; }
   }
-  
+
   .animate-fadeIn {
     animation: fadeIn 0.3s ease-out forwards;
   }
-  
+
   .animate-scaleIn {
     animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
@@ -452,20 +490,20 @@ export default function ActiveProjectDetail({ params }) {
 
               <div className="flex items-center space-x-4">
                 <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-astraprimary shadow-md">
-                  {initialProject.requester.profilePic ? (
+                  {projectData.requester.profilePic ? (
                     <img
-                      src={initialProject.requester.profilePic}
-                      alt={initialProject.requester.name}
+                      src={projectData.requester.profilePic}
+                      alt={projectData.requester.name}
                       className="w-full h-full rounded-full object-cover"
                     />
                   ) : (
                     <span className="text-lg font-bold">
-                      {initialProject.requester.name.charAt(0)}
+                      {projectData.requester.name.charAt(0)}
                     </span>
                   )}
                 </div>
                 <div>
-                  <h3 className="font-lb text-xl text-white mb-1">Message {initialProject.requester.name}</h3>
+                  <h3 className="font-lb text-xl text-white mb-1">Message {projectData.requester.name}</h3>
                   <p className="text-white/70 text-sm">
                     Typically responds within 24 hours
                   </p>
@@ -569,16 +607,16 @@ export default function ActiveProjectDetail({ params }) {
     from { opacity: 0; }
     to { opacity: 1; }
   }
-  
+
   @keyframes slideUp {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  
+
   .animate-fadeIn {
     animation: fadeIn 0.3s ease-out forwards;
   }
-  
+
   .animate-slideUp {
     animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
@@ -916,9 +954,9 @@ export default function ActiveProjectDetail({ params }) {
             <div className="flex justify-between items-end mb-2">
               <h2 className="font-lb text-xl">Fundraising Progress</h2>
               <div className="text-right">
-                <div className="text-2xl font-lb">{projectData.raised}</div>
+                <div className="text-2xl font-lb">{formatCurrency(projectData.raised)}</div>
                 <div className="text-astradarkgray text-sm">
-                  of {projectData.goal} goal
+                  of {formatCurrency(projectData.goal)} goal
                 </div>
               </div>
             </div>
@@ -955,7 +993,7 @@ export default function ActiveProjectDetail({ params }) {
                   <Goal className="w-8 h-8 text-astraprimary mt-1" />
                   <div>
                     <p className="font-sb">Funding Goal</p>
-                    <p className="text-astradarkgray">{projectData.goal}</p>
+                    <p className="text-astradarkgray">{formatCurrency(projectData.goal)}</p>
                   </div>
                 </div>
 
@@ -1026,10 +1064,10 @@ export default function ActiveProjectDetail({ params }) {
                     >
                       <td className="py-3 px-4">{transaction.donor}</td>
                       <td className="py-3 px-4 text-right font-sb text-astraprimary">
-                        {transaction.amount}
+                        {formatCurrency(transaction.amount)}
                       </td>
                       <td className="py-3 px-4 text-right text-astradarkgray">
-                        {new Date(transaction.date).toLocaleDateString("en-PH")}
+                        {formatDate(transaction.date, "long")}
                       </td>
                     </tr>
                   ))}
@@ -1038,7 +1076,7 @@ export default function ActiveProjectDetail({ params }) {
                   <tr className="bg-astralightgray/30 border-t-2 border-astralightgray">
                     <td className="py-3 px-4 font-sb">Total</td>
                     <td className="py-3 px-4 text-right font-sb text-astraprimary">
-                      {projectData.raised}
+                      {formatCurrency(projectData.raised)}
                     </td>
                     <td className="py-3 px-4"></td>
                   </tr>

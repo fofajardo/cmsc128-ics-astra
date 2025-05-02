@@ -5,6 +5,7 @@ const donationsRouter = () => {
   const router = express.Router();
 
   router.get("/", donationsController.getDonations);
+  router.get("/summary", donationsController.getDonationsSummary);
   router.get("/:donationId", donationsController.getDonationById);
   router.post("/", donationsController.createDonation);
   router.put("/:donationId", donationsController.updateDonation);
