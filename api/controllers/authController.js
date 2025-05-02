@@ -95,6 +95,10 @@ async function signInSbExternalCallback(aRequest, aResponse, aNext) {
   return aNext();
 }
 
+async function signInRedirectFe(aRequest, aResponse) {
+  return aResponse.redirect(process.env.ICSA_FE_URL);
+}
+
 async function signInGate(aRequest, aResponse, aNext) {
   if (aRequest.isAuthenticated()) {
     return aResponse.status(httpStatus.BAD_REQUEST).json({
@@ -129,6 +133,7 @@ const authController = {
   signInSbExternal,
   signInSbExternalCallback,
   signInGate,
+  signInRedirectFe,
   signedInUser,
   signOut,
 };
