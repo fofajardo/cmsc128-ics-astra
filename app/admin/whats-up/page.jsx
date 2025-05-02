@@ -1,11 +1,12 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TableHeader, PageTool } from "@/components/TableBuilder";
 import { Filter, Plus, Trash2, Edit2 } from "lucide-react";
 import { useTab } from "@/components/TabContext";
 import ToastNotification from "@/components/ToastNotification";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import axios from 'axios';
 
 export default function CommunicationPage() {
   const router = useRouter();
@@ -15,6 +16,27 @@ export default function CommunicationPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("All");
   const [tempSelectedType, setTempSelectedType] = useState(selectedType);
+  const [announcements, setAnnouncements] = useState(null);
+
+  useEffect(() => {
+    const fetchContents = async () => {
+      try {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents`);
+        if (response.data.status === "OK") {
+          const list = response.data.list || response.data.data?.list || [];
+          setAnnouncements(list);
+        } else {
+          console.error("Unexpected response format:", response.data);
+          setAnnouncements([]); // fallback
+        }
+      } catch (error) {
+        console.error("Failed to fetch contents:", error);
+        setAnnouncements([]); // fallback
+      }
+    };
+
+    fetchContents();
+  }, []);
 
   // Pagination state with limit
   const paginationOptions = [9, 12, 15, 18, 21];
@@ -22,7 +44,7 @@ export default function CommunicationPage() {
   const [currentPage, setCurrentPage] = useState(1);
 
   // Filter announcements
-  const filteredAnnouncements = announcements.filter((announcement) => {
+  const filteredAnnouncements = (announcements ?? []).filter((announcement) => {
     const matchesType = selectedType === "All" || announcement.type === selectedType;
     const matchesSearch = announcement.title.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesType && matchesSearch;
@@ -42,6 +64,7 @@ export default function CommunicationPage() {
     numToShow: itemsPerPage,
     total: totalItems
   };
+
 
   const handleDeleteNewsletter = (index, e) => {
     e.preventDefault(); // Prevent PDF from opening
@@ -264,205 +287,205 @@ export default function CommunicationPage() {
   );
 }
 
-const announcements = [
-  {
-    id: 1,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Upcoming Hackathon 2025",
-    datePublished: "2025-04-25",
-    description: "Join us for the annual coding competition! Register now and showcase your skills in software development.",
-    type: "Event"
-  },
-  {
-    id: 2,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Alumni Networking Event",
-    datePublished: "2025-05-10",
-    description: "Reconnect with fellow alumni and industry leaders at our exclusive networking event. Reserve your spot today!",
-    type: "Event"
-  },
-  {
-    id: 3,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "AI & Machine Learning Course",
-    datePublished: "2025-06-01",
-    description: "Our university is launching a new course on AI & Machine Learning! Enroll to stay ahead in the tech industry.",
-    type: "Update"
-  },
-  {
-    id: 4,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Graduation Ceremony 2025",
-    datePublished: "2025-07-15",
-    description: "Celebrate the achievements of our graduates! The commencement ceremony will be held at the university auditorium.",
-    type: "Event"
-  },
-  {
-    id: 5,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Scholarship Applications Open",
-    datePublished: "2025-08-05",
-    description: "Apply now for merit-based scholarships and financial aid opportunities available to eligible students.",
-    type: "Update"
-  },
-  {
-    id: 6,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Scholarship Applications Open",
-    datePublished: "2025-08-05",
-    description: "Apply now for merit-based scholarships and financial aid opportunities available to eligible students.",
-    type: "Update"
-  },
-  {
-    id: 7,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Scholarship Applications Open",
-    datePublished: "2025-08-05",
-    description: "Apply now for merit-based scholarships and financial aid opportunities available to eligible students.",
-    type: "Update"
-  },
-  {
-    id: 8,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Scholarship Applications Open",
-    datePublished: "2025-08-05",
-    description: "Apply now for merit-based scholarships and financial aid opportunities available to eligible students.",
-    type: "Update"
-  },
-  {
-    id: 9,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Scholarship Applications Open",
-    datePublished: "2025-08-05",
-    description: "Apply now for merit-based scholarships and financial aid opportunities available to eligible students.",
-    type: "Update"
-  },
-  {
-    id: 10,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Scholarship Applications Open",
-    datePublished: "2025-08-05",
-    description: "Apply now for merit-based scholarships and financial aid opportunities available to eligible students.",
-    type: "Update"
-  },
-  {
-    id: 11,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Research Symposium 2025",
-    datePublished: "2025-09-01",
-    description: "Present your research at our annual symposium. Open for submissions in various computer science domains.",
-    type: "Event"
-  },
-  {
-    id: 12,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "New Computer Lab Opening",
-    datePublished: "2025-09-15",
-    description: "State-of-the-art facilities featuring the latest hardware and software for students.",
-    type: "News"
-  },
-  {
-    id: 13,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Industry Partnership Program",
-    datePublished: "2025-09-20",
-    description: "New collaborations with leading tech companies offering internship opportunities.",
-    type: "Update"
-  },
-  {
-    id: 14,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Alumni Mentorship Program",
-    datePublished: "2025-10-01",
-    description: "Connect with experienced alumni mentors in your field of interest.",
-    type: "Event"
-  },
-  {
-    id: 15,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Programming Competition",
-    datePublished: "2025-10-15",
-    description: "Test your coding skills against fellow students. Attractive prizes to be won!",
-    type: "Event"
-  },
-  {
-    id: 16,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Software Engineering Workshop",
-    datePublished: "2025-10-30",
-    description: "Learn industry-standard practices and tools from experienced professionals.",
-    type: "Event"
-  },
-  {
-    id: 17,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Department Recognition Day",
-    datePublished: "2025-11-05",
-    description: "Celebrating outstanding achievements of students and faculty members.",
-    type: "News"
-  },
-  {
-    id: 18,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Curriculum Updates 2026",
-    datePublished: "2025-11-15",
-    description: "Important changes to course offerings and program requirements.",
-    type: "Update"
-  },
-  {
-    id: 19,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Tech Start-up Fair",
-    datePublished: "2025-11-30",
-    description: "Meet innovative start-ups and explore career opportunities.",
-    type: "Event"
-  },
-  {
-    id: 20,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Holiday Coding Camp",
-    datePublished: "2025-12-10",
-    description: "Join our winter break programming bootcamp for students.",
-    type: "Event"
-  },
-  {
-    id: 21,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Faculty Research Grants",
-    datePublished: "2025-12-15",
-    description: "New funding opportunities for research projects in computer science.",
-    type: "News"
-  },
-  {
-    id: 22,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Library System Upgrade",
-    datePublished: "2025-12-20",
-    description: "Enhanced digital resources and improved search functionality.",
-    type: "Update"
-  },
-  {
-    id: 23,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "New Year Tech Conference",
-    datePublished: "2026-01-05",
-    description: "Annual technology conference featuring keynote speakers from leading tech companies.",
-    type: "Event"
-  },
-  {
-    id: 24,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Student Excellence Awards",
-    datePublished: "2026-01-15",
-    description: "Recognizing outstanding academic and extracurricular achievements.",
-    type: "News"
-  },
-  {
-    id: 25,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Spring Semester Updates",
-    datePublished: "2026-01-20",
-    description: "Important information about upcoming semester changes and events.",
-    type: "Update"
-  }
-];
+// const announcements = [
+//   {
+//     id: 1,
+//     image: "/whats-up/assets/Announcement.jpg",
+//     title: "Upcoming Hackathon 2025",
+//     datePublished: "2025-04-25",
+//     description: "Join us for the annual coding competition! Register now and showcase your skills in software development.",
+//     type: "Event"
+//   },
+//   {
+//     id: 2,
+//     image: "/whats-up/assets/Announcement.jpg",
+//     title: "Alumni Networking Event",
+//     datePublished: "2025-05-10",
+//     description: "Reconnect with fellow alumni and industry leaders at our exclusive networking event. Reserve your spot today!",
+//     type: "Event"
+//   },
+//   {
+//     id: 3,
+//     image: "/whats-up/assets/Announcement.jpg",
+//     title: "AI & Machine Learning Course",
+//     datePublished: "2025-06-01",
+//     description: "Our university is launching a new course on AI & Machine Learning! Enroll to stay ahead in the tech industry.",
+//     type: "Update"
+//   },
+//   {
+//     id: 4,
+//     image: "/whats-up/assets/Announcement.jpg",
+//     title: "Graduation Ceremony 2025",
+//     datePublished: "2025-07-15",
+//     description: "Celebrate the achievements of our graduates! The commencement ceremony will be held at the university auditorium.",
+//     type: "Event"
+//   },
+//   {
+//     id: 5,
+//     image: "/whats-up/assets/Announcement.jpg",
+//     title: "Scholarship Applications Open",
+//     datePublished: "2025-08-05",
+//     description: "Apply now for merit-based scholarships and financial aid opportunities available to eligible students.",
+//     type: "Update"
+//   },
+//   {
+//     id: 6,
+//     image: "/whats-up/assets/Announcement.jpg",
+//     title: "Scholarship Applications Open",
+//     datePublished: "2025-08-05",
+//     description: "Apply now for merit-based scholarships and financial aid opportunities available to eligible students.",
+//     type: "Update"
+//   },
+//   {
+//     id: 7,
+//     image: "/whats-up/assets/Announcement.jpg",
+//     title: "Scholarship Applications Open",
+//     datePublished: "2025-08-05",
+//     description: "Apply now for merit-based scholarships and financial aid opportunities available to eligible students.",
+//     type: "Update"
+//   },
+//   {
+//     id: 8,
+//     image: "/whats-up/assets/Announcement.jpg",
+//     title: "Scholarship Applications Open",
+//     datePublished: "2025-08-05",
+//     description: "Apply now for merit-based scholarships and financial aid opportunities available to eligible students.",
+//     type: "Update"
+//   },
+//   {
+//     id: 9,
+//     image: "/whats-up/assets/Announcement.jpg",
+//     title: "Scholarship Applications Open",
+//     datePublished: "2025-08-05",
+//     description: "Apply now for merit-based scholarships and financial aid opportunities available to eligible students.",
+//     type: "Update"
+//   },
+//   {
+//     id: 10,
+//     image: "/whats-up/assets/Announcement.jpg",
+//     title: "Scholarship Applications Open",
+//     datePublished: "2025-08-05",
+//     description: "Apply now for merit-based scholarships and financial aid opportunities available to eligible students.",
+//     type: "Update"
+//   },
+//   {
+//     id: 11,
+//     image: "/whats-up/assets/Announcement.jpg",
+//     title: "Research Symposium 2025",
+//     datePublished: "2025-09-01",
+//     description: "Present your research at our annual symposium. Open for submissions in various computer science domains.",
+//     type: "Event"
+//   },
+//   {
+//     id: 12,
+//     image: "/whats-up/assets/Announcement.jpg",
+//     title: "New Computer Lab Opening",
+//     datePublished: "2025-09-15",
+//     description: "State-of-the-art facilities featuring the latest hardware and software for students.",
+//     type: "News"
+//   },
+//   {
+//     id: 13,
+//     image: "/whats-up/assets/Announcement.jpg",
+//     title: "Industry Partnership Program",
+//     datePublished: "2025-09-20",
+//     description: "New collaborations with leading tech companies offering internship opportunities.",
+//     type: "Update"
+//   },
+//   {
+//     id: 14,
+//     image: "/whats-up/assets/Announcement.jpg",
+//     title: "Alumni Mentorship Program",
+//     datePublished: "2025-10-01",
+//     description: "Connect with experienced alumni mentors in your field of interest.",
+//     type: "Event"
+//   },
+//   {
+//     id: 15,
+//     image: "/whats-up/assets/Announcement.jpg",
+//     title: "Programming Competition",
+//     datePublished: "2025-10-15",
+//     description: "Test your coding skills against fellow students. Attractive prizes to be won!",
+//     type: "Event"
+//   },
+//   {
+//     id: 16,
+//     image: "/whats-up/assets/Announcement.jpg",
+//     title: "Software Engineering Workshop",
+//     datePublished: "2025-10-30",
+//     description: "Learn industry-standard practices and tools from experienced professionals.",
+//     type: "Event"
+//   },
+//   {
+//     id: 17,
+//     image: "/whats-up/assets/Announcement.jpg",
+//     title: "Department Recognition Day",
+//     datePublished: "2025-11-05",
+//     description: "Celebrating outstanding achievements of students and faculty members.",
+//     type: "News"
+//   },
+//   {
+//     id: 18,
+//     image: "/whats-up/assets/Announcement.jpg",
+//     title: "Curriculum Updates 2026",
+//     datePublished: "2025-11-15",
+//     description: "Important changes to course offerings and program requirements.",
+//     type: "Update"
+//   },
+//   {
+//     id: 19,
+//     image: "/whats-up/assets/Announcement.jpg",
+//     title: "Tech Start-up Fair",
+//     datePublished: "2025-11-30",
+//     description: "Meet innovative start-ups and explore career opportunities.",
+//     type: "Event"
+//   },
+//   {
+//     id: 20,
+//     image: "/whats-up/assets/Announcement.jpg",
+//     title: "Holiday Coding Camp",
+//     datePublished: "2025-12-10",
+//     description: "Join our winter break programming bootcamp for students.",
+//     type: "Event"
+//   },
+//   {
+//     id: 21,
+//     image: "/whats-up/assets/Announcement.jpg",
+//     title: "Faculty Research Grants",
+//     datePublished: "2025-12-15",
+//     description: "New funding opportunities for research projects in computer science.",
+//     type: "News"
+//   },
+//   {
+//     id: 22,
+//     image: "/whats-up/assets/Announcement.jpg",
+//     title: "Library System Upgrade",
+//     datePublished: "2025-12-20",
+//     description: "Enhanced digital resources and improved search functionality.",
+//     type: "Update"
+//   },
+//   {
+//     id: 23,
+//     image: "/whats-up/assets/Announcement.jpg",
+//     title: "New Year Tech Conference",
+//     datePublished: "2026-01-05",
+//     description: "Annual technology conference featuring keynote speakers from leading tech companies.",
+//     type: "Event"
+//   },
+//   {
+//     id: 24,
+//     image: "/whats-up/assets/Announcement.jpg",
+//     title: "Student Excellence Awards",
+//     datePublished: "2026-01-15",
+//     description: "Recognizing outstanding academic and extracurricular achievements.",
+//     type: "News"
+//   },
+//   {
+//     id: 25,
+//     image: "/whats-up/assets/Announcement.jpg",
+//     title: "Spring Semester Updates",
+//     datePublished: "2026-01-20",
+//     description: "Important information about upcoming semester changes and events.",
+//     type: "Update"
+//   }
+// ];
