@@ -16,12 +16,12 @@ export default function Events() {
 
   const user = useSignedInUser();
 
-  // const isAllowed =
-  //   user?.state?.role === "admin" || user?.state?.role === "moderator";
+  const isAllowed =
+    user?.state?.role === "admin" || user?.state?.role === "moderator";
 
-  // if (!isAllowed) {
-  //   return <div>FORBIDDEN</div>;
-  // }
+  if (!isAllowed) {
+    return <div>FORBIDDEN</div>;
+  }
   const { setEventCounts } = useContext(TabContext);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);

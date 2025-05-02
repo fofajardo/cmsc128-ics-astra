@@ -6,7 +6,7 @@ export default function EventImage({ src, title }) {
       <Image
         src={src}
         alt={title}
-        // layout="fill"
+        layout="fill"
         // objectFit="cover"
         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         style={{ width: "100%", height: "100%" }}
