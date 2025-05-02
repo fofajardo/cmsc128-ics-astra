@@ -20,7 +20,7 @@ import venue2 from "../../assets/venue2.jpeg";
 import { useSignedInUser } from "@/components/UserContext";
 
 export default function EventsPage() {
-  const user =useSignedInUser();
+  const user = useSignedInUser();
   const itemsPerPage = 4;
   const [contentList, setContents] = useState([]);
   const [eventCounts, setEventCounts] = useState({
@@ -48,7 +48,7 @@ export default function EventsPage() {
   const fetchUserName = async (id) => {
     try{
       const response = await axios
-        .get(`${process.env.NEXT_PUBLIC_API_URL}/v1/users/users-legacy/${id}`);
+        .get(`${process.env.NEXT_PUBLIC_API_URL}/v1/users/${id}`);
 
       console.log(response);
       if (response.data.status === "OK") {
