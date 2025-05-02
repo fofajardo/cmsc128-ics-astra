@@ -1,10 +1,11 @@
 "use client";
 
 import Image from "next/image";
+import { Icon } from "@iconify/react";
+import { useState,useEffect } from "react";
+import axios from "axios";
 import Link from "next/link";
-import { useState } from "react";
 import { Sparkles } from "lucide-react";
-
 import EventCard from "@/components/events/GroupedEvents/EventCard/EventCard";
 import FilterDropdown from "@/components/events/GroupedEvents/FilterDropdown";
 import DateFilter from "@/components/events/GroupedEvents/DateFilter";
@@ -15,16 +16,168 @@ import UPLBImageCollage from "@/components/events/GroupedEvents/UPLBImageCollage
 
 import events from "../../data/events";
 import eventsVector from "../../assets/events-vector.png";
+import venue2 from "../../assets/venue2.jpeg";
+import { useSignedInUser } from "@/components/UserContext";
 
 export default function EventsPage() {
+  const user = useSignedInUser();
   const itemsPerPage = 4;
-  const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = Math.ceil(events.length / itemsPerPage);
+  const [contentList, setContents] = useState([]);
+  const [eventCounts, setEventCounts] = useState({
+    active: 0,
+    past: 0,
+    total: 0
+  });
 
-  const currentEvents = events.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+
+  const [pagination, setPagination] = useState({
+    display: [1, 10],
+    currPage: 1,
+    lastPage: 10,
+    numToShow: 10,
+    total: 0,
+  });
+
+  const [eventList, setEventList] = useState([]);
+  const [currentEvents, setCurrentEvents] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredEvents, setFilteredEvents] = useState([]);
+
+  const fetchUserName = async (id) => {
+    try{
+      const response = await axios
+        .get(`${process.env.NEXT_PUBLIC_API_URL}/v1/users/${id}`);
+
+      console.log(response);
+      if (response.data.status === "OK") {
+        const selectEventName = response.data.user.username;
+        console.log("select event name:",selectEventName, "type", typeof(selectEventName));
+        return selectEventName;
+      } else {
+        console.error("Unexpected response:", response.data);
+      }
+    }catch(error){
+      console.error("Failed to get content:", error);
+    }
+    return "Unknown";
+  };
+
+  const fetchAttendees = async (id) => {
+    try{
+      if( user?.state?.isAlumnus || user?.state?.isAdmin||user?.state?.isModerator){
+        console.log("fetchingg attendees...");
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/content/${id}`);
+
+        //console.log("fetched attendees:", response);
+        if (response.data.status === "OK"){
+          const interestedUserNames = await Promise.all(
+            response.data.list.map(async (user) => {
+              const name = await fetchUserName(user.user_id);
+              return name;
+            })
+          );
+
+          return interestedUserNames;
+        }
+      }
+    }catch(error){
+      console.log("error at fetching attendees", error);
+    }
+    return [];
+  };
+
+  const fetchEventPhoto = async (contentId) => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/event/${contentId}`
+      );
+
+      if (response.data.status === "OK" && response.data.photo) {
+        return response.data.photo;
+      }
+    } catch (error) {
+      console.log(`Failed to fetch photo for event_id ${contentId}:`, error);
+    }
+    return venue2; // Return default image if fetch fails
+  };
+
+  const fetchData = async () => {
+    try {
+      const [eventsRes, contentsRes,] = await Promise.all([
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events`, {
+          params: { page: 1, limit: 100 },
+        }),
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents`, {
+          params: { page: 1, limit: 100 },
+        }),
+      ]);
+
+      if (eventsRes.data.status === "OK" && contentsRes.data.status === "OK") {
+        const contentMap = new Map();
+        contentsRes.data.list.forEach(content => {
+          contentMap.set(content.id, content);
+        });
+
+        // array of promises to fetch event photos
+        const eventsPromises = eventsRes.data.list.map(async (event) => {
+          console.log(event);
+          const matchedContent = contentMap.get(event.event_id) || {};
+          const photoUrl = await fetchEventPhoto(event.event_id);
+          return {
+            id: event.event_id,
+            event_id: event.event_id,
+            imageSrc: photoUrl || venue2,  // Use fetched photo or default
+            title: matchedContent.title || "Untitled",
+            description: matchedContent.details || "No description",
+            date: new Date(event.event_date).toDateString(),
+            location: event.venue,
+            attendees: await fetchAttendees(event.event_id),
+            status: new Date(event.event_date) < new Date() ? "Closed" : "Open",
+            avatars: [],
+          };
+        });
+
+        const mergedEvents = await Promise.all(eventsPromises);
+
+        setEventList(mergedEvents);
+        setTotalPages(Math.ceil(mergedEvents.length / itemsPerPage));
+      }
+    } catch (error) {
+      console.error("Failed fetching events or contents:", error);
+      setEventList([]);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const source = filteredEvents.length > 0 || searchQuery !== ""
+      ? filteredEvents
+      : eventList;
+
+    setCurrentEvents(
+      source.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+      )
+    );
+  }, [currentPage, eventList, filteredEvents, searchQuery]);
+
+  useEffect(() => {
+    console.log("eventList", eventList);
+    console.log(searchQuery);
+    const filtered = eventList.filter(event =>
+      event.title && event.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    setFilteredEvents(filtered);
+    setCurrentPage(1);
+  }, [searchQuery]);
+
 
   return (
     <div className="w-full bg-astradirtywhite">
@@ -67,8 +220,12 @@ export default function EventsPage() {
                 type="text"
                 placeholder="Search for event"
                 className="flex-grow py-4 pl-6 focus:outline-none text-base text-astradark"
+                value={searchQuery}
+                onChange={(e)=>setSearchQuery(e.target.value)}
               />
-              <button className="px-6 bg-astraprimary hover:bg-astradark text-astrawhite font-semibold transition flex items-center gap-2 cursor-pointer">
+              <button className="px-6 bg-astraprimary hover:bg-astradark text-astrawhite font-semibold transition flex items-center gap-2 cursor-pointer"
+
+              >
                 Search
               </button>
             </div>
@@ -114,8 +271,20 @@ export default function EventsPage() {
         </h1>
         <div className="space-y-10 transition-all duration-700 ease-in-out">
           {currentEvents.map((event, index) => (
-            <EventCard key={index} {...event} />
+            <EventCard
+              key={index}
+              id={event.event_id}
+              imageSrc={event.imageSrc}
+              title={event.title}
+              description={event.description}
+              date={event.date}
+              location={event.location}
+              attendees={event.attendees}
+              status={event.status}
+              avatars={event.avatars}
+            />
           ))}
+
         </div>
         <Pagination
           currentPage={currentPage}
@@ -126,7 +295,7 @@ export default function EventsPage() {
 
       {/* Carousel */}
       <div className="max-w-[1440px] mx-auto px-12 mt-24 pb-20 bg-astradirtywhite">
-        <EventCarousel events={events} />
+        <EventCarousel events={eventList} />
       </div>
 
       {/* Explore UPLB Section */}

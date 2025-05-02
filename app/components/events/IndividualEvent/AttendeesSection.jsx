@@ -6,7 +6,7 @@ export default function AttendeesSection({ event }) {
     <div className="mt-10 bg-astrawhite rounded-xl shadow-md p-6">
       <div className="flex flex-wrap justify-between items-center mb-4">
         <div className="text-astraprimary font-semibold">
-          Going <span className="text-astradarkgray">({event.attendees})</span> • Interested (2)
+          Going <span className="text-astradarkgray">({event.attendees})</span> • Interested ({event.attendeesList.length})
         </div>
         <div className="text-4xl font-bold text-astraprimary">{event.attendees}</div>
         <div className="text-sm text-astradarkgray">Attendees Count</div>
@@ -15,6 +15,7 @@ export default function AttendeesSection({ event }) {
       <div className="flex flex-col gap-4 mt-4">
         {event.attendeesList.map((attendee, index) => (
           <div key={index} className="flex items-center gap-4 bg-astragray p-3 rounded-lg">
+
             {attendee.avatar && (
               <Image
                 src={attendee.avatar}

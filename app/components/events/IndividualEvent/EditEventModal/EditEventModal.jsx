@@ -18,7 +18,7 @@ export default function EditEventModal({ event, onClose, onSave }) {
       ...event,
       title,
       eventDetail,
-      date: date?.toISOString() || "",
+      date: new Date(date).toISOString().slice(0, 10) || "",
       location,
       status,
       image,

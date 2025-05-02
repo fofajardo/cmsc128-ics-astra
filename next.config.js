@@ -9,7 +9,11 @@ const nextConfig = {
           ? `${process.env.ICSA_API_URL}/v1/:path*`
           : "http://localhost:3001/v1/:path*"
       }
+
     ];
+  },
+  images: {
+    domains: ['lgehxciwuxmrtcnanuxp.supabase.co'],
   },
 };
 

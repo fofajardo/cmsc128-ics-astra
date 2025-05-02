@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import eventList from "../eventDummy";
 
 import BackButton from "@/components/events/IndividualEvent/BackButton";
@@ -9,19 +9,18 @@ import HeaderEvent from "@/components/events/IndividualEvent/HeaderEvent";
 import EditEventModal from "@/components/events/IndividualEvent/EditEventModal/EditEventModal";
 import DeleteConfirmationModal from "@/components/events/IndividualEvent/DeleteEventModal/DeleteEventModal";
 import ToastNotification from "@/components/ToastNotification";
+import axios from "axios";
 
 import EventDetailsCard from "./EventDetails.Card";
 import SendEventCard from "./SendEventCard";
 import AttendeesTabs from "./AttendeesTabs";
 import AttendeesList from "./AttendeesList";
+import venue2 from "../../../assets/venue2.jpeg";
 
 export default function EventAdminDetailPage() {
   const router = useRouter();
   const { id } = useParams();
-  const eventId = parseInt(id);
-  const originalEvent = eventList.find((e) => e.id === eventId);
-
-  const [event, setEvent] = useState(originalEvent);
+  const [event, setEvent] = useState(null);
   const [selectedOption, setSelectedOption] = useState("Everyone");
   const [message, setMessage] = useState("");
   const [activeTab, setActiveTab] = useState("going");
@@ -29,7 +28,6 @@ export default function EventAdminDetailPage() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [toastData, setToastData] = useState(null);
-
   const itemsPerPage = 5;
 
   const handleSave = (updatedEvent) => {
@@ -41,11 +39,118 @@ export default function EventAdminDetailPage() {
     setToastData({ type: "success", message: "Event updated successfully!" });
   };
 
-  const handleDelete = () => {
-    console.log("Deleted Event:", event.title);
-    setShowDeleteModal(false);
-    setToastData({ type: "success", message: "Event deleted successfully!" });
-    router.push("/events");
+  const handleDeleteContent = async (id) => {
+    try{
+      const response = await axios
+        .delete(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`);
+
+      setToastData({ type: "success", message: "Event deleted successfully!" });
+    }catch(error){
+      console.error("Failed to delete events:", error);
+      setToastData({ type: "error", message: "Failed to delete event!" });
+    }
+  };
+
+  const handleDelete = async () => {
+    try{
+      const response = await axios
+        .delete(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/${id}`);
+
+      console.log("edit event - delete:", response.data);
+      if (response.data.status === "DELETED") {
+        handleDeleteContent(id);
+      }
+    }catch{
+      setToastData({ type: "error", message: "Failed to delete event!" });
+    } finally{
+      setShowDeleteModal(false);
+      router.push("/admin/events");
+    }
+  };
+
+  const handleEdit = async (updatedEvent) => {
+    try{
+      const toEditId = id;
+      console.log("event id in ", toEditId);
+      console.log(event);
+      console.log(new Date(event.date));
+      console.log(updatedEvent);
+
+      const eventDefaults = {
+        event_date: "",
+        venue: "",
+        // external_link: "",
+        // access_link: "",
+        online: false,
+      };
+
+      const contentDefaults = {
+        title: "",
+        details: "",
+        //tags: [],
+      };
+
+      const eventUpdateData = getChangedFields({
+        event_date: updatedEvent.date,
+        venue: updatedEvent.location,
+        // external_link: addFormData.external_link,
+        // access_link: addFormData.access_link,
+        //online: addFormData.online,
+      }, eventDefaults);
+
+      const contentUpdateData = getChangedFields({
+        title: updatedEvent.title,
+        details: updatedEvent.description,
+        //tags: addFormData.tags,
+      }, contentDefaults);
+
+      let eventRes, contentRes, eventOnly = 0;
+      if (Object.keys(eventUpdateData).length > 0) {
+        eventRes = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/${toEditId}`, eventUpdateData);
+        eventOnly += 1;
+        console.log("entered event update");
+
+      }
+
+      if (Object.keys(contentUpdateData).length > 0) {
+        contentRes = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${toEditId}`,contentUpdateData);
+        eventOnly += 1; // 2 -> event,content updated; 1->onlyevent
+        console.log("entered content update");
+      }
+      // TODO: POST/PUT photo
+      //
+      //
+
+      console.log("eventOnly: ", eventOnly);
+      console.log(eventRes);
+      console.log(contentRes);
+      console.log(contentRes.data.status);
+      console.log(eventRes?.data);
+
+
+      if (eventRes?.data?.status ==="UPDATED"  && contentRes?.data?.status === "UPDATED" && eventOnly===2){
+        setToastData({ type: "success", message: "Event edited successfully!" });
+        console.log("here at 1dtcondition");
+
+      } else if ((eventRes?.data?.status ==="UPDATED" && eventOnly===1) || (contentRes?.data?.status === "UPDATED" && eventOnly===1)){
+        setToastData({ type: "success", message: "Event edited successfully!" });
+        console.log("here at 2nd condition");
+
+      } else if (
+        (["FAILED", "FORBIDDEN"].includes(eventRes?.data?.status) && eventOnly === 2) ||
+        (["FAILED", "FORBIDDEN"].includes(contentRes?.data?.status) && eventOnly === 2)
+      )
+      {
+        setToastData({ type: "error", message: "Failed to edit event." });
+        console.log("here at 3rd condition");
+      }
+    }catch(error){
+      console.log("error",error);
+      setToastData({ type: "error", message: "Failed to edit event." });
+    } finally{
+      setShowEditModal(false);
+      fetchEvent();
+    }
   };
 
   const handleSend = () => {
@@ -82,6 +187,130 @@ export default function EventAdminDetailPage() {
       message: `Successfully sent "${event.title}" to ${recipients.length} users!`
     });
   };
+
+  const getChangedFields = (current, defaults) => {
+    const changed = {};
+    for (const key in current) {
+      const currentValue = current[key];
+      const defaultValue = defaults[key];
+
+      const isArray = Array.isArray(currentValue);
+      const isString = typeof currentValue === "string";
+
+      let isDifferent;
+
+      if (isArray) {
+        isDifferent = JSON.stringify(currentValue) !== JSON.stringify(defaultValue);
+      } else if (isString) {
+        const trimmed = currentValue.trim();
+        isDifferent = trimmed !== defaultValue.trim();
+        if (trimmed === "") continue;
+      } else {
+        isDifferent = currentValue !== defaultValue;
+      }
+
+      if (isDifferent) {
+        changed[key] = currentValue;
+      }
+    }
+    return changed;
+  };
+
+  const fetchUserName = async (id) => {
+    try{
+      const response = await axios
+        .get(`${process.env.NEXT_PUBLIC_API_URL}/v1/users/${id}`);
+
+      console.log(response);
+      if (response.data.status === "OK") {
+        const selectUserName = response.data.user.username;
+        console.log("select event name:",selectUserName, "type", typeof(selectUserName));
+        return selectUserName;
+      } else {
+        console.error("Unexpected response:", response.data);
+      }
+    }catch(error){
+      console.error("Failed to get content:", error);
+    }
+    return "Unknown";
+  };
+
+  const fetchEventPhoto = async (contentId) => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/event/${contentId}`
+      );
+
+      if (response.data.status === "OK" && response.data.photo) {
+        return response.data.photo;
+      }
+    } catch (error) {
+      console.log(`Failed to fetch photo for event_id ${contentId}:`, error);
+    }
+    return venue2;
+  };
+
+  const fetchEvent = async () =>{
+    try {
+      console.log("id: ", id);
+      const [eventRes, contentRes,interestStatsRes,interestRes] = await Promise.all([
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/${id}`),
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`),
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/${id}`),
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/content/${id}`)
+        //TODO: fetch the photo
+
+      ]);
+
+      console.log("eventResponse:",eventRes);
+      if (eventRes.data.status === "OK" && contentRes.data.status === "OK" ) {
+        const eventResponse = eventRes.data;
+        const contentResponse = contentRes.data;
+        const interests = interestRes.data.list;
+        const interestStats = interestStatsRes.data.list;
+
+        console.log("interests:", interests);
+        console.log("intereststat", interestStats.interest_count);
+
+        const interestedUsers = await Promise.all(
+          interests.map(async (user) => ({
+            id: user.user_id,
+            name: await fetchUserName(user.user_id),
+          }))
+        );
+
+        console.log("event: ", eventResponse);
+        console.log("content: ", contentResponse);
+        console.log("event: ", eventResponse.event.event_id);
+        console.log("content: ", contentResponse.content.id);
+
+        const photoUrl = await fetchEventPhoto(eventResponse.event.event_id);
+
+
+        const mergedEvent = {
+          id: eventResponse.event.event_id,
+          event_id: eventResponse.event.event_id,
+          imageSrc: photoUrl || venue2, // fetch this on photo entity;
+          title: contentResponse.content.title || "Untitled",
+          description: contentResponse?.content.details || "No description",
+          date: new Date(eventResponse.event.event_date).toDateString(),
+          location: eventResponse.event.venue,
+          attendees: interestedUsers, //
+          status: eventResponse.online ? "Online" : "Offline",
+          avatars: [],
+        };
+        console.log("mergedEvent", mergedEvent);
+        setEvent(mergedEvent);
+      }
+    } catch (error) {
+      console.error("Failed fetching event, content, or interests:", error);
+      setEvent(null);
+    }
+  };
+
+  useEffect(() => {
+    fetchEvent();
+  }, [id]);
 
   if (!event) {
     return <div className="p-10 text-center text-xl">Event not found.</div>;
@@ -128,7 +357,7 @@ export default function EventAdminDetailPage() {
       <div className="bg-astrawhite mt-10 p-6 rounded-2xl shadow-md">
         <AttendeesTabs
           attendees={event.attendeesList || []}
-          interested={event.interestedList || []}
+          interested={event.attendees || []}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           setCurrentPage={setCurrentPage}
@@ -136,7 +365,7 @@ export default function EventAdminDetailPage() {
 
         <AttendeesList
           attendees={event.attendeesList || []}
-          interested={event.interestedList || []}
+          interested={event.attendees || []}
           activeTab={activeTab}
           itemsPerPage={itemsPerPage}
           currentPage={currentPage}
@@ -148,7 +377,7 @@ export default function EventAdminDetailPage() {
         <EditEventModal
           event={event}
           onClose={() => setShowEditModal(false)}
-          onSave={handleSave}
+          onSave={handleEdit}
         />
       )}
       {showDeleteModal && (
