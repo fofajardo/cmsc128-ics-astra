@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import avatar from "../../../assets/avatar.png"
+import avatar from "../../../assets/avatar.png";
 
 export default function AttendeesList({
   attendees,

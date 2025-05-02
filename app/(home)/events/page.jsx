@@ -147,7 +147,7 @@ export default function EventsPage() {
         const mergedEvents = await Promise.all(eventsPromises);
 
         setEventList(mergedEvents);
-        console.log('mergedEvents:',mergedEvents  );
+        console.log("mergedEvents:",mergedEvents  );
         setTotalPages(Math.ceil(mergedEvents.length / itemsPerPage));
       }
     } catch (error) {

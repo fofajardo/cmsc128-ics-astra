@@ -231,9 +231,9 @@ export default function EventDetailPage() {
       </div>
       <AttendeesSection
         event={(user?.state?.isUnlinked || user?.state?.isAdmin)
-        ? event
-        : { ...event, attendees: [] }}
-    />
+          ? event
+          : { ...event, attendees: [] }}
+      />
     </div>
   );
 }
