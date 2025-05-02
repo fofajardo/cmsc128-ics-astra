@@ -227,10 +227,10 @@ export default function EventAdminDetailPage() {
         console.log("select event name:",selectUserName, "type", typeof(selectUserName));
         return selectUserName;
       } else {
-        console.error("Unexpected response:", response.data);
+        setToastData("Unexpected response:", response.data.message);
       }
     }catch(error){
-      console.error("Failed to get content:", error);
+      setToastData({ type: "error", message: error.message });
     }
     return "Unknown";
   };

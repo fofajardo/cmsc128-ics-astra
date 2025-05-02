@@ -44,7 +44,11 @@ export default function EventsPage() {
   const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredEvents, setFilteredEvents] = useState([]);
-
+  const [sortFilter,setSortFilter] = useState("");
+  const [locationFilter, setLocationFilter] = useState(null);
+  const [statusFilter, setStatusFilter] = useState(null);
+  const [startDateFilter, setStartDateFilter] = useState(null);
+  const [endDateFilter, setEndDateFilter] = useState(null);
   const fetchUserName = async (id) => {
     try{
       const response = await axios
@@ -132,6 +136,7 @@ export default function EventsPage() {
             title: matchedContent.title || "Untitled",
             description: matchedContent.details || "No description",
             date: new Date(event.event_date).toDateString(),
+            isOnline: event.online,
             location: event.venue,
             attendees: await fetchAttendees(event.event_id),
             status: new Date(event.event_date) < new Date() ? "Closed" : "Open",
@@ -142,6 +147,7 @@ export default function EventsPage() {
         const mergedEvents = await Promise.all(eventsPromises);
 
         setEventList(mergedEvents);
+        console.log('mergedEvents:',mergedEvents  );
         setTotalPages(Math.ceil(mergedEvents.length / itemsPerPage));
       }
     } catch (error) {
@@ -155,28 +161,102 @@ export default function EventsPage() {
   }, []);
 
   useEffect(() => {
-    const source = filteredEvents.length > 0 || searchQuery !== ""
-      ? filteredEvents
-      : eventList;
+    console.log("Filtering triggered:", {
+      eventList,
+      searchQuery,
+      sortFilter,
+      locationFilter,
+      statusFilter,
+      startDateFilter,
+      endDateFilter
+    });
 
+    let filteredResults = [...eventList];
+
+
+    if (searchQuery !== "") {
+      console.log("searching...: ", searchQuery);
+      filteredResults = filteredResults.filter(event =>
+        event.title && event.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    if (locationFilter) {
+      console.log("location...: ", locationFilter);
+      filteredResults = filteredResults.filter(event => {
+        if (locationFilter.label === "Online") {
+          return event.isOnline === true;
+        } else if (locationFilter.label === "In-person") {
+          return event.isOnline === false;
+        }
+        return true;
+      });
+    }
+
+
+    if (statusFilter?.label) {
+      console.log("label...:", statusFilter);
+      const now = new Date();
+
+      filteredResults = filteredResults.filter(event => {
+        const eventDate = new Date(event.date);
+
+        if (statusFilter.label === "Upcoming") {
+          return eventDate > now;
+        } else if (statusFilter.label === "Ongoing") {
+          return eventDate.toDateString() === now.toDateString();
+        } else if (statusFilter.label === "Completed") {
+          return eventDate < now;
+        }
+        return true;
+      });
+    }
+
+    if (startDateFilter) {
+      console.log("startDateFilder...:", new Date(startDateFilter));
+      const startDate = new Date(startDateFilter);
+      filteredResults = filteredResults.filter(event =>
+        new Date(event.date) >= startDate
+      );
+    }
+
+    if (endDateFilter) {
+      console.log("startDateFilder...:", endDateFilter);
+      const endDate = new Date(endDateFilter);
+      filteredResults = filteredResults.filter(event =>
+        new Date(event.date) <= endDate
+      );
+    }
+    console.log("sortFilter...:", sortFilter);
+    if (sortFilter === "Most Recent") {
+
+      filteredResults.sort((a, b) => new Date(b.date) - new Date(a.date));
+    } else if (sortFilter === "Oldest") {
+      filteredResults.sort((a, b) => new Date(a.date) - new Date(b.date));
+    } else if (sortFilter === "Popular") {
+      filteredResults.sort((a, b) => (b.attendees || 0) - (a.attendees || 0));
+    }
+
+    setFilteredEvents(filteredResults);
+    setCurrentPage(1);
+  }, [
+    eventList,
+    searchQuery,
+    sortFilter,
+    locationFilter,
+    statusFilter,
+    startDateFilter,
+    endDateFilter
+  ]);
+
+  useEffect(() => {
     setCurrentEvents(
-      source.slice(
+      filteredEvents.slice(
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage
       )
     );
-  }, [currentPage, eventList, filteredEvents, searchQuery]);
-
-  useEffect(() => {
-    console.log("eventList", eventList);
-    console.log(searchQuery);
-    const filtered = eventList.filter(event =>
-      event.title && event.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-
-    setFilteredEvents(filtered);
-    setCurrentPage(1);
-  }, [searchQuery]);
+  }, [currentPage, filteredEvents, itemsPerPage]);
 
 
   return (
@@ -235,31 +315,63 @@ export default function EventsPage() {
             <FilterDropdown
               icon="material-symbols:location-on"
               options={[
+                { label: "Clear", icon: "mdi:close-circle-outline" },
                 { label: "Online", icon: "mdi:wifi" },
                 { label: "In-person", icon: "mdi:account-group" },
               ]}
               placeholder="Location"
+              value={locationFilter}
+              onChange={(selected) =>
+                selected.label === "Clear" ? setLocationFilter(null) : setLocationFilter(selected)
+              }
             />
+
             <FilterDropdown
               icon="fluent:status-20-filled"
               options={[
+                { label: "Clear", icon: "mdi:close-circle-outline" },
                 { label: "Upcoming", icon: "mdi:clock-outline" },
                 { label: "Ongoing", icon: "mdi:progress-clock" },
                 { label: "Completed", icon: "mdi:check-circle-outline" },
               ]}
               placeholder="Status"
+              value={statusFilter}
+              onChange={(selected) =>
+                selected.label === "Clear" ? setStatusFilter(null) : setStatusFilter(selected)
+              }
             />
-            <DateFilter placeholder="Start Date" />
-            <DateFilter placeholder="End Date" />
+
+            <DateFilter
+              placeholder="Start Date"
+              value={startDateFilter}
+              onChange={(date) => setStartDateFilter(date)}
+            />
+
+            <DateFilter
+              placeholder="End Date"
+              value={endDateFilter}
+              onChange={(date) => {
+                console.log("date", date);
+                setEndDateFilter(date);
+              }}
+            />
+
             <FilterDropdown
               icon="material-symbols:sort"
               options={[
+                { label: "Clear", icon: "mdi:close-circle-outline" },
                 { label: "Most Recent", icon: "mdi:sort-calendar-descending" },
                 { label: "Oldest", icon: "mdi:sort-calendar-ascending" },
                 { label: "Popular", icon: "mdi:star-outline" },
               ]}
               placeholder="Sort"
+              value={sortFilter}
+              onChange={(selected) =>
+                selected.label === "All" ? setSortFilter(null) : setSortFilter(selected)
+              }
+
             />
+
           </div>
         </div>
       </div>
@@ -335,3 +447,4 @@ export default function EventsPage() {
     </div>
   );
 }
+
