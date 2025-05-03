@@ -1,7 +1,11 @@
-// EditModal.jsx
 import { Edit3 } from "lucide-react";
 
-export default function EditModal({ isOpen, onClose, fundraiser, onSubmit }) {
+export default function EditModal({
+  isOpen,
+  onClose,
+  fundraiser,
+  onSubmit
+}) {
   if (!isOpen || !fundraiser) return null;
 
   return (
