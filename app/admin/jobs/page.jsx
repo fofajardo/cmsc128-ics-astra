@@ -177,7 +177,7 @@ function createRows(selectedIds, setSelectedIds, currTab, filteredJobs, fetch) {
     "Title": renderTitle(job.job_title),
     "Company": renderText(job.company_name),
     "Location": renderText(job.location),
-    "Type": renderType(jobTypeMap[job.employment_type]),
+    "Type": renderType(job.employment_type),
     "Posted": renderText(job.created_at),
     "Status": renderStatus(job.expires_at),
     "Quick Actions": renderActions(job.job_id, job.job_title, currTab, fetch),
