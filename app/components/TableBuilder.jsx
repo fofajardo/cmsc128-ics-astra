@@ -82,10 +82,17 @@ export function Header({ title, pagination }) {
 export function Toolbar({ toggleFilter, pagination, setPagination }) {
   const handleNumToShowChange = (e) => {
     const newNumToShow = parseInt(e.target.value);
+    const total = pagination.total;
+    const newLastPage = Math.max(1, Math.ceil(total / newNumToShow));
+    const newDisplay = [1, Math.min(newNumToShow, total)];
 
     setPagination({
       ...pagination,
       numToShow: newNumToShow,
+      itemsPerPage: newNumToShow,
+      currPage: 1,
+      lastPage: newLastPage,
+      display: newDisplay,
     });
   };
 
