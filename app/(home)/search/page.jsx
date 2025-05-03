@@ -226,7 +226,6 @@ export default function Page() {
               <p className="font-l text-astrawhite text-sm md:text-base">
                 Discover, connect, and engage with alumni to expand your network!
               </p>
-              <button className="blue-button mt-2 md:mt-4 text-sm md:text-base">Explore Now</button>
             </div>
             <div className="w-full lg:w-[550px] flex justify-center animate-fade-in">
               <div className="relative w-full h-auto max-w-[400px] md:max-w-[550px]">

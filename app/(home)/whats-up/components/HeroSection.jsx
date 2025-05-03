@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import styles from "./HeroSection.module.css";
 import animations from "../styles/animations.module.css";
-import heroImage from "../../../assets/whats-up-vector.png"; // Example image path
+import heroImage from "../../../assets/whats-up-vector.gif"; // Example image path
 
 export function HeroSection() {
   const router = useRouter();
@@ -36,9 +36,7 @@ export function HeroSection() {
     }
   }, []);
 
-  const handleLearnMore = () => {
-    router.push("/whats-up/about"); // Replace with your desired route
-  };
+
 
   return (
     <div className="w-full bg-astradirtywhite">
@@ -70,14 +68,7 @@ export function HeroSection() {
             <p className="text-lg font-medium hover:text-blue-200 transition-colors">
               Stay connected and informed with the latest updates and stories.
             </p>
-            <div className="flex justify-center lg:justify-end">
-              <button
-                onClick={handleLearnMore}
-                className={`mt-4 px-8 py-3 border-2 border-white text-white hover:bg-white hover:text-astraprimary rounded-xl transition-all duration-300 ${animations.glowEffect}`}
-              >
-                Learn More
-              </button>
-            </div>
+
           </div>
         </div>
       </div>

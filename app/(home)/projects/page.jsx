@@ -352,12 +352,12 @@ export default function ProjectsPage({ projects }) {
         function handleGridResponsiveness() {
           const cards = document.querySelectorAll('.grid > a');
           const width = window.innerWidth;
-          
+
           // Reset heights first
           cards.forEach(card => {
             card.style.height = 'auto';
           });
-          
+
           // Set initial visible count based on screen size
           if (width < 640) {
             setVisibleCount(prev => prev < 3 ? 3 : prev);
@@ -366,7 +366,7 @@ export default function ProjectsPage({ projects }) {
           } else {
             setVisibleCount(prev => prev < 6 ? 6 : prev);
           }
-          
+
           // Lazy load images for performance
           if ('IntersectionObserver' in window) {
             const imgObserver = new IntersectionObserver((entries, observer) => {
@@ -382,13 +382,13 @@ export default function ProjectsPage({ projects }) {
                 }
               });
             });
-            
+
             document.querySelectorAll('img[data-src]').forEach(img => {
               imgObserver.observe(img);
             });
           }
         }
-        
+
         window.addEventListener('resize', handleGridResponsiveness);
         handleGridResponsiveness();
       `,
@@ -637,7 +637,7 @@ export default function ProjectsPage({ projects }) {
         }
         window.addEventListener('resize', adjustVisibleCount);
         adjustVisibleCount();
-        
+
         // Reset startIndex when count changes to avoid showing blank spaces
         setStartIndex(0);
       `,
