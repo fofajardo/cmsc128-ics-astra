@@ -17,6 +17,7 @@ export default function Jobs() {
   const [toast, setToast] = useState(null);
   const [jobs, setJobs] = useState([]);
   const [filteredJobs, setFilteredJobs] = useState([]);
+  const [paginatedJobs, setPaginatedJobs] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const itemsPerPage = 5;
 
@@ -68,6 +69,12 @@ export default function Jobs() {
       itemsPerPage
     });
   }, [filteredJobs, searchQuery]);
+
+  useEffect(() => {
+    const start = (pagination.currPage - 1) * pagination.itemsPerPage;
+    const end = start + pagination.itemsPerPage;
+    setPaginatedJobs(filteredJobs.slice(start, end));
+  }, [filteredJobs, pagination.currPage, pagination.itemsPerPage]);
 
   const handleSearch = (searchInput) => {
     const lower = (searchInput || "").toLowerCase();
@@ -143,7 +150,7 @@ export default function Jobs() {
       <div className="bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24 flex flex-col">
         <div className='flex flex-col py-4 px-1 md:px-4 lg:px-8'>
           <TableHeader info={info} pagination={pagination} setPagination={setPagination} toggleFilter={toggleFilter} setSearchQuery={handleSearch} searchQuery={searchQuery} />
-          <Table cols={cols} data={createRows(selectedIds, setSelectedIds, currTab, filteredJobs, fetchJobs)} />
+          <Table cols={cols} data={createRows(selectedIds, setSelectedIds, currTab, paginatedJobs, fetchJobs)} />
           <PageTool pagination={pagination} setPagination={setPagination} />
         </div>
         <div className="flex flex-row justify-between md:pl-4 lg:pl-8">
@@ -170,7 +177,7 @@ function createRows(selectedIds, setSelectedIds, currTab, filteredJobs, fetch) {
     "Title": renderTitle(job.job_title),
     "Company": renderText(job.company_name),
     "Location": renderText(job.location),
-    "Type": renderType(jobTypeMap[job.employment_type]),
+    "Type": renderType(job.employment_type),
     "Posted": renderText(job.created_at),
     "Status": renderStatus(job.expires_at),
     "Quick Actions": renderActions(job.job_id, job.job_title, currTab, fetch),
