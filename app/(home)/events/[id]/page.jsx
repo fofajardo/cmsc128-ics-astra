@@ -194,6 +194,8 @@ export default function EventDetailPage() {
   const handleInterestClick = async () => {
     if (isInterestedLoading || isGoingLoading) return;
 
+    if (!user?.state?.isAlumnus || !user?.state?.isAdmin || !user?.state?.isModerator) return;
+
     try {
       setIsInterestedLoading(true);
       const newIsInterested = !isInterested;
@@ -227,8 +229,11 @@ export default function EventDetailPage() {
         <HeaderEvent event={event} onSave={handleSave} />
         <EventDetails event={event} isInterested={isInterested} handleInterestClick={handleInterestClick} isGoing={isGoing} handleGoingClick={handleGoingClick}/>
       </div>
-      {((user?.state?.isUnlinked || user?.state?.isUnlinked || user?.state?.isAdmin)) && <AttendeesSection event={event} /> }
-
+      <AttendeesSection
+        event={(user?.state?.isUnlinked || user?.state?.isAdmin)
+          ? event
+          : { ...event, attendees: [] }}
+      />
     </div>
   );
 }

@@ -16,12 +16,13 @@ export default function Events() {
 
   const user = useSignedInUser();
 
-  const isAllowed =
-    user?.state?.role === "admin" || user?.state?.role === "moderator";
+  // remove/comment out this if not signed in as admin
+  // const isAllowed =
+  //   user?.state?.role === "admin" || user?.state?.role === "moderator";
 
-  if (!isAllowed) {
-    return <div>FORBIDDEN</div>;
-  }
+  // if (!isAllowed) {
+  //   return <div>FORBIDDEN</div>;
+  // }
   const { setEventCounts } = useContext(TabContext);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -39,7 +40,6 @@ export default function Events() {
     { label: "Location", justify: "center", visible: "sm" },
     { label: "Type", justify: "center", visible: "md" },
     { label: "Date", justify: "center", visible: "lg" },
-    { label: "Going", justify: "center", visible: "lg" },
     { label: "Interested", justify: "center", visible: "lg" },
     { label: "Actions", justify: "center", visible: "all" },
   ];
@@ -585,7 +585,6 @@ function createRows(events, confirmDelete, toggleEditModal) {
     Location: renderText(event.location),
     Type: renderText(event.type),
     Date: renderText(event.date),
-    Going: renderText(event.going),
     Interested: renderText(event.interested),
     Actions: renderActions(event, confirmDelete, toggleEditModal),
   }));

@@ -23,17 +23,6 @@ export default function EventActions({ status, onGoingClick, onInterestClick, is
     <div className="flex flex-col items-center gap-2">
       <div className="flex flex-col sm:flex-row gap-3 justify-center w-full">
         <button
-          onClick={onGoingClick}
-          className={`w-full sm:w-auto px-4 py-2 rounded-lg font-semibold transition-colors ${
-            isGoing
-              ? "bg-green-700 text-white"
-              : "bg-astragray text-astradarkgray hover:bg-astradarkgray hover:text-white"
-          }`}
-        >
-          {isGoing ? "Going ✓" : "Going"}
-        </button>
-
-        <button
           onClick={onInterestClick}
           className={`w-full sm:w-auto px-4 py-2 rounded-lg font-semibold text-white transition-colors ${
             isInterested ? "bg-astradark" : "bg-astraprimary hover:bg-astradark"

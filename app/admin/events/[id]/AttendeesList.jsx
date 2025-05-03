@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import avatar from "../../../assets/avatar.png";
 
 export default function AttendeesList({
   attendees,
@@ -31,7 +32,7 @@ export default function AttendeesList({
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 relative rounded-full overflow-hidden">
                   <Image
-                    src={person.avatar}
+                    src={person.avatar || avatar}
                     alt={person.name}
                     fill
                     className="object-cover"
