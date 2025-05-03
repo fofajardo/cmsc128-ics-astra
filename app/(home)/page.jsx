@@ -46,54 +46,54 @@ export default function Page() {
 
 
       <section
-  id="mission"
-  className="py-24 md:py-32 w-full relative overflow-hidden"
->
-  <div className="absolute inset-0 bg-astratintedwhite"></div>
-  <div className="absolute top-0 left-1/2 w-full h-64 blur-3xl -translate-x-1/2 rounded-full"></div>
-  <div className="px-6 sm:px-8 md:px-12 max-w-6xl mx-auto relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-50 items-center">
-    <div className="flex justify-center order-1 md:order-1">
-      <motion.div
-        initial={{ opacity: 0, x: 50 }}
-        whileInView={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
+        id="mission"
+        className="py-24 md:py-32 w-full relative overflow-hidden"
       >
-        <h2 className="text-[var(--color-astraprimary)] text-4xl md:text-5xl font-bold mb-8 md:mb-10">
-          Join the Excitement!
-        </h2>
-        <div className="space-y-6 md:space-y-8">
-          <div className="flex items-start gap-4">
-            <p className="text-[var(--color-astrablack)] text-base md:text-lg">
-              From engaging workshops to exciting celebrations, there’s always something happening. Don’t just watch—participate, engage, and make each event unforgettable!
-            </p>
+        <div className="absolute inset-0 bg-astratintedwhite"></div>
+        <div className="absolute top-0 left-1/2 w-full h-64 blur-3xl -translate-x-1/2 rounded-full"></div>
+        <div className="px-6 sm:px-8 md:px-12 max-w-6xl mx-auto relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-50 items-center">
+          <div className="flex justify-center order-1 md:order-1">
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-[var(--color-astraprimary)] text-4xl md:text-5xl font-bold mb-8 md:mb-10">
+                Join the Excitement!
+              </h2>
+              <div className="space-y-6 md:space-y-8">
+                <div className="flex items-start gap-4">
+                  <p className="text-[var(--color-astrablack)] text-base md:text-lg">
+                    From engaging workshops to exciting celebrations, there’s always something happening. Don’t just watch—participate, engage, and make each event unforgettable!
+                  </p>
+                </div>
+                <Link href="/events" passHref>
+                  <button className="mt-12 border-2 border-astraprimary text-astrawhite bg-astraprimary hover:bg-astrawhite hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-[200px] h-[60px]">
+                    See Events
+                  </button>
+                </Link>
+              </div>
+            </motion.div>
           </div>
-          <Link href="/events" passHref>
-                <button className="mt-12 border-2 border-astraprimary text-astrawhite bg-astraprimary hover:bg-astrawhite hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-[200px] h-[60px]">
-              See Events
-            </button>
-            </Link>
+          <motion.div
+            initial={{ opacity: 0, rotateY: -30 }}
+            whileInView={{ opacity: 1, rotateY: 0 }}
+            transition={{ duration: 1 }}
+            viewport={{ once: true }}
+            className="relative order-2 md:order-2"
+          >
+            <div className="absolute rounded-full blur-xl opacity-30 animate-pulse"></div>
+            <Image
+              src="/homepage-vector1.gif"
+              alt="Institute of Computer Science Logo"
+              width={500}
+              height={500}
+              className="relative z-10 transform transition-all duration-500 hover:scale-105 object-contain"
+            />
+          </motion.div>
         </div>
-      </motion.div>
-    </div>
-    <motion.div
-      initial={{ opacity: 0, rotateY: -30 }}
-      whileInView={{ opacity: 1, rotateY: 0 }}
-      transition={{ duration: 1 }}
-      viewport={{ once: true }}
-      className="relative order-2 md:order-2"
-    >
-      <div className="absolute rounded-full blur-xl opacity-30 animate-pulse"></div>
-      <Image
-        src="/homepage-vector1.gif"
-        alt="Institute of Computer Science Logo"
-        width={500}
-        height={500}
-        className="relative z-10 transform transition-all duration-500 hover:scale-105 object-contain"
-      />
-    </motion.div>
-  </div>
-</section>
+      </section>
 
 
       {/* Looping Image Section going left */}
@@ -105,7 +105,7 @@ export default function Page() {
                 <Image
                   src={image}
                   fill
-                  style={{ objectFit: 'cover', borderRadius: '10px' }}
+                  style={{ objectFit: "cover", borderRadius: "10px" }}
                 />
               </div>
             ))}
@@ -123,7 +123,7 @@ export default function Page() {
                   src={image}
                   alt={`Alumni ${index + 1}`}
                   fill
-                  style={{ objectFit: 'cover', borderRadius: '10px' }}
+                  style={{ objectFit: "cover", borderRadius: "10px" }}
                 />
               </div>
             ))}
@@ -177,10 +177,10 @@ export default function Page() {
                   </p>
                 </div>
                 <Link href="/whats-up" passHref>
-                <button className="mt-12 border-2 border-astraprimary text-astrawhite bg-astraprimary hover:bg-astrawhite hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-[200px] h-[60px]">
-              See Latest Updates
-            </button>
-            </Link>
+                  <button className="mt-12 border-2 border-astraprimary text-astrawhite bg-astraprimary hover:bg-astrawhite hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-[200px] h-[60px]">
+                    See Latest Updates
+                  </button>
+                </Link>
               </div>
             </motion.div>
           </div>
