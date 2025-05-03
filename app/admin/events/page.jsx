@@ -11,6 +11,7 @@ import { isValidDate,isValidUUID } from "../../../api/utils/validators";
 import axios from "axios";
 import Fuse from "fuse.js";
 import { useSignedInUser } from "@/components/UserContext";
+import { CenteredSkeleton } from "@/components/ui/skeleton";
 
 export default function Events() {
 
@@ -33,6 +34,7 @@ export default function Events() {
   const [contentList, setContents] = useState([]);
   const [selectedContentId, setSelectedContentId] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [loading, setloading] = useState(true);
   // const [searchQuery, setSearchQuery] = useState("");
 
   const cols = [
@@ -270,9 +272,9 @@ export default function Events() {
 
         setEvents(eventList);
         console.log("list: ", response.data.list.length);
-
+        
         getActivePastEvents(eventList,response.data.total);
-
+        setloading(false);
       } else {
         console.error("Unexpected response:", response.data);
       }
@@ -569,7 +571,7 @@ export default function Events() {
           />
           <Table
             cols={cols}
-            data={createRows(currentPageData, confirmDelete, toggleEditModal)}
+            data={loading ? skeletonRows : createRows(currentPageData, confirmDelete, toggleEditModal)}
           />
           <PageTool pagination={pagination} setPagination={setPagination} />
         </div>
@@ -578,6 +580,15 @@ export default function Events() {
   );
 }
 
+
+const skeletonRows = Array(10).fill({
+  Event: <CenteredSkeleton className="h-6 w-1/2 my-6" />,
+  Location: <CenteredSkeleton className="h-6 w-1/2" />,
+  Type: <CenteredSkeleton className="h-6 w-1/2" />,
+  Date: <CenteredSkeleton className="h-6 w-1/2" />,
+  Interested: <CenteredSkeleton className="h-6 w-1/2" />,
+  Actions: <CenteredSkeleton className="h-4 w-18"/>
+})
 
 function createRows(events, confirmDelete, toggleEditModal) {
   return events.map((event) => ({
