@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import BackButton from "@/components/events/IndividualEvent/BackButton";
+import { PROJECT_TYPE } from "@/constants/projectConsts"; // TODO: Use constants for project type
 
 const RequestFundraiserGoal = () => {
   const router = useRouter();
@@ -11,20 +12,20 @@ const RequestFundraiserGoal = () => {
 
   // Initialize states with URL parameters if they exist
   const [amount, setAmount] = useState("");
-  const [zipCode, setZipCode] = useState("");
+  const [projectType, setProjectType] = useState("");
   const [targetDate, setTargetDate] = useState("");
   const [amountError, setAmountError] = useState("");
-  const [zipCodeError, setZipCodeError] = useState("");
+  const [projectTypeError, setProjectTypeError] = useState("");
   const [targetDateError, setTargetDateError] = useState("");
 
   // Load data from URL parameters on component mount
   useEffect(() => {
     const urlAmount = searchParams.get("amount");
-    const urlZipCode = searchParams.get("zipCode");
+    const urlProjectType = searchParams.get("projectType");
     const urlTargetDate = searchParams.get("targetDate");
 
     if (urlAmount) setAmount(urlAmount);
-    if (urlZipCode) setZipCode(urlZipCode);
+    if (urlProjectType) setProjectType(urlProjectType);
     if (urlTargetDate) setTargetDate(urlTargetDate);
   }, [searchParams]);
 
@@ -56,16 +57,16 @@ const RequestFundraiserGoal = () => {
   };
 
   // Handle ZIP code input change
-  const handleZipCodeChange = (e) => {
+  const handleProjectTypeChange = (e) => {
     const value = e.target.value;
-    setZipCode(value);
-    updateUrlParams("zipCode", value);
+    setProjectType(value);
+    updateUrlParams("projectType", value);
 
     // Validate that it's a number
-    if (value && isNaN(value)) {
-      setZipCodeError("Please enter a valid ZIP code");
+    if (value && !Object.values(PROJECT_TYPE).includes(value.toLowerCase())) {
+      setProjectTypeError("Please enter a valid project type");
     } else {
-      setZipCodeError("");
+      setProjectTypeError("");
     }
   };
 
@@ -92,7 +93,7 @@ const RequestFundraiserGoal = () => {
   };
 
   // Check if all fields are valid and filled
-  const isFormValid = amount && zipCode && targetDate && !amountError && !zipCodeError && !targetDateError;
+  const isFormValid = amount && projectType && targetDate && !amountError && !projectTypeError && !targetDateError;
 
   return (
     <div className="min-h-screen w-full flex flex-col md:flex-row">
@@ -105,7 +106,7 @@ const RequestFundraiserGoal = () => {
           </h2>
           <p className="font-r text-astrablack text-left tracking-wide">
             Give a rough estimate of your <br />
-            fundraising needs and timeline.
+            project needs and timeline.
           </p>
         </div>
       </div>
@@ -117,7 +118,7 @@ const RequestFundraiserGoal = () => {
           <div className="flex flex-col items-center space-y-4 w-full md:w-[70%] mb-8">
             {/* Header */}
             <h3 className="font-l text-astrablack self-start w-full">
-              Set your fundraising target
+              Set your project target
             </h3>
             {/* form */}
             <div className="w-full space-y-6">
@@ -145,7 +146,7 @@ const RequestFundraiserGoal = () => {
                 <label className="block text-astrablack font-r mb-2">
                   When do you need to reach your goal?
                 </label>
-                <input
+                <input  // TODO: Add date picker
                   type="date"
                   value={targetDate}
                   onChange={handleTargetDateChange}
@@ -159,22 +160,22 @@ const RequestFundraiserGoal = () => {
                 )}
               </div>
 
-              {/* ZIP code field */}
+              {/* Project type field */}
               <div className="w-full">
                 <label className="block text-astrablack font-r mb-2">
-                  Where are you fundraising?
+                  What type of project are you requesting?
                 </label>
-                <input
+                <input  // TODO: Convert to dropdown with options: [donation drive, fundraising, scholarship]
                   type="text"
-                  value={zipCode}
-                  onChange={handleZipCodeChange}
-                  placeholder="Enter your ZIP code"
+                  value={projectType}
+                  onChange={handleProjectTypeChange}
+                  placeholder="Enter project type"
                   className={`w-full p-3 border rounded-md ${
-                    zipCodeError ? "border-red-500" : "border-astradarkgray"
+                    projectTypeError ? "border-red-500" : "border-astradarkgray"
                   } focus:outline-none focus:ring-2 focus:ring-astraprimary`}
                 />
-                {zipCodeError && (
-                  <p className="text-red-500 text-sm mt-1">{zipCodeError}</p>
+                {projectTypeError && (
+                  <p className="text-red-500 text-sm mt-1">{projectTypeError}</p>
                 )}
               </div>
             </div>
