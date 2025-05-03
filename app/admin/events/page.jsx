@@ -272,7 +272,7 @@ export default function Events() {
 
         setEvents(eventList);
         console.log("list: ", response.data.list.length);
-        
+
         getActivePastEvents(eventList,response.data.total);
         setloading(false);
       } else {
@@ -588,7 +588,7 @@ const skeletonRows = Array(10).fill({
   Date: <CenteredSkeleton className="h-6 w-1/2" />,
   Interested: <CenteredSkeleton className="h-6 w-1/2" />,
   Actions: <CenteredSkeleton className="h-4 w-18"/>
-})
+});
 
 function createRows(events, confirmDelete, toggleEditModal) {
   return events.map((event) => ({

@@ -207,7 +207,7 @@ const skeletonRows = Array(10).fill({
   "Field Of Work": <CenteredSkeleton className="h-4 w-28" />,
   Skills: <CenteredSkeleton className="h-4 w-44" />,
   "Quick Actions": <CenteredSkeleton className="h-4 w-18" />,
-});  
+});
 
 function createRows(alumList) {
   return alumList.map((alum) => ({

@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 function Skeleton({
   className,
@@ -20,4 +20,4 @@ function CenteredSkeleton({ className }) {
   );
 }
 
-export { Skeleton, CenteredSkeleton }
+export { Skeleton, CenteredSkeleton };
