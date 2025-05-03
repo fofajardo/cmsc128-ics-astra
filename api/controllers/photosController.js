@@ -363,6 +363,51 @@ const getEventPhotoByContentId = async (req, res) => {
   }
 };
 
+const getProjectPhotoByContentId = async (req, res) => {
+  try {
+    const { project_id } = req.params;
+    console.log("Project ID:", project_id);
+    console.log("Looking for photo with content_id:", project_id, "and type: 5");
+
+    // Fetch the photo record from the database
+    const { data, error } = await photosService.fetchProjectPhotos(req.supabase, project_id);
+
+    console.log("Response data:", data);
+    console.log("Response error:", error);
+
+    if (error || !data) {
+      return res.status(404).json({
+        status: "FAILED",
+        message: "Photo not found for the given project ID",
+      });
+    }
+
+    // Generate a signed URL for the photo
+    const { data: signedUrlData, error: signedUrlError } = await req.supabase
+      .storage
+      .from("user-photos-bucket")
+      .createSignedUrl(data.image_key, 60 * 60); // URL valid for 1 hour
+
+    if (signedUrlError) {
+      return res.status(500).json({
+        status: "FAILED",
+        message: "Failed to generate signed URL",
+      });
+    }
+
+    return res.status(200).json({
+      status: "OK",
+      photo: signedUrlData.signedUrl,
+    });
+  } catch (error) {
+    console.error("Error in getProjectPhotoByContentId:", error);
+    return res.status(500).json({
+      status: "FAILED",
+      message: error.message,
+    });
+  }
+};
+
 const photosController = {
   getAllPhotos,
   getPhotoById,
@@ -372,6 +417,7 @@ const photosController = {
   getAllProfilePics,
   getPhotoByAlumId,
   getEventPhotoByContentId,
+  getProjectPhotoByContentId,
 };
 
 export default photosController;

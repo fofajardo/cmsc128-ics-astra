@@ -21,6 +21,8 @@ export default function InactiveProjectDetail({ params }) {
 
   const [projectData, setProjectData] = useState(null);
 
+  const [projectPhoto, setProjectPhoto] = useState({});
+
   useEffect(() => {
     const fetchProjectRequest = async () => {
       try {
@@ -54,7 +56,7 @@ export default function InactiveProjectDetail({ params }) {
             id: projectId,
             title: projectData.list.projectData.title,
             type: projectData.list.projectData.type,
-            image: "/projects/assets/Donation.jpg",
+            image: null,
             urlLink: projectData.list.projectData.donation_link,
             description: projectData.list.projectData.details,
             longDescription: projectData.list.projectData.details,
@@ -74,6 +76,17 @@ export default function InactiveProjectDetail({ params }) {
             fundDistribution: "NA",
             transactions: formattedDonations,
           });
+          try {
+            const photoResponse = await axios.get(
+              `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/project/${projectId}`
+            );
+
+            if (photoResponse.data.status === "OK" && photoResponse.data.photo) {
+              setProjectPhoto(photoResponse.data.photo);
+            }
+          } catch (photoError) {
+            console.log(`Failed to fetch photo for project_id ${projectId}:`, photoError);
+          }
         } else {
           console.error("Unexpected response:", projectData);
         }
@@ -85,7 +98,16 @@ export default function InactiveProjectDetail({ params }) {
     };
 
     fetchProjectRequest();
-  }, []);
+  }, [id]);
+
+  useEffect(() => {
+    if (projectData?.id) {
+      setProjectData(prevData => ({
+        ...prevData,
+        image: projectPhoto
+      }));
+    }
+  }, [projectPhoto]);
 
   //for progress bar percentage
   const goalValue = parseInt(projectData?.goal.replace(/[^0-9]/g, ""));

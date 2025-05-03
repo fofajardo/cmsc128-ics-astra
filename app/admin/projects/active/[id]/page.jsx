@@ -39,6 +39,8 @@ export default function ActiveProjectDetail({ params }) {
   const [editFormData, setEditFormData] = useState({});
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
+  const [projectPhoto, setProjectPhoto] = useState({});
+
   const STATUS = { DECLINE: 2 };
 
   // Initialize project data
@@ -75,7 +77,7 @@ export default function ActiveProjectDetail({ params }) {
             id: projectId,
             title: projectData.list.projectData.title,
             type: projectData.list.projectData.type,
-            image: "/projects/assets/Donation.jpg",
+            image: null,
             urlLink: projectData.list.projectData.donation_link,
             description: projectData.list.projectData.details,
             longDescription: projectData.list.projectData.details,
@@ -95,6 +97,19 @@ export default function ActiveProjectDetail({ params }) {
             fundDistribution: "NA",
             transactions: formattedDonations,
           });
+
+          // fetch photo
+          try {
+            const photoResponse = await axios.get(
+              `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/project/${projectId}`
+            );
+
+            if (photoResponse.data.status === "OK" && photoResponse.data.photo) {
+              setProjectPhoto(photoResponse.data.photo);
+            }
+          } catch (photoError) {
+            console.log(`Failed to fetch photo for project_id ${projectId}:`, photoError);
+          }
         } else {
           console.error("Unexpected response:", projectData);
         }
@@ -106,7 +121,16 @@ export default function ActiveProjectDetail({ params }) {
     };
 
     fetchProjectRequest();
-  }, []);
+  }, [id]);
+
+  useEffect(() => {
+    if (projectData?.id) {
+      setProjectData(prevData => ({
+        ...prevData,
+        image: projectPhoto
+      }));
+    }
+  }, [projectPhoto]);
 
   // If project data is not loaded yet, show loading state
   if (!projectData) {

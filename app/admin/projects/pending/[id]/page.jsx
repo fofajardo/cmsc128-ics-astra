@@ -25,6 +25,8 @@ export default function PendingProjectDetail({ params }) {
   const [projectData, setProjectData] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const [projectPhoto, setProjectPhoto] = useState({});
+
   const STATUS = {
     APPROVE: 1,
     DECLINE: 2
@@ -37,10 +39,27 @@ export default function PendingProjectDetail({ params }) {
         const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/requests/projects/${id}`);
         const projectData = response.data;
         if (projectData.status === "OK") {
+
+          const projectId = projectData.list.projectData.project_id;
+
+          // Fetch photo for this single project
+          try {
+            const photoResponse = await axios.get(
+              `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/project/${projectId}`
+            );
+
+            if (photoResponse.data.status === "OK" && photoResponse.data.photo) {
+              // Store the photo URL
+              setProjectPhoto(photoResponse.data.photo);
+            }
+          } catch (error) {
+            console.log(`Failed to fetch photo for project_id ${projectId}:`, error);
+          }
+
           setProjectData({
             id: projectData.list.projectData.project_id,
             title: projectData.list.projectData.title,
-            image: "/projects/assets/Donation.jpg",
+            image: projectPhoto,
             description: projectData.list.projectData.details,
             longDescription: projectData.list.projectData.details,
             goal: projectData.list.projectData.goal_amount.toString(),
@@ -73,6 +92,15 @@ export default function PendingProjectDetail({ params }) {
 
     fetchProjectRequest();
   }, []);
+
+  useEffect(() => {
+    if (Object.keys(projectData).length > 0) {
+      setProjectData(prevData => ({
+        ...prevData,
+        image: projectPhoto || "/projects/assets/Donation.jpg"
+      }));
+    }
+  }, [projectPhoto]);
 
   const project = projectData;
   // {

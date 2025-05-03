@@ -22,6 +22,8 @@ export default function ProjectsAdmin() {
   const [donationsSummary, setDonationsSummary] = useState({});
   const [loading, setLoading] = useState(true);
 
+  const [projectPhotos, setProjectPhotos] = useState({});
+
   useEffect(() => {
     const fetchProjectRequests = async () => {
       try {
@@ -30,13 +32,38 @@ export default function ProjectsAdmin() {
         const projectData = response.data;
         if (projectData.status === "OK") {
           console.log("Fetched projects:", projectData);
+
+          // extract project id's
+          const projectIds = projectData.list.map(project => project.projectData.project_id);
+
+          // map for photos initialization
+          const photoMap = {};
+
+          // fetch individual project photos
+          const photoPromises = projectIds.map(async (projectId) => {
+            try {
+              const photoResponse = await axios.get(
+                `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/project/${projectId}`
+              );
+
+              if (photoResponse.data.status === "OK" && photoResponse.data.photo) {
+                photoMap[projectId] = photoResponse.data.photo;
+              }
+            } catch (error) {
+              console.log(`Failed to fetch photo for project_id ${projectId}:`, error);
+            }
+          });
+
+          await Promise.all(photoPromises);
+          setProjectPhotos(photoMap);
+
           setProjects(
             projectData.list.map(
               project => ({
                 status: project.status,
                 request_id: project.request_id,
                 id: project.projectData.project_id,
-                image: "/projects/assets/Donation.jpg",
+                image: photoMap[project.projectData.project_id] || "/projects/assets/Donation.jpg",
                 project_status: project.projectData.project_status,
                 title: project.projectData.title,
                 description: project.projectData.details,
