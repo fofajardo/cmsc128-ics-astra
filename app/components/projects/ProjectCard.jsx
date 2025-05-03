@@ -3,6 +3,7 @@ import Image from "next/image";
 import { GraduationCap, HeartHandshake, Users, Calendar } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { formatCurrency, formatDate, capitalizeName } from "@/utils/format";
 
 export default function ProjectCard({
   id,
@@ -24,13 +25,6 @@ export default function ProjectCard({
   const goalAmount = parseInt(goal.replace(/[^0-9]/g, ""));
   const raisedAmount = parseInt(raised.replace(/[^0-9]/g, ""));
   const progressPercent = Math.min(Math.round((raisedAmount / goalAmount) * 100), 100);
-
-  // Format end date
-  const formattedDate = endDate ? new Date(endDate).toLocaleDateString("en-PH", {
-    year: "numeric",
-    month: "short",
-    day: "numeric"
-  }) : "";
 
   // Determine progress bar color based on percentage
   const getProgressColor = () => {
@@ -92,7 +86,7 @@ export default function ProjectCard({
           ) : (
             <HeartHandshake className="w-3 h-3" />
           )}
-          {type}
+          {capitalizeName(type)}
         </div>
       </div>
 
@@ -104,8 +98,8 @@ export default function ProjectCard({
         {/* Progress bar */}
         <div className="mt-auto pt-3">
           <div className="flex justify-between text-xs font-s mb-1 line-clamp-1">
-            <span>{raised} raised</span>
-            <span>Goal: {goal}</span>
+            <span>{formatCurrency(raised)} raised</span>
+            <span>Goal: {formatCurrency(goal)}</span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div
@@ -121,7 +115,7 @@ export default function ProjectCard({
             {endDate && (
               <div className="flex items-center gap-1">
                 <Calendar className="w-3 h-3" />
-                <span className="line-clamp-1">Until {formattedDate}</span>
+                <span className="line-clamp-1">Until {formatDate(endDate, "long")}</span>
               </div>
             )}
           </div>
