@@ -3,6 +3,7 @@ import projectsService from "../services/projectsService.js";
 import contentsService from "../services/contentsService.js";
 import requestsService from "../services/requestsService.js";
 import { isValidUUID, isValidDate } from "../utils/validators.js";
+import { REQUEST_TYPE, REQUEST_STATUS, PROJECT_TYPE } from "../utils/enums.js";
 import {Actions, Subjects} from "../../common/scopes.js";
 import { v4 as uuvidv4 } from "uuid";
 

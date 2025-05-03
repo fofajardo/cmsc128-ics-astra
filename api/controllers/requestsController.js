@@ -187,7 +187,7 @@ const getProjectRequests = async (req, res) => {
   try {
     // get requests from Requests table
     const filters = {
-      type: [0, 1],
+      type: [REQUEST_TYPE.PROJECT_FUNDS, REQUEST_TYPE.FUNDRAISING],
     };
     const { data: requestData, error: requestError } = await requestsService.fetchProjectRequests(req.supabase, filters);
 
