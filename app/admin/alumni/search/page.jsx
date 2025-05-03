@@ -9,11 +9,14 @@ import SkillTag from "@/components/SkillTag";
 import { Axis3DIcon } from "lucide-react";
 import axios from "axios";
 import { capitalizeName } from "../../../utils/format.jsx";
+import { Skeleton, CenteredSkeleton } from "@/components/ui/skeleton";
+
 
 export default function AlumniSearch() {
   const [showFilter, setShowFilter] = useState(false);
   const info = { title: "Registered Alumni", search: "Search for an alumni" };
   const toggleFilter = () => { setShowFilter((prev) => !prev); };
+  const [loading, setLoading] = useState(true);
 
   const [alumList, updateAlumList] = useState([]);
   const [appliedFilters, updateFilters] = useState({
@@ -44,6 +47,7 @@ export default function AlumniSearch() {
     });
 
     const fetchAlumniProfiles = async () => {
+      setLoading(true);
       try {
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles`,
@@ -124,6 +128,7 @@ export default function AlumniSearch() {
           );
 
           updateAlumList(updatedAlumList);
+          setLoading(false);
         } else {
           console.error("Unexpected response:", response.data);
         }
@@ -175,7 +180,7 @@ export default function AlumniSearch() {
             toggleFilter={toggleFilter}
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery} />
-          <Table cols={cols} data={createRows(alumList)} />
+          <Table cols={cols} data={loading ? skeletonRows : createRows(alumList)} />
           <PageTool pagination={pagination} setPagination={setPagination} />
         </div>
       </div>
@@ -193,6 +198,16 @@ const cols = [
   { label: "Skills", justify: "center", visible: "md" },
   { label: "Quick Actions", justify: "center", visible: "all" },
 ];
+
+const skeletonRows = Array(10).fill({
+  "Image:label-hidden": <CenteredSkeleton className="h-12 w-12 rounded-xl m-3" />,
+  Name: <Skeleton className="h-4 w-40" />,
+  "Graduation Year": <CenteredSkeleton className="h-4 w-24 flex justify-center" />,
+  Location: <CenteredSkeleton className="h-4 w-24" />,
+  "Field Of Work": <CenteredSkeleton className="h-4 w-28" />,
+  Skills: <CenteredSkeleton className="h-4 w-44" />,
+  "Quick Actions": <CenteredSkeleton className="h-4 w-18" />,
+});
 
 function createRows(alumList) {
   return alumList.map((alum) => ({

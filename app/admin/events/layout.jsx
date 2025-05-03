@@ -4,6 +4,7 @@ import { useState } from "react";
 import AdminStatCard from "@/components/AdminStatCard";
 import { CalendarClock, CalendarRange, CalendarCheck2 } from "lucide-react";
 import { TabContext } from "@/components/TabContext";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminEventsLayout({ children }) {
   const [info, setInfo] = useState({
@@ -12,9 +13,9 @@ export default function AdminEventsLayout({ children }) {
   });
 
   const [eventCounts, setEventCounts] = useState({
-    active: 0,
-    past: 0,
-    total: 0
+    active: <Skeleton className="h-7 w-12 my-2" />,
+    past: <Skeleton className="h-7 w-12 my-2" />,
+    total: <Skeleton className="h-7 w-12 my-2" />
   });
 
 
@@ -49,7 +50,7 @@ export default function AdminEventsLayout({ children }) {
                 delay={0.0}
                 title="Active Events"
                 value={eventCounts.active}
-                icon={<CalendarCheck2 className="size-13 text-astrawhite" strokeWidth={3} />}
+                icon={<CalendarCheck2 className="size-13 text-astrawhite" strokeWidth={2} />}
                 route={false}
                 onClick={() => {}}
               />
@@ -57,7 +58,7 @@ export default function AdminEventsLayout({ children }) {
                 delay={0.1}
                 title="Past Events"
                 value={eventCounts.past}
-                icon={<CalendarRange className="size-13 text-astrawhite" strokeWidth={3} />}
+                icon={<CalendarRange className="size-13 text-astrawhite" strokeWidth={2} />}
                 route={false}
                 onClick={() => {}}
               />
@@ -65,7 +66,7 @@ export default function AdminEventsLayout({ children }) {
                 delay={0.2}
                 title="Total Events"
                 value={eventCounts.total}
-                icon={<CalendarClock className="size-13 text-astrawhite" strokeWidth={3} />}
+                icon={<CalendarClock className="size-13 text-astrawhite" strokeWidth={2} />}
                 route={false}
                 onClick={() => {}}
               />
