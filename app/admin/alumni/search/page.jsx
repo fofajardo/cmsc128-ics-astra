@@ -47,6 +47,7 @@ export default function AlumniSearch() {
     });
 
     const fetchAlumniProfiles = async () => {
+      setLoading(true);
       try {
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles`,
