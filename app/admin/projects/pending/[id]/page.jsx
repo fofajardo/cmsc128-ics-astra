@@ -67,7 +67,9 @@ export default function PendingProjectDetail({ params }) {
               name: projectData.list.requesterData.full_name,
               email: "N/A",
               phone: "N/A",
-              position: projectData.list.requesterData.role || "N/A",
+              position: projectData.list.requesterData.role === "unlinked" || projectData.list.requesterData.role === null
+                ? "N/A"
+                : projectData.list.requesterData.role,
             },
             submissionDate: projectData.list.date_requested,
             proposedStartDate: "1999-01-01",
