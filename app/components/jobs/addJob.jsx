@@ -6,8 +6,10 @@ import { useState } from "react";
 import ConfirmationPrompt from "./edit/confirmation";
 import axios from "axios";
 import { v4 as uuvidv4 } from "uuid";
+import { useSignedInUser } from "../UserContext";
 
 export default function JobForm({isEdit, close}){
+  const user = useSignedInUser();
   const [showPrompt, setPrompt] = useState(false);
   const employmentOptions =[{value: "0", label: "Part-Time"},{value: "1", label: "Full-time"}, {value: "2", label: "Temporary"}, {value: "3", label: "Freelance"}];
   const locationOptions =[{value: "0", label: "Onsite"},{value: "1", label: "Remote"}, {value: "2", label: "Hybrid"}];
@@ -50,7 +52,7 @@ export default function JobForm({isEdit, close}){
       apply_link: formData.apply_link,
       details: formData.details,
       requirements: formData.job_requirements,
-      user_id: "05a4762d-29ef-4543-824b-9d16f77c6946",
+      user_id: user?.state?.user.id,
     };
     console.log(formData.job_requirements);
     console.log(payload.requirments);
