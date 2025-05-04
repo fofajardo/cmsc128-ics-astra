@@ -1,11 +1,62 @@
-const fetchUsers = async (supabase, page = 1, limit = 10) => {
+const fetchUsers = async (supabase, page = 1, limit = 10, isRecent = false, isAlumni = false) => {
   const startIndex = (page - 1) * limit;
   const endIndex = startIndex + Number(limit) - 1;
 
-  return await supabase
+  let query = supabase
     .from("users")
-    .select("*")
-    .range(startIndex, endIndex);
+    .select("*, alumni_profiles(*)") // we always need alumni_profiles if we're filtering by it
+    .order("created_at", { ascending: false });
+
+  // Apply role filter for alumni
+  if (isAlumni) {
+    query = query.eq("role", "alumnus");
+  }
+
+  if (isRecent) {
+    const boundDate = new Date();
+    boundDate.setDate(boundDate.getDate() - 365);
+    query = query.gte("created_at", boundDate.toISOString());
+  }
+
+  const { data, error } = await query;
+
+  if (error) return { error };
+
+  let filteredData = data;
+
+  // Process alumni_profiles if necessary
+  if ((isAlumni) && Array.isArray(filteredData)) {
+    filteredData = filteredData.map((user) => {
+      if (user.alumni_profiles && user.alumni_profiles.length > 0) {
+        const sortedProfiles = [...user.alumni_profiles].sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at)
+        );
+        user.alumni_profiles = sortedProfiles[0]; // Keep only the latest one
+      } else {
+        user.alumni_profiles = null;
+      }
+      return user;
+    });
+  }
+
+  // Apply pagination last, since we might have filtered in JS
+  const paginatedData = filteredData.slice(startIndex, endIndex + 1);
+
+  return { data: paginatedData };
+};
+
+const fetchInactiveAlumni = async (supabase, page = 1, limit = 10) => {
+  const startIndex = (page - 1) * limit;
+  const endIndex = startIndex + Number(limit) - 1;
+
+  const { data, error } = await supabase
+    .from('inactive_alumni_view')
+    .select('*')
+    .range(startIndex, endIndex + 1);
+
+  if (error) return { error };
+
+  return { data };
 };
 
 const fetchUserById = async (supabase, userId) => {
@@ -53,6 +104,7 @@ const hardDeleteUser = async (supabase, userId) => {
 
 const usersService = {
   fetchUsers,
+  fetchInactiveAlumni,
   fetchUserById,
   checkExistingUser,
   insertUser,

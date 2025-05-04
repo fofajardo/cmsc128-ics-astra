@@ -8,6 +8,7 @@ const usersRouter = () => {
   router.use(RequireAuthenticated); // Applies to all routes below
 
   router.get("/", usersController.getUsers);
+  router.get("/inactive-alumni", usersController.getInactiveAlumni);
   router.get("/:userId", usersController.getUserById);
   router.post("/", usersController.createUser);
   router.put("/:userId", usersController.updateUser);
