@@ -15,6 +15,7 @@ function buildUserContext() {
   const [ability, setAbility] = useState(null);
 
   const [authUser, setAuthUser] = useState(null);
+  const [isGuest, setIsGuest] = useState(false);
   const [isUnlinked, setIsUnlinked] = useState(false);
   const [isAlumnus, setIsAlumnus] = useState(false);
   const [isModerator, setIsModerator] = useState(false);
@@ -28,6 +29,7 @@ function buildUserContext() {
       profile,
       rules,
       ability,
+      isGuest,
       isUnlinked,
       isAlumnus,
       isModerator,
@@ -40,6 +42,7 @@ function buildUserContext() {
       setProfile,
       setRules,
       setAbility,
+      setIsGuest,
       setIsUnlinked,
       setIsAlumnus,
       setIsModerator,
@@ -78,6 +81,46 @@ function SignedInUserProvider({children}) {
   );
 }
 
+function updateRoleProperties(aUser, aContext) {
+  switch (aUser?.role) {
+  case RoleName.UNLINKED:
+    aContext.actions.setIsGuest(false);
+    aContext.actions.setIsUnlinked(true);
+    aContext.actions.setIsAlumnus(false);
+    aContext.actions.setIsModerator(false);
+    aContext.actions.setIsAdmin(false);
+    break;
+  case RoleName.ALUMNUS:
+    aContext.actions.setIsGuest(false);
+    aContext.actions.setIsUnlinked(false);
+    aContext.actions.setIsAlumnus(true);
+    aContext.actions.setIsModerator(false);
+    aContext.actions.setIsAdmin(false);
+    break;
+  case RoleName.MODERATOR:
+    aContext.actions.setIsGuest(false);
+    aContext.actions.setIsUnlinked(false);
+    aContext.actions.setIsAlumnus(false);
+    aContext.actions.setIsModerator(true);
+    aContext.actions.setIsAdmin(false);
+    break;
+  case RoleName.ADMIN:
+    aContext.actions.setIsGuest(false);
+    aContext.actions.setIsUnlinked(false);
+    aContext.actions.setIsAlumnus(false);
+    aContext.actions.setIsModerator(false);
+    aContext.actions.setIsAdmin(true);
+    break;
+  default:
+    aContext.actions.setIsGuest(true);
+    aContext.actions.setIsUnlinked(false);
+    aContext.actions.setIsAlumnus(false);
+    aContext.actions.setIsModerator(false);
+    aContext.actions.setIsAdmin(false);
+    break;
+  }
+}
+
 function fetchData(aUser, aContext) {
   if (aUser === null || aUser === undefined || aUser === "") {
     aContext.actions.setUser(null);
@@ -98,20 +141,7 @@ function fetchData(aUser, aContext) {
     }).catch(function (e) {
       // Ignore missing profile.
     });
-    switch (aUser.role) {
-    case RoleName.UNLINKED:
-      aContext.actions.setIsUnlinked(true);
-      break;
-    case RoleName.ALUMNUS:
-      aContext.actions.setIsAlumnus(true);
-      break;
-    case RoleName.MODERATOR:
-      aContext.actions.setIsModerator(true);
-      break;
-    case RoleName.ADMIN:
-      aContext.actions.setIsAdmin(true);
-      break;
-    }
+    updateRoleProperties(aUser, aContext);
   }
   if (aUser.scopes) {
     const ability = createMongoAbility(aUser.scopes);
