@@ -8,11 +8,10 @@ function Slideshow(){
   const heroImages =
     ["/showcase1.jpg",
       "/showcase2.jpg",
-      "/showcase3.jpg",
-      "/showcase4.jpg"
+      "/showcase3.jpg"
     ];
 
-  const delay = 2000;
+  const delay = 5000;
 
   const [index,setIndex] = React.useState(0);
 
@@ -29,7 +28,7 @@ function Slideshow(){
   }, [index]);
 
   const FadeProperties = {
-    duration: 5000,
+    duration: 4000,
     transitionDuration: 800,
     infinity: true,
     arrows: false
@@ -46,10 +45,9 @@ function Slideshow(){
 
               <div style = {{width: "100%", position: "absolute" ,
                 bottom: 0, left: 0, paddingBottom:"50px", paddingLeft: "50px",
-                paddingTop: "30px", backdropFilter: "blur(2px)",
+                paddingTop: "30px",
                 background:"linear-gradient(transparent,rgba(14, 108, 243, 0.35))"}}>
 
-                <h3 className ="text-astrawhite" style = {{fontSize: "18px", position: "absolute", top: 30}}>Be a part of the Komsayverse with</h3>
                 <div className = "app-title">
                   <div className="float-left">
                     <h1 className ="text-astrawhite" style = {{fontSize: "130px", fontWeight: "bold"}}>ICS-</h1>

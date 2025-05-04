@@ -129,7 +129,7 @@ body {
   .animate-fade-in {
     animation: fadeIn 0.5s ease-in-out;
   }
-  
+
   .animate-slide-up {
     animation: slideUp 0.5s ease-in-out;
   }
@@ -195,8 +195,8 @@ body {
     display: none;
   }
   .scrollbar-hide {
-    -ms-overflow-style: none; 
-    scrollbar-width: none; 
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 
 }
@@ -271,7 +271,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   --sidebar-border: oklch(0.92 0.004 286.32);
   --sidebar-ring: oklch(0.623 0.214 259.815);
 
-  
+
 
 
 }

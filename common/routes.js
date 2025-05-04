@@ -128,6 +128,50 @@ class TestRoutes extends BaseRoutes {
   }
 }
 
+class FrontEndRoutes {
+  constructor() {
+    this.buildRoutes();
+  }
+
+  /**
+   * Initializes and constructs route mappings for various front-end pages.
+   * Each key represents a logical route name, and the value is the actual URL path.
+   * This helps in centralizing and easily managing front-end navigation URLs.
+   *
+   * @return {void} This method does not return a value; it populates dynamically
+   * constructed route paths as properties on the instance.
+   */
+  buildRoutes() {
+    this.home = "/";
+    this.about = "/about";
+    this.events = "/events";
+    this.projects = "/projects";
+    this.projects_about = "/projects/about/${id}"
+    this.projects_donate = "/projects/donate/${id}"
+    this.projects_request_goal = "projects/request/goal"
+    this.projects_request_details = "projects/request/details"
+    this.projects_request_photo = "projects/request/photo"
+    this.projects_request_preview = "projects/request/preview"
+    this.search = "/search";
+    this.announcements = "/whats-up";
+    this.announcements_view = "/whats-up/article/${id}";
+    this.request_info = "/whats-up/request-info";
+    this.jobs = "/jobs";
+    this.jobs_view = "/jobs/${id}/view";
+    this.jobs_edit = "/jobs/${id}/edit";
+    this.settings = "/settings";
+    this.check = "/check";
+    this.admin_dashboard = "/admin/dashboard";
+    this.admin_alumni_search = "/admin/alumni/search";
+    this.admin_alumni_manage_access = "/admin/alumni/manage-access";
+    this.admin_events = "/admin/events";
+    this.admin_jobs = "/admin/jobs";
+    this.admin_projects = "admin/projects";
+    this.admin_announcements = "/admin/whats-up";
+    this.admin_organizations = "/admin/organizations";
+  }
+}
+
 export const serverRoutes = new ServerRoutes();
 export const clientRoutes = new ClientRoutes();
 export const testRoutes = new TestRoutes();

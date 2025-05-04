@@ -172,7 +172,9 @@ export default function HeaderUser() {
     { name: "About", href: "/about" },
     { name: "Events", href: "/events" },
     { name: "Projects", href: "/projects" },
+    { name: "Search Alumni", href: "/search" },
     { name: "What’s Up?", href: "/whats-up" },
+    { name: "Jobs", href: "/jobs" },
   ];
 
   // Handle scrolling effect for navbar
