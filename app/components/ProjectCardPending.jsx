@@ -1,7 +1,8 @@
 "use client";
 import { GraduationCap, HeartHandshake } from "lucide-react";
 import Link from "next/link";
-import { formatCurrency } from "@/utils/format";
+import { formatCurrency, capitalizeName } from "@/utils/format";
+import { PROJECT_TYPE } from "@/constants/projectConsts";
 import axios from "axios";
 
 export default function ProjectCardPending({
@@ -54,12 +55,12 @@ export default function ProjectCardPending({
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
           <div className="absolute top-2 right-2 bg-astradark text-astrawhite px-2 py-1 rounded-lg text-xs font-s flex items-center gap-1">
-            {type === "Scholarship" ? (
+            {type === PROJECT_TYPE.SCHOLARSHIP ? (
               <GraduationCap className="w-3 h-3" />
             ) : (
               <HeartHandshake className="w-3 h-3" />
             )}
-            {type}
+            {capitalizeName(type)}
           </div>
         </div>
 

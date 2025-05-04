@@ -1,7 +1,8 @@
 "use client";
 import { GraduationCap, HeartHandshake, Users, Calendar } from "lucide-react";
 import Link from "next/link";
-import { formatCurrency } from "@/utils/format";
+import { formatCurrency, formatDate, capitalizeName } from "@/utils/format";
+import { PROJECT_TYPE } from "@/constants/projectConsts";
 
 export default function ProjectCardActive({
   id,
@@ -19,13 +20,6 @@ export default function ProjectCardActive({
   const goalAmount = parseInt(goal.replace(/[^0-9]/g, ""));
   const raisedAmount = parseInt(raised.replace(/[^0-9]/g, ""));
   const progressPercent = Math.min(Math.round((raisedAmount / goalAmount) * 100), 100);
-
-  //end date
-  const formattedDate = new Date(endDate).toLocaleDateString("en-PH", {
-    year: "numeric",
-    month: "short",
-    day: "numeric"
-  });
 
   //determine progress bar color based on percentage
   const getProgressColor = () => {
@@ -46,12 +40,12 @@ export default function ProjectCardActive({
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
           <div className="absolute top-2 right-2 bg-astradark text-astrawhite px-2 py-1 rounded-lg text-xs font-s flex items-center gap-1">
-            {type === "Scholarship" ? (
+            {type === PROJECT_TYPE.SCHOLARSHIP ? (
               <GraduationCap className="w-3 h-3" />
             ) : (
               <HeartHandshake className="w-3 h-3" />
             )}
-            {type}
+            {capitalizeName(type)}
           </div>
         </div>
 
@@ -78,7 +72,7 @@ export default function ProjectCardActive({
               </div>
               <div className="flex items-center gap-1">
                 <Calendar className="w-3 h-3" />
-                <span>Until {formattedDate}</span>
+                <span>Until {formatDate(endDate, "long")}</span>
               </div>
             </div>
           </div>
