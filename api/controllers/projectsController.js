@@ -278,7 +278,7 @@ const createProject = async (req, res) => {
       "title",
       "details",
       // "tags",
-      "project_id",
+      // "project_id",
       // "project_status",
       "due_date",
       // "date_completed",
@@ -318,7 +318,7 @@ const createProject = async (req, res) => {
             (date_completed !== undefined && date_completed !== null && !isValidDate(date_completed)) ||
             typeof goal_amount !== "number" ||
             typeof donation_link !== "string" ||
-            ![PROJECT_TYPE.DONATION_DRIVE, PROJECT_TYPE.FUNDRAISING, PROJECT_TYPE.SCHOLARSHIP].includes(type.toLowerCase()())
+            ![PROJECT_TYPE.DONATION_DRIVE, PROJECT_TYPE.FUNDRAISING, PROJECT_TYPE.SCHOLARSHIP].includes(type.toString().toLowerCase())
     ) {
       return res.status(httpStatus.BAD_REQUEST).json({
         status: "FAILED",
@@ -381,7 +381,7 @@ const createProject = async (req, res) => {
       date_completed,
       goal_amount,
       donation_link: clean_donation_link,
-      type: type.toLowerCase(),
+      type: type.toString().toLowerCase(),
     });
 
     if (projectError) {
