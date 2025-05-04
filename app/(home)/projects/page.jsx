@@ -6,7 +6,7 @@ import HeaderUser from "../../components/HeaderUser.jsx";
 import ProjectCard from "../../components/projects/ProjectCard";
 import Link from "next/link";
 import { Icon } from "@iconify/react";
-import { Filter } from "lucide-react";
+import { Filter, User } from "lucide-react";
 import axios from "axios";
 import { PROJECT_STATUS, PROJECT_STATUS_LABELS, PROJECT_TYPE } from "@/constants/projectConsts.js";
 import { capitalizeName } from "@/utils/format.jsx";
