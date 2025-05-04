@@ -8,6 +8,7 @@ const statisticsRouter = () => {
   router.get("/active-jobs", statisticsController.getActiveJobsStats);
   router.get("/active-events", statisticsController.getActiveEventsStats);
   router.get("/funds-raised", statisticsController.getFundsRaisedStats);
+  router.get("/upcoming-events", statisticsController.getUpcomingEvents);
 
   return router;
 }

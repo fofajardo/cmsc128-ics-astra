@@ -55,8 +55,6 @@ const getInactiveAlumni = async (req, res) => {
       });
     }
 
-    console.log("Controller", data);
-
     return res.status(httpStatus.OK).json({
       status: "OK",
       list: data || [],

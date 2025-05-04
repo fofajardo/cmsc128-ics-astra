@@ -50,11 +50,24 @@ const fetchFundsRaisedStats = async (supabase) => {
   return data;
 }
 
+const fetchUpcomingEvents = async (supabase) => {
+  const { data, error } = await supabase
+    .from("upcoming_events")
+    .select("*");
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+}
+
 const statisticsService = {
   fetchActiveAlumniStats,
   fetchActiveJobsStats,
   fetchActiveEventsStats,
-  fetchFundsRaisedStats
+  fetchFundsRaisedStats,
+  fetchUpcomingEvents
 };
 
 export default statisticsService;

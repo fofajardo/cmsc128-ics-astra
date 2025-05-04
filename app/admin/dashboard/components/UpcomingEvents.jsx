@@ -1,7 +1,8 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import {Calendar} from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { Calendar } from "lucide-react";
+import axios from "axios";
 
 const mockData = [
   { id: 21, title: "Innovation Showcase", location: "Grand Hall", date: "2025-08-2" },
@@ -36,7 +37,7 @@ function EventItem({ event, router }) {
   return (
     <div className="flex items-center border-b py-2 min-h-[72px]">
       <div className="mr-3 bg-astraprimary p-2 rounded-xl">
-        <Calendar className="h-5 w-5 text-astrawhite" strokeWidth={2}/>
+        <Calendar className="h-5 w-5 text-astrawhite" strokeWidth={2} />
       </div>
       <div className="flex-1">
         <p className="font-r line-clamp-1">{event?.title}</p>
@@ -65,9 +66,8 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
     <button
       key={page}
       onClick={() => onPageChange(page)}
-      className={`px-2 md:px-4 py-2 rounded-sm md:rounded-xl font-s ${
-        currentPage === page ? "bg-astraprimary text-astrawhite" : "bg-transparent text-astradarkgray hover:bg-astratintedwhite"
-      }`}
+      className={`px-2 md:px-4 py-2 rounded-sm md:rounded-xl font-s ${currentPage === page ? "bg-astraprimary text-astrawhite" : "bg-transparent text-astradarkgray hover:bg-astratintedwhite"
+        }`}
     >
       {page}
     </button>
@@ -125,10 +125,49 @@ export default function UpcomingEvents() {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const eventsPerPage = 5;
-  const totalPages = Math.ceil(mockData.length / eventsPerPage);
+
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
+
+  const totalPages = useMemo(
+    () => Math.ceil(upcomingEvents.length / eventsPerPage),
+    [upcomingEvents.length]
+  );
+
+  useEffect(() => {
+    const fetchUpcomingEvents = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/upcoming-events`,
+        );
+
+        if (response.data.status === "OK") {
+          const updatedUpcomingEvents = await Promise.all(
+            response.data.list.map(async (event) => {
+              const eventData = {
+                id: event.id,
+                title: event.title,
+                location: event.venue,
+                date: event.event_date
+              };
+
+              return eventData;
+            })
+          );
+
+          setUpcomingEvents(updatedUpcomingEvents);
+        } else {
+          console.error("Unexpected response:", response.data);
+        }
+      } catch (error) {
+        console.log("Failed to fetch upcoming events:", error);
+      }
+    };
+
+    fetchUpcomingEvents();
+  }, []);
 
   const startIndex = (currentPage - 1) * eventsPerPage;
-  const currentEvents = mockData.slice(startIndex, startIndex + eventsPerPage);
+  const currentEvents = upcomingEvents.slice(startIndex, startIndex + eventsPerPage);
   const displayEvents = Array(eventsPerPage).fill(null).map((_, index) => currentEvents[index] || null);
 
   return (

@@ -171,7 +171,7 @@ export default function ActivityOverview() {
 
   const [tabs, setTabs] = useState({
     "Recent Registrations": 0,
-    "Inactive Accounts": inactiveAccounts.length,
+    "Inactive Accounts": 0,
   });
 
   useEffect(() => {
@@ -181,7 +181,7 @@ export default function ActivityOverview() {
           `${process.env.NEXT_PUBLIC_API_URL}/v1/users?recent=true&alumni=true`,
         );
 
-        console.log(response.data);
+        // console.log(response.data);
 
         if (response.data.status === "OK") {
           const updatedRecentRegisters = await Promise.all(
@@ -209,6 +209,7 @@ export default function ActivityOverview() {
         console.error("Failed to fetch alumni:", error);
       }
     };
+
     const fetchInactiveAccounts = async () => {
       try {
         const response = await axios.get(
