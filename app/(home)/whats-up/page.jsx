@@ -52,13 +52,13 @@ export default function WhatsUpPage() {
                 details: news.content_data.details,
                 // Placeholder for image URL
                 imageUrl: news.content_data.image_url || "https://cdn.builder.io/api/v1/image/assets/7687333fb4bb4909a4eab75308bcf09b/950fa1cdac6430480b31ef36a44036380a994f87?placeholderIfAbsent=true"
-              }
+              };
               // TODO: FETCH IMAGE PROPERLY
 
               return newsData;
             })
 
-          )
+          );
           setNewsList(updatedNewsList);
           console.log("Updated news list:", updatedNewsList);
         }
@@ -185,7 +185,8 @@ function newsItemBuilder(item) {
         <p className="mt-3 text-base text-slate-500">{item.description}</p>
         <div className="mt-4">
           <button
-            onClick={() => router.push(`/whats-up/article/${item.id}`)} // Navigate to article page
+            // TODO: UNDEFINED ROUTER
+            // onClick={() => router.push(`/whats-up/article/${item.id}`)} // Navigate to article page
             className="px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-800"
           >
             Read more →

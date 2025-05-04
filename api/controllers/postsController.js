@@ -74,7 +74,7 @@ async function createPost ( areq, ares ) {
       "category",
       "file", // TODO: IMPLEMENT FILE ATTACHMENT
       "user_id"
-    ]
+    ];
 
     const providedFields = Object.keys(areq.body);
     const unexpectedFields = providedFields.filter(field => !allowedFields.includes(field));
@@ -91,7 +91,7 @@ async function createPost ( areq, ares ) {
       "details",
       "category",
       "user_id"
-    ]
+    ];
 
     const missingFields = requiredFields.filter(field => !areq.body[field]);
 
@@ -167,6 +167,9 @@ async function createPost ( areq, ares ) {
         message: "Post already exists"
       });
     }
+
+    // TODO: fetch user_id from active session
+    const user_id = areq.body.user_id;
 
     // insert into contents first
     if (!user_id) {
@@ -260,7 +263,7 @@ async function updatePost ( areq, ares ) {
 
     const {
       file
-    } = req.body
+    } = areq.body;
 
     const allowedFields = [
       "file"
@@ -273,7 +276,7 @@ async function updatePost ( areq, ares ) {
       });
     }
 
-    const providedFields = Object.keys(req.body);
+    const providedFields = Object.keys(areq.body);
     const unexpectedFields = providedFields.filter(field => !allowedFields.includes(field));
 
     if (unexpectedFields.length > 0) {

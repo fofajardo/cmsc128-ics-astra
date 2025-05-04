@@ -11,6 +11,6 @@ const postsRouter = () => {
   router.delete("/:postId", postsController.deletePost);
 
   return router;
-}
+};
 
 export default postsRouter;
