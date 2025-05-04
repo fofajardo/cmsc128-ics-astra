@@ -128,13 +128,21 @@ class ClientRoutes extends BaseRoutes {
  */
 class TestRoutes extends BaseRoutes {
   constructor() {
-    super(process.env.ICSA_API_URL + "/v1");
+    super();
+  }
+
+  get BASE_URL() {
+    return process.env.ICSA_API_URL + "/v1";
   }
 }
 
-class FrontEndRoutes {
+class FrontEndRoutes extends BaseRoutes {
   constructor() {
-    this.buildRoutes();
+    super();
+  }
+
+  get BASE_URL() {
+    return "";
   }
 
   /**
@@ -145,41 +153,70 @@ class FrontEndRoutes {
    * @return {void} This method does not return a value; it populates dynamically
    * constructed route paths as properties on the instance.
    */
-  buildRoutes() {
-    this.home = "/";
-    this.about = "/about";
-    this.events = "/events";
-    this.projects = "/projects";
-    this.projects_about = "/projects/about/${id}"
-    this.projects_donate = "/projects/donate/${id}"
-    this.projects_request_goal = "projects/request/goal"
-    this.projects_request_details = "projects/request/details"
-    this.projects_request_photo = "projects/request/photo"
-    this.projects_request_preview = "projects/request/preview"
-    this.search = "/search";
-    this.announcements = "/whats-up";
-    this.announcements_view = "/whats-up/article/${id}";
-    this.request_info = "/whats-up/request-info";
-    this.jobs = "/jobs";
-    this.jobs_view = "/jobs/${id}/view";
-    this.jobs_edit = "/jobs/${id}/edit";
-    this.settings = "/settings";
-    this.check = "/check";
-    this.admin_dashboard = "/admin/dashboard";
-    this.admin_alumni_search = "/admin/alumni/search";
-    this.admin_alumni_manage_access = "/admin/alumni/manage-access";
-    this.admin_events = "/admin/events";
-    this.admin_jobs = "/admin/jobs";
-    this.admin_projects = "admin/projects";
-    this.admin_announcements = "/admin/whats-up";
-    this.admin_organizations = "/admin/organizations";
+  buildEndpoints() {
+    this.auth = {
+      signUp: () => `${this.BASE_URL}/sign-up`,
+      signIn: () => `${this.BASE_URL}/sign-in`,
+      signOut: () => `${this.BASE_URL}/sign-out`
+    };
+
+    this.main = {
+      home: () => `${this.BASE_URL}/`,
+      about: () => `${this.BASE_URL}/about`,
+      search: () => `${this.BASE_URL}/search`,
+      settings: () => `${this.BASE_URL}/settings`,
+      check: () => `${this.BASE_URL}/check`
+    };
+
+    this.events = {
+      base: () => `${this.BASE_URL}/events`
+    };
+
+    this.projects = {
+      base: () => `${this.BASE_URL}/projects`,
+      about: (id) => `${this.BASE_URL}/projects/about/${id}`,
+      donate: (id) => `${this.BASE_URL}/projects/donate/${id}`,
+      request: {
+        goal: () => `${this.BASE_URL}/projects/request/goal`,
+        details: () => `${this.BASE_URL}/projects/request/details`,
+        photo: () => `${this.BASE_URL}/projects/request/photo`,
+        preview: () => `${this.BASE_URL}/projects/request/preview`
+      }
+    };
+
+    this.announcements = {
+      base: () => `${this.BASE_URL}/whats-up`,
+      view: (id) => `${this.BASE_URL}/whats-up/article/${id}`,
+      requestInfo: () => `${this.BASE_URL}/whats-up/request-info`
+    };
+
+    this.jobs = {
+      base: () => `${this.BASE_URL}/jobs`,
+      view: (id) => `${this.BASE_URL}/jobs/${id}/view`,
+      edit: (id) => `${this.BASE_URL}/jobs/${id}/edit`
+    };
+
+    this.admin = {
+      dashboard: () => `${this.BASE_URL}/admin/dashboard`,
+      alumni: {
+        search: () => `${this.BASE_URL}/admin/alumni/search`,
+        manageAccess: () => `${this.BASE_URL}/admin/alumni/manage-access`
+      },
+      events: () => `${this.BASE_URL}/admin/events`,
+      jobs: () => `${this.BASE_URL}/admin/jobs`,
+      projects: () => `${this.BASE_URL}/admin/projects`,
+      announcements: () => `${this.BASE_URL}/admin/whats-up`,
+      organizations: () => `${this.BASE_URL}/admin/organizations`
+    };
   }
 }
 
 export const serverRoutes = new ServerRoutes();
 export const clientRoutes = new ClientRoutes();
 export const testRoutes = new TestRoutes();
+export const feRoutes = new FrontEndRoutes();
 
 Object.freeze(serverRoutes);
 Object.freeze(clientRoutes);
 Object.freeze(testRoutes);
+Object.freeze(feRoutes);
