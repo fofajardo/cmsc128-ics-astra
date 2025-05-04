@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation"; // Import Next.js router
 import { HeroSection } from "./components/HeroSection";
 import { NewsItem } from "./components/NewsItem";
@@ -9,9 +9,14 @@ import { NewsletterArchive } from "./components/NewsletterArchive";
 import animations from "./styles/animations.module.css";
 import { FileText } from "lucide-react";
 import Link from "next/link";
+import axios from "axios";
 
 export default function WhatsUpPage() {
   const router = useRouter(); // Initialize router
+
+  const [loading, setLoading] = useState(true);
+  const [newsList, setNewsList] = useState([]);
+
 
   useEffect(() => {
     // Add staggered animation to news items
@@ -21,39 +26,51 @@ export default function WhatsUpPage() {
     });
   }, []);
 
-  // Sample news data for demonstration
-  const newsItems = [
-    {
-      id: 1,
-      title: "News Title 1",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.",
-      imageUrl: "https://cdn.builder.io/api/v1/image/assets/7687333fb4bb4909a4eab75308bcf09b/950fa1cdac6430480b31ef36a44036380a994f87?placeholderIfAbsent=true"
-    },
-    {
-      id: 2,
-      title: "News Title 2",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.",
-      imageUrl: "https://cdn.builder.io/api/v1/image/assets/7687333fb4bb4909a4eab75308bcf09b/950fa1cdac6430480b31ef36a44036380a994f87?placeholderIfAbsent=true"
-    },
-    {
-      id: 3,
-      title: "News Title 3",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.",
-      imageUrl: "https://cdn.builder.io/api/v1/image/assets/7687333fb4bb4909a4eab75308bcf09b/950fa1cdac6430480b31ef36a44036380a994f87?placeholderIfAbsent=true"
-    },
-    {
-      id: 4,
-      title: "News Title 4",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.",
-      imageUrl: "https://cdn.builder.io/api/v1/image/assets/7687333fb4bb4909a4eab75308bcf09b/950fa1cdac6430480b31ef36a44036380a994f87?placeholderIfAbsent=true"
-    },
-    {
-      id: 5,
-      title: "News Title 5",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.",
-      imageUrl: "https://cdn.builder.io/api/v1/image/assets/7687333fb4bb4909a4eab75308bcf09b/950fa1cdac6430480b31ef36a44036380a994f87?placeholderIfAbsent=true"
-    }
-  ];
+  useEffect(() => {
+    async function fetchNews() {
+      setLoading(true);
+
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/v1/announcements`,
+          {
+            params: {
+
+            }
+          }
+        );
+        if (response.data.status === "OK") {
+          console.log("Fetched news:", response.data);
+          const updatedNewsList = await Promise.all(
+            response.data.list.map(async (news) => {
+              const newsData = {
+                id: news.post_id,
+                category: news.category,
+                files: news.files,
+                title: news.content_data.title,
+                details: news.content_data.details,
+                // Placeholder for image URL
+                imageUrl: news.content_data.image_url || "https://cdn.builder.io/api/v1/image/assets/7687333fb4bb4909a4eab75308bcf09b/950fa1cdac6430480b31ef36a44036380a994f87?placeholderIfAbsent=true"
+              }
+              // TODO: FETCH IMAGE PROPERLY
+
+              return newsData;
+            })
+
+          )
+          setNewsList(updatedNewsList);
+          console.log("Updated news list:", updatedNewsList);
+        }
+
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching news:", error);
+      }
+    };
+
+    fetchNews();
+  }, []);
+
 
   return (
     <main className={animations.fadeSlideUp}>
@@ -75,36 +92,13 @@ export default function WhatsUpPage() {
           <div className="mt-12 w-full max-md:mt-8 max-md:max-w-full">
             {/* News items grid */}
             <div className="flex flex-col gap-8 max-md:gap-6">
-              {newsItems.map((item) => (
-                <div
-                  key={item.id}
-                  className={`news-item ${animations.staggered} flex flex-row gap-6 bg-white rounded-lg shadow-sm hover:shadow-xl hover:scale-102 transition-all duration-300 max-md:flex-col`}
-                >
-                  <div className="w-2/5 max-md:w-full">
-                    <img
-                      src={item.imageUrl}
-                      alt={`News thumbnail for ${item.title}`}
-                      className="object-cover w-full h-full rounded-l-lg max-md:rounded-t-lg max-md:rounded-b-none"
-                    />
-                  </div>
-                  <div className="w-3/5 p-6 flex flex-col justify-center max-md:w-full">
-                    <h3 className="text-2xl font-bold text-slate-900 max-md:text-xl">
-                      {item.title}
-                    </h3>
-                    <p className="mt-3 text-base text-slate-500">
-                      {item.description}
-                    </p>
-                    <div className="mt-4">
-                      <button
-                        onClick={() => router.push(`/whats-up/article/${item.id}`)} // Navigate to article page
-                        className="px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-800"
-                      >
-                        Read more →
-                      </button>
-                    </div>
-                  </div>
+              {loading ? (
+                <div className="flex items-center justify-center w-full h-64">
+                  <FileText className="animate-spin text-slate-500" size={48} />
                 </div>
-              ))}
+              ) : (
+                renderNewsItems(newsList)
+              )}
             </div>
           </div>
 
@@ -153,5 +147,53 @@ export default function WhatsUpPage() {
         }
       `}</style>
     </main>
+  );
+}
+
+function renderNewsItems(newsItems) {
+  return (
+    (newsItems.length > 0 ?
+      <div className="flex flex-col gap-8 max-md:gap-6">
+        {newsItems.map((item) => (
+          newsItemBuilder(item)
+        ))}
+      </div>
+      :
+        <div className="flex items-center justify-center w-full h-64">
+          No news available at the moment.
+        </div>
+    )
+  );
+
+}
+
+function newsItemBuilder(item) {
+  return (
+    <div
+      key={item.id}
+      className={`news-item ${animations.staggered} flex flex-row gap-6 bg-white rounded-lg shadow-sm hover:shadow-xl hover:scale-102 transition-all duration-300 max-md:flex-col`}
+    >
+      <div className="w-2/5 max-md:w-full">
+        <img
+          src={item.imageUrl}
+          alt={`News thumbnail for ${item.title}`}
+          className="object-cover w-full h-full rounded-l-lg max-md:rounded-t-lg max-md:rounded-b-none"
+        />
+      </div>
+      <div className="w-3/5 p-6 flex flex-col justify-center max-md:w-full">
+        <h3 className="text-2xl font-bold text-slate-900 max-md:text-xl">
+          {item.title}
+        </h3>
+        <p className="mt-3 text-base text-slate-500">{item.description}</p>
+        <div className="mt-4">
+          <button
+            onClick={() => router.push(`/whats-up/article/${item.id}`)} // Navigate to article page
+            className="px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-800"
+          >
+            Read more →
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
