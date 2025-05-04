@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import AdminStatCard from "@/components/AdminStatCard";
+import AdminTabs from "@/components/AdminTabs";
 import { BriefcaseBusiness } from "lucide-react";
 import { TabContext } from "@/components/TabContext";
 import { useRouter, usePathname } from "next/navigation";
@@ -12,6 +13,45 @@ export default function AdminAlumniLayout({ children }) {
     title: "Jobs Openings",
     search: "Search for a job post",
   });
+
+  const tabs = {
+      "All": 3,
+      "Reported": 0
+  };
+
+  const [currTab, setCurrTab] = useState("All");
+
+  const handleTabChange = (newTab) => {
+    setCurrTab(newTab);
+
+    setInfo((prev) => ({
+      ...prev,
+      title: `${newTab} Jobs`,
+    }));
+
+    // Reset Filters and Pagination
+    // Then refetch alumList
+
+  };
+
+  // main tab switcher for the list page
+  const handleGoToTab = (newTab) => {
+    setCurrTab(newTab);
+    setInfo((prev) => ({
+      ...prev,
+      title: `${newTab} Jobs`,
+    }));
+    router.push("/admin/jobs");
+  };
+
+  //if from profile page, go back and set tab
+  const dynamicTabClick = (tabName) => {
+    if (pathname === "/admin/alumni/manage-access"){
+      handleTabChange(tabName);
+    }else {
+      handleGoToTab(tabName);
+    }
+  };
 
   return (
     <>
@@ -39,6 +79,7 @@ export default function AdminAlumniLayout({ children }) {
       </div>
       {/* pass the value of currTab and info to the children */}
       <TabContext.Provider value={{info, setInfo }}>
+        <AdminTabs tabs ={tabs} currTab={currTab} handleTabChange={dynamicTabClick}/>
         {children}
       </TabContext.Provider>
     </>
