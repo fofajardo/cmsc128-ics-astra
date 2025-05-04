@@ -1,16 +1,11 @@
-import { MessageSquare, User, Send } from "lucide-react";
+"use client";
 import { useState } from "react";
+import { MessageSquare, User, Send } from "lucide-react";
 
-export default function MessagesModal({
-  isOpen,
-  onClose,
-  fundraiser,
-  onSendMessage
-}) {
+export default function MessagesModal({ fundraiser, onClose, onSendMessage }) {
   const [message, setMessage] = useState("");
 
-  if (!isOpen || !fundraiser) return null;
-
+  // Format timestamp to readable date and time
   const formatTimestamp = (timestamp) => {
     const date = new Date(timestamp);
     return date.toLocaleString('en-US', {
@@ -23,7 +18,7 @@ export default function MessagesModal({
     });
   };
 
-  const handleSend = () => {
+  const handleSendMessage = () => {
     if (!message.trim()) return;
     onSendMessage(message);
     setMessage("");
@@ -141,12 +136,12 @@ export default function MessagesModal({
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
-                  handleSend();
+                  handleSendMessage();
                 }
               }}
             />
             <button
-              onClick={handleSend}
+              onClick={handleSendMessage}
               disabled={!message.trim()}
               className={`py-2 px-4 rounded-lg ${
                 message.trim()

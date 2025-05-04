@@ -1,12 +1,79 @@
-import { Edit3 } from "lucide-react";
+"use client";
+import { useState } from "react";
+import { Edit3, X } from "lucide-react";
 
-export default function EditModal({
-  isOpen,
-  onClose,
-  fundraiser,
-  onSubmit
-}) {
-  if (!isOpen || !fundraiser) return null;
+export default function EditModal({ fundraiser, onClose, onSubmit }) {
+  const [editedData, setEditedData] = useState({
+    title: fundraiser.title,
+    description: fundraiser.description,
+    goal: fundraiser.goal.replace(/[^\d]/g, ""),
+    endDate: new Date(fundraiser.endDate).toISOString().split('T')[0],
+    reason: "",
+  });
+
+  const [errors, setErrors] = useState({});
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setEditedData({
+      ...editedData,
+      [name]: value,
+    });
+
+    // Clear the error for this field when user makes changes
+    if (errors[name]) {
+      setErrors({
+        ...errors,
+        [name]: null,
+      });
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!editedData.title.trim()) {
+      newErrors.title = "Title is required";
+    }
+
+    if (!editedData.description.trim()) {
+      newErrors.description = "Description is required";
+    }
+
+    if (!editedData.goal) {
+      newErrors.goal = "Goal amount is required";
+    } else if (isNaN(editedData.goal) || parseInt(editedData.goal) <= 0) {
+      newErrors.goal = "Please enter a valid amount";
+    }
+
+    if (!editedData.endDate) {
+      newErrors.endDate = "End date is required";
+    } else {
+      const selectedDate = new Date(editedData.endDate);
+      const today = new Date();
+      if (selectedDate <= today) {
+        newErrors.endDate = "End date must be in the future";
+      }
+    }
+
+    if (!editedData.reason.trim()) {
+      newErrors.reason = "Please provide a reason for the edit request";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (validateForm()) {
+      onSubmit({
+        ...editedData,
+        goal: `$${parseInt(editedData.goal).toLocaleString()}`,
+      });
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn">
@@ -19,20 +86,7 @@ export default function EditModal({
               className="text-white/80 hover:text-white transition-colors"
               aria-label="Close modal"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
+              <X className="w-6 h-6" />
             </button>
           </div>
 
@@ -42,10 +96,10 @@ export default function EditModal({
             </div>
             <div>
               <h3 className="text-xl text-white mb-1 font-bold">
-                Request Fundraiser Edit
+                Request Edit
               </h3>
               <p className="text-white/70 text-sm">
-                {fundraiser.title}
+                Submit changes for review and approval
               </p>
             </div>
           </div>
@@ -53,116 +107,128 @@ export default function EditModal({
 
         {/* Body */}
         <div className="p-6">
-          <div className="mb-6">
-            <p className="text-sm text-astradarkgray mb-6">
-              To request changes to your approved fundraiser, please select the sections
-              you'd like to modify and provide details about the requested changes.
-              An administrator will review your request.
-            </p>
-
+          <form onSubmit={handleSubmit}>
             <div className="space-y-4">
               <div>
-                <label className="flex items-center gap-2 mb-2">
-                  <input type="checkbox" className="rounded text-astraprimary" />
-                  <span className="font-medium">Title</span>
+                <label className="block text-sm font-medium text-astradarkgray mb-1">
+                  Fundraiser Title
                 </label>
                 <input
                   type="text"
-                  className="w-full border border-astragray/30 rounded-lg p-3 focus:ring-2 focus:ring-astraprimary/30 focus:border-astraprimary transition-all bg-white"
-                  placeholder="New title"
-                  defaultValue={fundraiser.title}
+                  name="title"
+                  value={editedData.title}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-2 rounded-lg border ${
+                    errors.title
+                      ? "border-red-400 bg-red-50"
+                      : "border-astragray/30 focus:border-astraprimary"
+                  } focus:ring-2 focus:ring-astraprimary/30 transition-all`}
                 />
+                {errors.title && (
+                  <p className="text-red-500 text-xs mt-1">{errors.title}</p>
+                )}
               </div>
 
               <div>
-                <label className="flex items-center gap-2 mb-2">
-                  <input type="checkbox" className="rounded text-astraprimary" />
-                  <span className="font-medium">Description</span>
+                <label className="block text-sm font-medium text-astradarkgray mb-1">
+                  Description
                 </label>
                 <textarea
-                  className="w-full border border-astragray/30 rounded-lg p-3 min-h-24 focus:ring-2 focus:ring-astraprimary/30 focus:border-astraprimary transition-all bg-white"
-                  placeholder="New description"
-                  defaultValue={fundraiser.description}
+                  name="description"
+                  value={editedData.description}
+                  onChange={handleChange}
+                  rows="4"
+                  className={`w-full px-4 py-2 rounded-lg border ${
+                    errors.description
+                      ? "border-red-400 bg-red-50"
+                      : "border-astragray/30 focus:border-astraprimary"
+                  } focus:ring-2 focus:ring-astraprimary/30 transition-all resize-none`}
                 ></textarea>
+                {errors.description && (
+                  <p className="text-red-500 text-xs mt-1">{errors.description}</p>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-astradarkgray mb-1">
+                    Goal Amount ($)
+                  </label>
+                  <input
+                    type="number"
+                    name="goal"
+                    value={editedData.goal}
+                    onChange={handleChange}
+                    className={`w-full px-4 py-2 rounded-lg border ${
+                      errors.goal
+                        ? "border-red-400 bg-red-50"
+                        : "border-astragray/30 focus:border-astraprimary"
+                    } focus:ring-2 focus:ring-astraprimary/30 transition-all`}
+                  />
+                  {errors.goal && (
+                    <p className="text-red-500 text-xs mt-1">{errors.goal}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-astradarkgray mb-1">
+                    End Date
+                  </label>
+                  <input
+                    type="date"
+                    name="endDate"
+                    value={editedData.endDate}
+                    onChange={handleChange}
+                    className={`w-full px-4 py-2 rounded-lg border ${
+                      errors.endDate
+                        ? "border-red-400 bg-red-50"
+                        : "border-astragray/30 focus:border-astraprimary"
+                    } focus:ring-2 focus:ring-astraprimary/30 transition-all`}
+                  />
+                  {errors.endDate && (
+                    <p className="text-red-500 text-xs mt-1">{errors.endDate}</p>
+                  )}
+                </div>
               </div>
 
               <div>
-                <label className="flex items-center gap-2 mb-2">
-                  <input type="checkbox" className="rounded text-astraprimary" />
-                  <span className="font-medium">End Date</span>
-                </label>
-                <input
-                  type="date"
-                  className="w-full border border-astragray/30 rounded-lg p-3 focus:ring-2 focus:ring-astraprimary/30 focus:border-astraprimary transition-all bg-white"
-                  defaultValue={fundraiser.endDate}
-                />
-              </div>
-
-              <div>
-                <label className="flex items-center gap-2 mb-2">
-                  <input type="checkbox" className="rounded text-astraprimary" />
-                  <span className="font-medium">Other Changes</span>
+                <label className="block text-sm font-medium text-astradarkgray mb-1">
+                  Reason for Edit <span className="text-red-500">*</span>
                 </label>
                 <textarea
-                  className="w-full border border-astragray/30 rounded-lg p-3 min-h-24 focus:ring-2 focus:ring-astraprimary/30 focus:border-astraprimary transition-all bg-white"
-                  placeholder="Describe any other changes you'd like to make"
+                  name="reason"
+                  value={editedData.reason}
+                  onChange={handleChange}
+                  rows="3"
+                  placeholder="Please explain why you're requesting these changes..."
+                  className={`w-full px-4 py-2 rounded-lg border ${
+                    errors.reason
+                      ? "border-red-400 bg-red-50"
+                      : "border-astragray/30 focus:border-astraprimary"
+                  } focus:ring-2 focus:ring-astraprimary/30 transition-all resize-none`}
                 ></textarea>
+                {errors.reason && (
+                  <p className="text-red-500 text-xs mt-1">{errors.reason}</p>
+                )}
+              </div>
+
+              <div className="border-t border-astragray/20 pt-4 mt-4 flex justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="px-4 py-2 rounded-lg text-astradarkgray border border-astragray/30 hover:bg-astragray/10 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded-lg bg-astraprimary text-white hover:bg-astraprimary/90 transition-colors"
+                >
+                  Submit Edit Request
+                </button>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="p-6 bg-astralightgray/40 border-t border-astragray/10 flex justify-between items-center">
-          <div className="text-sm text-astradarkgray">
-            <div className="flex items-center space-x-1">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-astraprimary"
-              >
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="16" x2="12" y2="12"></line>
-                <line x1="12" y1="8" x2="12.01" y2="8"></line>
-              </svg>
-              <span>Your request will be reviewed within 1-2 business days</span>
-            </div>
-          </div>
-          <div className="flex space-x-3">
-            <button
-              onClick={onClose}
-              className="px-5 py-2 text-astradarkgray border border-astragray/30 rounded-lg hover:bg-astragray/10 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={onSubmit}
-              className="px-5 py-2 bg-gradient-to-r from-astraprimary to-astrasecondary text-white rounded-lg shadow-md hover:brightness-105 transition-all flex items-center space-x-2"
-            >
-              <span>Submit Request</span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-              </svg>
-            </button>
-          </div>
+          </form>
         </div>
       </div>
     </div>
