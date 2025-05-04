@@ -4,6 +4,7 @@ import { GraduationCap, HeartHandshake, Users, Calendar } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { formatCurrency, formatDate, capitalizeName } from "@/utils/format";
+import { PROJECT_TYPE } from "@/constants/projectConsts";
 
 export default function ProjectCard({
   id,
@@ -81,7 +82,7 @@ export default function ProjectCard({
           height={200}
         />
         <div className="absolute top-2 right-2 bg-astradark text-astrawhite px-2 py-1 rounded-lg text-xs font-s flex items-center gap-1">
-          {type === "Scholarship" ? (
+          {type === PROJECT_TYPE.SCHOLARSHIP ? (
             <GraduationCap className="w-3 h-3" />
           ) : (
             <HeartHandshake className="w-3 h-3" />

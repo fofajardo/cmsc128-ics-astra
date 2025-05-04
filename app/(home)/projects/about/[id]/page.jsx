@@ -18,7 +18,8 @@ import {
 } from "lucide-react";
 import ToastNotification from "@/components/ToastNotification";
 import axios from "axios";
-import { formatCurrency, formatDate } from "@/utils/format";
+import { formatCurrency, formatDate, capitalizeName } from "@/utils/format";
+import { PROJECT_TYPE } from "@/constants/projectConsts";
 
 
 export default function ProjectDetails({ params }) {
@@ -65,7 +66,7 @@ export default function ProjectDetails({ params }) {
           if (donationData.status === "OK") {
             formattedDonations = donationData.donations.map(donation => ({
               id: donation.id,
-              donor: donation.user_id,
+              donor: donation.donor,
               amount: donation.amount,
               date: donation.donation_date,
             }));
@@ -79,7 +80,7 @@ export default function ProjectDetails({ params }) {
             type: projectData.list.projectData.type,
             image: null,
             urlLink: projectData.list.projectData.donation_link,
-            status: 0,  // TODO: Clarify status
+            status: projectData.list.projectData.project_status,  // TODO: Clarify status
             description: projectData.list.projectData.details,
             longDescription: projectData.list.projectData.details,
             goal: projectData.list.projectData.goal_amount.toString(),
@@ -89,7 +90,7 @@ export default function ProjectDetails({ params }) {
             organizer: {
               name: projectData.list.requesterData.full_name,
               position: projectData.list.requesterData.role || "NA",
-              email: "NA",
+              email: projectData.list.requesterData.email,
               phone: "NA",
             },
             // submissionDate: projectData.list.date_requested,
@@ -99,7 +100,7 @@ export default function ProjectDetails({ params }) {
             transactions: formattedDonations,
             topDonator: formattedDonations.reduce((max, curr) => curr.amount > max.amount ? curr : max),
             recentDonator: formattedDonations.reduce((latest, curr) => new Date(curr.date) > new Date(latest.date) ? curr : latest ),
-            firstDonator: {}, // TODO: Get first donator
+            firstDonator: [...formattedDonations].sort((a, b) => new Date(a.donation_date) - new Date(b.donation_date))[0],
           });
 
           // fetch photo
@@ -157,22 +158,22 @@ export default function ProjectDetails({ params }) {
                 </h1>
                 <span
                   className={`${
-                    projectData?.status === 0 ? "bg-green-500" : "bg-red-500"
+                    projectData?.status !== 2 ? "bg-green-500" : "bg-red-500"
                   } text-astrawhite px-3 py-1 rounded-lg font-semibold`}
                 >
-                  {projectData?.status === 0 ? "Active" : "Inactive"}
+                  {projectData?.status !== 2 ? "Active" : "Inactive"}
                 </span>
               </div>
             </div>
 
             <div className="flex flex-wrap items-center mt-2 gap-4">
               <div className="bg-astrawhite text-astraprimary px-3 py-1 rounded-lg text-sm flex items-center gap-1 shadow border border-gray-200">
-                {projectData?.type === "Scholarship" ? (
+                {projectData?.type === PROJECT_TYPE.SCHOLARSHIP ? (
                   <GraduationCap className="w-4 h-4" />
                 ) : (
                   <HeartHandshake className="w-4 h-4" />
                 )}
-                {projectData?.type}
+                {projectData?.type ? capitalizeName(projectData.type) : projectData?.type}
               </div>
 
               <div className="bg-astrawhite text-astraprimary px-3 py-1 rounded-lg text-sm flex items-center gap-1 shadow border border-gray-200">
@@ -226,7 +227,7 @@ export default function ProjectDetails({ params }) {
                       {projectData?.organizer.name}
                     </p>
                     <p className="text-xs text-astradarkgray">
-                      {projectData?.organizer.position}
+                      {projectData?.organizer.position ? capitalizeName(projectData?.organizer.position) : projectData?.organizer.position}
                     </p>
                   </div>
                 </div>
@@ -244,10 +245,10 @@ export default function ProjectDetails({ params }) {
                 <p className="text-sm">{projectData?.organizer.email}</p>
               </div>
 
-              <div className="flex gap-3 items-center">
+              {/* <div className="flex gap-3 items-center">
                 <Phone className="w-5 h-5 text-astraprimary" />
                 <p className="text-sm">{projectData?.organizer.phone}</p>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
@@ -292,9 +293,9 @@ export default function ProjectDetails({ params }) {
                 <Share2 className="w-5 h-5" />
                 Share
               </button>
-              {projectData?.status === 0 && (
+              {projectData?.status !== 2 && !loading && (
                 <button
-                  onClick={() => router.push(`/projects/donate/${id}?title=${encodeURIComponent(projectData?.title)}`)}
+                  onClick={() => router.push(`/projects/donate/${projectData?.id}?title=${encodeURIComponent(projectData?.title)}`)}
                   className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-astraprimary text-white rounded-lg hover:bg-astraprimary/90 transition-colors font-medium"
                 >
                   <HeartHandshake className="w-5 h-5" />
@@ -316,9 +317,9 @@ export default function ProjectDetails({ params }) {
                   <span className="font-medium">Top Donator</span>
                 </div>
                 <div className="text-right">
-                  <p className="font-medium">{projectData?.topDonator.user_id}</p>
+                  <p className="font-medium">{projectData?.topDonator.donor}</p>
                   <p className="text-sm text-astradarkgray">
-                    {projectData?.topDonator.amount}
+                    {projectData?.topDonator?.amount ? formatCurrency(projectData.topDonator.amount) : 0}
                   </p>
                 </div>
               </div>
@@ -331,9 +332,9 @@ export default function ProjectDetails({ params }) {
                   <span className="font-medium">Recent Donator</span>
                 </div>
                 <div className="text-right">
-                  <p className="font-medium">{projectData?.recentDonator.user_id}</p>
+                  <p className="font-medium">{projectData?.recentDonator.donor}</p>
                   <p className="text-sm text-astradarkgray">
-                    {projectData?.recentDonator.amount}
+                    {projectData?.recentDonator?.amount ? formatCurrency(projectData.recentDonator.amount) : 0}
                   </p>
                 </div>
               </div>
@@ -346,9 +347,9 @@ export default function ProjectDetails({ params }) {
                   <span className="font-medium">First Donator</span>
                 </div>
                 <div className="text-right">
-                  <p className="font-medium">{projectData?.firstDonator.user_id}</p>
+                  <p className="font-medium">{projectData?.firstDonator.donor}</p>
                   <p className="text-sm text-astradarkgray">
-                    {projectData?.firstDonator.amount}
+                    {projectData?.firstDonator?.amount ? formatCurrency(projectData.firstDonator.amount) : 0}
                   </p>
                 </div>
               </div>
