@@ -337,7 +337,11 @@ const getProjectRequestById = async (req, res) => {
 
 
     let full_name;
-    if (alumError) {
+    if (userData.role === "moderator") {    // TODO: Clarify if moderator/admin users will have profiles (and names)
+      full_name = "Moderator";
+    } else if (userData.role === "admin") {
+      full_name = "Admin";
+    } else if (alumError) {
       full_name = "Deleted user";
     } else {
       full_name = [alumData.first_name, alumData.middle_name, alumData.last_name]
