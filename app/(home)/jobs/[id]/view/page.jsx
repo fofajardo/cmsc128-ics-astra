@@ -86,7 +86,7 @@ export default function JobsPage() {
 
       <div className="h-11" />
 
-      {job && <SmallJobCard job={job} showApply={true} />}
+      {job && <SmallJobCard job={job} showApply={true} canReport={true}/>}
     </div>
   );
 }
