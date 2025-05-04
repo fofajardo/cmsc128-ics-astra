@@ -5,39 +5,63 @@ import { useSearchParams, useRouter } from "next/navigation";
 import ToastNotification from "@/components/ToastNotification";
 import BackButton from "@/components/events/IndividualEvent/BackButton";
 import { set } from "date-fns";
+import { capitalizeName, formatCurrency, formatDate } from "@/utils/format";
+import { PROJECT_TYPE } from "@/constants/projectConsts";
+import axios from "axios";
+import { useSignedInUser } from "@/components/UserContext";
 
-const FundraiserConfirmPage = () => {
+const ProjectConfirmPage = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [showToast, setShowToast] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [photoUrl, setPhotoUrl] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  //dummy data for the fundraiser preview
-  const dummyData = {
-    title: "Help Build a New Community Library",
-    description: "Our neighborhood has been without a library for over 5 years after the old one was damaged in a storm. We're raising funds to build a new community library that will serve as an educational hub for children and adults alike.\n\nThe funds will go toward purchasing books, computers, and essential furniture. Any additional funds will be used for educational programs and workshops.\n\nYour support means everything to our community. Together, we can create a space where learning thrives!",
-    zipCode: "12345",
-    amount: "150000",
-    targetDate: "2025-12-31",
-    photoUrl: "https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+  const title = searchParams.get("title");
+  const description = searchParams.get("description");
+  const projectType = searchParams.get("projectType");
+  const amount = searchParams.get("amount");
+  const targetDate = searchParams.get("targetDate");
+  const photoUrlLink = "https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"; // TODO: Update photoUrl
+  const user = useSignedInUser();
+
+  const requestProject = async () => {
+    try {
+      setLoading(true);
+
+      const data = {
+        user_id: user?.state?.user?.id,
+        title: title,
+        details: description,
+        due_date: new Date(targetDate),
+        goal_amount: Number(amount),
+        donation_link: "test_link", // TODO: Add donation link field
+        type: projectType.toLowerCase(),
+      };
+
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/v1/projects`, data);
+      const projectData = response.data;
+      if (projectData.status === "CREATED") {
+        console.log("Created project:", projectData);
+      } else {
+        console.error("Unexpected response:", projectData);
+      }
+    } catch (error) {
+      console.log("Failed to create project request:", error);
+    } finally {
+      setLoading(false);
+    }
   };
-
-  // Use dummy data or URL params with fallback to dummy data
-  const title = searchParams.get("title") || dummyData.title;
-  const description = searchParams.get("description") || dummyData.description;
-  const zipCode = searchParams.get("zipCode") || dummyData.zipCode;
-  const amount = searchParams.get("amount") || dummyData.amount;
-  const targetDate = searchParams.get("targetDate") || dummyData.targetDate;
 
   // Safe sessionStorage access in useEffect to avoid SSR issues
   useEffect(() => {
     // Only access sessionStorage in the browser environment
     if (typeof window !== "undefined") {
-      const storedPhotoUrl = sessionStorage.getItem("fundraiserPhotoPreview");
-      setPhotoUrl(storedPhotoUrl || dummyData.photoUrl);
+      const storedPhotoUrl = sessionStorage.getItem("projectPhotoPreview");
+      setPhotoUrl(storedPhotoUrl || photoUrlLink);
     } else {
-      setPhotoUrl(dummyData.photoUrl);
+      setPhotoUrl(photoUrlLink);
     }
   }, []);
 
@@ -45,11 +69,8 @@ const FundraiserConfirmPage = () => {
     setIsSubmitting(true);
 
     try {
-      //code for backend API call to submit the fundraiser
-
-
-      // Simulate API call with timeout
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      //code for backend API call to submit the project
+      requestProject();
 
       // Show success toast
       setShowToast(true);
@@ -60,31 +81,15 @@ const FundraiserConfirmPage = () => {
       }, 500);
 
     } catch (error) {
-      console.error("Error submitting fundraiser:", error);
+      console.error("Error submitting project:", error);
       // Handle error state here
       setShowToast({
         type: "fail",
-        message: "Failed to submit fundraiser. Please try again.",
+        message: "Failed to submit project. Please try again.",
       });
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  // Format currency with commas for better readability
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-PH").format(value);
-  };
-
-  // Format date to be more user-friendly
-  const formatDate = (dateString) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric"
-    });
   };
 
   return (
@@ -92,17 +97,17 @@ const FundraiserConfirmPage = () => {
       {/* Header */}
       <div className="bg-astralightgray p-6 md:p-12">
         <h1 className="text-4xl font-bold text-astrablack">
-          Review Your Fundraiser
+          Review Your Project
         </h1>
         <p className="text-astradarkgray mt-2">
-          Please review all details before submitting your fundraiser.
+          Please review all details before submitting your project request.
         </p>
       </div>
 
       {/*Main content*/}
       <div className="flex-grow p-6 md:p-12">
         <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
-          {/* Preview header that mimics how the fundraiser will look */}
+          {/* Preview header that mimics how the project will look */}
           <div className="bg-gradient-to-r from-astraprimary to-astrablue h-16"></div>
 
           <div className="p-6 md:p-8">
@@ -114,7 +119,7 @@ const FundraiserConfirmPage = () => {
                     photoUrl.startsWith("data:") ? (
                       <img
                         src={photoUrl}
-                        alt="Fundraiser Visual"
+                        alt="Project Visual"
                         className="w-full h-full object-cover"
                       />
                     ) : photoUrl.match(/\.(mp4|webm|ogg)$/i) ? (
@@ -126,7 +131,7 @@ const FundraiserConfirmPage = () => {
                     ) : (
                       <img
                         src={photoUrl}
-                        alt="Fundraiser Visual"
+                        alt="Project Visual"
                         className="w-full h-full object-cover"
                       />
                     )
@@ -139,14 +144,14 @@ const FundraiserConfirmPage = () => {
 
                 <div className="space-y-4">
                   <div>
-                    <h2 className="text-lg font-semibold text-astrablack">Location</h2>
-                    <p className="text-astradarkgray">ZIP Code: {zipCode}</p>
+                    <h2 className="text-lg font-semibold text-astrablack">Project Type</h2>
+                    <p className="text-astradarkgray">{capitalizeName(projectType)}</p>
                   </div>
 
                   {/* Added Target Date section */}
                   <div>
                     <h2 className="text-lg font-semibold text-astrablack">Target Date</h2>
-                    <p className="text-astradarkgray">{formatDate(targetDate)}</p>
+                    <p className="text-astradarkgray">{formatDate(targetDate, "long")}</p>
                   </div>
                 </div>
               </div>
@@ -156,12 +161,12 @@ const FundraiserConfirmPage = () => {
                 <div className="mb-6">
                   <h1 className="text-2xl md:text-3xl font-bold text-astrablack">{title}</h1>
                   <div className="mt-4 bg-blue-50 p-4 rounded-lg">
-                    <p className="text-xl font-semibold text-astraprimary">₱{formatCurrency(amount)} <span className="text-sm text-astradarkgray">fundraising goal</span></p>
+                    <p className="text-xl font-semibold text-astraprimary">{formatCurrency(amount)} <span className="text-sm text-astradarkgray">project goal</span></p>
                   </div>
                 </div>
 
                 <div>
-                  <h2 className="text-xl font-semibold text-astrablack mb-2">About this fundraiser</h2>
+                  <h2 className="text-xl font-semibold text-astrablack mb-2">About this project</h2>
                   <div className="bg-white rounded-lg">
                     <p className="text-astradarkgray whitespace-pre-line">{description}</p>
                   </div>
@@ -189,7 +194,7 @@ const FundraiserConfirmPage = () => {
               Submitting...
             </>
           ) : (
-            "Submit Fundraiser"
+            "Submit Request"
           )}
         </button>
       </div>
@@ -198,7 +203,7 @@ const FundraiserConfirmPage = () => {
       {showToast && (
         <ToastNotification
           type="success"
-          message="Fundraiser submitted successfully!"
+          message="Project request submitted successfully!"
           onClose={() => setShowToast(false)}
         />
       )}
@@ -206,4 +211,4 @@ const FundraiserConfirmPage = () => {
   );
 };
 
-export default FundraiserConfirmPage;
+export default ProjectConfirmPage;
