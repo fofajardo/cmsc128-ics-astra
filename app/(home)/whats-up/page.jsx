@@ -10,6 +10,7 @@ import animations from "./styles/animations.module.css";
 import { FileText } from "lucide-react";
 import Link from "next/link";
 import axios from "axios";
+import LoadingOverlay from "@/components/LoadingOverlay";
 
 export default function WhatsUpPage() {
   const router = useRouter(); // Initialize router
@@ -92,17 +93,11 @@ export default function WhatsUpPage() {
           <div className="mt-12 w-full max-md:mt-8 max-md:max-w-full">
             {/* News items grid */}
             <div className="flex flex-col gap-8 max-md:gap-6">
-              {loading ? (
-                <div className="flex items-center justify-center w-full h-64">
-                  <FileText className="animate-spin text-slate-500" size={48} />
-                </div>
-              ) : (
-                renderNewsItems(newsList)
-              )}
+              {renderNewsItems(newsList, loading)}
             </div>
           </div>
 
-          <PaginationControls />
+          {/* <PaginationControls />
 
           <h2 className="self-start mt-24 text-3xl font-bold text-slate-900 max-md:mt-8 max-md:max-w-full max-md:text-2xl">
             Newsletter Archives
@@ -115,7 +110,7 @@ export default function WhatsUpPage() {
           </p>
 
           <YearFilter />
-          <NewsletterArchive />
+          <NewsletterArchive /> */}
         </section>
       </div>
 
@@ -150,19 +145,22 @@ export default function WhatsUpPage() {
   );
 }
 
-function renderNewsItems(newsItems) {
+function renderNewsItems(newsItems, loading) {
   return (
-    (newsItems.length > 0 ?
-      <div className="flex flex-col gap-8 max-md:gap-6">
-        {newsItems.map((item) => (
-          newsItemBuilder(item)
-        ))}
-      </div>
-      :
-        <div className="flex items-center justify-center w-full h-64">
-          No news available at the moment.
-        </div>
-    )
+    <div className="relative">
+      <LoadingOverlay loading={loading} coverContainer={true} />
+      {!loading ? (
+        newsItems.length > 0 ? (
+          <div className="flex flex-col gap-8 max-md:gap-6">
+            {newsItems.map((item) => newsItemBuilder(item))}
+          </div>
+        ) : (
+          <div className="flex items-center justify-center w-full h-64">
+            No news available at the moment.
+          </div>
+        )
+      ) : null}
+    </div>
   );
 
 }
