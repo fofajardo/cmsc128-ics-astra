@@ -6,7 +6,7 @@ import HeaderUser from "../../components/HeaderUser.jsx";
 import ProjectCard from "../../components/projects/ProjectCard";
 import Link from "next/link";
 import { Icon } from "@iconify/react";
-import { Filter } from "lucide-react";
+import { Filter, User } from "lucide-react";
 
 export default function ProjectsPage({ projects }) {
   const [visibleCount, setVisibleCount] = useState(6);
@@ -343,6 +343,24 @@ export default function ProjectsPage({ projects }) {
               </button>
             </div>
           )}
+
+          {/* My Projects Section */}
+          <div className="mt-20 bg-astralightgray py-10 px-6 rounded-xl shadow-md">
+            <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="text-left">
+                <h3 className="font-lb text-2xl text-astrablack mb-3">Track Your Fundraisers</h3>
+                <p className="text-astradarkgray max-w-xl">
+                  View the status of your submitted fundraisers, respond to messages, and manage your fundraising projects in one place.
+                </p>
+              </div>
+              <Link href="/projects/my-projects/1" passHref> {/* Assuming 1 is the user_id */}
+                <button className="px-8 py-4 bg-astraprimary text-astrawhite rounded-lg hover:bg-astraprimary/90 transition flex items-center gap-2 font-medium">
+                  <User className="w-5 h-5" />
+                  My Projects
+                </button>
+              </Link>
+            </div>
+          </div>
 
           {/*to handle resizing*/}
           <script
