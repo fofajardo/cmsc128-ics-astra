@@ -306,12 +306,12 @@ const getProjectRequestById = async (req, res) => {
     // get name and role from alumni profiles table
     const { data: alumData, error: alumError } = await alumniService.fetchAlumniProfileById(req.supabase, requestData.user_id);
 
-    if (alumError) {
-      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-        status: "FAILED",
-        message: alumError.message
-      });
-    };
+    // if (alumError) {
+    //   return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+    //     status: "FAILED",
+    //     message: alumError.message
+    //   });
+    // };
 
     // let alumData = Array.isArray(alumsData) ? alumsData[0] : alumsData;
 
@@ -337,9 +337,14 @@ const getProjectRequestById = async (req, res) => {
     };
 
 
-    const full_name = [alumData.first_name, alumData.middle_name, alumData.last_name]
-      .filter(Boolean) // remove undefined/null/empty values
-      .join(" ");
+    let full_name;
+    if (alumError) {
+      full_name = "Deleted user";
+    } else {
+      full_name = [alumData.first_name, alumData.middle_name, alumData.last_name]
+        .filter(Boolean) // remove undefined/null/empty values
+        .join(" ");
+    };
 
     // Combine everything
     const combinedData = {
