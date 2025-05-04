@@ -186,7 +186,12 @@ const RequestFundraiserGoal = () => {
         <div className="flex justify-between px-6 md:px-12 py-5 border-astralightgray border-t-1">
           <BackButton />
           {isFormValid ? (
-            <Link href="/projects/request/details" passHref>
+            <Link href={{ pathname:"/projects/request/details",
+              query: {
+                amount: amount,
+                projectType: projectType,
+                targetDate: targetDate,
+              }}} passHref>
               <button className="blue-button font-semibold transition cursor-pointer w-[150px] h-[55px]">
                 Continue
               </button>

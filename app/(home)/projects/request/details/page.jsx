@@ -17,7 +17,7 @@ const RequestFundraiserDetails = () => {
 
   // Retrieve previous page data
   const amount = searchParams.get("amount");
-  const zipCode = searchParams.get("zipCode");
+  const projectType = searchParams.get("projectType");
   const targetDate = searchParams.get("targetDate");
 
   // Load data from URL parameters on component mount
@@ -27,6 +27,12 @@ const RequestFundraiserDetails = () => {
 
     if (urlTitle) setTitle(urlTitle);
     if (urlDescription) setDescription(urlDescription);
+
+    console.log({
+      amount,
+      projectType,
+      targetDate,
+    });
   }, [searchParams]);
 
   // Update URL without navigation whenever values change
@@ -145,7 +151,14 @@ const RequestFundraiserDetails = () => {
         <div className="flex justify-between px-6 md:px-12 py-5 border-astralightgray border-t-1">
           <BackButton />
           {isFormValid ? (
-            <Link href="/projects/request/photo" passHref>
+            <Link href={{ pathname:"/projects/request/photo",
+              query: {
+                amount: amount,
+                projectType: projectType,
+                targetDate: targetDate,
+                title: title,
+                description: description,
+              }}} passHref>
               <button className="blue-button font-semibold transition cursor-pointer w-[150px] h-[55px]">
                 Continue
               </button>
