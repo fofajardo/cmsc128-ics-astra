@@ -6,7 +6,7 @@ import HeaderUser from "../../components/HeaderUser.jsx";
 import ProjectCard from "../../components/projects/ProjectCard";
 import Link from "next/link";
 import { Icon } from "@iconify/react";
-import { Filter } from "lucide-react";
+import { Filter, User } from "lucide-react";
 
 export default function ProjectsPage({ projects }) {
   const [visibleCount, setVisibleCount] = useState(6);
@@ -344,6 +344,24 @@ export default function ProjectsPage({ projects }) {
             </div>
           )}
 
+          {/* My Projects Section */}
+          <div className="mt-20 bg-astralightgray py-10 px-6 rounded-xl shadow-md">
+            <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="text-left">
+                <h3 className="font-lb text-2xl text-astrablack mb-3">Track Your Fundraisers</h3>
+                <p className="text-astradarkgray max-w-xl">
+                  View the status of your submitted fundraisers, respond to messages, and manage your fundraising projects in one place.
+                </p>
+              </div>
+              <Link href="/projects/my-projects/1" passHref> {/* Assuming 1 is the user_id */}
+                <button className="px-8 py-4 bg-astraprimary text-astrawhite rounded-lg hover:bg-astraprimary/90 transition flex items-center gap-2 font-medium">
+                  <User className="w-5 h-5" />
+                  My Projects
+                </button>
+              </Link>
+            </div>
+          </div>
+
           {/*to handle resizing*/}
           <script
             dangerouslySetInnerHTML={{
@@ -352,12 +370,12 @@ export default function ProjectsPage({ projects }) {
         function handleGridResponsiveness() {
           const cards = document.querySelectorAll('.grid > a');
           const width = window.innerWidth;
-          
+
           // Reset heights first
           cards.forEach(card => {
             card.style.height = 'auto';
           });
-          
+
           // Set initial visible count based on screen size
           if (width < 640) {
             setVisibleCount(prev => prev < 3 ? 3 : prev);
@@ -366,7 +384,7 @@ export default function ProjectsPage({ projects }) {
           } else {
             setVisibleCount(prev => prev < 6 ? 6 : prev);
           }
-          
+
           // Lazy load images for performance
           if ('IntersectionObserver' in window) {
             const imgObserver = new IntersectionObserver((entries, observer) => {
@@ -382,13 +400,13 @@ export default function ProjectsPage({ projects }) {
                 }
               });
             });
-            
+
             document.querySelectorAll('img[data-src]').forEach(img => {
               imgObserver.observe(img);
             });
           }
         }
-        
+
         window.addEventListener('resize', handleGridResponsiveness);
         handleGridResponsiveness();
       `,
@@ -637,7 +655,7 @@ export default function ProjectsPage({ projects }) {
         }
         window.addEventListener('resize', adjustVisibleCount);
         adjustVisibleCount();
-        
+
         // Reset startIndex when count changes to avoid showing blank spaces
         setStartIndex(0);
       `,
