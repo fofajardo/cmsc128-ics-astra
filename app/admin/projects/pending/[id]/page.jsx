@@ -65,7 +65,7 @@ export default function PendingProjectDetail({ params }) {
             goal: projectData.list.projectData.goal_amount.toString(),
             requester: {
               name: projectData.list.requesterData.full_name,
-              email: "N/A",
+              email: projectData.list.requesterData.email,
               phone: "N/A",
               position: projectData.list.requesterData.role === "unlinked" || projectData.list.requesterData.role === null
                 ? "N/A"
@@ -189,7 +189,7 @@ export default function PendingProjectDetail({ params }) {
             </div>
             <div className="flex items-center mt-2">
               <div className="bg-astrawhite text-astradark px-3 py-1 rounded-lg text-sm font-s flex items-center gap-1">
-                {project?.type ? capitalizeName(project.type) : project.type}
+                {project?.type ? capitalizeName(project.type) : project?.type}
               </div>
               <div className="ml-4 bg-astrawhite text-astradark px-3 py-1 rounded-lg text-sm font-s flex items-center gap-1">
                 Submitted: {new Date(project.submissionDate).toLocaleDateString("en-PH")}

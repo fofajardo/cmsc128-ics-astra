@@ -21,6 +21,7 @@ import {
 import ToastNotification from "@/components/ToastNotification";
 import axios from "axios";
 import { formatCurrency, formatDate, capitalizeName } from "@/utils/format";
+import { PROJECT_TYPE } from "@/constants/projectConsts";
 
 //for admin/projects/active/[id]
 export default function ActiveProjectDetail({ params }) {
@@ -88,7 +89,9 @@ export default function ActiveProjectDetail({ params }) {
               name: projectData.list.requesterData.full_name,
               email: projectData.list.requesterData.email,
               phone: "NA",
-              position: projectData.list.requesterData.role || "NA",
+              position: projectData.list.requesterData.role === "unlinked" || projectData.list.requesterData.role === null
+                ? "N/A"
+                : projectData.list.requesterData.role,
             },
             submissionDate: projectData.list.date_requested,
             startDate: "1999-01-01",
@@ -690,14 +693,15 @@ export default function ActiveProjectDetail({ params }) {
                     value={editFormData.type}
                     onChange={handleInputChange}
                   >
-                    <option value="Scholarship">Scholarship</option>
-                    <option value="Fundraiser">Fundraiser</option>
+                    <option value={PROJECT_TYPE.DONATION_DRIVE}>{capitalizeName(PROJECT_TYPE.DONATION_DRIVE)}</option>
+                    <option value={PROJECT_TYPE.FUNDRAISING}>{capitalizeName(PROJECT_TYPE.FUNDRAISING)}</option>
+                    <option value={PROJECT_TYPE.SCHOLARSHIP}>{capitalizeName(PROJECT_TYPE.SCHOLARSHIP)}</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-astradarkgray font-sb mb-2">
-                    Short Description
+                    Description
                   </label>
                   <input
                     type="text"
@@ -708,7 +712,7 @@ export default function ActiveProjectDetail({ params }) {
                   />
                 </div>
 
-                <div>
+                {/* <div>
                   <label className="block text-astradarkgray font-sb mb-2">
                     Detailed Description
                   </label>
@@ -718,7 +722,7 @@ export default function ActiveProjectDetail({ params }) {
                     value={editFormData.longDescription}
                     onChange={handleInputChange}
                   ></textarea>
-                </div>
+                </div> */}
               </div>
 
               {/* Funding Information */}
@@ -758,6 +762,7 @@ export default function ActiveProjectDetail({ params }) {
                       } rounded-lg p-3`}
                       value={editFormData.raised}
                       onChange={handleInputChange}
+                      disabled
                     />
                     {errors.raised && (
                       <p className="text-red-500 text-sm mt-1">
@@ -775,7 +780,7 @@ export default function ActiveProjectDetail({ params }) {
                 </h4>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
+                  {/* <div>
                     <label className="block text-astradarkgray font-sb mb-2">
                       Start Date
                     </label>
@@ -786,11 +791,11 @@ export default function ActiveProjectDetail({ params }) {
                       value={editFormData.startDate}
                       onChange={handleInputChange}
                     />
-                  </div>
+                  </div> */}
 
                   <div>
                     <label className="block text-astradarkgray font-sb mb-2">
-                      End Date
+                      Due Date
                     </label>
                     <input
                       type="date"
@@ -825,7 +830,7 @@ export default function ActiveProjectDetail({ params }) {
                   </>
                 )}
 
-                <div>
+                {/* <div>
                   <label className="block text-astradarkgray font-sb mb-2">
                     Fund Distribution
                   </label>
@@ -835,7 +840,7 @@ export default function ActiveProjectDetail({ params }) {
                     value={editFormData.fundDistribution}
                     onChange={handleInputChange}
                   ></textarea>
-                </div>
+                </div> */}
               </div>
 
               {/* Project Requester Information */}
@@ -855,6 +860,7 @@ export default function ActiveProjectDetail({ params }) {
                       className="w-full border border-astragray/30 rounded-lg p-3"
                       value={editFormData.requester.name}
                       onChange={handleInputChange}
+                      disabled
                     />
                   </div>
 
@@ -868,6 +874,7 @@ export default function ActiveProjectDetail({ params }) {
                       className="w-full border border-astragray/30 rounded-lg p-3"
                       value={editFormData.requester.position}
                       onChange={handleInputChange}
+                      disabled
                     />
                   </div>
 
@@ -881,10 +888,11 @@ export default function ActiveProjectDetail({ params }) {
                       className="w-full border border-astragray/30 rounded-lg p-3"
                       value={editFormData.requester.email}
                       onChange={handleInputChange}
+                      disabled
                     />
                   </div>
 
-                  <div>
+                  {/* <div>
                     <label className="block text-astradarkgray font-sb mb-2">
                       Phone
                     </label>
@@ -904,7 +912,7 @@ export default function ActiveProjectDetail({ params }) {
                         {errors["requester.phone"]}
                       </p>
                     )}
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>
@@ -946,12 +954,12 @@ export default function ActiveProjectDetail({ params }) {
             </div>
             <div className="flex items-center mt-2">
               <div className="bg-astrawhite text-astradark px-3 py-1 rounded-lg text-sm font-s flex items-center gap-1">
-                {projectData.type === "Scholarship" ? (
+                {projectData.type === PROJECT_TYPE.SCHOLARSHIP? (
                   <GraduationCap className="w-4 h-4" />
                 ) : (
                   <HeartHandshake className="w-4 h-4" />
                 )}
-                {capitalizeName(projectData.type)}
+                {projectData?.type ? capitalizeName(projectData.type) : projectData?.type}
               </div>
 
               <div className="ml-4 bg-astrawhite text-astradark px-3 py-1 rounded-lg text-sm font-s flex items-center gap-1">
@@ -1085,7 +1093,7 @@ export default function ActiveProjectDetail({ params }) {
                         {formatCurrency(transaction.amount)}
                       </td>
                       <td className="py-3 px-4 text-right text-astradarkgray">
-                        {formatDate(transaction.date, "long")}
+                        {formatDate(transaction.date)}
                       </td>
                     </tr>
                   ))}
@@ -1118,7 +1126,7 @@ export default function ActiveProjectDetail({ params }) {
                     {projectData.requester.name}
                   </p>
                   <p className="text-astralightgray text-sm">
-                    {capitalizeName(projectData.requester.position)}
+                    {projectData?.requester?.position && projectData?.requester?.position !== "N/A" ? capitalizeName(projectData.requester.position) : projectData?.requester?.position}
                   </p>
                 </div>
               </div>
@@ -1132,14 +1140,14 @@ export default function ActiveProjectDetail({ params }) {
                 </div>
               </div>
 
-              <div className="flex gap-2 items-start">
+              {/* <div className="flex gap-2 items-start">
                 <Phone className="w-6 h-6 text-astraprimary mr-2" />
                 <div>
                   <p className="text-astradarkgray">
                     {projectData.requester.phone}
                   </p>
                 </div>
-              </div>
+              </div> */}
 
               <button
                 className="flex items-center gap-2 mt-4 bg-astraprimary text-astrawhite py-2 px-4 rounded-lg w-full justify-center font-sb transition-colors hover:bg-astraprimary/90"

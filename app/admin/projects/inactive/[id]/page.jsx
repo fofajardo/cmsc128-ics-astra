@@ -6,7 +6,8 @@ import { GraduationCap, HeartHandshake, Calendar, User, Goal, FileText, Phone, M
 import ToastNotification from "@/components/ToastNotification";
 import Link from "next/link";
 import axios from "axios";
-import { formatCurrency, formatDate } from "@/utils/format";
+import { formatCurrency, formatDate, capitalizeName } from "@/utils/format";
+import { PROJECT_TYPE } from "@/constants/projectConsts";
 
 //for admin/projects/inactive/[id]
 export default function InactiveProjectDetail({ params }) {
@@ -65,9 +66,11 @@ export default function InactiveProjectDetail({ params }) {
             donors: projectData.list.projectData.number_of_donors.toString(),
             requester: {
               name: projectData.list.requesterData.full_name,
-              email: "NA",
+              email: projectData.list.requesterData.email,
               phone: "NA",
-              position: projectData.list.requesterData.role || "NA",
+              position: projectData.list.requesterData.role === "unlinked" || projectData.list.requesterData.role === null
+                ? "N/A"
+                : projectData.list.requesterData.role,
             },
             submissionDate: projectData.list.date_requested,
             startDate: "1999-01-01",
@@ -186,12 +189,12 @@ export default function InactiveProjectDetail({ params }) {
             </div>
             <div className="flex items-center mt-2">
               <div className="bg-astrawhite text-astradark px-3 py-1 rounded-lg text-sm font-s flex items-center gap-1">
-                {projectData?.type === "Scholarship" ? (
+                {projectData?.type === PROJECT_TYPE.SCHOLARSHIP ? (
                   <GraduationCap className="w-4 h-4" />
                 ) : (
                   <HeartHandshake className="w-4 h-4" />
                 )}
-                {projectData?.type}
+                {projectData?.type ? capitalizeName(projectData.type) : projectData?.type}
               </div>
 
               <div className="ml-4 bg-astrawhite text-astradark px-3 py-1 rounded-lg text-sm font-s flex items-center gap-1">
@@ -257,9 +260,9 @@ export default function InactiveProjectDetail({ params }) {
                 <div className="flex gap-2 items-start">
                   <Calendar className="w-8 h-8  text-astraprimary mt-1" />
                   <div>
-                    <p className="font-sb">Project Duration</p>
+                    <p className="font-sb">Project Due Date</p>
                     <p className="text-astradarkgray">
-                      {new Date(projectData?.startDate).toLocaleDateString("en-PH")} to {new Date(projectData?.endDate).toLocaleDateString("en-PH")}
+                      {formatDate(projectData?.endDate, "long")}
                     </p>
                   </div>
                 </div>
@@ -333,7 +336,7 @@ export default function InactiveProjectDetail({ params }) {
                 <User className="w-10 h-10 text-astraprimary" />
                 <div>
                   <p className="text-astradarkgray">{projectData?.requester.name}</p>
-                  <p className="text-astralightgray text-sm">{projectData?.requester.position}</p>
+                  <p className="text-astralightgray text-sm">{projectData?.requester?.position && projectData?.requester?.position !== "N/A" ? capitalizeName(projectData.requester.position) : projectData?.requester?.position}</p>
                 </div>
               </div>
 
@@ -344,12 +347,12 @@ export default function InactiveProjectDetail({ params }) {
                 </div>
               </div>
 
-              <div className="flex gap-2 items-start">
+              {/* <div className="flex gap-2 items-start">
                 <Phone className="w-6 h-6 text-astraprimary mr-2" />
                 <div>
                   <p className="text-astradarkgray">{projectData?.requester.phone}</p>
                 </div>
-              </div>
+              </div> */}
 
               <button
                 className="flex items-center gap-2 mt-4 bg-astraprimary text-astrawhite py-2 px-4 rounded-lg w-full justify-center font-sb transition-colors hover:bg-astraprimary/90"
