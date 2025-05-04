@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import ToastNotification from "@/components/ToastNotification";
 import axios from "axios";
-import { formatCurrency, formatDate } from "@/utils/format";
+import { formatCurrency, formatDate, capitalizeName } from "@/utils/format";
 
 //for admin/projects/active/[id]
 export default function ActiveProjectDetail({ params }) {
@@ -65,7 +65,7 @@ export default function ActiveProjectDetail({ params }) {
           if (donationData.status === "OK") {
             formattedDonations = donationData.donations.map(donation => ({
               id: donation.id,
-              donor: donation.user_id,
+              donor: donation.donor,
               amount: donation.amount,
               date: donation.donation_date,
             }));
@@ -86,7 +86,7 @@ export default function ActiveProjectDetail({ params }) {
             donors: projectData.list.projectData.number_of_donors.toString(),
             requester: {
               name: projectData.list.requesterData.full_name,
-              email: "NA",
+              email: projectData.list.requesterData.email,
               phone: "NA",
               position: projectData.list.requesterData.role || "NA",
             },
@@ -951,7 +951,7 @@ export default function ActiveProjectDetail({ params }) {
                 ) : (
                   <HeartHandshake className="w-4 h-4" />
                 )}
-                {projectData.type}
+                {capitalizeName(projectData.type)}
               </div>
 
               <div className="ml-4 bg-astrawhite text-astradark px-3 py-1 rounded-lg text-sm font-s flex items-center gap-1">
@@ -1024,15 +1024,9 @@ export default function ActiveProjectDetail({ params }) {
                 <div className="flex gap-2 items-start">
                   <Calendar className="w-8 h-8 text-astraprimary mt-1" />
                   <div>
-                    <p className="font-sb">Project Duration</p>
+                    <p className="font-sb">Project Due Date</p>
                     <p className="text-astradarkgray">
-                      {new Date(projectData.startDate).toLocaleDateString(
-                        "en-PH"
-                      )}{" "}
-                      to{" "}
-                      {new Date(projectData.endDate).toLocaleDateString(
-                        "en-PH"
-                      )}
+                      {formatDate(projectData.endDate, "long")}
                     </p>
                   </div>
                 </div>
@@ -1124,7 +1118,7 @@ export default function ActiveProjectDetail({ params }) {
                     {projectData.requester.name}
                   </p>
                   <p className="text-astralightgray text-sm">
-                    {projectData.requester.position}
+                    {capitalizeName(projectData.requester.position)}
                   </p>
                 </div>
               </div>

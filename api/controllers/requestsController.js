@@ -316,15 +316,14 @@ const getProjectRequestById = async (req, res) => {
     // let alumData = Array.isArray(alumsData) ? alumsData[0] : alumsData;
 
     // get email from Users table
-    // const { data: userData, error: userError } = await usersService.fetchUserById(req.supabase, alumData.id);
+    const { data: userData, error: userError } = await usersService.fetchUserById(req.supabase, requestData.user_id);
 
-    // if (userError) {
-    //   return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-    //     status: "FAILED",
-    //     message: userError.message
-    //   });
-    // };
-    // console.log(userData)
+    if (userError) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: userError.message
+      });
+    };
 
     // get project details from Projects table
     const { data: projectData, error: projectError } = await projectsService.fetchProjectById(req.supabase, requestData.content_id);
@@ -354,8 +353,8 @@ const getProjectRequestById = async (req, res) => {
       projectData: projectData,
       requesterData: {
         full_name,
-        role: null,
-        email: null,
+        role: userData.role,
+        email: userData.email,
       },
     };
 
