@@ -15,8 +15,8 @@ export default function AdminAlumniLayout({ children }) {
   });
 
   const tabs = {
-      "All": 3,
-      "Reported": 0
+    "All": 3,
+    "Reported": 0
   };
 
   const [currTab, setCurrTab] = useState("All");
