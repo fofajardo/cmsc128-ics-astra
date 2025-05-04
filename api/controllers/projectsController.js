@@ -439,6 +439,16 @@ const updateProject = async (req, res) => {
       });
     }
 
+    // Check if content exists
+    const { data: contentData, error: contentError} = await contentsService.fetchContentById(req.supabase, projectId);
+
+    if (contentError || !contentData) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: "FAILED",
+        message: "Content not found"
+      });
+    }
+
     // TODO: Clarify if disallow edits to donation_link
     // if (
     //     ("donation_link" in req.body && req.body.donation_link !== projectData.donation_link)
@@ -451,54 +461,80 @@ const updateProject = async (req, res) => {
 
     // Update only allowed fields
     const {
-      project_id,
+      title,
+      details,
+      type,
+      donation_link,
+      goal_amount,
       project_status,
       due_date,
       date_completed,
-      goal_amount,
-      donation_link
     } = req.body;
 
-    const updateData = {
-      project_id,
-      project_status,
-      due_date,
-      date_completed,
-      goal_amount,
-      donation_link
+    const contentUpdateData = {
+      title,
+      details,
+      updated_at: new Date().toISOString(),  // Default to current date
     };
 
     // Remove undefined fields to avoid overwriting with nulls
-    Object.keys(updateData).forEach(key => {
-      if (updateData[key] === undefined) {
-        delete updateData[key];
+    Object.keys(contentUpdateData).forEach(key => {
+      if (contentUpdateData[key] === undefined) {
+        delete contentUpdateData[key];
+      }
+    });
+
+
+    const { error: updateContentError } = await contentsService.updateContentData(req.supabase, projectId, contentUpdateData);
+
+
+    if (updateContentError) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: updateContentError.message
+      });
+    }
+
+    const projectUpdateData = {
+      type,
+      donation_link,
+      goal_amount,
+      project_status,
+      due_date,
+      date_completed,
+    };
+
+    // Remove undefined fields to avoid overwriting with nulls
+    Object.keys(projectUpdateData).forEach(key => {
+      if (projectUpdateData[key] === undefined) {
+        delete projectUpdateData[key];
       }
     });
 
     // Validate request body
-    const allowedFields = ["project_status", "due_date", "date_completed", "goal_amount", "donation_link"];
+    // const allowedFields = ["project_status", "due_date", "date_completed", "goal_amount", "donation_link"];
 
-    allowedFields.forEach(field => {
-      if (!(field in req.body)) {
-        return;
-      }; // skip if field is not present
+    // allowedFields.forEach(field => {
+    //   if (!(field in req.body)) {
+    //     return;
+    //   }; // skip if field is not present
 
-      const value = req.body[field];
+    //   const value = req.body[field];
 
-      if ((field === "project_status" && (typeof value !== "number" || ![0, 1, 2].includes(value))) ||
-                (field === "due_date" && !isValidDate(value)) ||
-                (field === "date_completed" && (value !== null && !isValidDate(value))) ||
-                (field === "goal_amount" && typeof value !== "number") ||
-                (field === "donation_link" && typeof value !== "string")
-      ) {
-        return res.status(httpStatus.BAD_REQUEST).json({
-          status: "FAILED",
-          message: "Invalid field values",
-        });
-      }
-    });
+    //   if ((field === "project_status" && (typeof value !== "number" || ![0, 1, 2].includes(value))) ||
+    //             (field === "due_date" && !isValidDate(value)) ||
+    //             (field === "date_completed" && (value !== null && !isValidDate(value))) ||
+    //             (field === "goal_amount" && typeof value !== "number") ||
+    //             (field === "donation_link" && typeof value !== "string")
+    //   ) {
+    //     return res.status(httpStatus.BAD_REQUEST).json({
+    //       status: "FAILED",
+    //       message: "Invalid field values",
+    //     });
+    //   }
+    // });
 
-    const { data, error } = await projectsService.updateProjectData(req.supabase, projectId, updateData);
+    const { error } = await projectsService.updateProjectData(req.supabase, projectId, projectUpdateData);
 
     if (error) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({

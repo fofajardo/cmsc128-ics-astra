@@ -258,29 +258,35 @@ export default function ActiveProjectDetail({ params }) {
     }
   };
 
+  const updateProject = async (updateData) => {
+    try {
+      const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/projects/${encodeURI(projectData.id)}`, updateData);
+      if (response.data.status === "UPDATED") {
+        console.log("Successfully updated project with id:", id);
+      } else {
+        console.error("Unexpected response:", response);
+      }
+    } catch (error) {
+      console.error("Failed to update project:", error);
+    }
+  };
+
   const handleSaveChanges = () => {
     const newErrors = {};
-    const fundingGoal = parseInt(editFormData.goal, 10);
-    const amountRaised = parseInt(editFormData.raised, 10);
     const phonePattern = /^(\+63|0)?\d{9,10}$/;
 
-    if (!phonePattern.test(editFormData.requester.phone.replace(/\s+/g, ""))) {
-      newErrors["requester.phone"] =
-        "Invalid phone number format. Use +63 or 09 format.";
+    if (!editFormData.title) {
+      newErrors["title"] =
+        "Please enter a title.";
     }
-    if (isNaN(fundingGoal) || fundingGoal <= 0) {
+    if (isNaN(editFormData.goal) || editFormData.goal <= 0) {
       newErrors["goal"] = "Funding goal must be a positive number.";
     }
-    if (isNaN(amountRaised) || amountRaised < 0) {
-      newErrors["raised"] =
-        "Amount raised must be a valid non-negative number.";
+    if (!Object.values(PROJECT_TYPE).includes(editFormData.type)) {
+      newErrors["type"] = "Please select a valid project type.";
     }
-    if (
-      !newErrors["goal"] &&
-      !newErrors["raised"] &&
-      amountRaised > fundingGoal
-    ) {
-      newErrors["raised"] = "Amount raised cannot exceed funding goal.";
+    if (!editFormData.urlLink) {
+      newErrors["urlLink"] = "Please enter a donation link.";
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -288,14 +294,30 @@ export default function ActiveProjectDetail({ params }) {
       return;
     }
 
-    // Reformat goal and raised back to ₱ format
-    const formattedGoal = `₱${fundingGoal.toLocaleString("en-PH")}`;
-    const formattedRaised = `₱${amountRaised.toLocaleString("en-PH")}`;
+    // console.log(
+    //   {
+    //     title: editFormData.title,
+    //     description: editFormData.description,
+    //     type: editFormData.type,
+    //     donation_link: editFormData.urlLink,
+    //     goal_amount: editFormData.goal,
+    //     due_date: editFormData.endDate,
+    //   }
+    // );
+
+    updateProject({
+      title: editFormData.title,
+      details: editFormData.description,
+      type: editFormData.type,
+      donation_link: editFormData.urlLink,
+      goal_amount: editFormData.goal,
+      due_date: editFormData.endDate,
+    });
 
     setProjectData({
       ...editFormData,
-      goal: formattedGoal,
-      raised: formattedRaised,
+      goal_amount: editFormData.goal.toString(),
+      raised: editFormData.raised.toString(),
     });
 
     setShowEditModal(false);
@@ -677,10 +699,15 @@ export default function ActiveProjectDetail({ params }) {
                   <input
                     type="text"
                     name="title"
-                    className="w-full border border-astragray/30 rounded-lg p-3"
+                    className={`w-full border ${
+                      errors.title ? "border-red-500" : "border-astragray/30"
+                    } rounded-lg p-3`}
                     value={editFormData.title}
                     onChange={handleInputChange}
                   />
+                  {errors.title && (
+                    <p className="text-red-500 text-sm mt-1">{errors.title}</p>
+                  )}
                 </div>
 
                 <div>
@@ -689,7 +716,9 @@ export default function ActiveProjectDetail({ params }) {
                   </label>
                   <select
                     name="type"
-                    className="w-full border border-astragray/30 rounded-lg p-3"
+                    className={`w-full border ${
+                      errors.type ? "border-red-500" : "border-astragray/30"
+                    } rounded-lg p-3`}
                     value={editFormData.type}
                     onChange={handleInputChange}
                   >
@@ -697,6 +726,9 @@ export default function ActiveProjectDetail({ params }) {
                     <option value={PROJECT_TYPE.FUNDRAISING}>{capitalizeName(PROJECT_TYPE.FUNDRAISING)}</option>
                     <option value={PROJECT_TYPE.SCHOLARSHIP}>{capitalizeName(PROJECT_TYPE.SCHOLARSHIP)}</option>
                   </select>
+                  {errors.type && (
+                    <p className="text-red-500 text-sm mt-1">{errors.type}</p>
+                  )}
                 </div>
 
                 <div>
@@ -801,16 +833,21 @@ export default function ActiveProjectDetail({ params }) {
                     <input
                       type="date"
                       name="endDate"
-                      className="w-full border border-astragray/30 rounded-lg p-3"
+                      className={`w-full border ${
+                        errors.endDate ? "border-red-500" : "border-astragray/30"
+                      } rounded-lg p-3`}
                       value={editFormData.endDate}
                       onChange={handleInputChange}
                     />
+                    {errors.endDate && (
+                      <p className="text-red-500 text-sm mt-1">{errors.endDate}</p>
+                    )}
                   </div>
                 </div>
               </div>
 
               {/* Scholarship/Fundraiser Specific Fields */}
-              <div className="space-y-4 md:col-span-2">
+              {/* <div className="space-y-4 md:col-span-2">
                 {editFormData.type === "Scholarship" && (
                   <>
                     <h4 className="font-sb text-lg border-b border-astralightgray pb-2">
@@ -831,7 +868,7 @@ export default function ActiveProjectDetail({ params }) {
                   </>
                 )}
 
-                {/* <div>
+                <div>
                   <label className="block text-astradarkgray font-sb mb-2">
                     Fund Distribution
                   </label>
@@ -841,8 +878,8 @@ export default function ActiveProjectDetail({ params }) {
                     value={editFormData.fundDistribution}
                     onChange={handleInputChange}
                   ></textarea>
-                </div> */}
-              </div>
+                </div>
+              </div> */}
 
               {/* Project Requester Information */}
               <div className="space-y-4 md:col-span-2">
