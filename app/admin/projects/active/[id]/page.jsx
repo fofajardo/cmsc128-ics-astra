@@ -712,17 +712,18 @@ export default function ActiveProjectDetail({ params }) {
                   />
                 </div>
 
-                {/* <div>
+                <div>
                   <label className="block text-astradarkgray font-sb mb-2">
-                    Detailed Description
+                    Donation Link
                   </label>
-                  <textarea
-                    name="longDescription"
-                    className="w-full border border-astragray/30 rounded-lg p-3 min-h-32"
-                    value={editFormData.longDescription}
+                  <input
+                    type="text"
+                    name="urlLink"
+                    className="w-full border border-astragray/30 rounded-lg p-3"
+                    value={editFormData.urlLink}
                     onChange={handleInputChange}
-                  ></textarea>
-                </div> */}
+                  ></input>
+                </div>
               </div>
 
               {/* Funding Information */}
