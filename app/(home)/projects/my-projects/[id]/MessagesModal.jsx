@@ -8,12 +8,12 @@ export default function MessagesModal({ fundraiser, onClose, onSendMessage }) {
   // Format timestamp to readable date and time
   const formatTimestamp = (timestamp) => {
     const date = new Date(timestamp);
-    return date.toLocaleString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
+    return date.toLocaleString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "numeric",
       hour12: true
     });
   };

@@ -7,7 +7,7 @@ export default function EditModal({ fundraiser, onClose, onSubmit }) {
     title: fundraiser.title,
     description: fundraiser.description,
     goal: fundraiser.goal.replace(/[^\d]/g, ""),
-    endDate: new Date(fundraiser.endDate).toISOString().split('T')[0],
+    endDate: new Date(fundraiser.endDate).toISOString().split("T")[0],
     reason: "",
   });
 
