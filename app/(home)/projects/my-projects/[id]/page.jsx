@@ -174,8 +174,8 @@ export default function UserFundraisers() {
         />
       )}
 
-      {/* Back Navigation - Moved to top */}
-      <div className="max-w-6xl mx-auto px-6 pt-4">
+      {/*Back Navigation */}
+      <div className="max-w-6xl mx-auto px-6 pt-5 pb-5">
         <button
           onClick={() => router.push("/projects")}
           className="flex items-center gap-2 text-astraprimary font-medium hover:text-astraprimary/80 transition-colors py-2 px-3 rounded-lg border border-astragray/20 bg-astrawhite shadow-sm"
@@ -195,13 +195,6 @@ export default function UserFundraisers() {
                 Manage and track all your fundraising projects in one place
               </p>
             </div>
-            <button
-              onClick={() => router.push("/projects/request/goal")}
-              className="bg-astrawhite text-astraprimary py-2 px-4 rounded-lg flex items-center gap-2 font-medium transition-colors hover:bg-astrawhite/90 shadow-lg"
-            >
-              <HeartHandshake className="w-5 h-5" />
-              Request Fundraiser
-            </button>
           </div>
         </div>
       </div>
