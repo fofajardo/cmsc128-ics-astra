@@ -80,8 +80,8 @@ export default function ProjectsPage() {
                 donationLink: project.projectData.donation_link,
                 requester: project.requesterData.full_name,
                 dateCompleted: project.projectData.date_complete,
-                // status: project.status,
-                // request_id: project.request_id,
+                status: project.status,
+                request_id: project.request_id,
               })
             )
           );
@@ -118,19 +118,6 @@ export default function ProjectsPage() {
   const allProjects = projects;
 
   const finishedProjects = allProjects.filter(project => project.project_status === PROJECT_STATUS.FINISHED);
-
-  // Sample finished projects data
-  // const finishedProjects =
-  // projects ||
-  // Array(6).fill({
-  //   image: "/projects/assets/Donation.jpg",
-  //   title: "tapos na",
-  //   description: "This project aims to provide snacks to students to encourage attendance and enhance focus.",
-  //   amountRaised: "₱10,000",
-  //   goalAmount: "₱30,000",
-  //   donors: "32",
-  //   buttonText: "Read story",
-  // });
 
   // Filter projects based on type and search term
   const filteredProjects = allProjects.filter((project) => {
@@ -342,7 +329,7 @@ export default function ProjectsPage() {
               >
                 {filteredProjects.slice(0, visibleCount).map((project) => (
                   <Link
-                    href={`/projects/about/${project.id}`}
+                    href={`/projects/about/${project.request_id}`}
                     key={project.id}
                     className="block h-full"
                   >

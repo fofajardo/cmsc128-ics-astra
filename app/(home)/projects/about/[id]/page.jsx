@@ -1,5 +1,5 @@
 "use client";
-import { useState, use } from "react";
+import { useState, use, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import BackButton from "@/components/events/IndividualEvent/BackButton";
@@ -17,6 +17,8 @@ import {
   MessageSquare,
 } from "lucide-react";
 import ToastNotification from "@/components/ToastNotification";
+import axios from "axios";
+import { formatCurrency, formatDate } from "@/utils/format";
 
 
 export default function ProjectDetails({ params }) {
@@ -31,42 +33,99 @@ export default function ProjectDetails({ params }) {
   });
   const [message, setMessage] = useState("");
   const [toast, setToast] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [projectData, setProjectData] = useState(null);
+  const [projectPhoto, setProjectPhoto] = useState({});
 
-
-
-  // Dummy project data
-  const project = {
-    id: use(params).id,
-    title: "Women in Tech Scholarship",
-    type: "Scholarship",
-    image: "/projects/assets/Donation.jpg",
-    urlLink: "https://example.com/project/12345",
-    status: 0,
-    description:
-      "Supporting female students pursuing degrees in CS and IT to increase representation in tech.",
-    longDescription:
-      "This scholarship aims to address the gender gap in technology fields by providing financial support to female students who demonstrate academic excellence and passion for computer science and IT. Recipients will receive funding for tuition, books, and mentorship opportunities. By supporting this initiative, we contribute to a more inclusive tech workforce.",
-    goal: "₱300,000",
-    raised: "₱200,000",
-    donors: 87,
-    endDate: "2025-09-30",
-    organizer: {
-      name: "Ma'am Mira Fanclub",
-      position: "Student Organization",
-      email: "mirafanclub@email.com",
-      phone: "+63 912 345 6789",
-    },
-    topDonator: { name: "pogi ng tl", amount: "₱100,000" },
-    recentDonator: { name: "maam mira cute", amount: "₱5,000" },
-    firstDonator: { name: "Anonymous", amount: "₱1,000" },
-  };
-  const title = project.title;
-  const goalValue = parseInt(project.goal.replace(/[^\d]/g, ""));
-  const raisedValue = parseInt(project.raised.replace(/[^\d]/g, ""));
+  const goalValue = parseInt(projectData?.goal.replace(/[^\d]/g, ""));
+  const raisedValue = parseInt(projectData?.raised.replace(/[^\d]/g, ""));
   const progressPercentage = Math.min(
     Math.round((raisedValue / goalValue) * 100),
     100
   );
+
+  useEffect(() => {
+    const fetchProjectRequest = async () => {
+      try {
+        setLoading(true);
+        const projectResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/requests/projects/${id}`);
+        const projectData = projectResponse.data;
+        console.log(projectData);
+        if (projectData.status === "OK") {
+          const projectId = projectData.list.projectData.project_id;
+
+          const donationsResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations`, {
+            params: {
+              project_id: projectId
+            }
+          });
+          const donationData = donationsResponse.data;
+          console.log(donationData);
+          let formattedDonations;
+          if (donationData.status === "OK") {
+            formattedDonations = donationData.donations.map(donation => ({
+              id: donation.id,
+              donor: donation.user_id,
+              amount: donation.amount,
+              date: donation.donation_date,
+            }));
+          } else {
+            console.error("Unexpected response:", donationData);
+          }
+
+          setProjectData({
+            id: projectId,
+            title: projectData.list.projectData.title,
+            type: projectData.list.projectData.type,
+            image: null,
+            urlLink: projectData.list.projectData.donation_link,
+            status: 0,  // TODO: Clarify status
+            description: projectData.list.projectData.details,
+            longDescription: projectData.list.projectData.details,
+            goal: projectData.list.projectData.goal_amount.toString(),
+            raised: projectData.list.projectData.total_donations.toString(),
+            donors: projectData.list.projectData.number_of_donors.toString(),
+            endDate: projectData.list.projectData.due_date,
+            organizer: {
+              name: projectData.list.requesterData.full_name,
+              position: projectData.list.requesterData.role || "NA",
+              email: "NA",
+              phone: "NA",
+            },
+            // submissionDate: projectData.list.date_requested,
+            // startDate: "1999-01-01",
+            // eligibilityCriteria: "NA",
+            // fundDistribution: "NA",
+            transactions: formattedDonations,
+            topDonator: formattedDonations.reduce((max, curr) => curr.amount > max.amount ? curr : max),
+            recentDonator: formattedDonations.reduce((latest, curr) => new Date(curr.date) > new Date(latest.date) ? curr : latest ),
+            firstDonator: {}, // TODO: Get first donator
+          });
+
+          // fetch photo
+          try {
+            const photoResponse = await axios.get(
+              `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/project/${projectId}`
+            );
+
+            if (photoResponse.data.status === "OK" && photoResponse.data.photo) {
+              setProjectPhoto(photoResponse.data.photo);
+            }
+          } catch (photoError) {
+            console.log(`Failed to fetch photo for project_id ${projectId}:`, photoError);
+          }
+        } else {
+          console.error("Unexpected response:", projectData);
+        }
+      } catch (error) {
+        console.error("Failed to fetch projects and donations:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjectRequest();
+  }, []);
 
   const handleSendMessage = () => {
     setToast({
@@ -94,32 +153,32 @@ export default function ProjectDetails({ params }) {
             <div className="bg-astrawhite rounded-lg px-3 py-2 inline-block shadow border border-gray-200">
               <div className="flex flex-wrap items-center gap-3">
                 <h1 className="text-3xl font-bold text-astraprimary">
-                  {project.title}
+                  {projectData?.title}
                 </h1>
                 <span
                   className={`${
-                    project.status === 0 ? "bg-green-500" : "bg-red-500"
+                    projectData?.status === 0 ? "bg-green-500" : "bg-red-500"
                   } text-astrawhite px-3 py-1 rounded-lg font-semibold`}
                 >
-                  {project.status === 0 ? "Active" : "Inactive"}
+                  {projectData?.status === 0 ? "Active" : "Inactive"}
                 </span>
               </div>
             </div>
 
             <div className="flex flex-wrap items-center mt-2 gap-4">
               <div className="bg-astrawhite text-astraprimary px-3 py-1 rounded-lg text-sm flex items-center gap-1 shadow border border-gray-200">
-                {project.type === "Scholarship" ? (
+                {projectData?.type === "Scholarship" ? (
                   <GraduationCap className="w-4 h-4" />
                 ) : (
                   <HeartHandshake className="w-4 h-4" />
                 )}
-                {project.type}
+                {projectData?.type}
               </div>
 
               <div className="bg-astrawhite text-astraprimary px-3 py-1 rounded-lg text-sm flex items-center gap-1 shadow border border-gray-200">
                 <Calendar className="w-4 h-4" />
                 <span>
-                  Ends: {new Date(project.endDate).toLocaleDateString("en-PH")}
+                  Ends: {formatDate(projectData?.endDate)}
                 </span>
               </div>
             </div>
@@ -132,8 +191,8 @@ export default function ProjectDetails({ params }) {
         <BackButton />
         <div className="mt-4 rounded-xl overflow-hidden h-64 w-full relative">
           <Image
-            src={project.image}
-            alt={project.title}
+            src={projectData?.image}
+            alt={projectData?.title}
             layout="fill"
             objectFit="cover"
             className="rounded-xl"
@@ -147,10 +206,10 @@ export default function ProjectDetails({ params }) {
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-astrawhite p-6 rounded-xl shadow border border-gray-200">
             <h2 className="text-2xl font-semibold mb-4">
-              {project.description}
+              {projectData?.description}
             </h2>
             <p className="text-sm leading-relaxed text-astrablack">
-              {project.longDescription}
+              {projectData?.longDescription}
             </p>
           </div>
 
@@ -164,10 +223,10 @@ export default function ProjectDetails({ params }) {
                   <User className="w-5 h-5 text-astraprimary" />
                   <div>
                     <p className="text-sm font-medium">
-                      {project.organizer.name}
+                      {projectData?.organizer.name}
                     </p>
                     <p className="text-xs text-astradarkgray">
-                      {project.organizer.position}
+                      {projectData?.organizer.position}
                     </p>
                   </div>
                 </div>
@@ -182,12 +241,12 @@ export default function ProjectDetails({ params }) {
 
               <div className="flex gap-3 items-center">
                 <Mail className="w-5 h-5 text-astraprimary" />
-                <p className="text-sm">{project.organizer.email}</p>
+                <p className="text-sm">{projectData?.organizer.email}</p>
               </div>
 
               <div className="flex gap-3 items-center">
                 <Phone className="w-5 h-5 text-astraprimary" />
-                <p className="text-sm">{project.organizer.phone}</p>
+                <p className="text-sm">{projectData?.organizer.phone}</p>
               </div>
             </div>
           </div>
@@ -200,9 +259,9 @@ export default function ProjectDetails({ params }) {
             <div className="flex justify-between items-end mb-2">
               <h2 className="text-xl font-bold">Fundraising Progress</h2>
               <div className="text-right">
-                <div className="text-2xl font-bold">{project.raised}</div>
+                <div className="text-2xl font-bold">{formatCurrency(projectData?.raised)}</div>
                 <div className="text-astradarkgray text-sm">
-                  of {project.goal}
+                  of {formatCurrency(projectData?.goal)}
                 </div>
               </div>
             </div>
@@ -217,7 +276,7 @@ export default function ProjectDetails({ params }) {
             <div className="flex justify-between mt-4 text-astradarkgray">
               <div className="flex items-center gap-1">
                 <Users className="w-5 h-5" />
-                <span>{project.donors} donors</span>
+                <span>{projectData?.donors} donors</span>
               </div>
               <div>{progressPercentage}% of goal</div>
             </div>
@@ -227,15 +286,15 @@ export default function ProjectDetails({ params }) {
               <button
                 onClick={() => setIsShareModalOpen(true)}
                 className={`flex items-center justify-center gap-2 ${
-                  project.status === 1 ? "w-full" : "w-full"
+                  projectData?.status === 1 ? "w-full" : "w-full"
                 } py-3 px-4 bg-astragray text-astradark rounded-lg hover:bg-astragray/80 transition-colors font-medium`}
               >
                 <Share2 className="w-5 h-5" />
                 Share
               </button>
-              {project.status === 0 && (
+              {projectData?.status === 0 && (
                 <button
-                  onClick={() => router.push(`/projects/donate/${id}?title=${encodeURIComponent(title)}`)}
+                  onClick={() => router.push(`/projects/donate/${id}?title=${encodeURIComponent(projectData?.title)}`)}
                   className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-astraprimary text-white rounded-lg hover:bg-astraprimary/90 transition-colors font-medium"
                 >
                   <HeartHandshake className="w-5 h-5" />
@@ -257,9 +316,9 @@ export default function ProjectDetails({ params }) {
                   <span className="font-medium">Top Donator</span>
                 </div>
                 <div className="text-right">
-                  <p className="font-medium">{project.topDonator.name}</p>
+                  <p className="font-medium">{projectData?.topDonator.user_id}</p>
                   <p className="text-sm text-astradarkgray">
-                    {project.topDonator.amount}
+                    {projectData?.topDonator.amount}
                   </p>
                 </div>
               </div>
@@ -272,9 +331,9 @@ export default function ProjectDetails({ params }) {
                   <span className="font-medium">Recent Donator</span>
                 </div>
                 <div className="text-right">
-                  <p className="font-medium">{project.recentDonator.name}</p>
+                  <p className="font-medium">{projectData?.recentDonator.user_id}</p>
                   <p className="text-sm text-astradarkgray">
-                    {project.recentDonator.amount}
+                    {projectData?.recentDonator.amount}
                   </p>
                 </div>
               </div>
@@ -287,9 +346,9 @@ export default function ProjectDetails({ params }) {
                   <span className="font-medium">First Donator</span>
                 </div>
                 <div className="text-right">
-                  <p className="font-medium">{project.firstDonator.name}</p>
+                  <p className="font-medium">{projectData?.firstDonator.user_id}</p>
                   <p className="text-sm text-astradarkgray">
-                    {project.firstDonator.amount}
+                    {projectData?.firstDonator.amount}
                   </p>
                 </div>
               </div>
@@ -377,7 +436,7 @@ export default function ProjectDetails({ params }) {
                 <input
                   type="text"
                   readOnly
-                  value={project.urlLink}
+                  value={projectData?.urlLink}
                   className="w-full text-sm py-1 bg-transparent focus:outline-none text-gray-700 overflow-hidden text-ellipsis"
                 />
               </div>
@@ -386,7 +445,7 @@ export default function ProjectDetails({ params }) {
             <div className="mt-6 flex justify-center">
               <button
                 onClick={() => {
-                  navigator.clipboard.writeText(project.urlLink);
+                  navigator.clipboard.writeText(projectData?.urlLink);
 
                   // Show success animation in button
                   const btn = document.getElementById("copyBtn");
@@ -436,7 +495,7 @@ export default function ProjectDetails({ params }) {
                 <div className="flex space-x-4 justify-center">
                   <a
                     href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-                      project.urlLink
+                      projectData?.urlLink
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -454,7 +513,7 @@ export default function ProjectDetails({ params }) {
                   </a>
                   <a
                     href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(
-                      project.urlLink
+                      projectData?.urlLink
                     )}&text=Check out this project!`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -472,7 +531,7 @@ export default function ProjectDetails({ params }) {
                   </a>
                   <a
                     href={`https://api.whatsapp.com/send?text=Check out this project! ${encodeURIComponent(
-                      project.urlLink
+                      projectData?.urlLink
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -490,7 +549,7 @@ export default function ProjectDetails({ params }) {
                   </a>
                   <a
                     href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
-                      project.urlLink
+                      projectData?.urlLink
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -574,21 +633,21 @@ export default function ProjectDetails({ params }) {
 
               <div className="flex items-center space-x-4">
                 <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-astraprimary shadow-md">
-                  {project.organizer.profilePic ? (
+                  {projectData?.organizer.profilePic ? (
                     <img
-                      src={project}
-                      alt={project.organizer.name}
+                      src={projectData}
+                      alt={projectData?.organizer.name}
                       className="w-full h-full rounded-full object-cover"
                     />
                   ) : (
                     <span className="text-lg font-bold">
-                      {project.organizer.name.charAt(0)}
+                      {projectData?.organizer.name.charAt(0)}
                     </span>
                   )}
                 </div>
                 <div>
                   <h3 className="font-lb text-xl text-white mb-1">
-                    Message {project.organizer.name}
+                    Message {projectData?.organizer.name}
                   </h3>
                   <p className="text-white/70 text-sm">
                     Typically responds within 24 hours
