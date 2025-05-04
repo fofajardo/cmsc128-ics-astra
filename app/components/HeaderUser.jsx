@@ -81,12 +81,6 @@ function HeaderAvatar({user}) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  function handleSignOut() {
-    axios.post(`${process.env.NEXT_PUBLIC_API_URL}/v1/auth/sign-out`).then(() => {
-      alert("Signed out");
-    });
-  }
-
   return <div className="relative flex items-center">
     <Image
       src={avatar}
@@ -117,13 +111,14 @@ function HeaderAvatar({user}) {
           <Settings size={18} className="mr-2"/>
           Settings
         </Link>
-        <button
-          onClick={handleSignOut}
-          className="flex items-center p-2 w-full text-astrared hover:bg-astrared hover:text-white rounded-md"
-        >
-          <LogOut size={18} className="mr-2"/>
-          Sign Out ({user?.state?.authUser?.id})
-        </button>
+        <Link href="/sign-out">
+          <button
+            className="flex items-center p-2 w-full text-astrared hover:bg-astrared hover:text-white rounded-md"
+          >
+            <LogOut size={18} className="mr-2"/>
+            Sign Out
+          </button>
+        </Link>
       </div>
     )}
   </div>;
@@ -172,7 +167,9 @@ export default function HeaderUser() {
     { name: "About", href: "/about" },
     { name: "Events", href: "/events" },
     { name: "Projects", href: "/projects" },
+    { name: "Search Alumni", href: "/search" },
     { name: "What’s Up?", href: "/whats-up" },
+    { name: "Jobs", href: "/jobs" },
   ];
 
   // Handle scrolling effect for navbar
@@ -184,8 +181,6 @@ export default function HeaderUser() {
 
   // Toggle Sidebar
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
-
-  console.log(user.state);
 
   return (
     <header
