@@ -3,6 +3,8 @@ import donationsService from "../services/donationsService.js";
 import { isValidUUID, isValidDate } from "../utils/validators.js";
 import {Actions, Subjects} from "../../common/scopes.js";
 import alumniService from "../services/alumniProfilesService.js";
+import usersService from "../services/usersService.js";
+import projectsService from "../services/projectsService.js";
 
 const getDonations = async (req, res) => {
   if (req.you.cannot(Actions.READ, Subjects.DONATION)) {
@@ -210,34 +212,23 @@ const createDonation = async (req, res) => {
     }
 
     // Check if userId and projectId exists
-    const userIdResponse = await req.supabase
-      .from("alumni_profiles")
-      .select("alum_id")
-      .eq("alum_id", userId)
-      .single();
+    const { data: userData, error: userError } = await usersService.fetchUserById(req.supabase, userId);
 
-    if (!userIdResponse.data && userIdResponse.error) {
+    if (userError || !userData) {
       return res.status(httpStatus.NOT_FOUND).json({
         status: "FAILED",
-        message: userIdResponse.error.message,
-        id: null
+        message: userError.message,
       });
     }
 
-    const projectIdResponse = await req.supabase
-      .from("projects")
-      .select("project_id")
-      .eq("project_id", projectId)
-      .single();
+    const { data: projectData, error: projectError } = await projectsService.fetchProjectById(req.supabase, projectId);
 
-    if (!projectIdResponse.data && projectIdResponse.error) {
+    if (projectError || !projectData) {
       return res.status(httpStatus.NOT_FOUND).json({
         status: "FAILED",
-        message: projectIdResponse.error.message,
-        id: null
+        message: projectError.message,
       });
     }
-
 
     const { data, error } = await donationsService.insertDonation(req.supabase, {
       user_id: userId,
@@ -417,7 +408,6 @@ const updateDonation = async (req, res) => {
                 (field === "donation_date" && (value !== null && !isValidDate(value))) ||
                 (field === "amount" && typeof value !== "number") ||
                 (field === "reference_num" && typeof value !== "string") ||
-                (field === "comment" && typeof value !== "string") ||
                 (field === "is_anonymous" && typeof value !== "boolean")
       ) {
         return res.status(httpStatus.BAD_REQUEST).json({
