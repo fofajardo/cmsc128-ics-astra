@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { TableHeader, Table, PageTool } from "@/components/TableBuilder";
 import { Check, Wallet, Users, HeartHandshake } from "lucide-react";
 import AdminStatCard from "@/components/AdminStatCard";
@@ -9,10 +10,14 @@ import ToastNotification from "@/components/ToastNotification";
 import ProjectCardPending from "@/components/ProjectCardPending";
 import ProjectCardActive from "@/components/ProjectCardActive";
 import { formatCurrency } from "@/utils/format";
+import { REQUEST_STATUS } from "../../../api/utils/enums";
+import DeclineModal from "@/components/projects/DeclineModal";
 import Link from "next/link";
 import axios from "axios";
 
 export default function ProjectsAdmin() {
+  const router = useRouter();
+
   const [showFilter, setShowFilter] = useState(false);
   const [selectedType, setSelectedType] = useState("All");
   const [toast, setToast] = useState(null);
@@ -23,6 +28,10 @@ export default function ProjectsAdmin() {
   const [loading, setLoading] = useState(true);
 
   const [projectPhotos, setProjectPhotos] = useState({});
+  const [requestTo, setrequestIdToDecline] = useState("");
+  const [showDeclineModal, setShowDeclineModal] = useState(false);
+  const [declineReason, setDeclineReason] = useState("");
+  const [declineRequestData, setDeclineRequestData] = useState({});
 
   useEffect(() => {
     const fetchProjectRequests = async () => {
@@ -110,7 +119,32 @@ export default function ProjectsAdmin() {
     fetchProjectRequests();
   }, []);
 
-  const handleUpdateCallback = (requestId, updatedStatus) => {
+  const updateProjectRequest = async (updatedStatus, requestId, requestResponse="") => {
+    try {
+      let data = {
+        status: updatedStatus
+      };
+
+      if (updatedStatus === REQUEST_STATUS.REJECTED) {
+        data = {
+          ...data,
+          response: requestResponse,
+        };
+      };
+
+      const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/requests/${encodeURI(requestId)}`, data);
+      if (response.data.status === "UPDATED") {
+        console.log("Successfully updated project request with id:", requestId);
+        handleUpdateCallback(updatedStatus, requestId);
+      } else {
+        console.error("Unexpected response:", response);
+      }
+    } catch (error) {
+      console.error("Failed to approve project request:", error);
+    }
+  };
+
+  const handleUpdateCallback = (updatedStatus, requestId) => {
     setProjects((prevProjects) =>
       prevProjects.map((project) =>
         project.request_id === requestId
@@ -118,6 +152,36 @@ export default function ProjectsAdmin() {
           : project
       )
     );
+  };
+
+  const handleApprove = (id, title) => (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log(id);
+    console.log(title);
+    updateProjectRequest(REQUEST_STATUS.APPROVED, id);
+    setToast({
+      type: "success",
+      message: `${title} has been approved!`
+    });
+  };
+
+  const handleDecline = (id, title) => (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowDeclineModal(true);
+    setDeclineRequestData({
+      id,
+      title,
+    });
+  };
+
+  const handleFinalDecline = () => {
+    updateProjectRequest(REQUEST_STATUS.REJECTED, declineRequestData.id, declineReason);
+    setToast({ type: "fail", message: `${declineRequestData.title} has been declined. Reason: ${declineReason}` });
+    setShowDeclineModal(false);
+    setDeclineReason("");
+    setTimeout(() => router.push("/admin/projects"), 2000);
   };
 
   const projectsData = projects;
@@ -362,8 +426,8 @@ export default function ProjectsAdmin() {
                     requester={project.requester}
                     goal={project.goal}
                     description={project.description}
-                    setToast={setToast}
-                    onUpdate={handleUpdateCallback}
+                    onApprove={handleApprove(project.request_id, project.title)}
+                    onTriggerDeclineModal={handleDecline(project.request_id, project.title)}
                   />
                 ))}
 
@@ -402,6 +466,15 @@ export default function ProjectsAdmin() {
           <PageTool pagination={pagination} setPagination={setPagination} />
         </div>
       </div>
+
+      {showDeclineModal && (
+        <DeclineModal
+          reason={declineReason}
+          setReason={setDeclineReason}
+          onClose={() => setShowDeclineModal(false)}
+          onSubmit={handleFinalDecline}
+        />
+      )}
     </div>
   );
 }
