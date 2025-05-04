@@ -77,8 +77,8 @@ export default function RejectionModal({ fundraiser, onClose, onResubmit }) {
                   {fundraiser.adminFeedback ? (
                     fundraiser.adminFeedback.map((feedback, index) => (
                       <li key={index} className="flex space-x-2">
-                        <span className="text-red-500 mt-0.5">•</span>
-                        <span className="text-sm text-astradarkgray">{feedback}</span>
+                        <span className="text-red-500">•</span>
+                        <span className="text-sm text-astradarkgray mt-0.5">{feedback}</span>
                       </li>
                     ))
                   ) : (
@@ -110,7 +110,7 @@ export default function RejectionModal({ fundraiser, onClose, onResubmit }) {
             <div>
               <h4 className="text-astradarkgray font-medium mb-2">Next Steps</h4>
               <p className="text-sm text-astradarkgray mb-4">
-                You can resubmit your fundraiser by addressing the feedback provided above.
+                You can request the fundraiser again by addressing the feedback provided above.
                 Our team will review your new submission as soon as possible.
               </p>
 
@@ -120,13 +120,6 @@ export default function RejectionModal({ fundraiser, onClose, onResubmit }) {
                   className="px-4 py-2 rounded-lg text-astradarkgray border border-astragray/30 hover:bg-astragray/10 transition-colors"
                 >
                   Close
-                </button>
-                <button
-                  onClick={onResubmit}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-astraprimary text-white hover:bg-astraprimary/90 transition-colors"
-                >
-                  <Edit3 className="w-4 h-4" />
-                  Resubmit Fundraiser
                 </button>
               </div>
             </div>

@@ -24,6 +24,8 @@ import EditModal from "./EditModal";
 import RejectionModal from "./RejectionModal";
 import { fundraisers as initialFundraisers } from "./fundraisersData";
 
+//id here refers to the user_id that is logged in that is tied to the fundraisers
+
 export default function UserFundraisers() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("all");
@@ -90,7 +92,7 @@ export default function UserFundraisers() {
 
     setFundraisers(updatedFundraisers);
 
-    // Update selected fundraiser with read messages
+    //Update selected fundraiser with read messages
     const updatedSelectedFundraiser = updatedFundraisers.find(
       (f) => f.id === fundraiser.id
     );
@@ -103,7 +105,7 @@ export default function UserFundraisers() {
   };
 
   const handleSubmitEditRequest = () => {
-    // Handle edit submission logic here
+    //Handle edit submission logic here
     setIsEditModalOpen(false);
     setToast({
       type: "success",
@@ -150,7 +152,7 @@ export default function UserFundraisers() {
 
     setFundraisers(updatedFundraisers);
 
-    // Update the selected fundraiser with the new messages
+    //Update the selected fundraiser with the new messages
     const updatedSelectedFundraiser = updatedFundraisers.find(
       (fundraiser) => fundraiser.id === fundraiserId
     );
@@ -172,8 +174,19 @@ export default function UserFundraisers() {
         />
       )}
 
+      {/* Back Navigation - Moved to top */}
+      <div className="max-w-6xl mx-auto px-6 pt-4">
+        <button
+          onClick={() => router.push("/projects")}
+          className="flex items-center gap-2 text-astraprimary font-medium hover:text-astraprimary/80 transition-colors py-2 px-3 rounded-lg border border-astragray/20 bg-astrawhite shadow-sm"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          Back to Projects
+        </button>
+      </div>
+
       {/* Header */}
-      <div className="bg-gradient-to-r from-astraprimary to-astraprimary/90 pt-12 pb-24">
+      <div className="bg-gradient-to-r from-astraprimary to-astraprimary/90 pt-6 pb-24">
         <div className="max-w-6xl mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
@@ -345,18 +358,6 @@ export default function UserFundraisers() {
                           <div className="flex flex-wrap gap-3">
                             {fundraiser.status === "approved" && (
                               <button
-                                onClick={() =>
-                                  router.push(`/projects/${fundraiser.id}`)
-                                }
-                                className="flex items-center gap-1.5 bg-astraprimary text-astrawhite py-2 px-4 rounded-lg text-sm hover:bg-astraprimary/90 transition-colors"
-                              >
-                                <ExternalLink className="w-4 h-4" />
-                                View Page
-                              </button>
-                            )}
-
-                            {fundraiser.status === "approved" && (
-                              <button
                                 onClick={() => handleOpenEditModal(fundraiser)}
                                 className="flex items-center gap-1.5 bg-amber-100 text-amber-700 py-2 px-4 rounded-lg text-sm hover:bg-amber-200 transition-colors"
                               >
@@ -472,7 +473,7 @@ export default function UserFundraisers() {
                           <div className="flex justify-end pt-4">
                             {fundraiser.status === "rejected" ? (
                               <button
-                                onClick={() => router.push("/projects/create")}
+                                onClick={() => router.push("/projects/request/goal")}
                                 className="flex items-center gap-1.5 bg-astraprimary text-astrawhite py-2 px-4 rounded-lg text-sm hover:bg-astraprimary/90 transition-colors"
                               >
                                 <Edit3 className="w-4 h-4" />
@@ -537,17 +538,6 @@ export default function UserFundraisers() {
           }}
         />
       )}
-
-      {/* Back Navigation */}
-      <div className="max-w-6xl mx-auto px-6 mt-8">
-        <button
-          onClick={() => router.push("/dashboard")}
-          className="flex items-center gap-2 text-astradarkgray hover:text-astraprimary transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Dashboard
-        </button>
-      </div>
     </div>
   );
 }
