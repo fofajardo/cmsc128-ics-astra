@@ -9,8 +9,9 @@ import AdminTabs from "@/components/AdminTabs";
 import ToastNotification from "@/components/ToastNotification";
 import ProjectCardPending from "@/components/ProjectCardPending";
 import ProjectCardActive from "@/components/ProjectCardActive";
-import { formatCurrency } from "@/utils/format";
-import { REQUEST_STATUS } from "../../../api/utils/enums";
+import { formatCurrency, capitalizeName } from "@/utils/format";
+import { REQUEST_STATUS } from "@/constants/requestConsts";
+import { PROJECT_TYPE } from "@/constants/projectConsts";
 import DeclineModal from "@/components/projects/DeclineModal";
 import Link from "next/link";
 import axios from "axios";
@@ -308,8 +309,9 @@ export default function ProjectsAdmin() {
                   onChange={(e) => setTempSelectedType(e.target.value)}
                 >
                   <option value="All">All Projects</option>
-                  <option value="Fundraiser">Fundraisers</option>
-                  <option value="Scholarship">Scholarships</option>
+                  <option value={PROJECT_TYPE.DONATION_DRIVE}>{capitalizeName(PROJECT_TYPE.DONATION_DRIVE)}</option>
+                  <option value={PROJECT_TYPE.FUNDRAISING}>{capitalizeName(PROJECT_TYPE.FUNDRAISING)}</option>
+                  <option value={PROJECT_TYPE.SCHOLARSHIP}>{capitalizeName(PROJECT_TYPE.SCHOLARSHIP)}</option>
                 </select>
               </div>
               <div className="flex justify-end gap-3 mt-4">
