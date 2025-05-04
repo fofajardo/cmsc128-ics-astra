@@ -2,6 +2,7 @@ import httpStatus from "http-status-codes";
 import donationsService from "../services/donationsService.js";
 import { isValidUUID, isValidDate } from "../utils/validators.js";
 import {Actions, Subjects} from "../../common/scopes.js";
+import alumniService from "../services/alumniProfilesService.js";
 
 const getDonations = async (req, res) => {
   if (req.you.cannot(Actions.READ, Subjects.DONATION)) {
@@ -22,9 +23,28 @@ const getDonations = async (req, res) => {
       });
     }
 
+    const userIds = data.map(donation => donation.user_id);
+    const { data: alumniData, error: alumniError } = await alumniService.fetchAlumniProfilesByFilter(req.supabase, { alum_id: userIds });
+
+    const donationsWithDonors = data.map(donation => {
+      const alum = alumniData.find(a => a.alum_id === donation.user_id);
+
+      let full_name = "Deleted user";
+      if (alum) {
+        full_name = [alum.first_name, alum.middle_name, alum.last_name]
+          .filter(Boolean) // remove undefined/null/empty values
+          .join(" ");
+      }
+
+      return {
+        ...donation,
+        donor: donation.is_anonymous ? "Anonymous" : full_name,
+      };
+    });
+
     return res.status(httpStatus.OK).json({
       status: "OK",
-      donations: data || [],
+      donations: donationsWithDonors || [],
     });
 
   } catch (error) {
