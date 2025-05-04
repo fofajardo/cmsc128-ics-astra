@@ -1,8 +1,11 @@
 "use client";
 import { useState } from "react";
 import ToastNotification from "@/components/ToastNotification";
+import {useRouter} from "next/navigation";
+import {feRoutes} from "../../../common/routes.js";
 
 export default function ForgotPassword() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [showToast, setShowToast] = useState(false);
 
@@ -26,6 +29,10 @@ export default function ForgotPassword() {
     }
 
     window.location.href = "/recover/2"; // Redirect to next step
+  };
+
+  const handleSignIn = function() {
+    router.push(feRoutes.auth.signIn());
   };
 
   return (
@@ -65,7 +72,7 @@ export default function ForgotPassword() {
 
           <div
             className="text-sm cursor-pointer text-[var(--color-astraprimary)]"
-            onClick={() => (window.location.href = "/login")}
+            onClick={handleSignIn}
           >
             Back to Sign In
           </div>
