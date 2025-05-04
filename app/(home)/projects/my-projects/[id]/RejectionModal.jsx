@@ -26,7 +26,7 @@ export default function RejectionModal({ fundraiser, onClose, onResubmit }) {
                 Fundraiser Rejected
               </h3>
               <p className="text-white/70 text-sm">
-                Here's why your fundraiser was not approved
+                Here&apos;s why your fundraiser was not approved
               </p>
             </div>
           </div>
