@@ -80,6 +80,8 @@ function SignedInUserProvider({children}) {
 
 function fetchData(aUser, aContext) {
   if (aUser === null || aUser === undefined || aUser === "") {
+    aContext.actions.setUser(null);
+    aContext.actions.setProfile(null);
     aContext.actions.setInitialized(true);
     return;
   }
