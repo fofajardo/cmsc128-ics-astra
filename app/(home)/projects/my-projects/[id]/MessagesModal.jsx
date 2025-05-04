@@ -108,7 +108,7 @@ export default function MessagesModal({ fundraiser, onClose, onSendMessage }) {
                         : "bg-astralightgray text-astradarkgray"
                     } p-3 rounded-lg`}
                   >
-                    <div className="flex justify-between items-center mb-1">
+                    <div className="flex justify-between items-center mb-1 gap-2">
                       <span className="font-medium text-sm">
                         {msg.sender}
                       </span>
