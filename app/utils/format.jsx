@@ -21,7 +21,7 @@ export function formatDate(date, format) {
 
   const options = formatOptions[format] || {};
 
-  return new Date(date).toLocaleDateString("en-US", options);
+  return new Date(date).toLocaleDateString("en-PH", options);
 }
 
 export function formatSalary(salary) {
