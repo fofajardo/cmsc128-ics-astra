@@ -627,12 +627,12 @@ export default function ProjectsPage() {
                   className="block"
                 >
                   <ProjectCard
-                    id={index}
+                    id={project.id}
                     image={project.image}
                     title={project.title}
                     description={project.description}
-                    goal={project.goalAmount}
-                    raised={project.amountRaised}
+                    goal={project.goal}
+                    raised={project.raised}
                     donors={project.donors}
                     endDate={project.endDate || "2025-01-01"}
                     type={project.type || "Fundraiser"}
