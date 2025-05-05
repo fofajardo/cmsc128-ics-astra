@@ -1,19 +1,56 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AdminStatCard from "@/components/AdminStatCard";
 import { BriefcaseBusiness, School } from "lucide-react";
 import { TabContext } from "@/components/TabContext";
 import { useRouter, usePathname } from "next/navigation";
 import { School2 } from "lucide-react";
 import { Building } from "lucide-react";
+import axios from "axios"; // Make sure axios is installed
 
 export default function AdminAlumniLayout({ children }) {
   const router = useRouter();
   const pathname = usePathname();
+
+  // State to store the statistics
+  const [stats, setStats] = useState({
+    total_organizations: 0,
+    universities: 0,
+    outside: 0,
+  });
+
   const [info, setInfo] = useState({
     title: "Organizations",
     search: "Search for an organization",
   });
+
+  useEffect(() => {
+    // Fetch statistics from the API
+    const fetchStatistics = async () => {
+      try {
+        console.log(`${process.env.NEXT_PUBLIC_API_URL}/v1/organizations/statistics`);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/organizations/stats`);
+
+        if (response.data.status === "OK") {
+          // Update state with the statistics data
+          const { total_organizations, universities, outside } = response.data.statistics;
+          setStats({
+            total_organizations,
+            universities,
+            outside,
+          });
+        } else {
+          console.error("Failed to fetch statistics");
+        }
+      } catch (error) {
+        console.error("Error fetching statistics:", error);
+      }
+    };
+
+    fetchStatistics();
+  }, []); // Empty dependency array means this runs only once when the component mounts
+
+  const statData = stats;
 
   return (
     <>
@@ -31,15 +68,36 @@ export default function AdminAlumniLayout({ children }) {
           </div>
           <div className="pt-6 pb-4 overflow-y-scroll w-full scrollbar-hide">
             <div className="flex flex-row gap-3 min-w-max px-4 justify-center">
-              <AdminStatCard delay={0.0} title='Total Orgs' value = {255} icon={<School className='size-13 text-astrawhite/>' strokeWidth={2}/>} route={false} onClick={() =>{}}/>
-              <AdminStatCard delay={0.1} title='University Orgs' value = {59} icon={<School2 className='size-13 text-astrawhite/>' strokeWidth={2}/>} route={false} onClick={() =>{}}/>
-              <AdminStatCard delay={0.2} title='Outside Orgs' value = {59} icon={<Building className='size-13 text-astrawhite/>' strokeWidth={2}/>} route={false} onClick={() =>{}}/>
+              <AdminStatCard
+                delay={0.0}
+                title="Total Orgs"
+                value={statData.total_organizations}
+                icon={<School className="size-13 text-astrawhite/" strokeWidth={2} />}
+                route={false}
+                onClick={() => {}}
+              />
+              <AdminStatCard
+                delay={0.1}
+                title="University Orgs"
+                value={statData.universities}
+                icon={<School2 className="size-13 text-astrawhite/" strokeWidth={2} />}
+                route={false}
+                onClick={() => {}}
+              />
+              <AdminStatCard
+                delay={0.2}
+                title="Outside Orgs"
+                value={statData.outside}
+                icon={<Building className="size-13 text-astrawhite/" strokeWidth={2} />}
+                route={false}
+                onClick={() => {}}
+              />
             </div>
           </div>
         </div>
       </div>
       {/* pass the value of currTab and info to the children */}
-      <TabContext.Provider value={{info, setInfo }}>
+      <TabContext.Provider value={{ info, setInfo }}>
         {children}
       </TabContext.Provider>
     </>

@@ -74,6 +74,13 @@ const deleteOrganization = async (supabase, orgId) => {
     .eq("id", orgId);
 };
 
+const fetchOrganizationStatistics = async (supabase) => {
+  return await supabase
+    .from("organization_view")
+    .select("*")
+    .single();
+}
+
 const organizationsService = {
   fetchOrganizations,
   fetchOrganizationById,
@@ -82,7 +89,8 @@ const organizationsService = {
   insertOrganization,
   updateOrganization,
   deleteOrganization,
-  fetchAlumni
+  fetchAlumni,
+  fetchOrganizationStatistics
 };
 
 export default organizationsService;
