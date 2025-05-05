@@ -20,7 +20,8 @@ import {
 } from "lucide-react";
 import ToastNotification from "@/components/ToastNotification";
 import axios from "axios";
-import { formatCurrency, formatDate } from "@/utils/format";
+import { formatCurrency, formatDate, capitalizeName } from "@/utils/format";
+import { PROJECT_TYPE } from "@/constants/projectConsts";
 
 //for admin/projects/active/[id]
 export default function ActiveProjectDetail({ params }) {
@@ -65,7 +66,7 @@ export default function ActiveProjectDetail({ params }) {
           if (donationData.status === "OK") {
             formattedDonations = donationData.donations.map(donation => ({
               id: donation.id,
-              donor: donation.user_id,
+              donor: donation.donor,
               amount: donation.amount,
               date: donation.donation_date,
             }));
@@ -86,9 +87,11 @@ export default function ActiveProjectDetail({ params }) {
             donors: projectData.list.projectData.number_of_donors.toString(),
             requester: {
               name: projectData.list.requesterData.full_name,
-              email: "NA",
+              email: projectData.list.requesterData.email,
               phone: "NA",
-              position: projectData.list.requesterData.role || "NA",
+              position: projectData.list.requesterData.role === "unlinked" || projectData.list.requesterData.role === null
+                ? "N/A"
+                : projectData.list.requesterData.role,
             },
             submissionDate: projectData.list.date_requested,
             startDate: "1999-01-01",
@@ -255,29 +258,35 @@ export default function ActiveProjectDetail({ params }) {
     }
   };
 
+  const updateProject = async (updateData) => {
+    try {
+      const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/projects/${encodeURI(projectData.id)}`, updateData);
+      if (response.data.status === "UPDATED") {
+        console.log("Successfully updated project with id:", id);
+      } else {
+        console.error("Unexpected response:", response);
+      }
+    } catch (error) {
+      console.error("Failed to update project:", error);
+    }
+  };
+
   const handleSaveChanges = () => {
     const newErrors = {};
-    const fundingGoal = parseInt(editFormData.goal, 10);
-    const amountRaised = parseInt(editFormData.raised, 10);
     const phonePattern = /^(\+63|0)?\d{9,10}$/;
 
-    if (!phonePattern.test(editFormData.requester.phone.replace(/\s+/g, ""))) {
-      newErrors["requester.phone"] =
-        "Invalid phone number format. Use +63 or 09 format.";
+    if (!editFormData.title) {
+      newErrors["title"] =
+        "Please enter a title.";
     }
-    if (isNaN(fundingGoal) || fundingGoal <= 0) {
+    if (isNaN(editFormData.goal) || editFormData.goal <= 0) {
       newErrors["goal"] = "Funding goal must be a positive number.";
     }
-    if (isNaN(amountRaised) || amountRaised < 0) {
-      newErrors["raised"] =
-        "Amount raised must be a valid non-negative number.";
+    if (!Object.values(PROJECT_TYPE).includes(editFormData.type)) {
+      newErrors["type"] = "Please select a valid project type.";
     }
-    if (
-      !newErrors["goal"] &&
-      !newErrors["raised"] &&
-      amountRaised > fundingGoal
-    ) {
-      newErrors["raised"] = "Amount raised cannot exceed funding goal.";
+    if (!editFormData.urlLink) {
+      newErrors["urlLink"] = "Please enter a donation link.";
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -285,14 +294,30 @@ export default function ActiveProjectDetail({ params }) {
       return;
     }
 
-    // Reformat goal and raised back to ₱ format
-    const formattedGoal = `₱${fundingGoal.toLocaleString("en-PH")}`;
-    const formattedRaised = `₱${amountRaised.toLocaleString("en-PH")}`;
+    // console.log(
+    //   {
+    //     title: editFormData.title,
+    //     description: editFormData.description,
+    //     type: editFormData.type,
+    //     donation_link: editFormData.urlLink,
+    //     goal_amount: editFormData.goal,
+    //     due_date: editFormData.endDate,
+    //   }
+    // );
+
+    updateProject({
+      title: editFormData.title,
+      details: editFormData.description,
+      type: editFormData.type,
+      donation_link: editFormData.urlLink,
+      goal_amount: editFormData.goal,
+      due_date: editFormData.endDate,
+    });
 
     setProjectData({
       ...editFormData,
-      goal: formattedGoal,
-      raised: formattedRaised,
+      goal_amount: editFormData.goal.toString(),
+      raised: editFormData.raised.toString(),
     });
 
     setShowEditModal(false);
@@ -674,10 +699,15 @@ export default function ActiveProjectDetail({ params }) {
                   <input
                     type="text"
                     name="title"
-                    className="w-full border border-astragray/30 rounded-lg p-3"
+                    className={`w-full border ${
+                      errors.title ? "border-red-500" : "border-astragray/30"
+                    } rounded-lg p-3`}
                     value={editFormData.title}
                     onChange={handleInputChange}
                   />
+                  {errors.title && (
+                    <p className="text-red-500 text-sm mt-1">{errors.title}</p>
+                  )}
                 </div>
 
                 <div>
@@ -686,18 +716,24 @@ export default function ActiveProjectDetail({ params }) {
                   </label>
                   <select
                     name="type"
-                    className="w-full border border-astragray/30 rounded-lg p-3"
+                    className={`w-full border ${
+                      errors.type ? "border-red-500" : "border-astragray/30"
+                    } rounded-lg p-3`}
                     value={editFormData.type}
                     onChange={handleInputChange}
                   >
-                    <option value="Scholarship">Scholarship</option>
-                    <option value="Fundraiser">Fundraiser</option>
+                    <option value={PROJECT_TYPE.DONATION_DRIVE}>{capitalizeName(PROJECT_TYPE.DONATION_DRIVE)}</option>
+                    <option value={PROJECT_TYPE.FUNDRAISING}>{capitalizeName(PROJECT_TYPE.FUNDRAISING)}</option>
+                    <option value={PROJECT_TYPE.SCHOLARSHIP}>{capitalizeName(PROJECT_TYPE.SCHOLARSHIP)}</option>
                   </select>
+                  {errors.type && (
+                    <p className="text-red-500 text-sm mt-1">{errors.type}</p>
+                  )}
                 </div>
 
                 <div>
                   <label className="block text-astradarkgray font-sb mb-2">
-                    Short Description
+                    Description
                   </label>
                   <input
                     type="text"
@@ -710,14 +746,15 @@ export default function ActiveProjectDetail({ params }) {
 
                 <div>
                   <label className="block text-astradarkgray font-sb mb-2">
-                    Detailed Description
+                    Donation Link
                   </label>
-                  <textarea
-                    name="longDescription"
-                    className="w-full border border-astragray/30 rounded-lg p-3 min-h-32"
-                    value={editFormData.longDescription}
+                  <input
+                    type="text"
+                    name="urlLink"
+                    className="w-full border border-astragray/30 rounded-lg p-3"
+                    value={editFormData.urlLink}
                     onChange={handleInputChange}
-                  ></textarea>
+                  ></input>
                 </div>
               </div>
 
@@ -758,6 +795,7 @@ export default function ActiveProjectDetail({ params }) {
                       } rounded-lg p-3`}
                       value={editFormData.raised}
                       onChange={handleInputChange}
+                      disabled
                     />
                     {errors.raised && (
                       <p className="text-red-500 text-sm mt-1">
@@ -775,7 +813,7 @@ export default function ActiveProjectDetail({ params }) {
                 </h4>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
+                  {/* <div>
                     <label className="block text-astradarkgray font-sb mb-2">
                       Start Date
                     </label>
@@ -786,25 +824,30 @@ export default function ActiveProjectDetail({ params }) {
                       value={editFormData.startDate}
                       onChange={handleInputChange}
                     />
-                  </div>
+                  </div> */}
 
                   <div>
                     <label className="block text-astradarkgray font-sb mb-2">
-                      End Date
+                      Due Date
                     </label>
                     <input
                       type="date"
                       name="endDate"
-                      className="w-full border border-astragray/30 rounded-lg p-3"
+                      className={`w-full border ${
+                        errors.endDate ? "border-red-500" : "border-astragray/30"
+                      } rounded-lg p-3`}
                       value={editFormData.endDate}
                       onChange={handleInputChange}
                     />
+                    {errors.endDate && (
+                      <p className="text-red-500 text-sm mt-1">{errors.endDate}</p>
+                    )}
                   </div>
                 </div>
               </div>
 
               {/* Scholarship/Fundraiser Specific Fields */}
-              <div className="space-y-4 md:col-span-2">
+              {/* <div className="space-y-4 md:col-span-2">
                 {editFormData.type === "Scholarship" && (
                   <>
                     <h4 className="font-sb text-lg border-b border-astralightgray pb-2">
@@ -836,7 +879,7 @@ export default function ActiveProjectDetail({ params }) {
                     onChange={handleInputChange}
                   ></textarea>
                 </div>
-              </div>
+              </div> */}
 
               {/* Project Requester Information */}
               <div className="space-y-4 md:col-span-2">
@@ -855,6 +898,7 @@ export default function ActiveProjectDetail({ params }) {
                       className="w-full border border-astragray/30 rounded-lg p-3"
                       value={editFormData.requester.name}
                       onChange={handleInputChange}
+                      disabled
                     />
                   </div>
 
@@ -868,6 +912,7 @@ export default function ActiveProjectDetail({ params }) {
                       className="w-full border border-astragray/30 rounded-lg p-3"
                       value={editFormData.requester.position}
                       onChange={handleInputChange}
+                      disabled
                     />
                   </div>
 
@@ -881,10 +926,11 @@ export default function ActiveProjectDetail({ params }) {
                       className="w-full border border-astragray/30 rounded-lg p-3"
                       value={editFormData.requester.email}
                       onChange={handleInputChange}
+                      disabled
                     />
                   </div>
 
-                  <div>
+                  {/* <div>
                     <label className="block text-astradarkgray font-sb mb-2">
                       Phone
                     </label>
@@ -904,7 +950,7 @@ export default function ActiveProjectDetail({ params }) {
                         {errors["requester.phone"]}
                       </p>
                     )}
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>
@@ -946,12 +992,12 @@ export default function ActiveProjectDetail({ params }) {
             </div>
             <div className="flex items-center mt-2">
               <div className="bg-astrawhite text-astradark px-3 py-1 rounded-lg text-sm font-s flex items-center gap-1">
-                {projectData.type === "Scholarship" ? (
+                {projectData.type === PROJECT_TYPE.SCHOLARSHIP? (
                   <GraduationCap className="w-4 h-4" />
                 ) : (
                   <HeartHandshake className="w-4 h-4" />
                 )}
-                {projectData.type}
+                {projectData?.type ? capitalizeName(projectData.type) : projectData?.type}
               </div>
 
               <div className="ml-4 bg-astrawhite text-astradark px-3 py-1 rounded-lg text-sm font-s flex items-center gap-1">
@@ -1024,15 +1070,9 @@ export default function ActiveProjectDetail({ params }) {
                 <div className="flex gap-2 items-start">
                   <Calendar className="w-8 h-8 text-astraprimary mt-1" />
                   <div>
-                    <p className="font-sb">Project Duration</p>
+                    <p className="font-sb">Project Due Date</p>
                     <p className="text-astradarkgray">
-                      {new Date(projectData.startDate).toLocaleDateString(
-                        "en-PH"
-                      )}{" "}
-                      to{" "}
-                      {new Date(projectData.endDate).toLocaleDateString(
-                        "en-PH"
-                      )}
+                      {formatDate(projectData.endDate, "long")}
                     </p>
                   </div>
                 </div>
@@ -1091,7 +1131,7 @@ export default function ActiveProjectDetail({ params }) {
                         {formatCurrency(transaction.amount)}
                       </td>
                       <td className="py-3 px-4 text-right text-astradarkgray">
-                        {formatDate(transaction.date, "long")}
+                        {formatDate(transaction.date)}
                       </td>
                     </tr>
                   ))}
@@ -1124,7 +1164,7 @@ export default function ActiveProjectDetail({ params }) {
                     {projectData.requester.name}
                   </p>
                   <p className="text-astralightgray text-sm">
-                    {projectData.requester.position}
+                    {projectData?.requester?.position && projectData?.requester?.position !== "N/A" ? capitalizeName(projectData.requester.position) : projectData?.requester?.position}
                   </p>
                 </div>
               </div>
@@ -1138,14 +1178,14 @@ export default function ActiveProjectDetail({ params }) {
                 </div>
               </div>
 
-              <div className="flex gap-2 items-start">
+              {/* <div className="flex gap-2 items-start">
                 <Phone className="w-6 h-6 text-astraprimary mr-2" />
                 <div>
                   <p className="text-astradarkgray">
                     {projectData.requester.phone}
                   </p>
                 </div>
-              </div>
+              </div> */}
 
               <button
                 className="flex items-center gap-2 mt-4 bg-astraprimary text-astrawhite py-2 px-4 rounded-lg w-full justify-center font-sb transition-colors hover:bg-astraprimary/90"

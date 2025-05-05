@@ -49,7 +49,7 @@ export function ResponseHelper(aRequest, aResponse, aNext) {
   aResponse.sendOne = function(aStatusCode, aStatusText, aData) {
     const body = {
       status: aStatusText,
-      data: aData
+      ...aData
     };
     // Dump entire response body to console if we're logging info.
     const passedFilter = FILTER.length === 0 ||
@@ -80,16 +80,15 @@ export function ResponseHelper(aRequest, aResponse, aNext) {
   aResponse.sendError = function(aError, aStatus) {
     let error = aError;
     // Take only the message if we have an error object.
-    if (aError instanceof Error) {
-      error = {
-        message: aError.message
-      };
+    let errorIsMessage = true;
+    if (aError instanceof Error || isString(aError?.message)) {
+      error = aError.message;
     } else if (isString(aError)) {
-      error = {
-        message: aError
-      };
+      error = aError;
+    } else {
+      errorIsMessage = false;
     }
-    return aResponse.sendOne(aStatus, "FAILED", { error });
+    return aResponse.sendOne(aStatus, "FAILED", errorIsMessage ? { message: error } : error);
   };
 
   aResponse.sendErrorServer = function(aError) {
@@ -120,6 +119,21 @@ export function ResponseHelper(aRequest, aResponse, aNext) {
       return aResponse.sendError(
         {
           message: "One or more required fields are missing or empty",
+          fieldNames
+        },
+        StatusCodes.BAD_REQUEST);
+    }
+
+    return false;
+  };
+
+  aResponse.sendErrorEmptyQuery = function(aValues) {
+    const fieldNames = hasNull(aRequest.query, aValues);
+
+    if (fieldNames) {
+      return aResponse.sendError(
+        {
+          message: "One or more required query parameters are missing or empty",
           fieldNames
         },
         StatusCodes.BAD_REQUEST);
@@ -160,7 +174,7 @@ export function ResponseHelper(aRequest, aResponse, aNext) {
       StatusCodes.BAD_REQUEST);
   };
 
-  aResponse.sendOk = function(aData) {
+  aResponse.sendOk = function(aData = {}) {
     return aResponse.sendOne(StatusCodes.OK, "OK", aData);
   };
 

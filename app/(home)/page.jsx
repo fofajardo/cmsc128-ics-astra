@@ -7,6 +7,7 @@ import { FileText } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Rocket, Users, Code, Database, Star } from "lucide-react";
 import Link from "next/link";
+import {RouteGuard} from "@/components/RouteGuard.jsx";
 
 
 const initialLoopImages1 = [
@@ -34,6 +35,7 @@ const loopImages2 = Array.from({ length: numberOfDuplicates }, () => initialLoop
 export default function Page() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-[var(--color-astrawhite)] to-[var(--color-astratintedwhite)]">
+      <RouteGuard />
       <Head>
         <title>ICS-ASTRA</title>
         <link rel="icon" href="/astra-logo.png" />
@@ -104,6 +106,7 @@ export default function Page() {
               <div key={index} className="inline-block mr-8 w-100 h-76 relative">
                 <Image
                   src={image}
+                  alt={`Alumni ${index + 1}`}
                   fill
                   style={{ objectFit: "cover", borderRadius: "10px" }}
                 />

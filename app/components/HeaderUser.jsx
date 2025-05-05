@@ -7,8 +7,9 @@ import logo from "../assets/logo.png";
 import avatar from "../assets/avatar.png";
 import { Menu, X, LogOut, User, Settings } from "lucide-react";
 import axios from "axios";
-import { useSignedInUser } from "@/components/UserContext.jsx";
-import { LoadingSpinner } from "@/components/LoadingSpinner.jsx";
+import {useSignedInUser} from "@/components/UserContext.jsx";
+import {LoadingSpinner} from "@/components/LoadingSpinner.jsx";
+import {feRoutes} from "../../common/routes.js";
 
 function HeaderMenu({ toggleSidebar, isSidebarOpen }) {
   return (
@@ -54,14 +55,14 @@ function HeaderNavigation({ navLinks, activeLink }) {
 function HeaderAuth() {
   return (
     <div className="flex items-center space-x-2 md:space-x-3">
-      <Link href="/sign-in">
+      <Link href={feRoutes.auth.signIn()}>
         <button
           className="cursor-pointer px-3 md:px-4 py-1 min-w-[80px] md:min-w-[90px] h-[32px] md:h-[35px] font-semibold text-astrawhite text-sm md:text-base bg-astraprimary border-2 border-astraprimary rounded-[12px] transition-all duration-300 transform hover:scale-105 hover:shadow-astraprimary truncate line-clamp-1"
         >
           Sign In
         </button>
       </Link>
-      <Link href="/sign-up">
+      <Link href={feRoutes.auth.signUp()}>
         <button
           className="cursor-pointer px-3 md:px-4 py-1 min-w-[80px] md:min-w-[90px] h-[32px] md:h-[35px] font-semibold text-astraprimary text-sm md:text-base bg-astrawhite border-2 border-astraprimary rounded-[12px] transition-all duration-300 transform hover:scale-105 hover:shadow-astraprimary truncate line-clamp-1"
         >

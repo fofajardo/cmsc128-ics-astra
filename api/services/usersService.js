@@ -1,3 +1,6 @@
+import { applyFilter } from "../utils/applyFilter.js";
+import {RoleName} from "../../common/scopes.js";
+
 const fetchUsers = async (supabase, page = 1, limit = 10) => {
   const startIndex = (page - 1) * limit;
   const endIndex = startIndex + Number(limit) - 1;
@@ -16,11 +19,28 @@ const fetchUserById = async (supabase, userId) => {
     .single();
 };
 
+const fetchUsersByFilter = async (supabase, filters) => {
+  let query = supabase
+    .from("users")
+    .select("*");
+
+  query = applyFilter(query, filters, {
+    ilike: [],
+    range: {},
+    sortBy: "updated_at",
+    defaultOrder: "desc",
+    specialKeys: []
+  });
+
+  return await query;
+};
+
 const checkExistingUser = async (supabase, username, email) => {
   return await supabase
     .from("users")
     .select("id")
-    .or(`username.eq.${username},email.eq.${email}`);
+    .or(`username.eq.${username},email.eq.${email}`)
+    .not("role", "eq", RoleName.UNLINKED);
 };
 
 const insertUser = async (supabase, userData) => {
@@ -54,6 +74,7 @@ const hardDeleteUser = async (supabase, userId) => {
 const usersService = {
   fetchUsers,
   fetchUserById,
+  fetchUsersByFilter,
   checkExistingUser,
   insertUser,
   updateUserData,
