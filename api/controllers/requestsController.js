@@ -359,6 +359,7 @@ const getProjectRequestById = async (req, res) => {
     const combinedData = {
       request_id: requestData.id,
       date_requested: requestData.date_requested,
+      date_reviewed: requestData.date_reviewed,
       status: requestData.status,
       projectData: projectData,
       requesterData: {
