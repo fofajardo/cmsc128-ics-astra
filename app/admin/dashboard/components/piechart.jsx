@@ -151,7 +151,7 @@ export function Donut() {
         <div className="flex justify-between">
           <div className="flex flex-col">
             <CardTitle>Highest Funded Categories</CardTitle>
-            <CardDescription>January - April 2025</CardDescription>
+            {/* <CardDescription>January - April 2025</CardDescription> */}
           </div>
           <a
             onClick={() => router.push("/admin/projects")}
@@ -213,9 +213,9 @@ export function Donut() {
           </PieChart>
         </ChartContainer>
         <CardFooter className="flex-col gap-2 font-s">
-          <div className="flex items-center gap-2 font-medium leading-none">
+          {/* <div className="flex items-center gap-2 font-medium leading-none">
             Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-          </div>
+          </div> */}
           <div className="leading-none text-muted-foreground">
             Showing {chartData.length} out of {projectStatistics.length} Donation Drives
           </div>
