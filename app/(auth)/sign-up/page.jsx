@@ -28,7 +28,7 @@ export default function SignupPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validateForm()) {
-      window.location.href = "/sign-up/2";
+      window.location.href = "/signup/2";
     }
   };
 
