@@ -1,11 +1,11 @@
 import httpStatus from "http-status-codes";
 import contentsService from "../services/contentsService.js";
-import { isValidUUID } from "../utils/validators.js";
+
 const getContents = async (req, res) => {
   try {
     const filters = req.query;
 
-    const { data, error } = await contentsService.fetchContents(req.supabase, filters);
+    const { data, error } = await contentsService.fetchContents(req.supabase);
 
     if (error) {
       console.log(error);
@@ -57,7 +57,7 @@ const getContentById = async (req, res) => {
 
 const createContent = async (req, res) => {
   try {
-    const allowedFields = ["user_id", "title", "details", "views", "created_at", "updated_at", "tags"];
+    const allowedFields = ["id", "user_id", "title", "details", "views", "created_at", "updated_at", "tags"];
     const providedFields = Object.keys(req.body);
 
     // Check for unexpected fields
@@ -106,7 +106,7 @@ const createContent = async (req, res) => {
       });
     }
 
-    const { data: existingContents, error: checkError } = await contentsService.checkExistingContent(req.supabase,title);
+    const { data: existingContents, error: checkError } = await contentsService.checkExistingContent(req.supabase);
 
     if (checkError) {
       console.error("Create Content Error:", checkError);
@@ -119,7 +119,7 @@ const createContent = async (req, res) => {
     if (existingContents?.length > 0) {
       return res.status(httpStatus.CONFLICT).json({
         status: "FAILED",
-        message: `Content already exists, ${existingContents?.length}`
+        message: "Content already exists"
       });
     }
 

@@ -1,37 +1,53 @@
 "use client";
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { GoBackButton } from "@/components/Buttons";
 import { Image, Trash2, Save, Send } from "lucide-react";
 import ConfirmModal from "@/components/ConfirmModal";
 import ToastNotification from "@/components/ToastNotification";
+import axios from "axios";
 
 export default function AnnouncementDetail() {
   const router = useRouter();
   const { id } = useParams();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [toast, setToast] = useState(null);
-
-  // Demo announcement data - replace with API call
-  const announcement = {
-    id,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Upcoming Hackathon 2025",
-    datePublished: "2025-04-25",
-    description: "Join us for the annual coding competition! Register now and showcase your skills in software development.",
-    type: "Event",
-    content: "Extended description and details about the announcement would go here...",
-    author: "Admin User",
-    recipients: 245,
-    viewCount: 123
-  };
-
+  const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState({
-    title: announcement.title,
-    description: announcement.description,
-    content: announcement.content,
-    image: announcement.image
+    title: "",
+    description: "",
+    content: "",
+    image: null
   });
+
+  // Simple text editor as a fallback solution
+  const [editorContent, setEditorContent] = useState("");
+
+  useEffect(() => {
+    if (id !== "new") {
+      setIsLoading(true);
+      axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`)
+        .then((response) => {
+          const content = response.data.content;
+          setFormData({
+            title: content?.title || "",
+            description: content?.description || "This is a description",
+            content: content?.details || "",
+            image: content?.image || null
+          });
+          setEditorContent(content?.details || "");
+        })
+        .catch((error) => {
+          console.log("Error fetching content", error);
+          setToast({ type: "error", message: "Failed to load announcement" });
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    } else {
+      setIsLoading(false);
+    }
+  }, [id]);
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
