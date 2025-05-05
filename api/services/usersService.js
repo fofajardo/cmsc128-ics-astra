@@ -1,4 +1,5 @@
 import { applyFilter } from "../utils/applyFilter.js";
+import {RoleName} from "../../common/scopes.js";
 
 const fetchUsers = async (supabase, page = 1, limit = 10) => {
   const startIndex = (page - 1) * limit;
@@ -38,7 +39,8 @@ const checkExistingUser = async (supabase, username, email) => {
   return await supabase
     .from("users")
     .select("id")
-    .or(`username.eq.${username},email.eq.${email}`);
+    .or(`username.eq.${username},email.eq.${email}`)
+    .not("role", "eq", RoleName.UNLINKED);
 };
 
 const insertUser = async (supabase, userData) => {

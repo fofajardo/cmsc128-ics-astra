@@ -5,6 +5,7 @@ import {createMongoAbility} from "@casl/ability";
 import {RoleName} from "../../common/scopes.js";
 import axios from "axios";
 import {clientRoutes} from "../../common/routes.js";
+import httpStatus from "http-status-codes";
 
 function buildUserContext() {
   const [initialized, setInitialized] = useState(false);
@@ -12,6 +13,7 @@ function buildUserContext() {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [degreePrograms, setDegreePrograms] = useState(null);
+  const [degreeProofUploaded, setDegreeProofUploaded] = useState(false);
 
   const [rules, setRules] = useState(null);
   const [ability, setAbility] = useState(null);
@@ -31,6 +33,7 @@ function buildUserContext() {
       authUser,
       profile,
       degreePrograms,
+      degreeProofUploaded,
       rules,
       ability,
       isGuest,
@@ -46,6 +49,7 @@ function buildUserContext() {
       setAuthUser,
       setProfile,
       setDegreePrograms,
+      setDegreeProofUploaded,
       setRules,
       setAbility,
       setIsGuest,
@@ -132,6 +136,7 @@ async function fetchData(aUser, aContext) {
     aContext.actions.setUser(null);
     aContext.actions.setProfile(null);
     aContext.actions.setDegreePrograms(null);
+    aContext.actions.setDegreeProofUploaded(false);
     aContext.actions.setInitialized(true);
     updateRoleProperties(aUser, aContext);
     return;
@@ -156,6 +161,13 @@ async function fetchData(aUser, aContext) {
       aContext.actions.setDegreePrograms(rawDegreePrograms?.data?.degreePrograms);
     } catch (e) {
       // Ignore missing degree programs.
+    }
+
+    try {
+      const rawDegreeProof = await axios.get(clientRoutes.photos.getDegreeProofJson(aUser.id));
+      aContext.actions.setDegreeProofUploaded(rawDegreeProof.status === httpStatus.OK);
+    } catch (e) {
+      // Ignore missing degree proof.
     }
     updateRoleProperties(aUser, aContext);
   }

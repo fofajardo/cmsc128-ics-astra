@@ -50,10 +50,18 @@ class BaseRoutes {
 
     this.photos = {
       base: (append = "") => `${this.BASE_URL}/photos${append}`,
+      withId: (id) => `${this.BASE_URL}/photos/${id}`,
+      getByProject: (projectId) => `${this.BASE_URL}/photos/project/${projectId}`,
+      getByEvent: (contentId) => `${this.BASE_URL}/photos/event/${contentId}`,
+      getByAlum: (alumId) => `${this.BASE_URL}/photos/alum/${alumId}`,
+      getProfilePics: () => `${this.BASE_URL}/photos/profile-pics`,
+      getDegreeProof: (alumId) => `${this.BASE_URL}/photos/degree-proof/${alumId}`,
+      getDegreeProofJson: (alumId) => `${this.BASE_URL}/photos/degree-proof/${alumId}/json`
     };
 
     this.alumniProfiles = {
       base: (append = "") => `${this.BASE_URL}/alumni-profiles${append}`,
+      withId: (id) => `${this.BASE_URL}/alumni-profiles/${id}`,
     };
 
     this.contents = {

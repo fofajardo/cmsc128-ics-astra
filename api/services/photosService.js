@@ -1,3 +1,5 @@
+// FIXME: THESE PHOTO TYPES SHOULD BE IN AN ENUM!
+
 const fetchAllPhotos = async (supabase) => {
   return await supabase
     .from("photos")
@@ -59,6 +61,15 @@ const fetchPhotoIdbyAlum = async (supabase, alum_id) => {
     .single();
 };
 
+const fetchDegreeProofPhoto = async (supabase, alum_id) => {
+  return await supabase
+    .from("photos")
+    .select("image_key")
+    .eq("user_id", alum_id)
+    .eq("type", 100) // Assuming type 100 is for degree proof
+    .single();
+};
+
 const fetchProjectPhotos = async (supabase, project_id) => {
   return await supabase
     .from("photos")
@@ -71,6 +82,7 @@ const fetchProjectPhotos = async (supabase, project_id) => {
 const photosService = {
   fetchAllPhotos,
   fetchPhotoById,
+  fetchDegreeProofPhoto,
   insertPhoto,
   updatePhotoById,
   deletePhotoById,
