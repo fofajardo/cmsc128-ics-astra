@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { TableHeader, PageTool } from "@/components/TableBuilder";
 import { Filter, Plus, Trash2, Edit2 } from "lucide-react";
 import { useTab } from "@/components/TabContext";
@@ -9,27 +9,17 @@ import Link from "next/link";
 
 export default function CommunicationPage() {
   const router = useRouter();
-  const { currTab } = useTab();
+  const { currTab, info } = useTab();
   const [toast, setToast] = useState(null);
   const [showFilter, setShowFilter] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("All");
   const [tempSelectedType, setTempSelectedType] = useState(selectedType);
 
-  // Single info state definition
-  const [info, setInfo] = useState({
-    title: currTab === "Newsletters" ? "Newsletters" : "Announcements",
-    search: currTab === "Newsletters" ? "Search newsletters" : "Search announcements",
-  });
-
-  // Simplified pagination state
-  const [pagination, setPagination] = useState({
-    display: [1, 10],
-    currPage: 1,
-    lastPage: Math.ceil(announcements.length / 10),
-    numToShow: 10,
-    total: announcements.length
-  });
+  // Pagination state with limit
+  const paginationOptions = [9, 12, 15, 18, 21];
+  const [itemsPerPage, setItemsPerPage] = useState(9);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Filter announcements
   const filteredAnnouncements = announcements.filter((announcement) => {
@@ -38,20 +28,20 @@ export default function CommunicationPage() {
     return matchesType && matchesSearch;
   });
 
-  // Calculate pagination with fixed page size
-  const startIndex = (pagination.currPage - 1) * pagination.numToShow;
-  const endIndex = Math.min(startIndex + pagination.numToShow, filteredAnnouncements.length);
+  // Calculate pagination
+  const totalItems = filteredAnnouncements.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
   const currentItems = filteredAnnouncements.slice(startIndex, endIndex);
 
-  // Update pagination when filters change
-  useEffect(() => {
-    setPagination(prev => ({
-      ...prev,
-      total: filteredAnnouncements.length,
-      lastPage: Math.ceil(filteredAnnouncements.length / prev.numToShow),
-      display: [startIndex + 1, endIndex]
-    }));
-  }, [filteredAnnouncements, startIndex, endIndex]);
+  const pagination = {
+    display: [startIndex + 1, Math.min(endIndex, totalItems)],
+    currPage: currentPage,
+    lastPage: totalPages,
+    numToShow: itemsPerPage,
+    total: totalItems
+  };
 
   const handleDeleteNewsletter = (index, e) => {
     e.preventDefault(); // Prevent PDF from opening
@@ -119,71 +109,108 @@ export default function CommunicationPage() {
         />
       )}
 
-      <div className="bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24 flex flex-col">
-        <div className="flex flex-col py-4 px-1 md:px-4 lg:px-8">
-          <TableHeader
-            info={info}
-            pagination={pagination}
-            setPagination={setPagination}
-            toggleFilter={() => setShowFilter(true)}
-            searchQuery={searchTerm}
-            setSearchQuery={setSearchTerm}
-            addButton={{
-              label: "Add New",
-              onClick: handleAddNew
-            }}
-          />
-
-          {/* Content sections */}
-          {currTab === "Announcements" && (
-            <div className="bg-astrawhite p-6 rounded-xl shadow-sm">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
-                {currentItems.map((announcement) => (
-                  <div key={announcement.id} className="group relative">
-                    <Link
-                      href={`/admin/whats-up/announcements/${announcement.id}`}
-                    >
-                      <div
-                        className="relative aspect-[4/3] rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
-                      >
-                        <img
-                          src={announcement.image}
-                          className="w-full h-full object-cover"
-                          alt={announcement.title}
-                        />
-                        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-astraprimary to-transparent/0 text-astrawhite p-4">
-                          <h1 className="text-lg font-bold text-astrawhite line-clamp-1">
-                            {announcement.title}
-                          </h1>
-                          <div className="flex items-center gap-2 mt-1">
-                            <i className="fas fa-calendar-alt text-astrawhite text-sm"></i>
-                            <span className="text-sm text-astrawhite/90">
-                              {announcement.datePublished}
-                            </span>
-                          </div>
-                          <p className="text-sm text-astrawhite/80 mt-2 line-clamp-2">
-                            {announcement.description}
-                          </p>
-                        </div>
-                      </div>
-                    </Link>
-                    {/* Edit Button */}
-                    <button
-                      onClick={() => router.push(`/admin/whats-up/announcements/${announcement.id}`)}
-                      className="absolute top-2 right-2 p-2 bg-astraprimary text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-astradark"
-                      title="Edit announcement"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
+      <div className="bg-astradirtywhite w-full px-2 py-4 md:px-6 lg:px-12 flex flex-col">
+        <div className='flex flex-col py-2 px-1 md:px-2 lg:px-4'>
+          {/* Search and Controls */}
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex items-center">
+              <span className="text-astradarkgray">
+                Displaying {pagination.display[0]}-{pagination.display[1]} of {pagination.total}
+              </span>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search announcements..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 pr-4 py-2 border border-astragray rounded-lg w-64"
+                />
+                <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 text-astradarkgray" width="20" height="20" viewBox="0 0 24 24">
+                  <path fill="none" stroke="currentColor" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
               </div>
+              <select
+                value={itemsPerPage}
+                onChange={(e) => {
+                  const newValue = parseInt(e.target.value);
+                  setItemsPerPage(newValue);
+                  setCurrentPage(1); // Reset to first page when changing items per page
+                }}
+                className="px-3 py-2 border border-astragray rounded-lg bg-white text-astradarkgray"
+              >
+                {paginationOptions.map(option => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+              <button
+                onClick={() => setShowFilter(true)}
+                className="flex items-center gap-2 px-4 py-2 border border-astragray rounded-lg"
+              >
+                <Filter className="w-4 h-4" />
+                Filter
+              </button>
+              <button
+                onClick={handleAddNew}
+                className="flex items-center gap-2 px-4 py-2 text-white bg-astraprimary rounded-lg"
+              >
+                <Plus className="w-4 h-4" />
+                Add New
+              </button>
+            </div>
+          </div>
+
+          {/* Content */}
+          {currTab === "Announcements" && (
+            <div className="bg-astrawhite p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 auto-rows-fr">
+              {currentItems.map((announcement) => (
+                <div key={announcement.id} className="group relative">
+                  <Link
+                    href={`/admin/whats-up/announcements/${announcement.id}`}
+                  >
+                    <div
+                      className="relative aspect-[4/3] rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+                    >
+                      <img
+                        src={announcement.image}
+                        className="w-full h-full object-cover"
+                        alt={announcement.title}
+                      />
+                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-astraprimary to-transparent/0 text-astrawhite p-4">
+                        <h1 className="text-lg font-bold text-astrawhite line-clamp-1">
+                          {announcement.title}
+                        </h1>
+                        <div className="flex items-center gap-2 mt-1">
+                          <i className="fas fa-calendar-alt text-astrawhite text-sm"></i>
+                          <span className="text-sm text-astrawhite/90">
+                            {announcement.datePublished}
+                          </span>
+                        </div>
+                        <p className="text-sm text-astrawhite/80 mt-2 line-clamp-2">
+                          {announcement.description}
+                        </p>
+                      </div>
+                    </div>
+                  </Link>
+                  {/* Edit Button */}
+                  <button
+                    onClick={() => router.push(`/admin/whats-up/announcements/${announcement.id}`)}
+                    className="absolute top-2 right-2 p-2 bg-astraprimary text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-astradark"
+                    title="Edit announcement"
+                  >
+                    <Edit2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
             </div>
           )}
 
           {currTab === "Newsletters" && (
-            <div className="bg-astrawhite p-6 rounded-xl shadow-sm">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-8">
+            <div className="bg-astrawhite p-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-8 max-w-[90%] mx-auto">
                 {Array(12).fill().map((_, index) => (
                   <Link
                     href="https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
@@ -199,6 +226,7 @@ export default function CommunicationPage() {
                         className="w-full h-full object-cover opacity-90"
                       />
                       <div className="absolute inset-0 bg-astradarkgray/50 group-hover:bg-astradarkgray/70 transition-colors" />
+
                       {/* Delete Button */}
                       <button
                         onClick={(e) => handleDeleteNewsletter(index, e)}
@@ -207,6 +235,7 @@ export default function CommunicationPage() {
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
+
                       <div className="absolute bottom-0 left-0 right-0 p-4 text-center">
                         <h3 className="text-astrawhite font-rb text-lg mb-1">
                           Volume {index + 1}
@@ -222,9 +251,12 @@ export default function CommunicationPage() {
             </div>
           )}
 
+          {/* Pagination */}
           <PageTool
             pagination={pagination}
-            setPagination={setPagination}
+            setPagination={(newPagination) => {
+              setCurrentPage(newPagination.currPage);
+            }}
           />
         </div>
       </div>
