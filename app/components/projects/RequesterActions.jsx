@@ -1,5 +1,6 @@
 "use client";
 import { User, Mail, Phone, MessageSquare } from "lucide-react";
+import { capitalizeName } from "@/utils/format";
 
 export default function RequesterActions({ project, onApprove, onTriggerDeclineModal, onContact }) {
   return (
@@ -11,17 +12,17 @@ export default function RequesterActions({ project, onApprove, onTriggerDeclineM
             <User className="w-10 h-10 text-astraprimary" />
             <div>
               <p className="text-astradarkgray">{project?.requester?.name}</p>
-              <p className="text-astralightgray text-sm">{project?.requester?.position}</p>
+              <p className="text-astralightgray text-sm">{project?.requester?.position && project?.requester?.position !== "N/A" ? capitalizeName(project.requester.position) : project?.requester?.position}</p>
             </div>
           </div>
           <div className="flex gap-2 items-start">
             <Mail className="w-6 h-6 text-astraprimary" />
             <p className="text-astradarkgray">{project?.requester?.email}</p>
           </div>
-          <div className="flex gap-2 items-start">
+          {/* <div className="flex gap-2 items-start">
             <Phone className="w-6 h-6 text-astraprimary" />
             <p className="text-astradarkgray">{project?.requester?.phone}</p>
-          </div>
+          </div> */}
           <button
             className="flex items-center gap-2 mt-4 bg-astraprimary text-astrawhite py-2 px-4 rounded-lg w-full justify-center font-sb hover:bg-astraprimary/90"
             onClick={onContact}

@@ -51,7 +51,6 @@ export default function EventModal({
           onSubmit={
             (e) => {
               e.preventDefault();
-              // For edit mode, pass the editId back
               if (isEdit) {
                 handleSubmit(id);
               } else {
@@ -70,7 +69,7 @@ export default function EventModal({
               onChange={handleChange}
               placeholder="Ex: User Experience Researcher"
               className="border rounded px-3 py-2 w-full"
-              required
+              required={!isEdit}
             />
           </div>
 
@@ -165,6 +164,7 @@ export default function EventModal({
               onChange={handleChange}
               placeholder="Ex: https://hiring.com/apply"
               className="border rounded px-3 py-2 w-full"
+              required={!isEdit && formData.type === "Online"}
             />
           </div>
           <div className="col-span-2">
@@ -188,8 +188,7 @@ export default function EventModal({
               onChange={handleChange}
               placeholder="Enter event description..."
               className="border rounded px-3 py-2 w-full h-28"
-              required
-
+              required={!isEdit}
             />
           </div>
 

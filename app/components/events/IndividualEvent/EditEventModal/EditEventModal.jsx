@@ -39,6 +39,7 @@ export default function EditEventModal({ event, onClose, onSave }) {
         <form onSubmit={handleSubmit} className="space-y-6">
           <ImageUploadSection image={image} setImage={setImage} />
           <EventFormFields
+            isEdit={true}
             title={title}
             setTitle={setTitle}
             date={date}

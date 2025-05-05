@@ -4,6 +4,7 @@ import alumniService from "../services/alumniProfilesService.js";
 import contentsService from "../services/contentsService.js";
 
 import { isValidUUID, isValidDate } from "../utils/validators.js";
+import { REQUEST_TYPE } from "../utils/enums.js";
 import { Actions, Subjects } from "../../common/scopes.js";
 import projectsService from "../services/projectsService.js";
 import usersService from "../services/usersService.js";
@@ -185,11 +186,14 @@ const getProjectRequests = async (req, res) => {
   }
 
   try {
+    const filters = req.query;
+
     // get requests from Requests table
-    const filters = {
-      type: [0, 1],
+    const completeFilters = {
+      ...filters,
+      type: [REQUEST_TYPE.PROJECT_FUNDS, REQUEST_TYPE.FUNDRAISING],
     };
-    const { data: requestData, error: requestError } = await requestsService.fetchProjectRequests(req.supabase, filters);
+    const { data: requestData, error: requestError } = await requestsService.fetchProjectRequests(req.supabase, completeFilters);
 
     if (requestError) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -259,6 +263,9 @@ const getProjectRequests = async (req, res) => {
       return {
         request_id: request.id,
         status: request.status,
+        date_requested: request.date_requested,
+        date_reviewed: request.date_reviewed,
+        response: request.response,
         projectData: project,
         requesterData: {
           full_name,
@@ -305,25 +312,24 @@ const getProjectRequestById = async (req, res) => {
     // get name and role from alumni profiles table
     const { data: alumData, error: alumError } = await alumniService.fetchAlumniProfileById(req.supabase, requestData.user_id);
 
-    if (alumError) {
-      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-        status: "FAILED",
-        message: alumError.message
-      });
-    };
+    // if (alumError) {
+    //   return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+    //     status: "FAILED",
+    //     message: alumError.message
+    //   });
+    // };
 
     // let alumData = Array.isArray(alumsData) ? alumsData[0] : alumsData;
 
     // get email from Users table
-    // const { data: userData, error: userError } = await usersService.fetchUserById(req.supabase, alumData.id);
+    const { data: userData, error: userError } = await usersService.fetchUserById(req.supabase, requestData.user_id);
 
-    // if (userError) {
-    //   return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-    //     status: "FAILED",
-    //     message: userError.message
-    //   });
-    // };
-    // console.log(userData)
+    if (userError) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: userError.message
+      });
+    };
 
     // get project details from Projects table
     const { data: projectData, error: projectError } = await projectsService.fetchProjectById(req.supabase, requestData.content_id);
@@ -336,20 +342,30 @@ const getProjectRequestById = async (req, res) => {
     };
 
 
-    const full_name = [alumData.first_name, alumData.middle_name, alumData.last_name]
-      .filter(Boolean) // remove undefined/null/empty values
-      .join(" ");
+    let full_name;
+    if (userData.role === "moderator") {    // TODO: Clarify if moderator/admin users will have profiles (and names)
+      full_name = "Moderator";
+    } else if (userData.role === "admin") {
+      full_name = "Admin";
+    } else if (alumError) {
+      full_name = "Deleted user";
+    } else {
+      full_name = [alumData.first_name, alumData.middle_name, alumData.last_name]
+        .filter(Boolean) // remove undefined/null/empty values
+        .join(" ");
+    };
 
     // Combine everything
     const combinedData = {
       request_id: requestData.id,
       date_requested: requestData.date_requested,
+      date_reviewed: requestData.date_reviewed,
       status: requestData.status,
       projectData: projectData,
       requesterData: {
         full_name,
-        role: null,
-        email: null,
+        role: userData.role,
+        email: userData.email,
       },
     };
 

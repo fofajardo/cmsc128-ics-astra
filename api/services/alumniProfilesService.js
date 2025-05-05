@@ -1,3 +1,5 @@
+import { applyFilter } from "../utils/applyFilter.js";
+
 const kAlumniProfileSelectQuery = `
     *,
     primary_work_experience:work_experiences (
@@ -34,6 +36,22 @@ const fetchAlumniProfileById = async (supabase, userId) => {
     .single();    // In case of duplicates, fetch latest created alumni profile
 };
 
+const fetchAlumniProfilesByFilter = async (supabase, filters) => {
+  let query = supabase
+    .from("alumni_profiles")
+    .select("*");
+
+  query = applyFilter(query, filters, {
+    ilike: [],
+    range: {},
+    sortBy: "created_at",
+    defaultOrder: "desc",
+    specialKeys: []
+  });
+
+  return await query;
+};
+
 const insertAlumniProfile = async (supabase, alumniProfileData) => {
   return await supabase
     .from("alumni_profiles")
@@ -57,6 +75,7 @@ const deleteAlumniProfileData = async (supabase, userId) => {
 const alumniService = {
   fetchAlumniProfiles,
   fetchAlumniProfileById,
+  fetchAlumniProfilesByFilter,
   insertAlumniProfile,
   updateAlumniProfileData,
   deleteAlumniProfileData
