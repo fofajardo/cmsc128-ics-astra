@@ -57,6 +57,7 @@ export default function EventsPage() {
   const fetchAttendees = async (id) => {
     try{
       console.log("in fetch attendees..:", user);
+      console.log("id in fetch attendees: ",id);
       if( user?.state?.isAlumnus || user?.state?.isAdmin||user?.state?.isModerator){
         console.log("fetchingg attendees...");
         const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/content/${id}`);
@@ -96,6 +97,8 @@ export default function EventsPage() {
 
   const fetchData = async () => {
     try {
+
+      console.log("=======START OF FETCHING DATA ==========");
       const [eventsRes, contentsRes,] = await Promise.all([
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events`, {
           params: { page: 1, limit: 100 },
@@ -115,9 +118,11 @@ export default function EventsPage() {
         // array of promises to fetch event photos
         const eventsPromises = eventsRes.data.list.map(async (event) => {
           console.log(event);
+          console.log("event id in event promises: ", event.event_id);
           const matchedContent = contentMap.get(event.event_id) || {};
           const photoUrl = await fetchEventPhoto(event.event_id);
           console.log("in fetch data, fetching user:", user);
+          console.log("event id in event promises: ", event.event_id);
           return {
             id: event.event_id,
             event_id: event.event_id,
@@ -136,7 +141,7 @@ export default function EventsPage() {
         const mergedEvents = await Promise.all(eventsPromises);
 
         setEventList(mergedEvents);
-        console.log("mergedEvents:",mergedEvents  );
+        console.log("mergedEvents:",mergedEvents);
         setTotalPages(Math.ceil(mergedEvents.length / itemsPerPage));
 
         fetchUpcomingEvent(contentMap);
@@ -166,7 +171,7 @@ export default function EventsPage() {
             date: new Date(event.event_date).toDateString(),
             isOnline: event.online,
             location: event.venue,
-            attendees: await fetchAttendees(event.event_id),
+            attendees: event.event_id ? await fetchAttendees(event.event_id) : [],
             status: new Date(event.event_date) < new Date() ? "Closed" : "Open",
             avatars: [],
           };
@@ -182,7 +187,6 @@ export default function EventsPage() {
   useEffect(() => {
     if (user) {
       fetchData();
-
     }
   }, [user]);
 

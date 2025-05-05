@@ -329,12 +329,13 @@ export default function Events() {
   const handleAdd = async () => {   // add content -> get the newly created content_id -> add event
     try{
       let contentId;
-      let user_id = "ee4d48d3-53b7-4b6f-a7c4-f93aab061b4c";  //manually added; TODO: change after user auth implemented
+
+      let user_id = user?.state?.user.id;  //manually added; TODO: change after user auth implemented
       console.log("event_id: ",selectedContentId);
       if(!isValidDate(addFormData.event_date)){
         console.log("invalid date format");
       }
-      const isOnline = addFormData.online === "Online";
+      const isOnline = addFormData.event_type === "Online";
       if (!isValidUUID(user_id)){
         console.log("invalid user id: ", user_id);
         setToast({ type: "error", message: "Failed to create event." });
@@ -402,6 +403,8 @@ export default function Events() {
 
       console.log("event id in ", toEditId);
 
+      console.log("add form: ", addFormData);
+
       const eventDefaults = {
         event_date: "",
         venue: "",
@@ -416,12 +419,13 @@ export default function Events() {
         tags: [],
       };
 
+      console.log("inside handle edit");
       const eventUpdateData = getChangedFields({
         event_date: addFormData.event_date,
         venue: addFormData.venue,
         external_link: addFormData.external_link,
         access_link: addFormData.access_link,
-        online: addFormData.online,
+        online: addFormData.event_type==="Online",
       }, eventDefaults);
 
       const contentUpdateData = getChangedFields({
@@ -449,7 +453,7 @@ export default function Events() {
       console.log("eventOnly: ", eventOnly);
       console.log(eventRes);
       console.log(contentRes);
-      console.log(contentRes.data.status);
+      console.log(contentRes?.data.status);
       console.log(eventRes?.data);
 
 
@@ -470,7 +474,7 @@ export default function Events() {
       }
 
     }catch(error){
-      console.log("error",error);
+      console.error("error",error);
       setToast({ type: "error", message: "Failed to edit event." });
     } finally{
       setShowEditModal(false);
