@@ -190,6 +190,7 @@ export default function CommunicationPage() {
           {currTab === "Announcements" && (
             <div className="bg-astrawhite p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 auto-rows-fr">
               {currentItems.map((announcement) => (
+
                 <div key={announcement.id} className="group relative">
                   <Link
                     href={`/admin/whats-up/announcements/${announcement.id}`}
@@ -209,11 +210,15 @@ export default function CommunicationPage() {
                         <div className="flex items-center gap-2 mt-1">
                           <i className="fas fa-calendar-alt text-astrawhite text-sm"></i>
                           <span className="text-sm text-astrawhite/90">
-                            {announcement.datePublished}
+                            {announcement.updated_at ? new Date(announcement.updated_at).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: '2-digit',
+                              year: 'numeric'
+                            }) : 'No date'}
                           </span>
                         </div>
                         <p className="text-sm text-astrawhite/80 mt-2 line-clamp-2">
-                          {announcement.description}
+                          {announcement.details}
                         </p>
                       </div>
                     </div>
