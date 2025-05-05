@@ -6,13 +6,17 @@ import Throbber from "../../../../components/projects/Throbber";
 import DonationSuccess from "../../../../components/projects/DonationSuccess";
 import BackButton from "@/components/events/IndividualEvent/BackButton";
 import ToastNotification from "@/components/ToastNotification";
+import axios from "axios";
+import { v4 as uuidv4 } from "uuid";
+import { DONATION_MODE_OF_PAYMENT } from "@/constants/donationConsts";
+import { useSignedInUser } from "@/components/UserContext";
 
 export default function DonatePage() {
   const { id } = useParams();
   const searchParams = useSearchParams();
   const title = searchParams.get("title");
   const [amount, setAmount] = useState(1000);
-  const [paymentMethod, setPaymentMethod] = useState("paypal");
+  const [paymentMethod, setPaymentMethod] = useState("bank");
   const [receipt, setReceipt] = useState(null);
   const [status, setStatus] = useState("idle");
   const [showToast, setShowToast] = useState(null);
@@ -22,6 +26,35 @@ export default function DonatePage() {
   const [expiry, setExpiry] = useState("");
   const [cvv, setCvv] = useState("");
   const [cardName, setCardName] = useState("");
+
+  const user = useSignedInUser();
+
+  const createDonation = async () => {
+    try {
+      const generatedRefNum = "REF" + uuidv4();
+
+      const data = {
+        user_id: user?.state?.user?.id,
+        project_id: id,
+        donation_date: new Date().toISOString(),
+        reference_num: generatedRefNum,
+        mode_of_payment: DONATION_MODE_OF_PAYMENT.BANK_TRANSFER,
+        amount: amount,
+        is_anonymous: false,  // TODO: Add is_anonymous field
+        comment: null,  // TODO: Add comment field
+      };
+
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations`, data);
+      const donationData = response.data;
+      if (donationData.status === "CREATED") {
+        console.log("Created donation:", donationData);
+      } else {
+        console.error("Unexpected response:", donationData);
+      }
+    } catch (error) {
+      console.log("Failed to create donation:", error);
+    }
+  };
 
   const handleAmountChange = (newAmount) => {
     setAmount(Number(newAmount));
@@ -44,6 +77,8 @@ export default function DonatePage() {
       setShowToast({ type: "error", message: "Please upload a receipt before donating." });
       return;
     }
+
+    createDonation();
 
     setStatus("loading");
     setTimeout(() => setStatus("success"), 2000);
@@ -115,6 +150,7 @@ export default function DonatePage() {
                 value="paypal"
                 checked={paymentMethod === "paypal"}
                 onChange={(e) => setPaymentMethod(e.target.value)}
+                disabled
               />
               <img src="/icons/paypal.svg" alt="PayPal" className="w-16 h-auto" />
             </label>
@@ -127,6 +163,7 @@ export default function DonatePage() {
                 value="credit"
                 checked={paymentMethod === "credit"}
                 onChange={(e) => setPaymentMethod(e.target.value)}
+                disabled
               />
               Credit/Debit Card
             </label>

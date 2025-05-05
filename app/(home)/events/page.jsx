@@ -14,7 +14,6 @@ import EventCarousel from "@/components/events/GroupedEvents/CardCarousel/EventC
 import ExploreUPLBSection from "@/components/events/GroupedEvents/ExploreUPLBSection";
 import UPLBImageCollage from "@/components/events/GroupedEvents/UPLBImageCollage";
 
-import events from "../../data/events";
 import eventsVector from "../../assets/events-vector.png";
 import venue2 from "../../assets/venue2.jpeg";
 import { useSignedInUser } from "@/components/UserContext";
@@ -22,21 +21,7 @@ import { useSignedInUser } from "@/components/UserContext";
 export default function EventsPage() {
   const user = useSignedInUser();
   const itemsPerPage = 4;
-  const [contentList, setContents] = useState([]);
-  const [eventCounts, setEventCounts] = useState({
-    active: 0,
-    past: 0,
-    total: 0
-  });
-
-
-  const [pagination, setPagination] = useState({
-    display: [1, 10],
-    currPage: 1,
-    lastPage: 10,
-    numToShow: 10,
-    total: 0,
-  });
+  console.log("user: ", user);
 
   const [eventList, setEventList] = useState([]);
   const [currentEvents, setCurrentEvents] = useState([]);
@@ -49,6 +34,7 @@ export default function EventsPage() {
   const [statusFilter, setStatusFilter] = useState(null);
   const [startDateFilter, setStartDateFilter] = useState(null);
   const [endDateFilter, setEndDateFilter] = useState(null);
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
   const fetchUserName = async (id) => {
     try{
       const response = await axios
@@ -70,11 +56,13 @@ export default function EventsPage() {
 
   const fetchAttendees = async (id) => {
     try{
+      console.log("in fetch attendees..:", user);
+      console.log("id in fetch attendees: ",id);
       if( user?.state?.isAlumnus || user?.state?.isAdmin||user?.state?.isModerator){
         console.log("fetchingg attendees...");
         const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/content/${id}`);
 
-        //console.log("fetched attendees:", response);
+        console.log("fetched attendees:", response);
         if (response.data.status === "OK"){
           const interestedUserNames = await Promise.all(
             response.data.list.map(async (user) => {
@@ -109,6 +97,8 @@ export default function EventsPage() {
 
   const fetchData = async () => {
     try {
+
+      console.log("=======START OF FETCHING DATA ==========");
       const [eventsRes, contentsRes,] = await Promise.all([
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events`, {
           params: { page: 1, limit: 100 },
@@ -124,11 +114,15 @@ export default function EventsPage() {
           contentMap.set(content.id, content);
         });
 
+
         // array of promises to fetch event photos
         const eventsPromises = eventsRes.data.list.map(async (event) => {
           console.log(event);
+          console.log("event id in event promises: ", event.event_id);
           const matchedContent = contentMap.get(event.event_id) || {};
           const photoUrl = await fetchEventPhoto(event.event_id);
+          console.log("in fetch data, fetching user:", user);
+          console.log("event id in event promises: ", event.event_id);
           return {
             id: event.event_id,
             event_id: event.event_id,
@@ -147,18 +141,54 @@ export default function EventsPage() {
         const mergedEvents = await Promise.all(eventsPromises);
 
         setEventList(mergedEvents);
-        console.log("mergedEvents:",mergedEvents  );
+        console.log("mergedEvents:",mergedEvents);
         setTotalPages(Math.ceil(mergedEvents.length / itemsPerPage));
+
+        fetchUpcomingEvent(contentMap);
       }
     } catch (error) {
-      console.error("Failed fetching events or contents:", error);
+      console.log("Failed fetching events or contents:", error);
       setEventList([]);
     }
   };
 
+  const fetchUpcomingEvent = async (contentMap) => {
+    try {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/upcoming-events`);
+
+      if (response.data.status === "OK"){
+        const upcomingEventsPromises = response.data.list.map(async (event) => {
+          console.log(event);
+          const matchedContent = contentMap.get(event.event_id) || {};
+          const photoUrl = await fetchEventPhoto(event.event_id);
+          console.log("in fetch data, fetching user:", user);
+          return {
+            id: event.event_id,
+            event_id: event.event_id,
+            imageSrc: photoUrl || venue2,  // Use fetched photo or default
+            title: matchedContent.title || "Untitled",
+            description: matchedContent.details || "No description",
+            date: new Date(event.event_date).toDateString(),
+            isOnline: event.online,
+            location: event.venue,
+            attendees: event.event_id ? await fetchAttendees(event.event_id) : [],
+            status: new Date(event.event_date) < new Date() ? "Closed" : "Open",
+            avatars: [],
+          };
+        });
+
+        const mergedUpcommingEvents = await Promise.all(upcomingEventsPromises);
+        setUpcomingEvents(mergedUpcommingEvents);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (user) {
+      fetchData();
+    }
+  }, [user]);
 
   useEffect(() => {
     console.log("Filtering triggered:", {
@@ -221,20 +251,22 @@ export default function EventsPage() {
     }
 
     if (endDateFilter) {
-      console.log("startDateFilder...:", endDateFilter);
+      console.log("endDateFilder...:", endDateFilter);
       const endDate = new Date(endDateFilter);
       filteredResults = filteredResults.filter(event =>
         new Date(event.date) <= endDate
       );
     }
     console.log("sortFilter...:", sortFilter);
-    if (sortFilter === "Most Recent") {
-
+    if (sortFilter?.label === "MOst Recent") {
       filteredResults.sort((a, b) => new Date(b.date) - new Date(a.date));
-    } else if (sortFilter === "Oldest") {
+      console.log("mpst recent", filteredResults);
+    } else if (sortFilter?.label === "Oldest") {
       filteredResults.sort((a, b) => new Date(a.date) - new Date(b.date));
-    } else if (sortFilter === "Popular") {
-      filteredResults.sort((a, b) => (b.attendees || 0) - (a.attendees || 0));
+      console.log("oldest", filteredResults);
+    } else if (sortFilter?.label === "Popular") {
+      filteredResults.sort((a, b) => (b.attendees.length || 0) - (a.attendees.length || 0));
+      console.log("popular", filteredResults);
     }
 
     setFilteredEvents(filteredResults);
@@ -344,14 +376,14 @@ export default function EventsPage() {
             <DateFilter
               placeholder="Start Date"
               value={startDateFilter}
-              onChange={(date) => setStartDateFilter(date)}
+              onChange={(date) => date === setStartDateFilter(date)}
             />
 
             <DateFilter
               placeholder="End Date"
               value={endDateFilter}
               onChange={(date) => {
-                console.log("date", date);
+                console.log("date:", date);
                 setEndDateFilter(date);
               }}
             />
@@ -367,7 +399,7 @@ export default function EventsPage() {
               placeholder="Sort"
               value={sortFilter}
               onChange={(selected) =>
-                selected.label === "All" ? setSortFilter(null) : setSortFilter(selected)
+                selected.label === "Clear" ? setSortFilter(null) : setSortFilter(selected)
               }
 
             />
@@ -407,7 +439,7 @@ export default function EventsPage() {
 
       {/* Carousel */}
       <div className="max-w-[1440px] mx-auto px-12 mt-24 pb-20 bg-astradirtywhite">
-        <EventCarousel events={eventList} />
+        <EventCarousel events={upcomingEvents} />
       </div>
 
       {/* Explore UPLB Section */}

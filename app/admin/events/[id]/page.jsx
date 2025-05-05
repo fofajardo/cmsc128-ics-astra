@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useState,useEffect } from "react";
+import { useState,useEffect, useContext } from "react";
 import eventList from "../eventDummy";
 
 import BackButton from "@/components/events/IndividualEvent/BackButton";
@@ -10,6 +10,7 @@ import EditEventModal from "@/components/events/IndividualEvent/EditEventModal/E
 import DeleteConfirmationModal from "@/components/events/IndividualEvent/DeleteEventModal/DeleteEventModal";
 import ToastNotification from "@/components/ToastNotification";
 import axios from "axios";
+import { TabContext } from "@/components/TabContext";
 
 import EventDetailsCard from "./EventDetails.Card";
 import SendEventCard from "./SendEventCard";
@@ -20,6 +21,7 @@ import venue2 from "../../../assets/venue2.jpeg";
 export default function EventAdminDetailPage() {
   const router = useRouter();
   const { id } = useParams();
+  const { setEventCounts } = useContext(TabContext);
   const [event, setEvent] = useState(null);
   const [selectedOption, setSelectedOption] = useState("Everyone");
   const [message, setMessage] = useState("");
@@ -38,6 +40,7 @@ export default function EventAdminDetailPage() {
     setShowEditModal(false);
     setToastData({ type: "success", message: "Event updated successfully!" });
   };
+
 
   const handleDeleteContent = async (id) => {
     try{
@@ -247,21 +250,30 @@ export default function EventAdminDetailPage() {
     } catch (error) {
       console.log(`Failed to fetch photo for event_id ${contentId}:`, error);
     }
-    return venue2;
+    return venue2.src;
   };
 
   const fetchEvent = async () =>{
     try {
       console.log("id: ", id);
-      const [eventRes, contentRes,interestStatsRes,interestRes] = await Promise.all([
+      const [eventRes, contentRes,interestStatsRes,interestRes,eventsResponse,actResponse] = await Promise.all([
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/${id}`),
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`),
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/${id}`),
-        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/content/${id}`)
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/content/${id}`),
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events`),
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/active-events`),
         //TODO: fetch the photo
 
       ]);
-
+      if(eventsResponse.data.status === "OK" && actResponse.data.status === "OK") {
+        console.log("events responses: ",eventsResponse);
+        console.log("acts responses: ",actResponse);
+        setEventCounts({active:actResponse.data.list.active_events_count,
+          past: eventsResponse.data.list.length- actResponse.data.list.active_events_count,
+          total:eventsResponse.data.list.length
+        });
+      }
       console.log("eventResponse:",eventRes);
       if (eventRes.data.status === "OK" && contentRes.data.status === "OK" ) {
         const eventResponse = eventRes.data;
@@ -285,6 +297,8 @@ export default function EventAdminDetailPage() {
         console.log("content: ", contentResponse.content.id);
 
         const photoUrl = await fetchEventPhoto(eventResponse.event.event_id);
+
+        console.log("photo url: ", photoUrl);
 
 
         const mergedEvent = {

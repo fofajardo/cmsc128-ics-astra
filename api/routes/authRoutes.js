@@ -29,6 +29,20 @@ const authRouter = () => {
     controller.signedInUser
   ]);
 
+  router.get("/sign-in/confirm", [
+    controller.signInGate,
+    controller.signInSbConfirm,
+    controller.signInRedirectFe
+  ]);
+
+  router.get("/sign-in/confirm/raw", [
+    controller.signInGate,
+    controller.signInSbConfirm,
+    controller.signedInUser
+  ]);
+
+  router.post("/sign-up/email/resend", controller.signUpResendEmail);
+
   router.get("/signed-in-user", controller.signedInUser);
 
   router.post("/sign-out", controller.signOut);

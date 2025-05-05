@@ -18,10 +18,10 @@ export default function AttendeesList({
   return (
     <>
       <div className="flex flex-col md:flex-row">
-        <div className="hidden md:flex flex-col items-center justify-center w-48 border-r pr-6">
+        {/* <div className="hidden md:flex flex-col items-center justify-center w-48 border-r pr-6">
           <div className="text-5xl font-bold text-astrablue">{list.length}</div>
           <div className="text-astradarkgray mt-2 text-center">Attendees</div>
-        </div>
+        </div> */}
 
         <div className="flex-1">
           {paginatedList.map((person, index) => (
