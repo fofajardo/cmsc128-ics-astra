@@ -1,3 +1,5 @@
+import { applyFilter } from "../utils/applyFilter.js";
+
 const fetchUsers = async (supabase, page = 1, limit = 10) => {
   const startIndex = (page - 1) * limit;
   const endIndex = startIndex + Number(limit) - 1;
@@ -14,6 +16,22 @@ const fetchUserById = async (supabase, userId) => {
     .select("*")
     .eq("id", userId)
     .single();
+};
+
+const fetchUsersByFilter = async (supabase, filters) => {
+  let query = supabase
+    .from("users")
+    .select("*");
+
+  query = applyFilter(query, filters, {
+    ilike: [],
+    range: {},
+    sortBy: "updated_at",
+    defaultOrder: "desc",
+    specialKeys: []
+  });
+
+  return await query;
 };
 
 const checkExistingUser = async (supabase, username, email) => {
@@ -54,6 +72,7 @@ const hardDeleteUser = async (supabase, userId) => {
 const usersService = {
   fetchUsers,
   fetchUserById,
+  fetchUsersByFilter,
   checkExistingUser,
   insertUser,
   updateUserData,
