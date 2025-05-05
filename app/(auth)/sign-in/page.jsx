@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-import {ArrowLeft} from "lucide-react";
 import {ErrorMessage, Field, Form, Formik} from "formik";
 import {AuthSchema} from "../../../common/validationSchemas.js";
 import {clientRoutes} from "../../../common/routes.js";
@@ -8,6 +7,8 @@ import LoadingOverlay from "@/components/LoadingOverlay.jsx";
 import axios from "axios";
 import {useRouter} from "next/navigation";
 import {useRefetchUser, useSignedInUser} from "@/components/UserContext.jsx";
+import {AuthBackToHomeLink} from "@/(auth)/AuthBackToHomeLink.jsx";
+import {RouteGuardUnauthenticated} from "@/components/RouteGuard.jsx";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -27,12 +28,13 @@ export default function LoginPage() {
         setSubmitting(false);
       });
     }).catch(function (error) {
-      setFieldError("username", "Invalid email or password.");
+      setFieldError("server", error?.response?.data?.message ?? "Something went wrong");
       setSubmitting(false);
     });
   };
 
-  function buildForm({isSubmitting}) {
+  const buildForm = function({errors, isSubmitting}) {
+    const errorsForMap = Object.values(errors);
     return (
       <Form className="space-y-4">
         <LoadingOverlay loading={isSubmitting} coverContainer={true}/>
@@ -40,23 +42,22 @@ export default function LoginPage() {
           type="email"
           name="username"
           placeholder="Email"
-          className="text-sm md:text-base w-full px-3 py-2 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[--color-astraprimary] bg-white text-gray-900"
+          className="w-full px-3 py-2 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-gray-900 text-sm md:text-base"
         />
-        <ErrorMessage
-          name="username"
-          component="div"
-          className="bg-red-100 text-[var(--color-astrared)] text-sm md:text-base px-3 py-2 rounded"/>
-
         <Field
           type="password"
           name="password"
           placeholder="Password"
-          className="text-sm md:text-base w-full px-3 py-2 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[--color-astraprimary] bg-white text-gray-900"
+          className="w-full px-3 py-2 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-gray-900 text-sm md:text-base"
         />
-        <ErrorMessage
-          name="password"
-          component="div"
-          className="bg-red-100 text-[var(--color-astrared)] text-sm md:text-base px-3 py-2 rounded"/>
+
+        {errorsForMap.length > 0 && (
+          <div className="bg-red-100 text-[var(--color-astrared)] text-sm px-3 py-2 rounded">
+            {errorsForMap.map((err, idx) => (
+              <p key={idx}>{err}</p>
+            ))}
+          </div>
+        )}
 
         <button
           type="submit"
@@ -75,13 +76,15 @@ export default function LoginPage() {
         </Link>
       </Form>
     );
-  }
+  };
 
   return (
     <div className="min-h-screen flex bg-[var(--color-astratintedwhite)]">
+      <RouteGuardUnauthenticated />
       {/* Left Side */}
       <div className="w-full md:w-1/2 relative flex items-center justify-center px-4 md:px-8">
-        <div className="w-full max-w-md p-8">
+        <div className="w-full max-w-md">
+          <AuthBackToHomeLink />
           {/* Logo and Back to Home inside form flex */}
           <div className="flex flex-col items-center mb-4">
             <img
@@ -91,13 +94,6 @@ export default function LoginPage() {
               width={120}
               className="w-auto mb-2"
             />
-            <Link
-              href="/"
-              className="flex items-center text-[var(--color-astrablack)] hover:text-[var(--color-astraprimary)] transition-colors text-sm md:text-base font-medium py-1 px-4"
-            >
-              <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 mr-2"/>
-              Back to Home
-            </Link>
           </div>
 
           <div className="mb-6 flex justify-between items-center">
@@ -110,9 +106,12 @@ export default function LoginPage() {
             </Link>
           </div>
 
-          <Formik initialValues={initialValues} onSubmit={handleSubmit} validationSchema={AuthSchema}>
-            {buildForm}
-          </Formik>
+          <Formik
+            initialValues={initialValues}
+            onSubmit={handleSubmit}
+            validationSchema={AuthSchema}
+            component={buildForm}
+          />
 
           <div className="mt-4">
             <Link
