@@ -5,6 +5,7 @@ const organizationsRouter = () => {
   const router = express.Router();
 
   router.get("/", organizationsController.getOrganizations);
+  router.get("/stats", organizationsController.getOrganizationStatistics);
   router.get("/:orgId", organizationsController.getOrganizationById);
   router.get("/:orgId/alumni", organizationsController.getAlumni);
   router.post("/", organizationsController.createOrganization);
