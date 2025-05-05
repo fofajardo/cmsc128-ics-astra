@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect ,useContext} from "react";
 import {TableHeader, Table, PageTool} from "@/components/TableBuilder";
 import SearchFilter from "./filter";
 import { ActionButton } from "@/components/Buttons";
@@ -9,8 +9,10 @@ import ToastNotification from "@/components/ToastNotification";
 import { Trash2, Eye } from "lucide-react";
 import { jobTypeMap } from "@/components/jobs/mappings";
 import axios from "axios";
+import { TabContext } from "../../components/TabContext";
 
 export default function Jobs() {
+  const {setJobCounts} = useContext(TabContext)
   const [showFilter, setShowFilter] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
   const { currTab, info } = useTab();
@@ -40,6 +42,7 @@ export default function Jobs() {
       const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs`);
       if (response.data.status === "OK") {
         setJobs(response.data.list || []);
+        computeCounts(response.data.list || []);
       } else {
         console.error("Unexpected response from server.");
       }
@@ -84,6 +87,23 @@ export default function Jobs() {
 
     setSearchQuery(searchInput);
     setFilteredJobs(filtered);
+  };
+
+  const computeCounts = (list) => {
+    const today = new Date();
+    let active = 0;
+    let expired = 0;
+
+    for (const job of list) {
+      const expiresAt = new Date(job.expires_at);
+      if (!isNaN(expiresAt) && expiresAt >= today) {
+        active++;
+      } else {
+        expired++;
+      }
+    }
+    let total_count = active + expired;
+    setJobCounts({ active:active, expired: expired, total: total_count });
   };
 
   const handleApply = (filters = {}) => {
