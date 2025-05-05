@@ -186,11 +186,14 @@ const getProjectRequests = async (req, res) => {
   }
 
   try {
+    const filters = req.query;
+
     // get requests from Requests table
-    const filters = {
+    const completeFilters = {
+      ...filters,
       type: [REQUEST_TYPE.PROJECT_FUNDS, REQUEST_TYPE.FUNDRAISING],
     };
-    const { data: requestData, error: requestError } = await requestsService.fetchProjectRequests(req.supabase, filters);
+    const { data: requestData, error: requestError } = await requestsService.fetchProjectRequests(req.supabase, completeFilters);
 
     if (requestError) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -260,6 +263,9 @@ const getProjectRequests = async (req, res) => {
       return {
         request_id: request.id,
         status: request.status,
+        date_requested: request.date_requested,
+        date_reviewed: request.date_reviewed,
+        response: request.response,
         projectData: project,
         requesterData: {
           full_name,
