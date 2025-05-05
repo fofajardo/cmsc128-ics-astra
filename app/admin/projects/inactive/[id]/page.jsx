@@ -45,7 +45,7 @@ export default function InactiveProjectDetail({ params }) {
           if (donationData.status === "OK") {
             formattedDonations = donationData.donations.map(donation => ({
               id: donation.id,
-              donor: donation.user_id,
+              donor: donation.donor,
               amount: donation.amount,
               date: donation.donation_date,
             }));
@@ -311,8 +311,8 @@ export default function InactiveProjectDetail({ params }) {
                   {projectData?.transactions.map((transaction) => (
                     <tr key={transaction.id} className="hover:bg-astralightgray/10 transition-colors">
                       <td className="py-3 px-4">{transaction.donor}</td>
-                      <td className="py-3 px-4 text-right font-sb text-astraprimary">{transaction.amount}</td>
-                      <td className="py-3 px-4 text-right text-astradarkgray">{new Date(transaction.date).toLocaleDateString("en-PH")}</td>
+                      <td className="py-3 px-4 text-right font-sb text-astraprimary">{formatCurrency(transaction.amount)}</td>
+                      <td className="py-3 px-4 text-right text-astradarkgray">{formatDate(transaction.date)}</td>
                     </tr>
                   ))}
                 </tbody>
