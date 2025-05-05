@@ -1,18 +1,28 @@
 "use client";
 
 import { useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import JobForm from "../../../components/jobs/edit/editJob";
 import ConfirmationPrompt from "./confirmation";
+import axios from "axios";
 
-export default function BigJobCardwEdit(job) {
+export default function BigJobCardwEdit({ job = {}, content = {} }) {
   const [showPrompt, setPrompt] = useState(false);
   const [showForm, setForm] = useState(false);
-
   const { id } = useParams();
+  const router = useRouter();
 
-  const handleDelete = () => {
-    // handle delete job id logic here
+  const handleDelete = async () => {
+    try {
+      const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs/${id}`);
+      if (response.data.status === "DELETED") {
+        router.push("/jobs"); // Redirect after successful deletion
+      } else {
+        console.error("Failed to delete job.");
+      }
+    } catch (error) {
+      console.error("Error deleting job:", error);
+    }
 
     setPrompt(false);
   };
@@ -29,7 +39,7 @@ export default function BigJobCardwEdit(job) {
         <button onClick={()=>{setPrompt(true);}} className="hover:scale-none hover:opacity-70 !cursor-pointer text-astraprimary border-1 border-astraprimary font-semibold w-20 py-2 rounded-lg text-lg">Delete</button>
       </div>
 
-      <p className="mt-5 text-black text-justify whitespace-pre-wrap">{`${job.details}`}</p>
+      <p className="mt-5 text-black text-justify whitespace-pre-wrap">{`${content.details}`}</p>
       {showForm ? <JobForm close={()=>setForm(false)} job={job}/> : <></>}
       {showPrompt ? <ConfirmationPrompt prompt={"Are you sure you want to delete this job posting?"} close={()=>setPrompt(false)} object={id} handleConfirm={handleDelete}/> : <></>}
     </div>
