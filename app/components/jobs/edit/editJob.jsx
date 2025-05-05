@@ -50,7 +50,7 @@ export default function JobForm({isEdit, close, job, content}){
     });
 
     if (changedFields.length === 0) {
-      console.error('No changes detected.');
+      console.error("No changes detected.");
       setPrompt(false);
       return;
     }
@@ -66,7 +66,7 @@ export default function JobForm({isEdit, close, job, content}){
     }, {});
 
     if (Object.keys(missingFields).length > 0) {
-      console.error('Missing required fields:', missingFields);
+      console.error("Missing required fields:", missingFields);
       setErrors(missingFields);
       setPrompt(false);
       return;
@@ -75,7 +75,7 @@ export default function JobForm({isEdit, close, job, content}){
     // Prepare job data except description
     const datatobesent = {};
     changedFields.forEach((field) => {
-      if (field !== 'description') {
+      if (field !== "description") {
         datatobesent[field] = formData[field];
       }
     });
@@ -87,18 +87,18 @@ export default function JobForm({isEdit, close, job, content}){
       }
 
       // Update content.details if description changed
-      if (changedFields.includes('description')) {
+      if (changedFields.includes("description")) {
         const contentToSend = {
           details: formData.description,
         };
         await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${job.job_id}`, contentToSend);
       }
 
-      console.log('Job and/or content updated successfully!');
+      console.log("Job and/or content updated successfully!");
       setPrompt(false);
       close();
     } catch (error) {
-      console.error('Error updating job:', error.response?.data || error.message);
+      console.error("Error updating job:", error.response?.data || error.message);
       setPrompt(false);
     }
   };
