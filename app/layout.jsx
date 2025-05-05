@@ -1,5 +1,6 @@
 import { SignedInUserFetcher, SignedInUserProvider } from "./components/UserContext";
 import PropTypes from "prop-types";
+import {RootLoadingOverlay} from "@/components/LoadingOverlay.jsx";
 
 export const metadata = {
   title: {
@@ -21,6 +22,7 @@ export default function RootLayout({ children }) {
       <body>
         <SignedInUserProvider>
           <SignedInUserFetcher />
+          <RootLoadingOverlay />
           {children}
         </SignedInUserProvider>
       </body>
