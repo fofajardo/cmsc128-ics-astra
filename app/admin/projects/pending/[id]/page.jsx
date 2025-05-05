@@ -9,8 +9,11 @@ import ContactModal from "@/components/projects/ContactModal";
 import ProjectDetails from "@/components/projects/ProjectDetails";
 import RequesterActions from "@/components/projects/RequesterActions";
 import DeclineModal from "@/components/projects/DeclineModal";
-import { formatCurrency, capitalizeName } from "@/utils/format";
+import { capitalizeName } from "@/utils/format";
 import axios from "axios";
+import { HeartHandshake } from "lucide-react";
+import { GraduationCap } from "lucide-react";
+import { PROJECT_TYPE } from "@/constants/projectConsts";
 
 export default function PendingProjectDetail({ params }) {
   const id = use(params).id;
@@ -189,6 +192,11 @@ export default function PendingProjectDetail({ params }) {
             </div>
             <div className="flex items-center mt-2">
               <div className="bg-astrawhite text-astradark px-3 py-1 rounded-lg text-sm font-s flex items-center gap-1">
+                {project.type === PROJECT_TYPE.SCHOLARSHIP? (
+                  <GraduationCap className="w-4 h-4" />
+                ) : (
+                  <HeartHandshake className="w-4 h-4" />
+                )}
                 {project?.type ? capitalizeName(project.type) : project?.type}
               </div>
               <div className="ml-4 bg-astrawhite text-astradark px-3 py-1 rounded-lg text-sm font-s flex items-center gap-1">
