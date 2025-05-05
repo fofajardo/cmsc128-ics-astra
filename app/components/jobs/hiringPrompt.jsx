@@ -3,7 +3,7 @@
 import JobForm from "../../components/jobs/addJob";
 import { useState } from "react";
 
-export default function HiringPrompt() {
+export default function HiringPrompt({refreshJobs}) {
   const [showForm, setForm] = useState(false);
 
   return (
@@ -16,6 +16,6 @@ export default function HiringPrompt() {
         <button onClick={()=>setForm(true)}className="!cursor-pointer text-left bg-astratintedwhite font-normal text-sm text-astradarkgray py-7 px-4 rounded-2xl inset-shadow-[0_1px_4px_rgba(0,0,0,0.25)] hover:inset-shadow-[0_1px_6px_rgba(0,0,0,0.4)] w-full">What job are you hiring for?..</button>
       </div>
 
-      {showForm ? <JobForm close={()=>setForm(false)}/> : <></>}
+      {showForm ? <JobForm close={() => setForm(false)} refreshJobs={refreshJobs} /> : <></>}
     </div>
   );}

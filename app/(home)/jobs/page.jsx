@@ -19,20 +19,21 @@ export default function JobsPage() {
   const [myJobCards, setMyJobCards] = useState(6); // limit / no. of cards owned to show
   const CARDS_PER_CLICK = 6;
 
+  const fetchJobs = async () => {
+    try {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs`);
+      if (response.data.status === "OK") {
+        setJobs(response.data.list || []);
+      } else {
+        console.error("Unexpected response from server.");
+      }
+    } catch (error) {
+      console.error("Failed to fetch jobs. Please try again later.");
+    }
+  };
+
   //UseEffect for Jobs
   useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs`);
-        if (response.data.status === "OK") {
-          setJobs(response.data.list || []);
-        } else {
-          console.error("Unexpected response from server.");
-        }
-      } catch (error) {
-        console.error("Failed to fetch jobs. Please try again later.");
-      }
-    };
     fetchJobs();
   }, []);
 
@@ -56,7 +57,7 @@ export default function JobsPage() {
         </h2>
       </header>
 
-      <HiringPrompt/>
+      <HiringPrompt refreshJobs={fetchJobs}/>
 
       <SearchBar onSearch={(query) => {
         const lower = query.toLowerCase();
