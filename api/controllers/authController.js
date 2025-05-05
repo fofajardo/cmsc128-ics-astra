@@ -1,5 +1,6 @@
 import httpStatus from "http-status-codes";
 import {absFeRoutes, clientRoutes} from "../../common/routes.js";
+import usersService from "../services/usersService.js";
 
 async function signUp(aRequest, aResponse, aNext) {
   const {body} = aRequest;
@@ -9,6 +10,17 @@ async function signUp(aRequest, aResponse, aNext) {
 
   if (aResponse.sendErrorEmptyBody(requiredProps)) {
     return;
+  }
+
+  const { data: existingUsers, error: checkError } =
+    await usersService.checkExistingUser(aRequest.supabase, null, body.username);
+
+  if (checkError) {
+    return aResponse.sendErrorServer(checkError);
+  }
+
+  if (existingUsers.length > 0) {
+    return aResponse.sendErrorClient("An account with this email already exists. Please sign in instead.");
   }
 
   const {data, error} = await aRequest.supabase.auth.signUp({
