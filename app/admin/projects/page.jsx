@@ -348,7 +348,7 @@ export default function ProjectsAdmin() {
         <img
           src="/blue-bg.png"
           alt="Background"
-          className="h-80 w-full object-cover"
+          className="h-100 w-full object-cover"
         />
         <div className="absolute inset-2 flex flex-col items-center justify-evenly text-astrawhite z-20">
           <div className="text-center pt-6">
@@ -401,6 +401,13 @@ export default function ProjectsAdmin() {
               />
             </div>
           </div>
+
+          {/* Create a project button */}
+          <Link href="/projects/request/goal" passHref>
+            <button className="mt-2 border-2 border-astrawhite text-astrawhite hover:bg-astrawhite hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-[200px] h-[60px]">
+              Create a Project
+            </button>
+          </Link>
         </div>
       </div>
 
