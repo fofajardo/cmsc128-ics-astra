@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import avatar from "../../../assets/avatar.png";
 
 export default function AttendeesList({
   attendees,
@@ -17,10 +18,10 @@ export default function AttendeesList({
   return (
     <>
       <div className="flex flex-col md:flex-row">
-        <div className="hidden md:flex flex-col items-center justify-center w-48 border-r pr-6">
+        {/* <div className="hidden md:flex flex-col items-center justify-center w-48 border-r pr-6">
           <div className="text-5xl font-bold text-astrablue">{list.length}</div>
           <div className="text-astradarkgray mt-2 text-center">Attendees</div>
-        </div>
+        </div> */}
 
         <div className="flex-1">
           {paginatedList.map((person, index) => (
@@ -31,7 +32,7 @@ export default function AttendeesList({
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 relative rounded-full overflow-hidden">
                   <Image
-                    src={person.avatar}
+                    src={person.avatar || avatar}
                     alt={person.name}
                     fill
                     className="object-cover"

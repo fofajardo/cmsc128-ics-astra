@@ -1,6 +1,9 @@
 "use client";
 import { GraduationCap, HeartHandshake } from "lucide-react";
 import Link from "next/link";
+import { formatCurrency, capitalizeName } from "@/utils/format";
+import { PROJECT_TYPE } from "@/constants/projectConsts";
+import axios from "axios";
 
 export default function ProjectCardPending({
   id,
@@ -10,28 +13,36 @@ export default function ProjectCardPending({
   requester,
   goal,
   description,
-  setToast
+  onApprove,
+  onTriggerDeclineModal,
 }) {
 
+  // const STATUS = {
+  //   APPROVE: 1,
+  //   DECLINE: 2
+  // };
+
   //Function to handle approve, placeholder pa lang
-  const handleApprove = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setToast({
-      type: "success",
-      message: `${title} has been approved!`
-    });
-  };
+  // const handleApprove = (e) => {
+  //   e.preventDefault();
+  //   e.stopPropagation();
+  //   updateProjectRequest(STATUS.APPROVE, id);
+  //   setToast({
+  //     type: "success",
+  //     message: `${title} has been approved!`
+  //   });
+  // };
 
   //Function to handle decline, placeholder pa lang
-  const handleDecline = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setToast({
-      type: "fail",
-      message: `${title} has been declined!`
-    });
-  };
+  // const handleDecline = (e) => {
+  //   e.preventDefault();
+  //   e.stopPropagation();
+  //   updateProjectRequest(STATUS.DECLINE);
+  //   setToast({
+  //     type: "fail",
+  //     message: `${title} has been declined!`
+  //   });
+  // };
 
   return (
     <Link href={`/admin/projects/pending/${id}`}>
@@ -44,12 +55,12 @@ export default function ProjectCardPending({
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
           <div className="absolute top-2 right-2 bg-astradark text-astrawhite px-2 py-1 rounded-lg text-xs font-s flex items-center gap-1">
-            {type === "Scholarship" ? (
+            {type === PROJECT_TYPE.SCHOLARSHIP ? (
               <GraduationCap className="w-3 h-3" />
             ) : (
               <HeartHandshake className="w-3 h-3" />
             )}
-            {type}
+            {capitalizeName(type)}
           </div>
         </div>
 
@@ -60,7 +71,7 @@ export default function ProjectCardPending({
             <span className="font-sb">Requested by:</span> {requester}
           </p>
           <p className="text-astradarkgray font-s mt-1">
-            <span className="font-sb">Goal:</span> {goal}
+            <span className="font-sb">Goal:</span> {formatCurrency(goal)}
           </p>
           <p className="text-astradarkgray font-s mt-2 line-clamp-2">{description}</p>
 
@@ -68,13 +79,13 @@ export default function ProjectCardPending({
           <div className="flex flex-col gap-3 mt-4">
             <button
               className="green-button px-2 py-1"
-              onClick={handleApprove}
+              onClick={onApprove}
             >
               Approve
             </button>
             <button
               className="red-button px-2 py-1"
-              onClick={handleDecline}
+              onClick={onTriggerDeclineModal}
             >
               Decline
             </button>

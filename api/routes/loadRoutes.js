@@ -14,6 +14,7 @@ import projectsRouter from "./projectsRoutes.js";
 import donationsRouter from "./donationsRoutes.js";
 import organizationsRouter from "./organizationsRoutes.js";
 import organizationAffiliationsRouter from "./organizationAffiliationsRoutes.js";
+import postsRouter from "./postsRoutes.js";
 import reportsRouter from "./reportsRoutes.js";
 import requestsRouter from "./requestsRoutes.js";
 import jobsRouter from "./jobsRoutes.js";
@@ -40,6 +41,7 @@ const registerRoutes = (app) => {
   app.use(serverRoutes.workExperiences.base(), workExperiencesRouter());
   app.use(serverRoutes.events.base(), eventsRouter());
   app.use(serverRoutes.eventInterests.base(), eventInterestsRouter());
+  app.use(serverRoutes.announcements.base(), postsRouter());
   app.use(serverRoutes.projects.base(), projectsRouter());
   app.use(serverRoutes.donations.base(), donationsRouter());
   app.use(serverRoutes.organizations.base(), organizationsRouter());

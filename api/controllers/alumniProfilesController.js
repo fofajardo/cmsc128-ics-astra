@@ -29,6 +29,29 @@ const getAlumniProfiles = async (req, res) => {
   }
 };
 
+const getAlumniProfilesById = async function(aRequest, aResponse) {
+  const {userId} = aRequest.params;
+  if (!userId) {
+    return aResponse.sendErrorEmptyParam("userId");
+  }
+
+  try {
+    const {page = 1, limit = 10} = aRequest.query;
+    const {data, error} = await alumniProfilesService.fetchAlumniProfiles(aRequest.supabase, page, limit, userId);
+
+    if (error) {
+      return aResponse.sendErrorServer(error);
+    }
+
+    return aResponse.status(httpStatus.OK).json({
+      status: "OK",
+      list: data || [],
+    });
+  } catch (e) {
+    return aResponse.sendErrorServer(e);
+  }
+};
+
 const getAlumniProfileById = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -111,7 +134,7 @@ const createAlumniProfile = async (req, res) => {
       "honorifics",
       "citizenship",
       "sex",
-      "primary_work_experience_id",
+      // "primary_work_experience_id",
       "civil_status",
       "first_name",
       "middle_name",
@@ -145,6 +168,7 @@ const createAlumniProfile = async (req, res) => {
       first_name,
       middle_name,
       last_name,
+      suffix,
       is_profile_public
     } = req.body;
 
@@ -166,6 +190,7 @@ const createAlumniProfile = async (req, res) => {
       first_name,
       middle_name,
       last_name,
+      suffix,
       is_profile_public,
       created_at // Set internally
     });
@@ -295,6 +320,7 @@ const updateAlumniProfile = async (req, res) => {
 
 const alumniProfilesController = {
   getAlumniProfiles,
+  getAlumniProfilesById,
   getAlumniProfileById,
   createAlumniProfile,
   updateAlumniProfile

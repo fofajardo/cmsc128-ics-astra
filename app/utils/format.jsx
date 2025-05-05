@@ -20,6 +20,7 @@ export function formatDate(date, format) {
 
   const formatOptions = {
     "short": { year: "2-digit", month: "2-digit", day: "2-digit" },
+    "short-month": {year: "numeric", month: "short", day: "numeric"},
     "long": { year: "numeric", month: "long", day: "numeric" },
     "month-year": { year: "numeric", month: "long" },
     "year": { year: "numeric" },
@@ -28,7 +29,7 @@ export function formatDate(date, format) {
 
   const options = formatOptions[format] || {};
 
-  return new Date(date).toLocaleDateString("en-US", options);
+  return new Date(date).toLocaleDateString("en-PH", options);
 }
 
 export function formatSalary(salary) {

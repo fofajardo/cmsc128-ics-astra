@@ -1,41 +1,55 @@
-const fetchAlumniProfiles = async (supabase, page = 1, limit = 10) => {
+import { applyFilter } from "../utils/applyFilter.js";
+
+const kAlumniProfileSelectQuery = `
+    *,
+    primary_work_experience:work_experiences (
+        title,
+        field,
+        company,
+        year_started,
+        year_ended,
+        salary
+    )
+`;
+
+const fetchAlumniProfiles = async (supabase, page = 1, limit = 10, userId = null) => {
   const startIndex = (page - 1) * limit;
   const endIndex = startIndex + Number(limit) - 1;
 
-  return await supabase
+  const baseQuery = supabase
     .from("alumni_profiles")
-  // .select("*")
-  // remove unnecessary columns to reduce data transfer
-    .select(`
-            *,
-            primary_work_experience:work_experiences (
-                title,
-                field,
-                company,
-                year_started,
-                year_ended,
-                salary
-            )
-        `)
+    .select(kAlumniProfileSelectQuery)
     .range(startIndex, endIndex);
+
+  return await (userId
+    ? baseQuery.eq("alum_id", userId)
+    : baseQuery);
 };
 
 const fetchAlumniProfileById = async (supabase, userId) => {
   return await supabase
     .from("alumni_profiles")
-    .select(`
-            *,
-            primary_work_experience:work_experiences (
-                title,
-                field,
-                company,
-                year_started,
-                year_ended,
-                salary
-            )
-        `)
+    .select(kAlumniProfileSelectQuery)
     .eq("alum_id", userId)
-    .single();
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .single();    // In case of duplicates, fetch latest created alumni profile
+};
+
+const fetchAlumniProfilesByFilter = async (supabase, filters) => {
+  let query = supabase
+    .from("alumni_profiles")
+    .select("*");
+
+  query = applyFilter(query, filters, {
+    ilike: [],
+    range: {},
+    sortBy: "created_at",
+    defaultOrder: "desc",
+    specialKeys: []
+  });
+
+  return await query;
 };
 
 const insertAlumniProfile = async (supabase, alumniProfileData) => {
@@ -61,6 +75,7 @@ const deleteAlumniProfileData = async (supabase, userId) => {
 const alumniService = {
   fetchAlumniProfiles,
   fetchAlumniProfileById,
+  fetchAlumniProfilesByFilter,
   insertAlumniProfile,
   updateAlumniProfileData,
   deleteAlumniProfileData

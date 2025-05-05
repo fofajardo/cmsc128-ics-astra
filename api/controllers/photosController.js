@@ -284,12 +284,72 @@ const getPhotoByAlumId = async (req, res) => {
     console.log("Alum ID:", alum_id);
 
     // Fetch the photo record from the database
-    const { data, error } = await req.supabase
-      .from("photos")
-      .select("image_key")
-      .eq("user_id", alum_id)
-      .eq("type", 0) // Assuming type 0 is for profile pictures
-      .single();
+    const { data, error } = await photosService.fetchPhotoIdbyAlum(req.supabase, alum_id);
+
+    if (error || !data) {
+      return res.status(404).json({
+        status: "OK",
+        photo: "https://cdn-icons-png.flaticon.com/512/145/145974.png"
+      });
+    }
+
+    try {
+      // Try both approaches - first signed URL, then public URL
+      const { data: signedUrlData, error: signedUrlError } = await req.supabase
+        .storage
+        .from("user-photos-bucket")
+        .createSignedUrl(data.image_key, 60 * 60);
+
+      if (signedUrlError) {
+        console.log("Will use public URL.");
+
+        // Try public URL as fallback
+        const { data: publicUrlData } = req.supabase
+          .storage
+          .from("user-photos-bucket")
+          .getPublicUrl(data.image_key);
+
+        if (publicUrlData && publicUrlData.publicUrl) {
+          console.log("Public URL generated successfully.", publicUrlData.publicUrl);
+          return res.status(200).json({
+            status: "OK",
+            photo: publicUrlData.publicUrl
+          });
+        } else {
+          return res.status(200).json({
+            status: "OK",
+            photo: "https://cdn-icons-png.flaticon.com/512/145/145974.png"
+          });
+        }
+      }
+
+      return res.status(200).json({
+        status: "OK",
+        photo: signedUrlData.signedUrl,
+      });
+    } catch (urlError) {
+      console.error("Error generating URL:", urlError);
+      return res.status(200).json({
+        status: "OK",
+        photo: "https://cdn-icons-png.flaticon.com/512/145/145974.png"
+      });
+    }
+  } catch (error) {
+    console.error("Error in getPhotoByAlumId:", error);
+    return res.status(200).json({
+      status: "OK",
+      photo: "https://cdn-icons-png.flaticon.com/512/145/145974.png"
+    });
+  }
+};
+
+const getDegreeProofPhotoByAlumId = async (req, res) => {
+  try {
+    const { alum_id } = req.params;
+    console.log("Alum ID:", alum_id);
+
+    // Fetch the photo record from the database
+    const { data, error } = await photosService.fetchDegreeProofPhoto(req.supabase, alum_id);
 
     if (error || !data) {
       return res.status(404).json({
@@ -323,6 +383,173 @@ const getPhotoByAlumId = async (req, res) => {
   }
 };
 
+const getJsonOfDegreeProofPhotoByAlumId = async (req, res) => {
+  try {
+    const { alum_id } = req.params;
+    console.log("Alum ID:", alum_id);
+
+    // Fetch the photo record from the database
+    const { data, error } = await photosService.fetchDegreeProofPhoto(req.supabase, alum_id);
+
+    if (error || !data) {
+      return res.status(404).json({
+        status: "FAILED",
+        message: "Photo not found for the given Alum ID",
+      });
+    }
+
+    return res.status(200).json({
+      status: "OK",
+      ...data,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "FAILED",
+      message: error.message,
+    });
+  }
+};
+
+const getEventPhotoByContentId = async (req, res) => {
+  try {
+    const { content_id } = req.params;
+    console.log("Content ID:", content_id);
+    console.log("Looking for photo with content_id:", content_id, "and type: 3");
+
+    // Fetch the photo record from the database
+    const { data, error } = await photosService.fetchEventPhotos(req.supabase, content_id);
+
+    // console.log("Response data:", data);
+    // console.log("Response error:", error);
+
+    if (error || !data) {
+      console.log("Photo not found for content_id:", content_id, "Error:", error);
+      return res.status(200).json({
+        status: "OK",
+        photo: "/events/default-event.jpg" // Default event image
+      });
+    }
+
+    try {
+      // Try both approaches - first signed URL, then public URL
+      const { data: signedUrlData, error: signedUrlError } = await req.supabase
+        .storage
+        .from("user-photos-bucket")
+        .createSignedUrl(data.image_key, 60 * 60);
+
+      if (signedUrlError) {
+        console.log("Will use public URL.");
+
+        // Try public URL as fallback
+        const { data: publicUrlData } = req.supabase
+          .storage
+          .from("user-photos-bucket")
+          .getPublicUrl(data.image_key);
+
+        if (publicUrlData && publicUrlData.publicUrl) {
+          // console.log("Public URL generated successfully for event.", publicUrlData.publicUrl);
+          return res.status(200).json({
+            status: "OK",
+            photo: publicUrlData.publicUrl
+          });
+        } else {
+          return res.status(200).json({
+            status: "OK",
+            photo: "/events/default-event.jpg" // Default event image
+          });
+        }
+      }
+
+      return res.status(200).json({
+        status: "OK",
+        photo: signedUrlData.signedUrl,
+      });
+    } catch (urlError) {
+      console.error("Error generating URL for event:", urlError);
+      return res.status(200).json({
+        status: "OK",
+        photo: "/events/default-event.jpg" // Default event image
+      });
+    }
+  } catch (error) {
+    console.error("Error in getEventPhotoByContentId:", error);
+    return res.status(200).json({
+      status: "OK",
+      photo: "/events/default-event.jpg" // Default event image
+    });
+  }
+};
+
+const getProjectPhotoByContentId = async (req, res) => {
+  try {
+    const { project_id } = req.params;
+    // console.log("Project ID:", project_id);
+    // console.log("Looking for photo with content_id:", project_id, "and type: 5");
+
+    // Fetch the photo record from the database
+    const { data, error } = await photosService.fetchProjectPhotos(req.supabase, project_id);
+
+    // console.log("Response data:", data);
+    // console.log("Response error:", error);
+
+    if (error || !data) {
+      console.log("Photo not found for project_id:", project_id, "Error:", error);
+      return res.status(200).json({
+        status: "OK",
+        photo: "/projects/assets/Donation.jpg" // Default project image
+      });
+    }
+
+    try {
+      // Try both approaches - first signed URL, then public URL
+      const { data: signedUrlData, error: signedUrlError } = await req.supabase
+        .storage
+        .from("user-photos-bucket")
+        .createSignedUrl(data.image_key, 60 * 60);
+
+      if (signedUrlError) {
+        console.log("Will use public URL.");
+
+        // Try public URL as fallback
+        const { data: publicUrlData } = req.supabase
+          .storage
+          .from("user-photos-bucket")
+          .getPublicUrl(data.image_key);
+
+        if (publicUrlData && publicUrlData.publicUrl) {
+          // console.log("Public URL generated successfully for project.", publicUrlData.publicUrl);
+          return res.status(200).json({
+            status: "OK",
+            photo: publicUrlData.publicUrl
+          });
+        } else {
+          return res.status(200).json({
+            status: "OK",
+            photo: "/projects/assets/Donation.jpg" // Default project image
+          });
+        }
+      }
+
+      return res.status(200).json({
+        status: "OK",
+        photo: signedUrlData.signedUrl,
+      });
+    } catch (urlError) {
+      console.error("Error generating URL for project:", urlError);
+      return res.status(200).json({
+        status: "OK",
+        photo: "/projects/assets/Donation.jpg" // Default project image
+      });
+    }
+  } catch (error) {
+    console.error("Error in getProjectPhotoByContentId:", error);
+    return res.status(200).json({
+      status: "OK",
+      photo: "/projects/assets/Donation.jpg" // Default project image
+    });
+  }
+};
+
 const photosController = {
   getAllPhotos,
   getPhotoById,
@@ -331,6 +558,10 @@ const photosController = {
   deletePhoto,
   getAllProfilePics,
   getPhotoByAlumId,
+  getEventPhotoByContentId,
+  getProjectPhotoByContentId,
+  getDegreeProofPhotoByAlumId,
+  getJsonOfDegreeProofPhotoByAlumId,
 };
 
 export default photosController;

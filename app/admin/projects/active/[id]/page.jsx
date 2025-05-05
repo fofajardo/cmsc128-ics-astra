@@ -19,6 +19,10 @@ import {
   X,
 } from "lucide-react";
 import ToastNotification from "@/components/ToastNotification";
+import axios from "axios";
+import { formatCurrency, formatDate, capitalizeName } from "@/utils/format";
+import { PROJECT_TYPE } from "@/constants/projectConsts";
+
 //for admin/projects/active/[id]
 export default function ActiveProjectDetail({ params }) {
   const id = use(params).id;
@@ -29,64 +33,107 @@ export default function ActiveProjectDetail({ params }) {
   const [showContactModal, setShowContactModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+
   const [projectData, setProjectData] = useState(null);
+
   const [editFormData, setEditFormData] = useState({});
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
-  //dummy data
-  const initialProject = {
-    id: id,
-    title: "Computer Science Scholarship Fund",
-    type: "Scholarship",
-    image: "/projects/assets/Donation.jpg",
-    urlLink: "https://example.com/project/12345",
-    description:
-      "Supporting underprivileged students pursuing Computer Science degrees with full tuition coverage and stipend for books and materials.",
-    longDescription:
-      "This scholarship aims to provide comprehensive financial support to academically gifted but financially challenged students who wish to pursue a degree in Computer Science. Selected recipients will receive full tuition coverage, a monthly stipend for living expenses, and additional allowances for books, materials, and technology requirements. The scholarship committee will select candidates based on academic excellence, demonstrated financial need, and a passion for computing. By removing financial barriers, we hope to enable talented students to focus on their studies and achieve their full potential in the field of computer science.",
-    goal: "₱500,000",
-    raised: "₱480,000",
-    donors: 45,
-    requester: {
-      name: "Prof. Maria Santos",
-      email: "msantos@example.edu.ph",
-      phone: "+63 912 345 6789",
-      position: "Faculty Member",
-    },
-    submissionDate: "2024-12-05",
-    startDate: "2025-01-15",
-    endDate: "2025-12-31",
-    eligibilityCriteria:
-      "Undergraduate students majoring in Computer Science with at least a 2.0 GPA. Must demonstrate financial need and submit a personal statement about their interest in computer science.",
-    fundDistribution:
-      "75% for tuition fees, 15% for books and study materials, 10% for stipend",
-    transactions: [
-      { id: 1, donor: "Anonymous", amount: "₱25,000", date: "2025-01-20" },
-      { id: 2, donor: "Juan Dela Cruz", amount: "₱15,000", date: "2025-01-25" },
-      {
-        id: 3,
-        donor: "ICS Alumni Association",
-        amount: "₱100,000",
-        date: "2025-02-05",
-      },
-      {
-        id: 4,
-        donor: "Tech Company Inc.",
-        amount: "₱150,000",
-        date: "2025-02-28",
-      },
-      { id: 5, donor: "Anonymous", amount: "₱10,000", date: "2025-03-10" },
-      { id: 6, donor: "Maria Reyes", amount: "₱50,000", date: "2025-03-22" },
-      { id: 7, donor: "Maria Reyes", amount: "₱50,000", date: "2025-03-22" },
-      { id: 8, donor: "Maria Reyes", amount: "₱50,000", date: "2025-03-22" },
-      { id: 9, donor: "Maria Reyes", amount: "₱50,000", date: "2025-03-22" },
-    ],
-  };
+  const [projectPhoto, setProjectPhoto] = useState({});
+
+  const STATUS = { DECLINE: 2 };
 
   // Initialize project data
   useEffect(() => {
-    setProjectData(initialProject);
-  }, []);
+    const fetchProjectRequest = async () => {
+      try {
+        setLoading(true);
+        const projectResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/requests/projects/${id}`);
+        const projectData = projectResponse.data;
+        console.log(projectData);
+        if (projectData.status === "OK") {
+          const projectId = projectData.list.projectData.project_id;
+
+          const donationsResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations`, {
+            params: {
+              project_id: projectId
+            }
+          });
+          const donationData = donationsResponse.data;
+          console.log(donationData);
+          let formattedDonations;
+          if (donationData.status === "OK") {
+            formattedDonations = donationData.donations.map(donation => ({
+              id: donation.id,
+              donor: donation.donor,
+              amount: donation.amount,
+              date: donation.donation_date,
+            }));
+          } else {
+            console.error("Unexpected response:", donationData);
+          }
+
+          setProjectData({
+            id: projectId,
+            title: projectData.list.projectData.title,
+            type: projectData.list.projectData.type,
+            image: null,
+            urlLink: projectData.list.projectData.donation_link,
+            description: projectData.list.projectData.details,
+            longDescription: projectData.list.projectData.details,
+            goal: projectData.list.projectData.goal_amount.toString(),
+            raised: projectData.list.projectData.total_donations.toString(),
+            donors: projectData.list.projectData.number_of_donors.toString(),
+            requester: {
+              name: projectData.list.requesterData.full_name,
+              email: projectData.list.requesterData.email,
+              phone: "NA",
+              position: projectData.list.requesterData.role === "unlinked" || projectData.list.requesterData.role === null
+                ? "N/A"
+                : projectData.list.requesterData.role,
+            },
+            submissionDate: projectData.list.date_requested,
+            startDate: "1999-01-01",
+            endDate: projectData.list.projectData.due_date,
+            eligibilityCriteria: "NA",
+            fundDistribution: "NA",
+            transactions: formattedDonations,
+          });
+
+          // fetch photo
+          try {
+            const photoResponse = await axios.get(
+              `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/project/${projectId}`
+            );
+
+            if (photoResponse.data.status === "OK" && photoResponse.data.photo) {
+              setProjectPhoto(photoResponse.data.photo);
+            }
+          } catch (photoError) {
+            console.log(`Failed to fetch photo for project_id ${projectId}:`, photoError);
+          }
+        } else {
+          console.error("Unexpected response:", projectData);
+        }
+      } catch (error) {
+        console.error("Failed to fetch projects and donations:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjectRequest();
+  }, [id]);
+
+  useEffect(() => {
+    if (projectData?.id) {
+      setProjectData(prevData => ({
+        ...prevData,
+        image: projectPhoto
+      }));
+    }
+  }, [projectPhoto]);
 
   // If project data is not loaded yet, show loading state
   if (!projectData) {
@@ -140,6 +187,22 @@ export default function ActiveProjectDetail({ params }) {
     setShowEditModal(true);
   };
 
+  const softDeleteProject = async () => {
+    try {
+      const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/requests/${id}`, {
+        status: STATUS.DECLINE,
+        response: "Project was deleted by admin"
+      });
+      if (response.data.status === "UPDATED") {
+        console.log("Successfully updated project request with id:", id);
+      } else {
+        console.error("Unexpected response:", response);
+      }
+    } catch (error) {
+      console.error("Failed to approve project request:", error);
+    }
+  };
+
   //show the delete modal
   const handleDelete = () => {
     setShowDeleteModal(true);
@@ -149,6 +212,8 @@ export default function ActiveProjectDetail({ params }) {
   //connect to backend to delete
   const confirmDelete = () => {
     setShowDeleteModal(false);
+
+    softDeleteProject();
 
     setToast({
       type: "success",
@@ -193,29 +258,35 @@ export default function ActiveProjectDetail({ params }) {
     }
   };
 
+  const updateProject = async (updateData) => {
+    try {
+      const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/projects/${encodeURI(projectData.id)}`, updateData);
+      if (response.data.status === "UPDATED") {
+        console.log("Successfully updated project with id:", id);
+      } else {
+        console.error("Unexpected response:", response);
+      }
+    } catch (error) {
+      console.error("Failed to update project:", error);
+    }
+  };
+
   const handleSaveChanges = () => {
     const newErrors = {};
-    const fundingGoal = parseInt(editFormData.goal, 10);
-    const amountRaised = parseInt(editFormData.raised, 10);
     const phonePattern = /^(\+63|0)?\d{9,10}$/;
 
-    if (!phonePattern.test(editFormData.requester.phone.replace(/\s+/g, ""))) {
-      newErrors["requester.phone"] =
-        "Invalid phone number format. Use +63 or 09 format.";
+    if (!editFormData.title) {
+      newErrors["title"] =
+        "Please enter a title.";
     }
-    if (isNaN(fundingGoal) || fundingGoal <= 0) {
+    if (isNaN(editFormData.goal) || editFormData.goal <= 0) {
       newErrors["goal"] = "Funding goal must be a positive number.";
     }
-    if (isNaN(amountRaised) || amountRaised < 0) {
-      newErrors["raised"] =
-        "Amount raised must be a valid non-negative number.";
+    if (!Object.values(PROJECT_TYPE).includes(editFormData.type)) {
+      newErrors["type"] = "Please select a valid project type.";
     }
-    if (
-      !newErrors["goal"] &&
-      !newErrors["raised"] &&
-      amountRaised > fundingGoal
-    ) {
-      newErrors["raised"] = "Amount raised cannot exceed funding goal.";
+    if (!editFormData.urlLink) {
+      newErrors["urlLink"] = "Please enter a donation link.";
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -223,14 +294,30 @@ export default function ActiveProjectDetail({ params }) {
       return;
     }
 
-    // Reformat goal and raised back to ₱ format
-    const formattedGoal = `₱${fundingGoal.toLocaleString("en-PH")}`;
-    const formattedRaised = `₱${amountRaised.toLocaleString("en-PH")}`;
+    // console.log(
+    //   {
+    //     title: editFormData.title,
+    //     description: editFormData.description,
+    //     type: editFormData.type,
+    //     donation_link: editFormData.urlLink,
+    //     goal_amount: editFormData.goal,
+    //     due_date: editFormData.endDate,
+    //   }
+    // );
+
+    updateProject({
+      title: editFormData.title,
+      details: editFormData.description,
+      type: editFormData.type,
+      donation_link: editFormData.urlLink,
+      goal_amount: editFormData.goal,
+      due_date: editFormData.endDate,
+    });
 
     setProjectData({
       ...editFormData,
-      goal: formattedGoal,
-      raised: formattedRaised,
+      goal_amount: editFormData.goal.toString(),
+      raised: editFormData.raised.toString(),
     });
 
     setShowEditModal(false);
@@ -293,7 +380,7 @@ export default function ActiveProjectDetail({ params }) {
                 <input
                   type="text"
                   readOnly
-                  value={initialProject.urlLink}
+                  value={projectData.urlLink}
                   className="w-full text-sm py-1 bg-transparent focus:outline-none text-gray-700 overflow-hidden text-ellipsis"
                 />
               </div>
@@ -302,7 +389,7 @@ export default function ActiveProjectDetail({ params }) {
             <div className="mt-6 flex justify-center">
               <button
                 onClick={() => {
-                  navigator.clipboard.writeText(initialProject.urlLink);
+                  navigator.clipboard.writeText(projectData.urlLink);
 
                   // Show success animation in button
                   const btn = document.getElementById("copyBtn");
@@ -338,7 +425,7 @@ export default function ActiveProjectDetail({ params }) {
                 <p className="text-xs text-gray-500 mb-3">Or share directly to</p>
                 <div className="flex space-x-4 justify-center">
                   <a
-                    href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(initialProject.urlLink)}`}
+                    href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(projectData.urlLink)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition-colors"
@@ -348,7 +435,7 @@ export default function ActiveProjectDetail({ params }) {
                     </svg>
                   </a>
                   <a
-                    href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(initialProject.urlLink)}&text=Check out this project!`}
+                    href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(projectData.urlLink)}&text=Check out this project!`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-blue-400 text-white p-2 rounded-full hover:bg-blue-500 transition-colors"
@@ -358,7 +445,7 @@ export default function ActiveProjectDetail({ params }) {
                     </svg>
                   </a>
                   <a
-                    href={`https://api.whatsapp.com/send?text=Check out this project! ${encodeURIComponent(initialProject.urlLink)}`}
+                    href={`https://api.whatsapp.com/send?text=Check out this project! ${encodeURIComponent(projectData.urlLink)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-green-500 text-white p-2 rounded-full hover:bg-green-600 transition-colors"
@@ -368,7 +455,7 @@ export default function ActiveProjectDetail({ params }) {
                     </svg>
                   </a>
                   <a
-                    href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(initialProject.urlLink)}`}
+                    href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(projectData.urlLink)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition-colors"
@@ -389,16 +476,16 @@ export default function ActiveProjectDetail({ params }) {
     from { opacity: 0; }
     to { opacity: 1; }
   }
-  
+
   @keyframes scaleIn {
     from { transform: scale(0.95); opacity: 0; }
     to { transform: scale(1); opacity: 1; }
   }
-  
+
   .animate-fadeIn {
     animation: fadeIn 0.3s ease-out forwards;
   }
-  
+
   .animate-scaleIn {
     animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
@@ -452,20 +539,20 @@ export default function ActiveProjectDetail({ params }) {
 
               <div className="flex items-center space-x-4">
                 <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-astraprimary shadow-md">
-                  {initialProject.requester.profilePic ? (
+                  {projectData.requester.profilePic ? (
                     <img
-                      src={initialProject.requester.profilePic}
-                      alt={initialProject.requester.name}
+                      src={projectData.requester.profilePic}
+                      alt={projectData.requester.name}
                       className="w-full h-full rounded-full object-cover"
                     />
                   ) : (
                     <span className="text-lg font-bold">
-                      {initialProject.requester.name.charAt(0)}
+                      {projectData.requester.name.charAt(0)}
                     </span>
                   )}
                 </div>
                 <div>
-                  <h3 className="font-lb text-xl text-white mb-1">Message {initialProject.requester.name}</h3>
+                  <h3 className="font-lb text-xl text-white mb-1">Message {projectData.requester.name}</h3>
                   <p className="text-white/70 text-sm">
                     Typically responds within 24 hours
                   </p>
@@ -569,16 +656,16 @@ export default function ActiveProjectDetail({ params }) {
     from { opacity: 0; }
     to { opacity: 1; }
   }
-  
+
   @keyframes slideUp {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  
+
   .animate-fadeIn {
     animation: fadeIn 0.3s ease-out forwards;
   }
-  
+
   .animate-slideUp {
     animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
@@ -612,10 +699,15 @@ export default function ActiveProjectDetail({ params }) {
                   <input
                     type="text"
                     name="title"
-                    className="w-full border border-astragray/30 rounded-lg p-3"
+                    className={`w-full border ${
+                      errors.title ? "border-red-500" : "border-astragray/30"
+                    } rounded-lg p-3`}
                     value={editFormData.title}
                     onChange={handleInputChange}
                   />
+                  {errors.title && (
+                    <p className="text-red-500 text-sm mt-1">{errors.title}</p>
+                  )}
                 </div>
 
                 <div>
@@ -624,18 +716,24 @@ export default function ActiveProjectDetail({ params }) {
                   </label>
                   <select
                     name="type"
-                    className="w-full border border-astragray/30 rounded-lg p-3"
+                    className={`w-full border ${
+                      errors.type ? "border-red-500" : "border-astragray/30"
+                    } rounded-lg p-3`}
                     value={editFormData.type}
                     onChange={handleInputChange}
                   >
-                    <option value="Scholarship">Scholarship</option>
-                    <option value="Fundraiser">Fundraiser</option>
+                    <option value={PROJECT_TYPE.DONATION_DRIVE}>{capitalizeName(PROJECT_TYPE.DONATION_DRIVE)}</option>
+                    <option value={PROJECT_TYPE.FUNDRAISING}>{capitalizeName(PROJECT_TYPE.FUNDRAISING)}</option>
+                    <option value={PROJECT_TYPE.SCHOLARSHIP}>{capitalizeName(PROJECT_TYPE.SCHOLARSHIP)}</option>
                   </select>
+                  {errors.type && (
+                    <p className="text-red-500 text-sm mt-1">{errors.type}</p>
+                  )}
                 </div>
 
                 <div>
                   <label className="block text-astradarkgray font-sb mb-2">
-                    Short Description
+                    Description
                   </label>
                   <input
                     type="text"
@@ -648,14 +746,15 @@ export default function ActiveProjectDetail({ params }) {
 
                 <div>
                   <label className="block text-astradarkgray font-sb mb-2">
-                    Detailed Description
+                    Donation Link
                   </label>
-                  <textarea
-                    name="longDescription"
-                    className="w-full border border-astragray/30 rounded-lg p-3 min-h-32"
-                    value={editFormData.longDescription}
+                  <input
+                    type="text"
+                    name="urlLink"
+                    className="w-full border border-astragray/30 rounded-lg p-3"
+                    value={editFormData.urlLink}
                     onChange={handleInputChange}
-                  ></textarea>
+                  ></input>
                 </div>
               </div>
 
@@ -696,6 +795,7 @@ export default function ActiveProjectDetail({ params }) {
                       } rounded-lg p-3`}
                       value={editFormData.raised}
                       onChange={handleInputChange}
+                      disabled
                     />
                     {errors.raised && (
                       <p className="text-red-500 text-sm mt-1">
@@ -713,7 +813,7 @@ export default function ActiveProjectDetail({ params }) {
                 </h4>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
+                  {/* <div>
                     <label className="block text-astradarkgray font-sb mb-2">
                       Start Date
                     </label>
@@ -724,25 +824,30 @@ export default function ActiveProjectDetail({ params }) {
                       value={editFormData.startDate}
                       onChange={handleInputChange}
                     />
-                  </div>
+                  </div> */}
 
                   <div>
                     <label className="block text-astradarkgray font-sb mb-2">
-                      End Date
+                      Due Date
                     </label>
                     <input
                       type="date"
                       name="endDate"
-                      className="w-full border border-astragray/30 rounded-lg p-3"
+                      className={`w-full border ${
+                        errors.endDate ? "border-red-500" : "border-astragray/30"
+                      } rounded-lg p-3`}
                       value={editFormData.endDate}
                       onChange={handleInputChange}
                     />
+                    {errors.endDate && (
+                      <p className="text-red-500 text-sm mt-1">{errors.endDate}</p>
+                    )}
                   </div>
                 </div>
               </div>
 
               {/* Scholarship/Fundraiser Specific Fields */}
-              <div className="space-y-4 md:col-span-2">
+              {/* <div className="space-y-4 md:col-span-2">
                 {editFormData.type === "Scholarship" && (
                   <>
                     <h4 className="font-sb text-lg border-b border-astralightgray pb-2">
@@ -774,7 +879,7 @@ export default function ActiveProjectDetail({ params }) {
                     onChange={handleInputChange}
                   ></textarea>
                 </div>
-              </div>
+              </div> */}
 
               {/* Project Requester Information */}
               <div className="space-y-4 md:col-span-2">
@@ -793,6 +898,7 @@ export default function ActiveProjectDetail({ params }) {
                       className="w-full border border-astragray/30 rounded-lg p-3"
                       value={editFormData.requester.name}
                       onChange={handleInputChange}
+                      disabled
                     />
                   </div>
 
@@ -806,6 +912,7 @@ export default function ActiveProjectDetail({ params }) {
                       className="w-full border border-astragray/30 rounded-lg p-3"
                       value={editFormData.requester.position}
                       onChange={handleInputChange}
+                      disabled
                     />
                   </div>
 
@@ -819,10 +926,11 @@ export default function ActiveProjectDetail({ params }) {
                       className="w-full border border-astragray/30 rounded-lg p-3"
                       value={editFormData.requester.email}
                       onChange={handleInputChange}
+                      disabled
                     />
                   </div>
 
-                  <div>
+                  {/* <div>
                     <label className="block text-astradarkgray font-sb mb-2">
                       Phone
                     </label>
@@ -842,7 +950,7 @@ export default function ActiveProjectDetail({ params }) {
                         {errors["requester.phone"]}
                       </p>
                     )}
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>
@@ -884,12 +992,12 @@ export default function ActiveProjectDetail({ params }) {
             </div>
             <div className="flex items-center mt-2">
               <div className="bg-astrawhite text-astradark px-3 py-1 rounded-lg text-sm font-s flex items-center gap-1">
-                {projectData.type === "Scholarship" ? (
+                {projectData.type === PROJECT_TYPE.SCHOLARSHIP? (
                   <GraduationCap className="w-4 h-4" />
                 ) : (
                   <HeartHandshake className="w-4 h-4" />
                 )}
-                {projectData.type}
+                {projectData?.type ? capitalizeName(projectData.type) : projectData?.type}
               </div>
 
               <div className="ml-4 bg-astrawhite text-astradark px-3 py-1 rounded-lg text-sm font-s flex items-center gap-1">
@@ -916,9 +1024,9 @@ export default function ActiveProjectDetail({ params }) {
             <div className="flex justify-between items-end mb-2">
               <h2 className="font-lb text-xl">Fundraising Progress</h2>
               <div className="text-right">
-                <div className="text-2xl font-lb">{projectData.raised}</div>
+                <div className="text-2xl font-lb">{formatCurrency(projectData.raised)}</div>
                 <div className="text-astradarkgray text-sm">
-                  of {projectData.goal} goal
+                  of {formatCurrency(projectData.goal)} goal
                 </div>
               </div>
             </div>
@@ -955,22 +1063,16 @@ export default function ActiveProjectDetail({ params }) {
                   <Goal className="w-8 h-8 text-astraprimary mt-1" />
                   <div>
                     <p className="font-sb">Funding Goal</p>
-                    <p className="text-astradarkgray">{projectData.goal}</p>
+                    <p className="text-astradarkgray">{formatCurrency(projectData.goal)}</p>
                   </div>
                 </div>
 
                 <div className="flex gap-2 items-start">
                   <Calendar className="w-8 h-8 text-astraprimary mt-1" />
                   <div>
-                    <p className="font-sb">Project Duration</p>
+                    <p className="font-sb">Project Due Date</p>
                     <p className="text-astradarkgray">
-                      {new Date(projectData.startDate).toLocaleDateString(
-                        "en-PH"
-                      )}{" "}
-                      to{" "}
-                      {new Date(projectData.endDate).toLocaleDateString(
-                        "en-PH"
-                      )}
+                      {formatDate(projectData.endDate, "long")}
                     </p>
                   </div>
                 </div>
@@ -1026,10 +1128,10 @@ export default function ActiveProjectDetail({ params }) {
                     >
                       <td className="py-3 px-4">{transaction.donor}</td>
                       <td className="py-3 px-4 text-right font-sb text-astraprimary">
-                        {transaction.amount}
+                        {formatCurrency(transaction.amount)}
                       </td>
                       <td className="py-3 px-4 text-right text-astradarkgray">
-                        {new Date(transaction.date).toLocaleDateString("en-PH")}
+                        {formatDate(transaction.date)}
                       </td>
                     </tr>
                   ))}
@@ -1038,7 +1140,7 @@ export default function ActiveProjectDetail({ params }) {
                   <tr className="bg-astralightgray/30 border-t-2 border-astralightgray">
                     <td className="py-3 px-4 font-sb">Total</td>
                     <td className="py-3 px-4 text-right font-sb text-astraprimary">
-                      {projectData.raised}
+                      {formatCurrency(projectData.raised)}
                     </td>
                     <td className="py-3 px-4"></td>
                   </tr>
@@ -1062,7 +1164,7 @@ export default function ActiveProjectDetail({ params }) {
                     {projectData.requester.name}
                   </p>
                   <p className="text-astralightgray text-sm">
-                    {projectData.requester.position}
+                    {projectData?.requester?.position && projectData?.requester?.position !== "N/A" ? capitalizeName(projectData.requester.position) : projectData?.requester?.position}
                   </p>
                 </div>
               </div>
@@ -1076,14 +1178,14 @@ export default function ActiveProjectDetail({ params }) {
                 </div>
               </div>
 
-              <div className="flex gap-2 items-start">
+              {/* <div className="flex gap-2 items-start">
                 <Phone className="w-6 h-6 text-astraprimary mr-2" />
                 <div>
                   <p className="text-astradarkgray">
                     {projectData.requester.phone}
                   </p>
                 </div>
-              </div>
+              </div> */}
 
               <button
                 className="flex items-center gap-2 mt-4 bg-astraprimary text-astrawhite py-2 px-4 rounded-lg w-full justify-center font-sb transition-colors hover:bg-astraprimary/90"

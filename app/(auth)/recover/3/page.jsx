@@ -1,8 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import {useRouter} from "next/navigation";
+import {feRoutes} from "../../../../common/routes.js";
 
 export default function SetPassword() {
+  const router = useRouter();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
@@ -23,6 +26,10 @@ export default function SetPassword() {
     setError("");
 
     window.location.href = "/recover/4";
+  };
+
+  const handleSignIn = function() {
+    router.push(feRoutes.auth.signIn());
   };
 
   return (
@@ -76,7 +83,7 @@ export default function SetPassword() {
           </button>
           <div
             className="text-sm cursor-pointer text-[var(--color-astraprimary)]"
-            onClick={() => (window.location.href = "/login")}
+            onClick={handleSignIn}
           >
             Back to Sign In
           </div>

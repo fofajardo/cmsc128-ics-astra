@@ -52,9 +52,9 @@ export default function HeaderEvent({ event, onSave, onDelete }) {
         onDelete={handleDelete}
         onCancel={toggleEditMode}
       />
-      <HeaderDescription description={eventData.eventDetail} />
+      <HeaderDescription description={eventData.description} />
 
-      {showEditModal && (
+      {/* {showEditModal && (
         <EditEventModal
           event={eventData}
           onClose={closeEditModal}
@@ -68,7 +68,7 @@ export default function HeaderEvent({ event, onSave, onDelete }) {
           onConfirm={confirmDelete}
           onCancel={cancelDelete}
         />
-      )}
+      )} */}
     </div>
   );
 }

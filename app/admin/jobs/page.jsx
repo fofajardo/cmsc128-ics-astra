@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect ,useContext} from "react";
 import {TableHeader, Table, PageTool} from "@/components/TableBuilder";
 import SearchFilter from "./filter";
 import { ActionButton } from "@/components/Buttons";
@@ -9,14 +9,20 @@ import ToastNotification from "@/components/ToastNotification";
 import { Trash2, Eye } from "lucide-react";
 import { jobTypeMap } from "@/components/jobs/mappings";
 import axios from "axios";
+import { TabContext } from "../../components/TabContext";
+import ConfirmationPrompt from "@/components/jobs/edit/confirmation";
 
 export default function Jobs() {
+  const [showPrompt, setPrompt] = useState(false);
+  const [jobToDelete, setJobToDelete] = useState(null);
+  const {setJobCounts} = useContext(TabContext);
   const [showFilter, setShowFilter] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
   const { currTab, info } = useTab();
   const [toast, setToast] = useState(null);
   const [jobs, setJobs] = useState([]);
   const [filteredJobs, setFilteredJobs] = useState([]);
+  const [paginatedJobs, setPaginatedJobs] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const itemsPerPage = 5;
 
@@ -39,6 +45,7 @@ export default function Jobs() {
       const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs`);
       if (response.data.status === "OK") {
         setJobs(response.data.list || []);
+        computeCounts(response.data.list || []);
       } else {
         console.error("Unexpected response from server.");
       }
@@ -69,6 +76,12 @@ export default function Jobs() {
     });
   }, [filteredJobs, searchQuery]);
 
+  useEffect(() => {
+    const start = (pagination.currPage - 1) * pagination.itemsPerPage;
+    const end = start + pagination.itemsPerPage;
+    setPaginatedJobs(filteredJobs.slice(start, end));
+  }, [filteredJobs, pagination.currPage, pagination.itemsPerPage]);
+
   const handleSearch = (searchInput) => {
     const lower = (searchInput || "").toLowerCase();
     const filtered = jobs.filter(job =>
@@ -77,6 +90,23 @@ export default function Jobs() {
 
     setSearchQuery(searchInput);
     setFilteredJobs(filtered);
+  };
+
+  const computeCounts = (list) => {
+    const today = new Date();
+    let active = 0;
+    let expired = 0;
+
+    for (const job of list) {
+      const expiresAt = new Date(job.expires_at);
+      if (!isNaN(expiresAt) && expiresAt >= today) {
+        active++;
+      } else {
+        expired++;
+      }
+    }
+    let total_count = active + expired;
+    setJobCounts({ active:active, expired: expired, total: total_count });
   };
 
   const handleApply = (filters = {}) => {
@@ -117,6 +147,27 @@ export default function Jobs() {
     setFilteredJobs(filtered);
   };
 
+  const handleDelete = async () => {
+    if (!jobToDelete?.id) {
+      console.error("No job selected for deletion.");
+      return;
+    }
+
+    try {
+      const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs/${jobToDelete.id}`);
+      if (response.data.status === "DELETED") {
+        console.log("Successfully deleted");
+        fetchJobs();
+        setPrompt(false);
+        setJobToDelete(null);
+      } else {
+        console.error("Failed to delete job.");
+      }
+    } catch (error) {
+      console.error("Error deleting job:", error);
+    }
+  };
+
   return (
     <div>
       {/* Filter Modal */}
@@ -143,7 +194,7 @@ export default function Jobs() {
       <div className="bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24 flex flex-col">
         <div className='flex flex-col py-4 px-1 md:px-4 lg:px-8'>
           <TableHeader info={info} pagination={pagination} setPagination={setPagination} toggleFilter={toggleFilter} setSearchQuery={handleSearch} searchQuery={searchQuery} />
-          <Table cols={cols} data={createRows(selectedIds, setSelectedIds, currTab, filteredJobs, fetchJobs)} />
+          <Table cols={cols} data={createRows(selectedIds, setSelectedIds, currTab, paginatedJobs, setPrompt, setJobToDelete)} />
           <PageTool pagination={pagination} setPagination={setPagination} />
         </div>
         <div className="flex flex-row justify-between md:pl-4 lg:pl-8">
@@ -151,6 +202,13 @@ export default function Jobs() {
           {/* <BottomButtons selectedCount={selectedIds.length} currTab={currTab} setToast={setToast}/> */}
         </div>
       </div>
+      {showPrompt && (
+        <ConfirmationPrompt
+          prompt="Are you sure you want to delete this job posting?"
+          close={() => setPrompt(false)}
+          handleConfirm={handleDelete}
+        />
+      )}
     </div>
   );
 }
@@ -165,15 +223,15 @@ const cols = [
   { label: "Quick Actions", justify: "center", visible: "all" },
 ];
 
-function createRows(selectedIds, setSelectedIds, currTab, filteredJobs, fetch) {
+function createRows(selectedIds, setSelectedIds, currTab, filteredJobs, setPrompt, setJobtoDelete) {
   return filteredJobs.map((job) => ({
     "Title": renderTitle(job.job_title),
     "Company": renderText(job.company_name),
     "Location": renderText(job.location),
-    "Type": renderType(jobTypeMap[job.employment_type]),
+    "Type": renderType(job.employment_type),
     "Posted": renderText(job.created_at),
     "Status": renderStatus(job.expires_at),
-    "Quick Actions": renderActions(job.job_id, job.job_title, currTab, fetch),
+    "Quick Actions": renderActions(job.job_id, job.job_title, currTab, setPrompt, setJobtoDelete),
   }));
 }
 
@@ -193,16 +251,16 @@ function renderType(type) {
   let text;
 
   switch (type) {
-  case 1:
+  case 0:
     text = "Part-time";
     break;
-  case 2:
+  case 1:
     text = "Full-time";
     break;
-  case 3:
+  case 2:
     text = "Temporary";
     break;
-  case 4:
+  case 3:
     text = "Freelance";
     break;
   default:
@@ -222,19 +280,10 @@ function renderStatus(expiresAt) {
   return <div className={`text-center ${text === "Expired" ? "text-astrared" : "text-astragreen"} font-s`}>{text}</div>;
 }
 
-function renderActions(id, name, currTab, onDeleteSuccess) {
-  const handleDelete = async () => {
-    try {
-      const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs/${id}`);
-      if (response.data.status === "DELETED") {
-        console.log("Successfully deleted");
-        onDeleteSuccess();
-      } else {
-        console.error("Failed to delete job.");
-      }
-    } catch (error) {
-      console.error("Error deleting job:", error);
-    }
+function renderActions(id, name, currTab, setPrompt, setJobToDelete) {
+  const confirmDelete = () => {
+    setJobToDelete({id});
+    setPrompt(true);
   };
   return (
 
@@ -259,7 +308,7 @@ function renderActions(id, name, currTab, onDeleteSuccess) {
         <ActionButton
           label="Delete"
           color="red"
-          onClick={handleDelete}
+          onClick={confirmDelete}
           notifyMessage={`${name} has been deleted!`}
           notifyType="fail"
         />
@@ -268,7 +317,7 @@ function renderActions(id, name, currTab, onDeleteSuccess) {
         <ActionButton
           label={<Trash2 size={20}/>}
           color="red"
-          onClick={handleDelete}
+          onClick={confirmDelete}
           notifyMessage={`${name} has been deleted!`}
           notifyType="fail"
         />

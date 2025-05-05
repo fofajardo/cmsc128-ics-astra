@@ -59,6 +59,35 @@ const fetchRequestsByContentId = async (supabase, contentId) => {
     .eq("content_id", contentId);
 };
 
+const fetchProjectRequests = async (supabase, filters) => {
+  let query = supabase.from("requests").select("*");
+
+  query = applyFilter(query, filters, {
+    ilike: ["title", "description"],
+    range: {
+      date_requested: [filters.from_date_requested, filters.to_date_requested],
+      date_reviewed: [filters.from_date_reviewed, filters.to_date_reviewed],
+    },
+    sortBy: "date_requested",
+    defaultOrder: "desc",
+    specialKeys: [
+      "from_date_requested",
+      "to_date_requested",
+      "from_date_reviewed",
+      "to_date_reviewed",
+    ],
+  });
+
+  return await query;
+};
+
+const fetchProjectRequestById = async (supabase, requestId) => {
+  return await supabase
+    .from("requests")
+    .select("*")
+    .eq("id", requestId);
+};
+
 const insertRequest = async (supabase, requestData) => {
   return await supabase
     .from("requests")
@@ -85,6 +114,8 @@ const requestsService = {
   fetchRequestById,
   fetchRequestsByUserId,
   fetchRequestsByContentId,
+  fetchProjectRequests,
+  fetchProjectRequestById,
   insertRequest,
   updateRequest,
   deleteRequest

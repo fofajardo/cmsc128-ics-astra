@@ -17,7 +17,7 @@ order
 */
 const fetchProjects = async (supabase, filters) => {
   let query = supabase
-    .from("projects")
+    .from("project_donation_summary")
     .select("*");
 
   query = applyFilter(query, filters, {
@@ -29,8 +29,8 @@ const fetchProjects = async (supabase, filters) => {
     sortBy: "due_date",
     defaultOrder: "asc",
     specialKeys: [
-      // 'from_due_date',
-      // 'to_due_date',
+      // "from_due_date",
+      // "to_due_date",
       "min_goal",
       "max_goal"
     ]
@@ -41,7 +41,7 @@ const fetchProjects = async (supabase, filters) => {
 
 const fetchProjectById = async (supabase, projectId) => {
   return await supabase
-    .from("projects")
+    .from("project_donation_summary")
     .select("*")
     .eq("project_id", projectId)
     .single();

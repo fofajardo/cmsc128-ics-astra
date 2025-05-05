@@ -52,6 +52,13 @@ const fetchDonationById = async (supabase, donationId) => {
     .single();
 };
 
+const fetchDonationsSummary = async (supabase) => {
+  return await supabase
+    .from("all_project_summary")
+    .select("*")
+    .single();
+};
+
 const insertDonation = async (supabase, donationData) => {
   return await supabase
     .from("donations")
@@ -77,6 +84,7 @@ const deleteDonation = async (supabase, donationId) => {
 const donationsService = {
   fetchDonations,
   fetchDonationById,
+  fetchDonationsSummary,
   insertDonation,
   updateDonationData,
   deleteDonation

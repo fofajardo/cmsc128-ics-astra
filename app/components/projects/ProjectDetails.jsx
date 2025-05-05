@@ -1,5 +1,6 @@
 "use client";
 import { Goal, Calendar } from "lucide-react";
+import { formatCurrency, formatDate } from "@/utils/format";
 
 export default function ProjectDetails({ project }) {
   return (
@@ -12,16 +13,15 @@ export default function ProjectDetails({ project }) {
           <Goal className="w-8 h-8 text-astraprimary mt-1" />
           <div>
             <p className="font-sb">Funding Goal</p>
-            <p className="text-astradarkgray">{project.goal}</p>
+            <p className="text-astradarkgray">{formatCurrency(project.goal)}</p>
           </div>
         </div>
         <div className="flex gap-2 items-start">
           <Calendar className="w-8 h-8 text-astraprimary mt-1" />
           <div>
-            <p className="font-sb">Project Duration</p>
+            <p className="font-sb">Project Due Date</p>
             <p className="text-astradarkgray">
-              {new Date(project.proposedStartDate).toLocaleDateString("en-PH")} to{" "}
-              {new Date(project.proposedEndDate).toLocaleDateString("en-PH")}
+              {formatDate(project.proposedEndDate, "long")}
             </p>
           </div>
         </div>

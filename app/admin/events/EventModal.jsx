@@ -7,21 +7,23 @@ import { Calendar, X } from "lucide-react"; // import X icon
 
 export default function EventModal({
   isEdit,
+  id,
   formData,
   handleChange,
   handleSubmit,
   toggleModal,
 }) {
   const [selectedDate, setSelectedDate] = useState(
-    formData.date ? new Date(formData.date) : null
+    formData.event_date ? new Date(formData.event_date) : null
   );
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
     handleChange({
-      target: { name: "date", value: date.toISOString().split("T")[0] },
+      target: { name: "event_date", value: date.toISOString().split("T")[0] },
     });
   };
+
 
   return (
     <div
@@ -46,7 +48,16 @@ export default function EventModal({
 
         <form
           className="grid grid-cols-1 md:grid-cols-2 gap-4"
-          onSubmit={handleSubmit}
+          onSubmit={
+            (e) => {
+              e.preventDefault();
+              if (isEdit) {
+                handleSubmit(id);
+              } else {
+                handleSubmit(e);
+              }
+            }
+          }
         >
           {/* Event Name */}
           <div>
@@ -54,11 +65,11 @@ export default function EventModal({
             <input
               type="text"
               name="title"
-              value={formData.event_name}
+              value={formData.title}
               onChange={handleChange}
               placeholder="Ex: User Experience Researcher"
               className="border rounded px-3 py-2 w-full"
-              required
+              required={!isEdit}
             />
           </div>
 
@@ -66,11 +77,12 @@ export default function EventModal({
           <div>
             <label className="block font-medium mb-1">Event Type</label>
             <select
-              name="type"
+              name="event_type"
               value={formData.type}
               onChange={handleChange}
               className="border rounded px-3 py-2 w-full"
-              required
+              required={!isEdit}
+
             >
               <option value="">Please Select</option>
               <option>In-Person</option>
@@ -83,12 +95,13 @@ export default function EventModal({
             <label className="block font-medium mb-1">Location</label>
             <input
               type="text"
-              name="location"
-              value={formData.location}
+              name="venue"
+              value={formData.venue}
               onChange={handleChange}
               placeholder="Ex: Santa Rosa City, Laguna"
               className="border rounded px-3 py-2 w-full"
-              required
+              required={!isEdit}
+
             />
           </div>
 
@@ -118,7 +131,8 @@ export default function EventModal({
                 dateFormat="yyyy-MM-dd"
                 placeholderText="Select date"
                 className="w-full outline-none cursor-pointer"
-                required
+                required={!isEdit}
+
               />
             </div>
           </div>
@@ -131,7 +145,8 @@ export default function EventModal({
               value={formData.status}
               onChange={handleChange}
               className="border rounded px-3 py-2 w-full"
-              required
+              required={!isEdit}
+
             >
               <option value="">Please Select</option>
               <option>Open</option>
@@ -141,11 +156,23 @@ export default function EventModal({
 
           {/* Link */}
           <div className="col-span-2">
-            <label className="block font-medium mb-1">Link</label>
+            <label className="block font-medium mb-1">External Link</label>
             <input
               type="text"
-              name="link"
-              value={formData.link}
+              name="external_link"
+              value={formData.external_link}
+              onChange={handleChange}
+              placeholder="Ex: https://hiring.com/apply"
+              className="border rounded px-3 py-2 w-full"
+              required={!isEdit && formData.type === "Online"}
+            />
+          </div>
+          <div className="col-span-2">
+            <label className="block font-medium mb-1">Access Link</label>
+            <input
+              type="text"
+              name="access_link"
+              value={formData.access_link}
               onChange={handleChange}
               placeholder="Ex: https://hiring.com/apply"
               className="border rounded px-3 py-2 w-full"
@@ -161,6 +188,7 @@ export default function EventModal({
               onChange={handleChange}
               placeholder="Enter event description..."
               className="border rounded px-3 py-2 w-full h-28"
+              required={!isEdit}
             />
           </div>
 
@@ -176,6 +204,7 @@ export default function EventModal({
             <button
               type="submit"
               className="bg-blue-600 text-white px-6 py-2 rounded-md font-semibold hover:bg-blue-700"
+              //onClick={handleSubmit}
             >
               {isEdit ? "Update Event" : "Publish Post"}
             </button>

@@ -9,6 +9,7 @@ const eventInterestsRouter = () => {
   router.get("/", eventInterestsController.getEventInterests);
   router.get("/alumnus/:alumnId", eventInterestsController.getEventInterestByAlumnId);
   router.get("/content/:contentId", eventInterestsController.getEventInterestByContentId);
+  router.get("/:contentId", eventInterestsController.getEventInterestStats);
   router.post("/", eventInterestsController.createEventInterest);
   router.delete("/", eventInterestsController.deleteEmptyEventInterest);
   router.delete("/:alumId/:contentId", eventInterestsController.deleteEventInterest);

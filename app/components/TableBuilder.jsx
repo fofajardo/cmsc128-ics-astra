@@ -17,7 +17,7 @@
 
 "use client";
 import { useState } from "react";
-import { Search, SlidersHorizontal, ArrowLeft, ArrowRight } from "lucide-react";
+import { Search, SlidersHorizontal, CirclePlus, ArrowLeft, ArrowRight } from "lucide-react";
 
 export function TableHeader({ info, pagination, toggleFilter, setPagination, searchQuery, setSearchQuery }) {
   return (
@@ -38,6 +38,70 @@ export function TableHeader({ info, pagination, toggleFilter, setPagination, sea
     </div>
   );
 }
+
+export function EventTableHeader({ info, pagination, toggleFilter, setPagination, searchQuery, setSearchQuery }) {
+  console.log("inside the event table heaadr");
+  return (
+    <div>
+      <div className='flex md:hidden flex-col gap-4'>
+        <SearchComponent placeholder={info.search} setSearchQuery={setSearchQuery} searchQuery={searchQuery}/>
+        <EventToolbar toggleFilter={toggleFilter} pagination={pagination} setPagination={setPagination}/>
+        <Header title={info.title} pagination={pagination} />
+      </div>
+
+      <div className='hidden md:flex md:w-full flex-row gap-4 items-center'>
+        <Header title={info.title} pagination={pagination} />
+        <div className='flex flex-row w-full justify-end gap-4'>
+          <SearchComponent placeholder={info.search} setSearchQuery={setSearchQuery} searchQuery={searchQuery}/>
+          <EventToolbar toggleFilter={toggleFilter} pagination={pagination} setPagination={setPagination}/>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function EventToolbar({ toggleFilter, pagination, setPagination }) {
+  console.log("at event tool bar");
+  const handleNumToShowChange = (e) => {
+    const newNumToShow = parseInt(e.target.value);
+    const total = pagination.total;
+    const newLastPage = Math.max(1, Math.ceil(total / newNumToShow));
+    const newDisplay = [1, Math.min(newNumToShow, total)];
+
+    setPagination({
+      ...pagination,
+      numToShow: newNumToShow,
+      itemsPerPage: newNumToShow,
+      currPage: 1,
+      lastPage: newLastPage,
+      display: newDisplay,
+    });
+  };
+
+  return (
+    <div className="flex flex-row gap-2 justify-end h-12">
+      <select
+        value={pagination.numToShow}
+        onChange={handleNumToShowChange}
+        className="px-4 py-2 rounded-xl bg-astrawhite text-astradarkgray border border-astradarkgray outline-none"
+      >
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="15">15</option>
+        <option value="20">20</option>
+        <option value="25">25</option>
+      </select>
+      <button
+        onClick={toggleFilter}
+        className="flex flex-grow flex-row items-center justify-center gap-2 blue-button"
+      >
+        <CirclePlus className="w-5 h-5" />
+        <span className="flex md:hidden lg:flex">Add</span>
+      </button>
+    </div>
+  );
+}
+
 
 export function SearchComponent({ placeholder, setSearchQuery, searchQuery }) {
   const [inputValue, setInputValue] = useState(searchQuery);
@@ -82,10 +146,17 @@ export function Header({ title, pagination }) {
 export function Toolbar({ toggleFilter, pagination, setPagination }) {
   const handleNumToShowChange = (e) => {
     const newNumToShow = parseInt(e.target.value);
+    const total = pagination.total;
+    const newLastPage = Math.max(1, Math.ceil(total / newNumToShow));
+    const newDisplay = [1, Math.min(newNumToShow, total)];
 
     setPagination({
       ...pagination,
       numToShow: newNumToShow,
+      itemsPerPage: newNumToShow,
+      currPage: 1,
+      lastPage: newLastPage,
+      display: newDisplay,
     });
   };
 
@@ -161,7 +232,15 @@ export function Table({ cols, data }) {
 export function PageTool({ pagination, setPagination }) {
   const { currPage, lastPage, total, numToShow } = pagination;
 
+  console.log("PageTool rendering with:", {
+    currPage,
+    lastPage,
+    total,
+    numToShow,
+    display: pagination.display
+  });
   const handlePageChange = (newPage) => {
+    console.log("Changing to page:", newPage);
     const start = (newPage - 1) * numToShow + 1;
     const end = Math.min(newPage * numToShow, total);
     setPagination({ ...pagination, currPage: newPage, display: [start, end] });

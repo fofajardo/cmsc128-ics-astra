@@ -18,7 +18,7 @@ export default function EditEventModal({ event, onClose, onSave }) {
       ...event,
       title,
       eventDetail,
-      date: date?.toISOString() || "",
+      date: new Date(date).toISOString().slice(0, 10) || "",
       location,
       status,
       image,
@@ -39,6 +39,7 @@ export default function EditEventModal({ event, onClose, onSave }) {
         <form onSubmit={handleSubmit} className="space-y-6">
           <ImageUploadSection image={image} setImage={setImage} />
           <EventFormFields
+            isEdit={true}
             title={title}
             setTitle={setTitle}
             date={date}

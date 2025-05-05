@@ -1,10 +1,11 @@
 "use client";
 
 import Image from "next/image";
+import { Icon } from "@iconify/react";
+import { useState,useEffect } from "react";
+import axios from "axios";
 import Link from "next/link";
-import { useState } from "react";
 import { Sparkles } from "lucide-react";
-
 import EventCard from "@/components/events/GroupedEvents/EventCard/EventCard";
 import FilterDropdown from "@/components/events/GroupedEvents/FilterDropdown";
 import DateFilter from "@/components/events/GroupedEvents/DateFilter";
@@ -13,18 +14,282 @@ import EventCarousel from "@/components/events/GroupedEvents/CardCarousel/EventC
 import ExploreUPLBSection from "@/components/events/GroupedEvents/ExploreUPLBSection";
 import UPLBImageCollage from "@/components/events/GroupedEvents/UPLBImageCollage";
 
-import events from "../../data/events";
 import eventsVector from "../../assets/events-vector.png";
+import venue2 from "../../assets/venue2.jpeg";
+import { useSignedInUser } from "@/components/UserContext";
 
 export default function EventsPage() {
+  const user = useSignedInUser();
   const itemsPerPage = 4;
-  const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = Math.ceil(events.length / itemsPerPage);
+  console.log("user: ", user);
 
-  const currentEvents = events.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const [eventList, setEventList] = useState([]);
+  const [currentEvents, setCurrentEvents] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredEvents, setFilteredEvents] = useState([]);
+  const [sortFilter,setSortFilter] = useState("");
+  const [locationFilter, setLocationFilter] = useState(null);
+  const [statusFilter, setStatusFilter] = useState(null);
+  const [startDateFilter, setStartDateFilter] = useState(null);
+  const [endDateFilter, setEndDateFilter] = useState(null);
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
+  const fetchUserName = async (id) => {
+    try{
+      const response = await axios
+        .get(`${process.env.NEXT_PUBLIC_API_URL}/v1/users/${id}`);
+
+      console.log(response);
+      if (response.data.status === "OK") {
+        const selectEventName = response.data.user.username;
+        console.log("select event name:",selectEventName, "type", typeof(selectEventName));
+        return selectEventName;
+      } else {
+        console.error("Unexpected response:", response.data);
+      }
+    }catch(error){
+      console.error("Failed to get content:", error);
+    }
+    return "Unknown";
+  };
+
+  const fetchAttendees = async (id) => {
+    try{
+      console.log("in fetch attendees..:", user);
+      console.log("id in fetch attendees: ",id);
+      if( user?.state?.isAlumnus || user?.state?.isAdmin||user?.state?.isModerator){
+        console.log("fetchingg attendees...");
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/content/${id}`);
+
+        console.log("fetched attendees:", response);
+        if (response.data.status === "OK"){
+          const interestedUserNames = await Promise.all(
+            response.data.list.map(async (user) => {
+              const name = await fetchUserName(user.user_id);
+              return name;
+            })
+          );
+
+          return interestedUserNames;
+        }
+      }
+    }catch(error){
+      console.log("error at fetching attendees", error);
+    }
+    return [];
+  };
+
+  const fetchEventPhoto = async (contentId) => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/event/${contentId}`
+      );
+
+      if (response.data.status === "OK" && response.data.photo) {
+        return response.data.photo;
+      }
+    } catch (error) {
+      console.log(`Failed to fetch photo for event_id ${contentId}:`, error);
+    }
+    return venue2; // Return default image if fetch fails
+  };
+
+  const fetchData = async () => {
+    try {
+
+      console.log("=======START OF FETCHING DATA ==========");
+      const [eventsRes, contentsRes,] = await Promise.all([
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events`, {
+          params: { page: 1, limit: 100 },
+        }),
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents`, {
+          params: { page: 1, limit: 100 },
+        }),
+      ]);
+
+      if (eventsRes.data.status === "OK" && contentsRes.data.status === "OK") {
+        const contentMap = new Map();
+        contentsRes.data.list.forEach(content => {
+          contentMap.set(content.id, content);
+        });
+
+
+        // array of promises to fetch event photos
+        const eventsPromises = eventsRes.data.list.map(async (event) => {
+          console.log(event);
+          console.log("event id in event promises: ", event.event_id);
+          const matchedContent = contentMap.get(event.event_id) || {};
+          const photoUrl = await fetchEventPhoto(event.event_id);
+          console.log("in fetch data, fetching user:", user);
+          console.log("event id in event promises: ", event.event_id);
+          return {
+            id: event.event_id,
+            event_id: event.event_id,
+            imageSrc: photoUrl || venue2,  // Use fetched photo or default
+            title: matchedContent.title || "Untitled",
+            description: matchedContent.details || "No description",
+            date: new Date(event.event_date).toDateString(),
+            isOnline: event.online,
+            location: event.venue,
+            attendees: await fetchAttendees(event.event_id),
+            status: new Date(event.event_date) < new Date() ? "Closed" : "Open",
+            avatars: [],
+          };
+        });
+
+        const mergedEvents = await Promise.all(eventsPromises);
+
+        setEventList(mergedEvents);
+        console.log("mergedEvents:",mergedEvents);
+        setTotalPages(Math.ceil(mergedEvents.length / itemsPerPage));
+
+        fetchUpcomingEvent(contentMap);
+      }
+    } catch (error) {
+      console.log("Failed fetching events or contents:", error);
+      setEventList([]);
+    }
+  };
+
+  const fetchUpcomingEvent = async (contentMap) => {
+    try {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/upcoming-events`);
+
+      if (response.data.status === "OK"){
+        const upcomingEventsPromises = response.data.list.map(async (event) => {
+          console.log(event);
+          const matchedContent = contentMap.get(event.event_id) || {};
+          const photoUrl = await fetchEventPhoto(event.event_id);
+          console.log("in fetch data, fetching user:", user);
+          return {
+            id: event.event_id,
+            event_id: event.event_id,
+            imageSrc: photoUrl || venue2,  // Use fetched photo or default
+            title: matchedContent.title || "Untitled",
+            description: matchedContent.details || "No description",
+            date: new Date(event.event_date).toDateString(),
+            isOnline: event.online,
+            location: event.venue,
+            attendees: event.event_id ? await fetchAttendees(event.event_id) : [],
+            status: new Date(event.event_date) < new Date() ? "Closed" : "Open",
+            avatars: [],
+          };
+        });
+
+        const mergedUpcommingEvents = await Promise.all(upcomingEventsPromises);
+        setUpcomingEvents(mergedUpcommingEvents);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    if (user) {
+      fetchData();
+    }
+  }, [user]);
+
+  useEffect(() => {
+    console.log("Filtering triggered:", {
+      eventList,
+      searchQuery,
+      sortFilter,
+      locationFilter,
+      statusFilter,
+      startDateFilter,
+      endDateFilter
+    });
+
+    let filteredResults = [...eventList];
+
+
+    if (searchQuery !== "") {
+      console.log("searching...: ", searchQuery);
+      filteredResults = filteredResults.filter(event =>
+        event.title && event.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    if (locationFilter) {
+      console.log("location...: ", locationFilter);
+      filteredResults = filteredResults.filter(event => {
+        if (locationFilter.label === "Online") {
+          return event.isOnline === true;
+        } else if (locationFilter.label === "In-person") {
+          return event.isOnline === false;
+        }
+        return true;
+      });
+    }
+
+
+    if (statusFilter?.label) {
+      console.log("label...:", statusFilter);
+      const now = new Date();
+
+      filteredResults = filteredResults.filter(event => {
+        const eventDate = new Date(event.date);
+
+        if (statusFilter.label === "Upcoming") {
+          return eventDate > now;
+        } else if (statusFilter.label === "Ongoing") {
+          return eventDate.toDateString() === now.toDateString();
+        } else if (statusFilter.label === "Completed") {
+          return eventDate < now;
+        }
+        return true;
+      });
+    }
+
+    if (startDateFilter) {
+      console.log("startDateFilder...:", new Date(startDateFilter));
+      const startDate = new Date(startDateFilter);
+      filteredResults = filteredResults.filter(event =>
+        new Date(event.date) >= startDate
+      );
+    }
+
+    if (endDateFilter) {
+      console.log("endDateFilder...:", endDateFilter);
+      const endDate = new Date(endDateFilter);
+      filteredResults = filteredResults.filter(event =>
+        new Date(event.date) <= endDate
+      );
+    }
+    console.log("sortFilter...:", sortFilter);
+    if (sortFilter?.label === "MOst Recent") {
+      filteredResults.sort((a, b) => new Date(b.date) - new Date(a.date));
+      console.log("mpst recent", filteredResults);
+    } else if (sortFilter?.label === "Oldest") {
+      filteredResults.sort((a, b) => new Date(a.date) - new Date(b.date));
+      console.log("oldest", filteredResults);
+    } else if (sortFilter?.label === "Popular") {
+      filteredResults.sort((a, b) => (b.attendees.length || 0) - (a.attendees.length || 0));
+      console.log("popular", filteredResults);
+    }
+
+    setFilteredEvents(filteredResults);
+    setCurrentPage(1);
+  }, [
+    eventList,
+    searchQuery,
+    sortFilter,
+    locationFilter,
+    statusFilter,
+    startDateFilter,
+    endDateFilter
+  ]);
+
+  useEffect(() => {
+    setCurrentEvents(
+      filteredEvents.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+      )
+    );
+  }, [currentPage, filteredEvents, itemsPerPage]);
+
 
   return (
     <div className="w-full bg-astradirtywhite">
@@ -67,8 +332,12 @@ export default function EventsPage() {
                 type="text"
                 placeholder="Search for event"
                 className="flex-grow py-4 pl-6 focus:outline-none text-base text-astradark"
+                value={searchQuery}
+                onChange={(e)=>setSearchQuery(e.target.value)}
               />
-              <button className="px-6 bg-astraprimary hover:bg-astradark text-astrawhite font-semibold transition flex items-center gap-2 cursor-pointer">
+              <button className="px-6 bg-astraprimary hover:bg-astradark text-astrawhite font-semibold transition flex items-center gap-2 cursor-pointer"
+
+              >
                 Search
               </button>
             </div>
@@ -78,31 +347,63 @@ export default function EventsPage() {
             <FilterDropdown
               icon="material-symbols:location-on"
               options={[
+                { label: "Clear", icon: "mdi:close-circle-outline" },
                 { label: "Online", icon: "mdi:wifi" },
                 { label: "In-person", icon: "mdi:account-group" },
               ]}
               placeholder="Location"
+              value={locationFilter}
+              onChange={(selected) =>
+                selected.label === "Clear" ? setLocationFilter(null) : setLocationFilter(selected)
+              }
             />
+
             <FilterDropdown
               icon="fluent:status-20-filled"
               options={[
+                { label: "Clear", icon: "mdi:close-circle-outline" },
                 { label: "Upcoming", icon: "mdi:clock-outline" },
                 { label: "Ongoing", icon: "mdi:progress-clock" },
                 { label: "Completed", icon: "mdi:check-circle-outline" },
               ]}
               placeholder="Status"
+              value={statusFilter}
+              onChange={(selected) =>
+                selected.label === "Clear" ? setStatusFilter(null) : setStatusFilter(selected)
+              }
             />
-            <DateFilter placeholder="Start Date" />
-            <DateFilter placeholder="End Date" />
+
+            <DateFilter
+              placeholder="Start Date"
+              value={startDateFilter}
+              onChange={(date) => date === setStartDateFilter(date)}
+            />
+
+            <DateFilter
+              placeholder="End Date"
+              value={endDateFilter}
+              onChange={(date) => {
+                console.log("date:", date);
+                setEndDateFilter(date);
+              }}
+            />
+
             <FilterDropdown
               icon="material-symbols:sort"
               options={[
+                { label: "Clear", icon: "mdi:close-circle-outline" },
                 { label: "Most Recent", icon: "mdi:sort-calendar-descending" },
                 { label: "Oldest", icon: "mdi:sort-calendar-ascending" },
                 { label: "Popular", icon: "mdi:star-outline" },
               ]}
               placeholder="Sort"
+              value={sortFilter}
+              onChange={(selected) =>
+                selected.label === "Clear" ? setSortFilter(null) : setSortFilter(selected)
+              }
+
             />
+
           </div>
         </div>
       </div>
@@ -114,8 +415,20 @@ export default function EventsPage() {
         </h1>
         <div className="space-y-10 transition-all duration-700 ease-in-out">
           {currentEvents.map((event, index) => (
-            <EventCard key={index} {...event} />
+            <EventCard
+              key={index}
+              id={event.event_id}
+              imageSrc={event.imageSrc}
+              title={event.title}
+              description={event.description}
+              date={event.date}
+              location={event.location}
+              attendees={event.attendees}
+              status={event.status}
+              avatars={event.avatars}
+            />
           ))}
+
         </div>
         <Pagination
           currentPage={currentPage}
@@ -126,7 +439,7 @@ export default function EventsPage() {
 
       {/* Carousel */}
       <div className="max-w-[1440px] mx-auto px-12 mt-24 pb-20 bg-astradirtywhite">
-        <EventCarousel events={events} />
+        <EventCarousel events={upcomingEvents} />
       </div>
 
       {/* Explore UPLB Section */}
@@ -166,3 +479,4 @@ export default function EventsPage() {
     </div>
   );
 }
+

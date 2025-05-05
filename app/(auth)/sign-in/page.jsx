@@ -1,31 +1,92 @@
 "use client";
-import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, User } from "lucide-react";
+import {ErrorMessage, Field, Form, Formik} from "formik";
+import {AuthSchema} from "../../../common/validationSchemas.js";
+import {clientRoutes} from "../../../common/routes.js";
+import LoadingOverlay from "@/components/LoadingOverlay.jsx";
+import axios from "axios";
+import {useRouter} from "next/navigation";
+import {useRefetchUser, useSignedInUser} from "@/components/UserContext.jsx";
+import {AuthBackToHomeLink} from "@/(auth)/AuthBackToHomeLink.jsx";
+import {RouteGuardUnauthenticated} from "@/components/RouteGuard.jsx";
+import {FaGoogle} from "react-icons/fa";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState([]);
+  const router = useRouter();
+  const initialValues = {
+    username: "",
+    password: "",
+  };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const newErrors = [];
+  const userContext = useSignedInUser();
 
-    // Check if all fields are filled
-    if (!email || !password) {
-      newErrors.push("Please fill in all fields.");
-    }
+  const handleSubmit = function (aValues, {setSubmitting, setFieldError}) {
+    axios.post(clientRoutes.auth.signIn(), aValues).then(function (response) {
+      useRefetchUser(userContext).then(function () {
+        if (response.status === 200) {
+          return router.push("/");
+        }
+        setSubmitting(false);
+      });
+    }).catch(function (error) {
+      setFieldError("server", error?.response?.data?.message ?? "Something went wrong");
+      setSubmitting(false);
+    });
+  };
 
-    setErrors(newErrors);
-    return newErrors.length === 0;
+  const buildForm = function({errors, isSubmitting}) {
+    const errorsForMap = Object.values(errors);
+    return (
+      <Form className="space-y-4">
+        <LoadingOverlay loading={isSubmitting} coverContainer={true}/>
+        <Field
+          type="email"
+          name="username"
+          placeholder="Email"
+          className="w-full px-3 py-2 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-gray-900 text-sm md:text-base"
+        />
+        <Field
+          type="password"
+          name="password"
+          placeholder="Password"
+          className="w-full px-3 py-2 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-gray-900 text-sm md:text-base"
+        />
+
+        {errorsForMap.length > 0 && (
+          <div className="bg-red-100 text-[var(--color-astrared)] text-sm px-3 py-2 rounded">
+            {errorsForMap.map((err, idx) => (
+              <p key={idx}>{err}</p>
+            ))}
+          </div>
+        )}
+
+        <button
+          type="submit"
+          className="text-sm md:text-base w-full bg-[var(--color-astraprimary)] text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
+          disabled={isSubmitting}
+        >
+          Sign In
+        </button>
+        <Link href={clientRoutes.auth.signInExternal("google")}>
+          <button
+            type="button"
+            className="w-full bg-[var(--color-astraprimary)] hover:bg-blue-700 rounded-md py-2 px-4 flex items-center justify-center transition-colors"
+          >
+            <FaGoogle size={18} className="mr-2 text-white" />
+            <span className="text-sm md:text-base text-white">Sign In with Google</span>
+          </button>
+        </Link>
+      </Form>
+    );
   };
 
   return (
     <div className="min-h-screen flex bg-[var(--color-astratintedwhite)]">
+      <RouteGuardUnauthenticated />
       {/* Left Side */}
       <div className="w-full md:w-1/2 relative flex items-center justify-center px-4 md:px-8">
-        <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
+        <div className="w-full max-w-md">
+          <AuthBackToHomeLink />
           {/* Logo and Back to Home inside form flex */}
           <div className="flex flex-col items-center mb-4">
             <img
@@ -35,76 +96,33 @@ export default function LoginPage() {
               width={120}
               className="w-auto mb-2"
             />
-            <Link
-              href="/"
-              className="flex items-center text-[var(--color-astrablack)] hover:text-[var(--color-astraprimary)] transition-colors text-sm md:text-base font-medium py-1 px-4"
-            >
-              <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 mr-2" />
-              Back to Home
-            </Link>
           </div>
 
           <div className="mb-6 flex justify-between items-center">
             <h2 className="text-xl md:text-2xl font-semibold text-[var(--color-astrablack)]">Sign In</h2>
             <Link
-              href="/signup"
+              href="/sign-up"
               className="text-[var(--color-astraprimary)] text-sm md:text-base hover:underline"
             >
               Create an account
             </Link>
           </div>
 
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <div>
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="text-sm md:text-base w-full px-3 py-2 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[--color-astraprimary] bg-white text-gray-900"
-              />
-            </div>
+          <Formik
+            initialValues={initialValues}
+            onSubmit={handleSubmit}
+            validationSchema={AuthSchema}
+            component={buildForm}
+          />
 
-            <div>
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="text-sm md:text-base w-full px-3 py-2 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[--color-astraprimary] bg-white text-gray-900"
-              />
-            </div>
-
-            {errors.length > 0 && (
-              <div className="bg-red-100 text-[var(--color-astrared)] text-sm md:text-base px-3 py-2 rounded">
-                {errors.map((err, idx) => (
-                  <p key={idx}>{err}</p>
-                ))}
-              </div>
-            )}
-
-            <button
-              type="submit"
-              className="text-sm md:text-base w-full bg-[var(--color-astraprimary)] text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
-            >
-              Sign In
-            </button>
-          </form>
-
-          <div className="mt-4 text-center">
+          <div className="mt-4">
             <Link
-              href="/recover"
-              className="text-[var(--color-astraprimary)] text-sm md:text-base hover:underline"
-            >
-              Forgot password?
+              href="/recover">
+              <button
+                className="w-full border border-[var(--color-astradirtywhite)] bg-white hover:bg-gray-100 rounded-md py-2 px-4 flex items-center justify-center transition-colors">
+                <span className="text-sm md:text-base text-[var(--color-astrablack)]">Forgot password?</span>
+              </button>
             </Link>
-          </div>
-
-          <div className="mt-6">
-            <button className="w-full border border-[var(--color-astradirtywhite)] bg-white hover:bg-gray-100 rounded-md py-2 px-4 flex items-center justify-center transition-colors">
-              <User size={18} className="mr-2 text-[var(--color-astralightgray)]" />
-              <span className="text-sm md:text-base text-[var(--color-astrablack)]">Continue as Guest</span>
-            </button>
           </div>
         </div>
       </div>

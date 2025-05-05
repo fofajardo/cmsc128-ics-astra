@@ -7,6 +7,8 @@ const eventsRouter = () => {
 
   router.use(RequireAuthenticated);
   router.get("/", eventsController.getEvents);
+  router.get("/active-events", eventsController.getActiveEvents);
+  router.get("/upcoming-events",eventsController.getUpcomingEvents);
   router.get("/:eventId", eventsController.getEventById);
   router.post("/", eventsController.createEvent);
   router.put("/:eventId", eventsController.updateEvent);
