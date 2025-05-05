@@ -1,11 +1,11 @@
 "use client";
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
+import axios from "axios";
 import eventsVector from "../../assets/search.gif";
 import { Table } from "@/components/TableBuilder";
 import SkillTag from "@/components/SkillTag";
 import { ActionButton } from "@/components/Buttons";
-import { alumniData } from "@/components/DummyDataSearch";
 import Pagination from "@/components/search/GroupedEvents/Pagination";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -13,9 +13,9 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 const ITEMS_PER_PAGE = 10;
 
 export default function Page() {
-  const initialAlumniList = useMemo(() => alumniData, []);
-
-  const [alumList, setAlumList] = useState(initialAlumniList);
+  // Replace dummy data with API data
+  const [alumList, setAlumList] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState("");
   const [filters, setFilters] = useState({
     minGradYear: "",
@@ -35,7 +35,8 @@ export default function Page() {
     skills: false,
   });
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState(""); // State for the search input
+  const [searchTerm, setSearchTerm] = useState("");
+  const [totalResults, setTotalResults] = useState(0);
 
   const toggleFilter = (filterName) => {
     setShowFilters((prevShowFilters) => ({
@@ -62,53 +63,146 @@ export default function Page() {
     setCurrentPage(1); // Reset page on search
   };
 
-  const filteredAlumList = useMemo(() => {
-    const lowerCaseSearchTerm = searchTerm.toLowerCase();
-    return alumList.filter((alum) => {
-      const withinMinYear =
-        !appliedFilters.minGradYear ||
-        (alum.year_graduated &&
-          parseInt(alum.year_graduated.substring(0, 4), 10) >=
-            parseInt(appliedFilters.minGradYear, 10));
-      const withinMaxYear =
-        !appliedFilters.maxGradYear ||
-        (alum.year_graduated &&
-          parseInt(alum.year_graduated.substring(0, 4), 10) <=
-            parseInt(appliedFilters.maxGradYear, 10));
-      const matchesLocation =
-        !appliedFilters.location ||
-        (alum.location &&
-          alum.location.toLowerCase().includes(appliedFilters.location.toLowerCase()));
-      const skillsMatch =
-        !appliedFilters.skills ||
-        (alum.skills && alum.skills.toLowerCase().includes(appliedFilters.skills.toLowerCase()));
-      const nameMatch =
-        !lowerCaseSearchTerm ||
-        alum.first_name.toLowerCase().includes(lowerCaseSearchTerm) ||
-        alum.last_name.toLowerCase().includes(lowerCaseSearchTerm) ||
-        `${alum.first_name.toLowerCase()} ${alum.last_name.toLowerCase()}`.includes(lowerCaseSearchTerm);
+  // Fetch alumni data from the API
+  useEffect(() => {
+    const fetchAlumniProfiles = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles`,
+          {
+            params: {
+              page: currentPage,
+              limit: ITEMS_PER_PAGE,
+              search: searchTerm,
+            },
+          }
+        );
 
-      return withinMinYear && withinMaxYear && matchesLocation && skillsMatch && nameMatch;
-    });
-  }, [alumList, appliedFilters, searchTerm]);
+        if (response.data.status === "OK") {
+          const updatedAlumList = await Promise.all(
+            response.data.list.map(async (alum) => {
+              const alumData = {
+                id: alum.alum_id,
+                first_name: alum.first_name,
+                last_name: alum.last_name,
+                email: alum.email,
+                year_graduated: "N/A",
+                location: alum.location || "N/A",
+                field: alum.primary_work_experience?.field || "N/A",
+                skills: alum.skills ? alum.skills.split(",") : [],
+                image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
+              };
 
+              try {
+                const photoResponse = await axios.get(
+                  `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/alum/${alum.alum_id}`
+                );
+                if (
+                  photoResponse.data.status === "OK" &&
+                  photoResponse.data.photo
+                ) {
+                  alumData.image = photoResponse.data.photo;
+                }
+              } catch (photoError) {
+                console.log(
+                  `Failed to fetch photo for alum_id ${alum.alum_id}:`,
+                  photoError
+                );
+              }
+
+              try {
+                const idForDegree = alum.user_id || alum.alum_id;
+                if (idForDegree) {
+                  console.log("Fetching degree programs for user_id:", idForDegree);
+                  const degreeResponse = await axios.get(
+                    `${process.env.NEXT_PUBLIC_API_URL}/v1/degree-programs/alumni/${idForDegree}`
+                  );
+                  if (
+                    degreeResponse.data.status === "OK" &&
+                    degreeResponse.data.degreePrograms?.length > 0
+                  ) {
+                    const sortedPrograms = [
+                      ...degreeResponse.data.degreePrograms,
+                    ].sort(
+                      (a, b) =>
+                        new Date(b.year_graduated) -
+                        new Date(a.year_graduated)
+                    );
+                    alumData.year_graduated = sortedPrograms[0].year_graduated;
+                  }
+                }
+              } catch (degreeError) {
+                console.error(
+                  `Failed to fetch degree programs for user_id: ${alum.user_id || alum.alum_id}`,
+                  degreeError
+                );
+              }
+
+              return alumData;
+            })
+          );
+
+          // Apply client-side filtering since the API doesn't support all our filters yet
+          const filteredList = updatedAlumList.filter(alum => {
+            // Filter by graduation year range if specified
+            const gradYear = alum.year_graduated !== "N/A"
+              ? parseInt(alum.year_graduated.substring(0, 4), 10)
+              : null;
+
+            const withinMinYear = !appliedFilters.minGradYear || !gradYear ||
+              gradYear >= parseInt(appliedFilters.minGradYear, 10);
+
+            const withinMaxYear = !appliedFilters.maxGradYear || !gradYear ||
+              gradYear <= parseInt(appliedFilters.maxGradYear, 10);
+
+            // Filter by location if specified
+            const matchesLocation = !appliedFilters.location ||
+              (alum.location && alum.location.toLowerCase().includes(appliedFilters.location.toLowerCase()));
+
+            // Filter by skills if specified
+            const skillsMatch = !appliedFilters.skills ||
+              alum.skills.some(skill =>
+                skill.toLowerCase().includes(appliedFilters.skills.toLowerCase())
+              );
+
+            return withinMinYear && withinMaxYear && matchesLocation && skillsMatch;
+          });
+
+          setAlumList(filteredList);
+          setTotalResults(filteredList.length);
+          setLoading(false);
+        } else {
+          console.error("Unexpected response:", response.data);
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("Failed to fetch alumni:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchAlumniProfiles();
+  }, [currentPage, searchTerm, appliedFilters]);
+
+  // Apply sorting
   const sortedAlumList = useMemo(() => {
-    let sortedList = [...filteredAlumList];
+    let sortedList = [...alumList];
     if (sortBy === "firstName") {
       sortedList.sort((a, b) => a.first_name.localeCompare(b.first_name));
     }
     if (sortBy === "lastName") {
       sortedList.sort((a, b) => a.last_name.localeCompare(b.last_name));
     }
-    if (sortBy === "graduationYear" && sortedList[0]?.year_graduated) {
-      sortedList.sort(
-        (a, b) =>
-          parseInt(a.year_graduated.substring(0, 4), 10) -
-          parseInt(b.year_graduated.substring(0, 4), 10)
-      );
+    if (sortBy === "graduationYear") {
+      sortedList.sort((a, b) => {
+        const yearA = a.year_graduated !== "N/A" ? parseInt(a.year_graduated.substring(0, 4), 10) : 0;
+        const yearB = b.year_graduated !== "N/A" ? parseInt(b.year_graduated.substring(0, 4), 10) : 0;
+        return yearA - yearB;
+      });
     }
     return sortedList;
-  }, [filteredAlumList, sortBy]);
+  }, [alumList, sortBy]);
 
   const totalPages = useMemo(() => {
     return Math.ceil(sortedAlumList.length / ITEMS_PER_PAGE);
@@ -120,18 +214,34 @@ export default function Page() {
     return sortedAlumList.slice(startIndex, endIndex);
   }, [sortedAlumList, currentPage]);
 
+  // Define skeleton rows for loading state
+  const skeletonRows = Array(10).fill({}).map(() => ({
+    "Image:label-hidden": <div className="flex justify-center p-2"><div className="w-12 h-12 m-3 bg-gray-200 rounded-xl animate-pulse"></div></div>,
+    "First Name": <div className="bg-gray-200 h-5 w-24 animate-pulse"></div>,
+    "Last Name": <div className="bg-gray-200 h-5 w-24 animate-pulse"></div>,
+    "Graduation Year": <div className="text-center bg-gray-200 h-5 w-16 mx-auto animate-pulse"></div>,
+
+    // uncomment if you want to show location, skills, and actions
+    // "Location": <div className="text-center bg-gray-200 h-5 w-20 mx-auto animate-pulse"></div>,
+    // "Skills": <div className="flex justify-center"><div className="bg-gray-200 h-6 w-32 animate-pulse"></div></div>,
+    // "Quick Actions": <div className="flex justify-center"><div className="bg-gray-200 h-8 w-16 rounded animate-pulse"></div></div>,
+  }));
+
+  // Column definitions
   const cols = [
     { label: "Image:label-hidden", justify: "center", visible: "all" },
     {
       label: "First Name",
-      justify: "start",
+      justify: "center",
+      // justify: "start",
       visible: "sm",
       sortable: true,
       onSort: () => handleSort("firstName"),
     },
     {
       label: "Last Name",
-      justify: "start",
+      justify: "center",
+      // justify: "start",
       visible: "sm",
       sortable: true,
       onSort: () => handleSort("lastName"),
@@ -143,10 +253,13 @@ export default function Page() {
       sortable: true,
       onSort: () => handleSort("graduationYear"),
     },
-    { label: "Location", justify: "center", visible: "lg" },
-    { label: "Skills", justify: "center", visible: "md" },
-    { label: "Quick Actions", justify: "center", visible: "all" },
+
+    // Uncomment if you want to show location, skills, and actions
+    // { label: "Location", justify: "center", visible: "lg" },
+    // { label: "Skills", justify: "center", visible: "md" },
+    // { label: "Quick Actions", justify: "center", visible: "all" },
   ];
+
   function handleSort(column) {
     setCurrentPage(1);
     setSortBy(column);
@@ -157,10 +270,12 @@ export default function Page() {
       "Image:label-hidden": renderAvatar(alum.image, `${alum.first_name} ${alum.last_name}`),
       "First Name": renderText(alum.first_name),
       "Last Name": renderText(alum.last_name),
-      "Graduation Year": renderText(alum.year_graduated ? alum.year_graduated.substring(0, 4) : "N/A"),
-      Location: renderText(alum.location || "N/A"),
-      Skills: renderSkills(alum.skills ? alum.skills.split(", ") : []),
-      "Quick Actions": renderActions(alum.id),
+      "Graduation Year": renderText(alum.year_graduated !== "N/A" ? alum.year_graduated.substring(0, 4) : "N/A"),
+
+      // uncomment if you want to show location, skills, and actions
+      // Location: renderText(alum.location || "N/A"),
+      // Skills: renderSkills(alum.skills || []),
+      // "Quick Actions": renderActions(alum.id),
     }));
   }
 
@@ -201,6 +316,7 @@ export default function Page() {
       </div>
     );
   }
+
   function renderActions(id) {
     return (
       <div className="flex justify-center p-2">
@@ -408,14 +524,20 @@ export default function Page() {
                 </div>
               </div>
               <div className="col-span-12 md:col-span-9">
-                <div className="overflow-x-auto md:pl-4"> {/* Added overflow-x-auto */}
-                  <Table cols={cols} data={createRows(paginatedAlumList)} />
-                  {totalPages > 1 && (
-                    <Pagination
-                      currentPage={currentPage}
-                      totalPages={totalPages}
-                      onPageChange={(page) => setCurrentPage(page)}
-                    />
+                <div className="overflow-x-auto md:pl-4">
+                  {loading ? (
+                    <Table cols={cols} data={skeletonRows} />
+                  ) : (
+                    <>
+                      <Table cols={cols} data={createRows(paginatedAlumList)} />
+                      {totalPages > 1 && (
+                        <Pagination
+                          currentPage={currentPage}
+                          totalPages={totalPages}
+                          onPageChange={(page) => setCurrentPage(page)}
+                        />
+                      )}
+                    </>
                   )}
                 </div>
               </div>
