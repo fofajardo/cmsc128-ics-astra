@@ -124,7 +124,6 @@ const createContent = async (req, res) => {
     }
 
     const { data, error } = await contentsService.insertContent(req.supabase, {
-      id,
       user_id,
       title,
       details,
