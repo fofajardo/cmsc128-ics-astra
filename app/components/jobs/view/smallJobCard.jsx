@@ -3,8 +3,9 @@ import Link from "next/link";
 import { jobTypeMap, locationTypeMap } from "@/components/jobs/mappings";
 import { Clock } from "lucide-react";
 import JobMap from "../map";
+import { ReportButton } from "@/components/Buttons";
 
-export default function SmallJobCard({job, showApply}) {
+export default function SmallJobCard({job, showApply, canReport}) {
   const isOpen = true;
 
   const formatSalary = (num) => {
@@ -51,9 +52,15 @@ export default function SmallJobCard({job, showApply}) {
       </div>
 
       {/* Map */}
-      <div className="w-full md:w-2/3 md:h-70 h-40 flex items-center rounded-sm">
-        {/* <Image src="/map.jpg" width={600} height={275} alt='loc' className="shrink-0"></Image> */}
-        <JobMap address={job.location}/>
+      <div className="w-full md:w-2/3 flex flex-col gap-2">
+        <div className="w-full md:h-70 h-40 flex items-center rounded-sm">
+          {/* <Image src="/map.jpg" width={600} height={275} alt='loc' className="shrink-0"></Image> */}
+          <JobMap address={job.location}/>
+        </div>
+        {canReport &&
+        <div className="self-end mr-2">
+          <ReportButton contentType={"Job"}/>
+        </div>}
       </div>
     </div>
   );}

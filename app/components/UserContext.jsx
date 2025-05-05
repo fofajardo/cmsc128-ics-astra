@@ -5,11 +5,15 @@ import {createMongoAbility} from "@casl/ability";
 import {RoleName} from "../../common/scopes.js";
 import axios from "axios";
 import {clientRoutes} from "../../common/routes.js";
+import httpStatus from "http-status-codes";
 
 function buildUserContext() {
   const [initialized, setInitialized] = useState(false);
+  const [routeInitialized, setRouteInitialized] = useState(true);
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
+  const [degreePrograms, setDegreePrograms] = useState(null);
+  const [degreeProofUploaded, setDegreeProofUploaded] = useState(false);
 
   const [rules, setRules] = useState(null);
   const [ability, setAbility] = useState(null);
@@ -24,9 +28,12 @@ function buildUserContext() {
   return {
     state: {
       initialized,
+      routeInitialized,
       user,
       authUser,
       profile,
+      degreePrograms,
+      degreeProofUploaded,
       rules,
       ability,
       isGuest,
@@ -37,9 +44,12 @@ function buildUserContext() {
     },
     actions: {
       setInitialized,
+      setRouteInitialized,
       setUser,
       setAuthUser,
       setProfile,
+      setDegreePrograms,
+      setDegreeProofUploaded,
       setRules,
       setAbility,
       setIsGuest,
@@ -121,11 +131,14 @@ function updateRoleProperties(aUser, aContext) {
   }
 }
 
-function fetchData(aUser, aContext) {
+async function fetchData(aUser, aContext) {
   if (aUser === null || aUser === undefined || aUser === "") {
     aContext.actions.setUser(null);
     aContext.actions.setProfile(null);
+    aContext.actions.setDegreePrograms(null);
+    aContext.actions.setDegreeProofUploaded(false);
     aContext.actions.setInitialized(true);
+    updateRoleProperties(aUser, aContext);
     return;
   }
 
@@ -136,11 +149,26 @@ function fetchData(aUser, aContext) {
       delete authUser.public_metadata;
       aContext.actions.setAuthUser(authUser);
     }
-    axios.get(clientRoutes.alumniProfiles.base(`/${aUser.id}`)).then(function (aProfile) {
-      aContext.actions.setProfile(aProfile);
-    }).catch(function (e) {
+    try {
+      const rawProfile = await axios.get(clientRoutes.alumniProfiles.base(`/${aUser.id}`));
+      aContext.actions.setProfile(rawProfile?.data?.alumniProfile);
+    } catch (e) {
       // Ignore missing profile.
-    });
+    }
+
+    try {
+      const rawDegreePrograms = await axios.get(clientRoutes.users.getOneDegreePrograms(aUser.id));
+      aContext.actions.setDegreePrograms(rawDegreePrograms?.data?.degreePrograms);
+    } catch (e) {
+      // Ignore missing degree programs.
+    }
+
+    try {
+      const rawDegreeProof = await axios.get(clientRoutes.photos.getDegreeProofJson(aUser.id));
+      aContext.actions.setDegreeProofUploaded(rawDegreeProof.status === httpStatus.OK);
+    } catch (e) {
+      // Ignore missing degree proof.
+    }
     updateRoleProperties(aUser, aContext);
   }
   if (aUser.scopes) {

@@ -17,7 +17,7 @@ const RequestFundraiserDetails = () => {
 
   // Retrieve previous page data
   const amount = searchParams.get("amount");
-  const zipCode = searchParams.get("zipCode");
+  const projectType = searchParams.get("projectType");
   const targetDate = searchParams.get("targetDate");
 
   // Load data from URL parameters on component mount
@@ -27,6 +27,12 @@ const RequestFundraiserDetails = () => {
 
     if (urlTitle) setTitle(urlTitle);
     if (urlDescription) setDescription(urlDescription);
+
+    console.log({
+      amount,
+      projectType,
+      targetDate,
+    });
   }, [searchParams]);
 
   // Update URL without navigation whenever values change
@@ -83,7 +89,7 @@ const RequestFundraiserDetails = () => {
             Share your story
           </h2>
           <p className="font-r text-astrablack text-left tracking-wide">
-            Help others understand your fundraising<br />
+            Help others understand your project<br />
             goal and why it matters to you.
           </p>
         </div>
@@ -96,14 +102,14 @@ const RequestFundraiserDetails = () => {
           <div className="flex flex-col items-center space-y-4 w-full md:w-[70%] mb-8">
             {/* Header */}
             <h3 className="font-l text-astrablack self-start w-full">
-              Describe why you’re fundraising
+              Describe why you&apos;re requesting the project
             </h3>
             {/* form */}
             <div className="w-full space-y-6">
               {/* Title field */}
               <div className="w-full">
                 <label className="block text-astrablack font-r mb-2">
-                  Give your fundraiser a title
+                  Give your project a title
                 </label>
                 <input
                   type="text"
@@ -145,7 +151,14 @@ const RequestFundraiserDetails = () => {
         <div className="flex justify-between px-6 md:px-12 py-5 border-astralightgray border-t-1">
           <BackButton />
           {isFormValid ? (
-            <Link href="/projects/request/photo" passHref>
+            <Link href={{ pathname:"/projects/request/photo",
+              query: {
+                amount: amount,
+                projectType: projectType,
+                targetDate: targetDate,
+                title: title,
+                description: description,
+              }}} passHref>
               <button className="blue-button font-semibold transition cursor-pointer w-[150px] h-[55px]">
                 Continue
               </button>

@@ -1,42 +1,76 @@
 "use client";
 
-import { useState } from "react";
+import {useLayoutEffect, useState} from "react";
 import Link from "next/link";
-import { ArrowLeft, User } from "lucide-react";
+import {feRoutes} from "../../../common/routes.js";
+import {AuthBackToHomeLink} from "@/(auth)/AuthBackToHomeLink.jsx";
+import SignUpStep1 from "@/(auth)/sign-up/SignUpStep1.jsx";
+import SignUpStep2 from "@/(auth)/sign-up/SignUpStep2.jsx";
+import SignUpStep3 from "@/(auth)/sign-up/SignUpStep3.jsx";
+import SignUpStep4 from "@/(auth)/sign-up/SignUpStep4.jsx";
+import SignUpStep5 from "@/(auth)/sign-up/SignUpStep5.jsx";
+import {useSignedInUser} from "@/components/UserContext.jsx";
+import {LoadingSpinner} from "@/components/LoadingSpinner.jsx";
+import {RouteGuard} from "@/components/RouteGuard.jsx";
+import {RouteGuardMode} from "../../../common/scopes.js";
+import SignUpStep6 from "@/(auth)/sign-up/SignUpStep6.jsx";
+
+function buildPage(aPageState) {
+  const [page, setPage] = aPageState;
+  const [email, setEmail] = useState(null);
+
+  switch (page) {
+  case 0:
+    return (
+      <div className="w-full flex items-center justify-center">
+        <LoadingSpinner className="w-16 h-16" />
+      </div>
+    );
+  case 1:
+    return <SignUpStep1 onSetPage={setPage} onSetEmail={setEmail} />;
+  case 2:
+    return <SignUpStep2 email={email} />;
+  case 3:
+    return <SignUpStep3 onSetPage={setPage} />;
+  case 4:
+    return <SignUpStep4 onSetPage={setPage} />;
+  case 5:
+    return <SignUpStep5 onSetPage={setPage} />;
+  case 6:
+    return <SignUpStep6 />;
+  default:
+    return "Unknown page";
+  }
+}
 
 export default function SignupPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [errors, setErrors] = useState([]);
+  const userContext = useSignedInUser();
+  const [page, setPage] = useState(0);
 
-  const validateForm = () => {
-    const newErrors = [];
-
-    if (!email || !password || !confirmPassword) {
-      newErrors.push("Please fill in all fields.");
-    }
-
-    if (email && !email.includes("@")) newErrors.push("Invalid email format.");
-    if (password && password.length < 8) newErrors.push("Password must be at least 8 characters.");
-    if (password !== confirmPassword) newErrors.push("Passwords do not match.");
-
-    setErrors(newErrors);
-    return newErrors.length === 0;
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (validateForm()) {
-      window.location.href = "/signup/2";
+  const handleRouteGuardChange = function(userContext) {
+    if (userContext.state.isGuest) {
+      setPage(1);
+    } else if (userContext.state.profile === null) {
+      setPage(3);
+    } else if (userContext.state.degreePrograms === null) {
+      setPage(4);
+    } else if (!userContext.state.degreeProofUploaded) {
+      setPage(5);
+    } else {
+      // This user has already completed the sign up process.
+      return feRoutes.main.home();
     }
   };
 
   return (
     <div className="min-h-screen flex bg-[var(--color-astratintedwhite)]">
+      <RouteGuard mode={RouteGuardMode.AUTH_SIGN_UP} onChange={handleRouteGuardChange} />
       {/* Left Side */}
-      <div className="w-full md:w-1/2 relative flex items-center justify-center px-4 md:px-8">
-        <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
+      <div className="w-full md:w-1/2 relative flex justify-center px-4 md:px-8 max-h-screen overflow-auto">
+        <div className="w-full max-w-md py-8">
+          {
+            page === 1 && <AuthBackToHomeLink />
+          }
           {/* Logo and Back to Home */}
           <div className="flex flex-col items-center mb-4">
             <img
@@ -46,79 +80,26 @@ export default function SignupPage() {
               width={120}
               className="w-auto mb-2"
             />
-            <Link
-              href="/"
-              className="flex items-center text-[var(--color-astrablack)] hover:text-[var(--color-astraprimary)] transition-colors text-sm md:text-base font-medium bg-transparent"
-            >
-              <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 mr-2" />
-              Back to Home
-            </Link>
           </div>
 
-          <div className="mb-6 flex justify-between items-center">
-            <h2 className="text-xl md:text-2xl font-semibold text-[var(--color-astrablack)]">Sign Up</h2>
-            <Link href="/login" className="text-[var(--color-astraprimary)] text-sm md:text-base hover:underline">
-              I have an account
-            </Link>
+          <div className="space-y-4">
+            {buildPage([page, setPage])}
           </div>
 
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-gray-900 text-sm md:text-base"
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-gray-900 text-sm md:text-base"
-            />
-            <input
-              type="password"
-              placeholder="Confirm Password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-3 py-2 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-gray-900 text-sm md:text-base"
-            />
-
-            {errors.length > 0 && (
-              <div className="bg-red-100 text-[var(--color-astrared)] text-sm px-3 py-2 rounded">
-                {errors.map((err, idx) => (
-                  <p key={idx}>{err}</p>
-                ))}
-              </div>
-            )}
-
-            <button
-              type="submit"
-              className="text-sm md:text-base w-full bg-[var(--color-astraprimary)] text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
-            >
-              Next
-            </button>
-          </form>
-
-          <div className="mt-4 text-center">
-            <Link href="/recover" className="text-[var(--color-astraprimary)] text-sm md:text-base hover:underline">
-              Forgot password?
-            </Link>
-          </div>
-
-          <div className="mt-6">
-            <button className="w-full border border-[var(--color-astradirtywhite)] bg-white hover:bg-gray-100 rounded-md py-2 px-4 flex items-center justify-center transition-colors">
-              <User size={18} className="mr-2 text-[var(--color-astralightgray)]" />
-              <span className="text-sm md:text-base text-[var(--color-astrablack)]">Continue as Guest</span>
-            </button>
-          </div>
-
+          {
+            page > 0 &&
           <div className="flex justify-center mt-6 space-x-2">
-            <div className="w-2 h-2 rounded-full bg-[var(--color-astraprimary)]"></div>
-            <div className="w-2 h-2 rounded-full bg-gray-300"></div>
-            <div className="w-2 h-2 rounded-full bg-gray-300"></div>
+            <div className={"w-2 h-2 rounded-full " + (page >= 1 ? "bg-[var(--color-astraprimary)]" : "bg-gray-300")}></div>
+            <div className={"w-2 h-2 rounded-full " + (page >= 2 ? "bg-[var(--color-astraprimary)]" : "bg-gray-300")}></div>
+            <div className={"w-2 h-2 rounded-full " + (page >= 3 ? "bg-[var(--color-astraprimary)]" : "bg-gray-300")}></div>
+            <div className={"w-2 h-2 rounded-full " + (page >= 4 ? "bg-[var(--color-astraprimary)]" : "bg-gray-300")}></div>
+            <div className={"w-2 h-2 rounded-full " + (page >= 5 ? "bg-[var(--color-astraprimary)]" : "bg-gray-300")}></div>
+            <div className={"w-2 h-2 rounded-full " + (page >= 6 ? "bg-[var(--color-astraprimary)]" : "bg-gray-300")}></div>
           </div>
+          }
+
+          {/* spacing hack */}
+          <hr className="my-4 opacity-0" />
         </div>
       </div>
 

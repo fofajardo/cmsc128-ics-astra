@@ -7,7 +7,8 @@ import avatar from "../assets/avatar.png"; // Replace with your actual avatar pa
 import { Menu, X, LogOut, User, Settings } from "lucide-react";
 import axios from "axios";
 import {useSignedInUser} from "@/components/UserContext.jsx";
-import {LoadingSpinner} from "@/components/LoadingSpinner.jsx"; // Using lucide-react for icons
+import {LoadingSpinner} from "@/components/LoadingSpinner.jsx";
+import {feRoutes} from "../../common/routes.js"; // Using lucide-react for icons
 
 function HeaderMenu(toggleSidebar, isSidebarOpen) {
   return <button
@@ -51,13 +52,13 @@ function HeaderNavigation(navLinks, setActiveLink, activeLink) {
 
 function HeaderAuth() {
   return <div className="flex items-center space-x-3">
-    <Link href="/sign-in">
+    <Link href={feRoutes.auth.signIn()}>
       <button
         className="cursor-pointer px-4 py-1 min-w-[90px] h-[35px] font-semibold text-astrawhite bg-astraprimary border-2 border-astraprimary rounded-[12px] transition-all duration-300 transform hover:scale-105 hover:shadow-astraprimary">
         Sign In
       </button>
     </Link>
-    <Link href="/sign-up">
+    <Link href={feRoutes.auth.signUp()}>
       <button
         className="cursor-pointer px-4 py-1 min-w-[90px] h-[35px] font-semibold text-astraprimary bg-astrawhite border-2 border-astraprimary rounded-[12px] transition-all duration-300 transform hover:scale-105 hover:shadow-astraprimary">
         Sign Up
