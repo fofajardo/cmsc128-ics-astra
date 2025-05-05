@@ -98,9 +98,9 @@ export default function ProjectDetails({ params }) {
             // eligibilityCriteria: "NA",
             // fundDistribution: "NA",
             transactions: formattedDonations,
-            topDonator: formattedDonations.reduce((max, curr) => curr.amount > max.amount ? curr : max),
-            recentDonator: formattedDonations.reduce((latest, curr) => new Date(curr.date) > new Date(latest.date) ? curr : latest ),
-            firstDonator: [...formattedDonations].sort((a, b) => new Date(a.donation_date) - new Date(b.donation_date))[0],
+            topDonator: formattedDonations.length ? formattedDonations.reduce((max, curr) => curr.amount > max.amount ? curr : max) : { donor: "", amount: "" },
+            recentDonator: formattedDonations.length ? formattedDonations.reduce((latest, curr) => new Date(curr.donation_date) > new Date(latest.donation_date) ? curr : latest) : { donor: "", amount: "" },
+            firstDonator: formattedDonations.length ? [...formattedDonations].sort( (a, b) => new Date(a.donation_date) - new Date(b.donation_date) )[formattedDonations.length-1] : { donor: "", amount: "" },
           });
 
           // fetch photo
