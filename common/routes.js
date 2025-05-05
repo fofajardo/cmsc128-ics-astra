@@ -24,6 +24,7 @@ class BaseRoutes {
     this.auth = {
       base: (append = "") => `${this.BASE_URL}/auth${append}`,
       signUp: () => `${this.BASE_URL}/auth/sign-up`,
+      signUpResendEmail: () => `${this.BASE_URL}/auth/sign-up/email/resend`,
       signIn: () => `${this.BASE_URL}/auth/sign-in`,
       signInExternal: (aProvider) => `${this.BASE_URL}/auth/sign-in/external?provider=${aProvider}`,
       signInExternalCallback: () => `${this.BASE_URL}/auth/sign-in/external/callback`,
@@ -37,6 +38,10 @@ class BaseRoutes {
 
     this.users = {
       base: (append = "") => `${this.BASE_URL}/users${append}`,
+      getOne: (id) => `${this.BASE_URL}/users/${id}`,
+      getOneDegreePrograms: (id) => `${this.BASE_URL}/users/${id}/degree-programs`,
+      getOneAlumniProfile: (id) => `${this.BASE_URL}/users/${id}/profile/latest`,
+      getAlumniProfiles: (id) => `${this.BASE_URL}/users/${id}/profile`,
     };
 
     this.degreePrograms = {
@@ -137,12 +142,13 @@ class TestRoutes extends BaseRoutes {
 }
 
 class FrontEndRoutes extends BaseRoutes {
-  constructor() {
+  constructor(aIsAbsolute) {
     super();
+    this.isAbsolute = aIsAbsolute;
   }
 
   get BASE_URL() {
-    return "";
+    return this.isAbsolute ? process.env.ICSA_FE_URL : "";
   }
 
   /**
@@ -214,9 +220,11 @@ class FrontEndRoutes extends BaseRoutes {
 export const serverRoutes = new ServerRoutes();
 export const clientRoutes = new ClientRoutes();
 export const testRoutes = new TestRoutes();
-export const feRoutes = new FrontEndRoutes();
+export const feRoutes = new FrontEndRoutes(false);
+export const absFeRoutes = new FrontEndRoutes(true);
 
 Object.freeze(serverRoutes);
 Object.freeze(clientRoutes);
 Object.freeze(testRoutes);
 Object.freeze(feRoutes);
+Object.freeze(absFeRoutes);
