@@ -134,7 +134,7 @@ const createAlumniProfile = async (req, res) => {
       "honorifics",
       "citizenship",
       "sex",
-      "primary_work_experience_id",
+      // "primary_work_experience_id",
       "civil_status",
       "first_name",
       "middle_name",
@@ -168,6 +168,7 @@ const createAlumniProfile = async (req, res) => {
       first_name,
       middle_name,
       last_name,
+      suffix,
       is_profile_public
     } = req.body;
 
@@ -189,6 +190,7 @@ const createAlumniProfile = async (req, res) => {
       first_name,
       middle_name,
       last_name,
+      suffix,
       is_profile_public,
       created_at // Set internally
     });
