@@ -6,15 +6,16 @@ import JobEditCard from "../../components/jobs/jobEditCard";
 import SearchBar from "../../components/jobs/search";
 import Filter from "../../components/jobs/filters";
 import Image from "next/image";
-import {dummyJobs, dummyMyJobs} from "./dummy";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Eye, EyeOff } from "lucide-react";
+import { useSignedInUser } from "@/components/UserContext";
 
 export default function JobsPage() {
+  const user = useSignedInUser();
   const [jobs, setJobs] = useState([]);
   const [filteredJobs, setFilteredJobs] = useState([]);
-  const [myJobs, setMyJobs] = useState(dummyMyJobs);
+  const [myJobs, setMyJobs] = useState([]);
   const [jobCards, setJobCards] = useState(6); // limit / no. of cards to show
   const [myJobCards, setMyJobCards] = useState(6); // limit / no. of cards owned to show
   const CARDS_PER_CLICK = 6;
@@ -23,7 +24,39 @@ export default function JobsPage() {
     try {
       const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs`);
       if (response.data.status === "OK") {
-        setJobs(response.data.list || []);
+        const jobs = response.data.list || [];
+        setJobs(jobs);
+
+        const userId = user?.state?.user?.id;
+
+        if (userId) {
+          const jobsWithContentFlag = await Promise.all(
+            jobs.map(async (job) => {
+              try {
+                const res = await axios.get(
+                  `${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${job.job_id}`
+                );
+
+                const contents = Array.isArray(res.data)
+                  ? res.data
+                  : res.data.list || [];
+
+                const hasUserContent = contents.some(
+                  (content) => content.user_id === userId
+                );
+
+                return {
+                  ...job,
+                  hasUserContent,
+                };
+              } catch (err) {
+                console.error(`Error fetching content for job ${job.job_id}`, err);
+                return { ...job, hasUserContent: false };
+              }
+            })
+          );
+          setMyJobs(jobsWithContentFlag);
+        }
       } else {
         console.error("Unexpected response from server.");
       }
@@ -32,19 +65,11 @@ export default function JobsPage() {
     }
   };
 
-  //UseEffect for Jobs
   useEffect(() => {
     fetchJobs();
-  }, []);
+  }, [user]);
 
   const [showExpired, setExpired] = useState(false);
-
-  useEffect(() => {
-    // fetch jobs logic here whenever See More component is clicked
-
-    // fetch myJobs logic here whenever See More component is clicked
-
-  }, [jobCards, myJobCards]);
 
   return (
     <div className="overflow-hidden pb-10 bg-astratintedwhite w-full flex flex-col items-center">
