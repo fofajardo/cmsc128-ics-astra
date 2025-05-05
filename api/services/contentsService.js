@@ -1,28 +1,10 @@
 import { applyFilter } from "../utils/applyFilter.js";
 
-const fetchContents = async (supabase, filters) => {
-  let query = supabase
+const fetchContents = async (supabase) => {
+  return await supabase
     .from("contents")
-    .select("*");
+    .select();
 
-  // Apply additional filters
-  query = applyFilter(query, filters, {
-    ilike: ["title", "details"],
-    range: {
-      created_at: [filters.created_at_from, filters.created_at_to]
-    },
-    sortBy: filters.sortBy || "created_at",
-    defaultOrder: filters.order || "desc",
-    specialKeys: ["created_at_from", "created_at_to", "sortBy", "order"]
-  });
-
-  // Add filter for tags if it's present
-  if (filters.tags) {
-    // Ensure tags are passed as a proper array format for PostgreSQL
-    query = query.contains("tags", Array.isArray(filters.tags) ? filters.tags : [filters.tags]);
-  }
-
-  return await query;
 };
 
 
