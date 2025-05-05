@@ -3,3 +3,9 @@ export const REQUEST_STATUS = {
   APPROVED: 1,
   REJECTED: 2,
 };
+
+export const REQUEST_STATUS_LABELS = {
+  [REQUEST_STATUS.SENT]: "Sent",
+  [REQUEST_STATUS.APPROVED]: "Approved",
+  [REQUEST_STATUS.REJECTED]: "Rejected",
+};
