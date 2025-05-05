@@ -13,6 +13,7 @@ import {useSignedInUser} from "@/components/UserContext.jsx";
 import {LoadingSpinner} from "@/components/LoadingSpinner.jsx";
 import {RouteGuard} from "@/components/RouteGuard.jsx";
 import {RouteGuardMode} from "../../../common/scopes.js";
+import SignUpStep6 from "@/(auth)/sign-up/SignUpStep6.jsx";
 
 function buildPage(aPageState) {
   const [page, setPage] = aPageState;
@@ -35,6 +36,8 @@ function buildPage(aPageState) {
     return <SignUpStep4 onSetPage={setPage} />;
   case 5:
     return <SignUpStep5 onSetPage={setPage} />;
+  case 6:
+    return <SignUpStep6 />;
   default:
     return "Unknown page";
   }
@@ -91,6 +94,7 @@ export default function SignupPage() {
             <div className={"w-2 h-2 rounded-full " + (page >= 3 ? "bg-[var(--color-astraprimary)]" : "bg-gray-300")}></div>
             <div className={"w-2 h-2 rounded-full " + (page >= 4 ? "bg-[var(--color-astraprimary)]" : "bg-gray-300")}></div>
             <div className={"w-2 h-2 rounded-full " + (page >= 5 ? "bg-[var(--color-astraprimary)]" : "bg-gray-300")}></div>
+            <div className={"w-2 h-2 rounded-full " + (page >= 6 ? "bg-[var(--color-astraprimary)]" : "bg-gray-300")}></div>
           </div>
           }
 
