@@ -11,7 +11,7 @@ import ProjectCardPending from "@/components/ProjectCardPending";
 import ProjectCardActive from "@/components/ProjectCardActive";
 import { formatCurrency, capitalizeName } from "@/utils/format";
 import { REQUEST_STATUS } from "@/constants/requestConsts";
-import { PROJECT_TYPE } from "@/constants/projectConsts";
+import { PROJECT_STATUS, PROJECT_TYPE } from "@/constants/projectConsts";
 import DeclineModal from "@/components/projects/DeclineModal";
 import Link from "next/link";
 import axios from "axios";
@@ -70,7 +70,7 @@ export default function ProjectsAdmin() {
           setProjects(
             projectData.list.map(
               project => ({
-                status: project.status,
+                status: project.projectData.project_status === PROJECT_STATUS.FINISHED ? REQUEST_STATUS.REJECTED : project.status,
                 request_id: project.request_id,
                 id: project.projectData.project_id,
                 image: photoMap[project.projectData.project_id] || "/projects/assets/Donation.jpg",

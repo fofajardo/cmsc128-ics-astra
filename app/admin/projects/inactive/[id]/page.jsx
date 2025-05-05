@@ -7,7 +7,7 @@ import ToastNotification from "@/components/ToastNotification";
 import Link from "next/link";
 import axios from "axios";
 import { formatCurrency, formatDate, capitalizeName } from "@/utils/format";
-import { PROJECT_TYPE } from "@/constants/projectConsts";
+import { PROJECT_STATUS, PROJECT_TYPE } from "@/constants/projectConsts";
 
 //for admin/projects/inactive/[id]
 export default function InactiveProjectDetail({ params }) {
@@ -55,6 +55,8 @@ export default function InactiveProjectDetail({ params }) {
 
           setProjectData({
             id: projectId,
+            request_status: projectData.status,
+            project_status: projectData.list.projectData.project_status,
             title: projectData.list.projectData.title,
             type: projectData.list.projectData.type,
             image: null,
@@ -73,6 +75,7 @@ export default function InactiveProjectDetail({ params }) {
                 : projectData.list.requesterData.role,
             },
             submissionDate: projectData.list.date_requested,
+            dateReviewed: projectData.list.date_reviewed,
             startDate: "1999-01-01",
             endDate: projectData.list.projectData.due_date,
             eligibilityCriteria: "NA",
@@ -199,7 +202,7 @@ export default function InactiveProjectDetail({ params }) {
 
               <div className="ml-4 bg-astrawhite text-astradark px-3 py-1 rounded-lg text-sm font-s flex items-center gap-1">
                 <Calendar className="w-4 h-4" />
-                <span>Ended: {new Date(projectData?.endDate).toLocaleDateString("en-PH")}</span>
+                <span>{projectData?.project_status === PROJECT_STATUS.FINISHED ? `Date Ended: ${formatDate(projectData?.endDate)}` : `Date Deleted: ${formatDate(projectData?.dateReviewed)}`}</span>
               </div>
             </div>
           </div>
