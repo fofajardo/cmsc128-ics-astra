@@ -155,10 +155,6 @@ export default function CommunicationPage() {
             toggleFilter={() => setShowFilter(true)}
             searchQuery={searchTerm}
             setSearchQuery={setSearchTerm}
-            addButton={{
-              label: "Add New",
-              onClick: handleAddNew,
-            }}
           />
 
           {currTab === "Announcements" && (
