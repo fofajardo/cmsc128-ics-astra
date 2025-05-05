@@ -9,8 +9,11 @@ import ContactModal from "@/components/projects/ContactModal";
 import ProjectDetails from "@/components/projects/ProjectDetails";
 import RequesterActions from "@/components/projects/RequesterActions";
 import DeclineModal from "@/components/projects/DeclineModal";
-import { formatCurrency } from "@/utils/format";
+import { capitalizeName } from "@/utils/format";
 import axios from "axios";
+import { HeartHandshake } from "lucide-react";
+import { GraduationCap } from "lucide-react";
+import { PROJECT_TYPE } from "@/constants/projectConsts";
 
 export default function PendingProjectDetail({ params }) {
   const id = use(params).id;
@@ -65,9 +68,11 @@ export default function PendingProjectDetail({ params }) {
             goal: projectData.list.projectData.goal_amount.toString(),
             requester: {
               name: projectData.list.requesterData.full_name,
-              email: "NA",
-              phone: "NA",
-              position: projectData.list.requesterData.role || "NA",
+              email: projectData.list.requesterData.email,
+              phone: "N/A",
+              position: projectData.list.requesterData.role === "unlinked" || projectData.list.requesterData.role === null
+                ? "N/A"
+                : projectData.list.requesterData.role,
             },
             submissionDate: projectData.list.date_requested,
             proposedStartDate: "1999-01-01",
@@ -178,7 +183,7 @@ export default function PendingProjectDetail({ params }) {
 
       {/* Header Banner */}
       <div className="relative h-64">
-        <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
+        <img src={!project.image ? "/projects/assets/Donation.jpg" : project.image} alt={project.title} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/30 flex items-end">
           <div className="p-6 text-astrawhite w-full">
             <div className="flex items-center mt-4">
@@ -187,7 +192,12 @@ export default function PendingProjectDetail({ params }) {
             </div>
             <div className="flex items-center mt-2">
               <div className="bg-astrawhite text-astradark px-3 py-1 rounded-lg text-sm font-s flex items-center gap-1">
-                {project.type}
+                {project.type === PROJECT_TYPE.SCHOLARSHIP? (
+                  <GraduationCap className="w-4 h-4" />
+                ) : (
+                  <HeartHandshake className="w-4 h-4" />
+                )}
+                {project?.type ? capitalizeName(project.type) : project?.type}
               </div>
               <div className="ml-4 bg-astrawhite text-astradark px-3 py-1 rounded-lg text-sm font-s flex items-center gap-1">
                 Submitted: {new Date(project.submissionDate).toLocaleDateString("en-PH")}

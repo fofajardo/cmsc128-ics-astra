@@ -1,17 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import HeaderUser from "../../components/HeaderUser.jsx";
 import ProjectCard from "../../components/projects/ProjectCard";
 import Link from "next/link";
 import { Icon } from "@iconify/react";
 import { Filter, User } from "lucide-react";
+import axios from "axios";
+import { PROJECT_STATUS, PROJECT_STATUS_LABELS, PROJECT_TYPE } from "@/constants/projectConsts.js";
+import { capitalizeName } from "@/utils/format.jsx";
+import { useSignedInUser } from "@/components/UserContext.jsx";
 
-export default function ProjectsPage({ projects }) {
+export default function ProjectsPage() {
+  const user = useSignedInUser();
   const [visibleCount, setVisibleCount] = useState(6);
   const [startIndex, setStartIndex] = useState(0);
-  const completedVisibleCount = 3;
+  const finishedVisibleCount = 3;
 
   // Filter modal state
   const [showFilter, setShowFilter] = useState(false);
@@ -19,76 +24,116 @@ export default function ProjectsPage({ projects }) {
   const [tempSelectedType, setTempSelectedType] = useState(selectedType);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("All");
-  const [sortOrder, setSortOrder] = useState("Recent");
+  const [sortOrder, setSortOrder] = useState("Recent"); // TODO: Implement sorting by date (due date?)
   const [showTypeDropdown, setShowTypeDropdown] = useState(false);
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const [showSortDropdown, setShowSortDropdown] = useState(false);
 
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [projectPhotos, setProjectPhotos] = useState({});
 
+  useEffect(() => {
+    const fetchApprovedProjects = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/projects/approved`);
+        const projectData = response.data;
+        if (projectData.status === "OK") {
+          console.log("Fetched projects:", projectData);
 
+          // extract project id's
+          const projectIds = projectData.projects.map(project => project.projectData.project_id);
+
+          // map for photos initialization
+          const photoMap = {};
+
+          // fetch individual project photos
+          const photoPromises = projectIds.map(async (projectId) => {
+            try {
+              const photoResponse = await axios.get(
+                `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/project/${projectId}`
+              );
+
+              if (photoResponse.data.status === "OK" && photoResponse.data.photo) {
+                photoMap[projectId] = photoResponse.data.photo;
+              }
+            } catch (error) {
+              console.log(`Failed to fetch photo for project_id ${projectId}:`, error);
+            }
+          });
+
+          await Promise.all(photoPromises);
+          setProjectPhotos(photoMap);
+
+          setProjects(
+            projectData.projects.map(
+              project => ({
+                id: project.projectData.project_id,
+                title: project.projectData.title,
+                description: project.projectData.details,
+                image: photoMap[project.projectData.project_id] || "/projects/assets/Donation.jpg",
+                goal: project.projectData.goal_amount.toString(),
+                raised: project.projectData.total_donations.toString(),
+                donors: project.projectData.number_of_donors,
+                type: project.projectData.type,
+                endDate: project.projectData.due_date,
+                project_status: project.projectData.project_status,
+                donationLink: project.projectData.donation_link,
+                requester: project.requesterData.full_name,
+                dateCompleted: project.projectData.date_complete,
+                status: project.status,
+                request_id: project.request_id,
+              })
+            )
+          );
+        } else {
+          console.error("Unexpected response:", projectData);
+        }
+      } catch (error) {
+        console.error("Failed to fetch projects:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchApprovedProjects();
+  }, []);
 
   const toggleFilter = () => {
     setTempSelectedType(selectedType); // reset modal input to current selection
     setShowFilter((prev) => !prev);
   };
 
-
-
-  // Navigate Left for completed projects carousel
+  // Navigate Left for finished projects carousel
   const handlePrev = () => {
     setStartIndex((prev) => Math.max(prev - 1, 0));
   };
 
-  // Navigate Right for completed projects carousel
+  // Navigate Right for finished projects carousel
   const handleNext = () => {
     setStartIndex((prev) =>
-      Math.min(prev + 1, completedProjects.length - completedVisibleCount)
+      Math.min(prev + 1, finishedProjects.length - finishedVisibleCount)
     );
   };
 
-  // Sample all projects data
-  const allProjects = [...Array(12).keys()].map((i) => ({
-    id: i,
-    title: `${i % 2 === 0 ? "Scholarship" : "Fundraiser"} Project ${i + 1}`,
-    description: `This project aims to provide middle school students the resources they need to excel academically, emotionally, and physically... ${
-      i + 1
-    }`,
-    image: "/projects/assets/Donation.jpg",
-    goal: "₱50,000",
-    raised: i % 3 === 0 ? "₱10,000" : i % 3 === 1 ? "₱35,000" : "₱48,000",
-    donors: "30",
-    type: i % 2 === 0 ? "Scholarship" : "Fundraiser",
-    endDate: "2025-06-30",
-    statud: i % 3 === 0 ? "Completed" : "Ongoing"
-  }));
-    //completed projects data
-    //const completedProjects = allProjects.filter(project => project.status === "Completed");
+  const allProjects = projects;
 
-  // Sample completed projects data
-  const completedProjects =
-  projects ||
-  Array(6).fill({
-    image: "/projects/assets/Donation.jpg",
-    title: "tapos na",
-    description: "This project aims to provide snacks to students to encourage attendance and enhance focus.",
-    amountRaised: "₱10,000",
-    goalAmount: "₱30,000",
-    donors: "32",
-    buttonText: "Read story",
-  });
+  const finishedProjects = allProjects.filter(project => project.project_status === PROJECT_STATUS.FINISHED);
 
   // Filter projects based on type and search term
   const filteredProjects = allProjects.filter((project) => {
-    const matchesType = selectedType === "All" || project.type === selectedType;
+    const matchesType = selectedType === "All" || project.type === selectedType.toLowerCase();
     const matchesSearch = project.title
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
-    return matchesType && matchesSearch;
+    const matchesStatus = selectedStatus === "All" || project.project_status === selectedStatus;
+    return matchesType && matchesSearch && matchesStatus;
   });
 
-  const visibleCompletedProjects = completedProjects.slice(
+  const visibleCompletedProjects = finishedProjects.slice(
     startIndex,
-    startIndex + completedVisibleCount
+    startIndex + finishedVisibleCount
   );
 
   return (
@@ -115,8 +160,9 @@ export default function ProjectsPage({ projects }) {
                   onChange={(e) => setTempSelectedType(e.target.value)}
                 >
                   <option value="All">All Projects</option>
-                  <option value="Fundraiser">Fundraisers</option>
-                  <option value="Scholarship">Scholarships</option>
+                  <option value={capitalizeName(PROJECT_TYPE.FUNDRAISING)}>{capitalizeName(PROJECT_TYPE.FUNDRAISING)}</option>
+                  <option value={capitalizeName(PROJECT_TYPE.SCHOLARSHIP)}>{capitalizeName(PROJECT_TYPE.SCHOLARSHIP)+"s"}</option>
+                  <option value={capitalizeName(PROJECT_TYPE.DONATION_DRIVE)}>{capitalizeName(PROJECT_TYPE.DONATION_DRIVE)+"s"}</option>
                 </select>
               </div>
               <div className="flex justify-end gap-3 mt-4">
@@ -161,7 +207,7 @@ export default function ProjectsPage({ projects }) {
           {/* Request a fundraiser button */}
           <Link href="/projects/request/goal" passHref>
             <button className="mt-12 border-2 border-astrawhite text-astrawhite hover:bg-astrawhite hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-[200px] h-[60px]">
-              Request a Fundraiser
+              Request a Project
             </button>
           </Link>
         </motion.div>
@@ -204,8 +250,9 @@ export default function ProjectsPage({ projects }) {
                 {showTypeDropdown && (
                   <div className="absolute mt-2 bg-white border border-gray-300 rounded shadow-md z-10 w-48">
                     <button onClick={() => { setSelectedType("All"); setShowTypeDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">All Projects</button>
-                    <button onClick={() => { setSelectedType("Fundraiser"); setShowTypeDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">Fundraiser</button>
-                    <button onClick={() => { setSelectedType("Scholarship"); setShowTypeDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">Scholarship</button>
+                    <button onClick={() => { setSelectedType(capitalizeName(PROJECT_TYPE.FUNDRAISING)); setShowTypeDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">{capitalizeName(PROJECT_TYPE.FUNDRAISING)}</button>
+                    <button onClick={() => { setSelectedType(capitalizeName(PROJECT_TYPE.SCHOLARSHIP)); setShowTypeDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">{capitalizeName(PROJECT_TYPE.SCHOLARSHIP)}</button>
+                    <button onClick={() => { setSelectedType(capitalizeName(PROJECT_TYPE.DONATION_DRIVE)); setShowTypeDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">{capitalizeName(PROJECT_TYPE.DONATION_DRIVE)}</button>
                   </div>
                 )}
               </div>
@@ -226,8 +273,9 @@ export default function ProjectsPage({ projects }) {
                 {showStatusDropdown && (
                   <div className="absolute mt-2 bg-white border border-gray-300 rounded shadow-md z-10 w-48">
                     <button onClick={() => { setSelectedStatus("All"); setShowStatusDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">All</button>
-                    <button onClick={() => { setSelectedStatus("Ongoing"); setShowStatusDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">Ongoing</button>
-                    <button onClick={() => { setSelectedStatus("Completed"); setShowStatusDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">Completed</button>
+                    <button onClick={() => { setSelectedStatus(PROJECT_STATUS.AWAITING_BUDGET); setShowStatusDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">{PROJECT_STATUS_LABELS[PROJECT_STATUS.AWAITING_BUDGET]}</button>
+                    <button onClick={() => { setSelectedStatus(PROJECT_STATUS.ONGOING); setShowStatusDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">{PROJECT_STATUS_LABELS[PROJECT_STATUS.ONGOING]}</button>
+                    <button onClick={() => { setSelectedStatus(PROJECT_STATUS.FINISHED); setShowStatusDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">{PROJECT_STATUS_LABELS[PROJECT_STATUS.FINISHED]}</button>
                   </div>
                 )}
               </div>
@@ -283,7 +331,7 @@ export default function ProjectsPage({ projects }) {
               >
                 {filteredProjects.slice(0, visibleCount).map((project) => (
                   <Link
-                    href={`/projects/about/${project.id}`}
+                    href={`/projects/about/${project.request_id}`}
                     key={project.id}
                     className="block h-full"
                   >
@@ -345,7 +393,7 @@ export default function ProjectsPage({ projects }) {
           )}
 
           {/* My Projects Section */}
-          <div className="mt-20 bg-astralightgray py-10 px-6 rounded-xl shadow-md">
+          {user?.state?.user && <div className="mt-20 bg-astralightgray py-10 px-6 rounded-xl shadow-md">
             <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
               <div className="text-left">
                 <h3 className="font-lb text-2xl text-astrablack mb-3">Track Your Fundraisers</h3>
@@ -353,14 +401,14 @@ export default function ProjectsPage({ projects }) {
                   View the status of your submitted fundraisers, respond to messages, and manage your fundraising projects in one place.
                 </p>
               </div>
-              <Link href="/projects/my-projects/1" passHref> {/* Assuming 1 is the user_id */}
+              <Link href={`/projects/my-projects/${encodeURI(user?.state?.user?.id)}`} passHref>
                 <button className="px-8 py-4 bg-astraprimary text-astrawhite rounded-lg hover:bg-astraprimary/90 transition flex items-center gap-2 font-medium">
                   <User className="w-5 h-5" />
                   My Projects
                 </button>
               </Link>
             </div>
-          </div>
+          </div>}
 
           {/*to handle resizing*/}
           <script
@@ -550,11 +598,11 @@ export default function ProjectsPage({ projects }) {
         </div>
       </section>
 
-      {/* Completed Fundraisers*/}
+      {/* Finished Fundraisers*/}
       <section className="bg-astralightgray pt-20 pb-30">
         <div className="max-w-7xl mx-auto px-4 relative">
           <h2 className="font-h2 text-astrablack mb-3">
-            Completed Fundraisers
+            Finished Fundraisers
           </h2>
           <p className="text-astrablack font-r mb-10">
             See the fundraisers and scholarships we&apos;ve brought to life together.
@@ -581,17 +629,17 @@ export default function ProjectsPage({ projects }) {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-500 ease-in-out">
               {visibleCompletedProjects.map((project, index) => (
                 <Link
-                  href={`/projects/about/${index}`}
+                  href={`/projects/about/${project.request_id}`}
                   key={index}
                   className="block"
                 >
                   <ProjectCard
-                    id={index}
+                    id={project.id}
                     image={project.image}
                     title={project.title}
                     description={project.description}
-                    goal={project.goalAmount}
-                    raised={project.amountRaised}
+                    goal={project.goal}
+                    raised={project.raised}
                     donors={project.donors}
                     endDate={project.endDate || "2025-01-01"}
                     type={project.type || "Fundraiser"}
@@ -605,10 +653,10 @@ export default function ProjectsPage({ projects }) {
             <button
               onClick={handleNext}
               disabled={
-                startIndex >= completedProjects.length - completedVisibleCount
+                startIndex >= finishedProjects.length - finishedVisibleCount
               }
               className={`absolute -right-6 top-1/2 transform -translate-y-1/2 z-10 bg-white shadow-md hover:bg-astragray transition-all p-2 rounded-full hidden md:flex items-center justify-center ${
-                startIndex >= completedProjects.length - completedVisibleCount
+                startIndex >= finishedProjects.length - finishedVisibleCount
                   ? "opacity-50 cursor-not-allowed"
                   : "cursor-pointer"
               }`}
@@ -624,14 +672,14 @@ export default function ProjectsPage({ projects }) {
           <div className="flex justify-center mt-6 md:hidden">
             {Array.from({
               length: Math.ceil(
-                completedProjects.length / completedVisibleCount
+                finishedProjects.length / finishedVisibleCount
               ),
             }).map((_, idx) => (
               <button
                 key={idx}
-                onClick={() => setStartIndex(idx * completedVisibleCount)}
+                onClick={() => setStartIndex(idx * finishedVisibleCount)}
                 className={`mx-1 w-2 h-2 rounded-full ${
-                  startIndex === idx * completedVisibleCount
+                  startIndex === idx * finishedVisibleCount
                     ? "bg-astraprimary"
                     : "bg-astragray"
                 }`}
@@ -639,7 +687,7 @@ export default function ProjectsPage({ projects }) {
             ))}
           </div>
 
-          {/* Responsive completedVisibleCount adjustment */}
+          {/* Responsive finishedVisibleCount adjustment */}
           <script
             dangerouslySetInnerHTML={{
               __html: `

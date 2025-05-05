@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { MessageSquare, User, Send } from "lucide-react";
 
-export default function MessagesModal({ fundraiser, onClose, onSendMessage }) {
+export default function MessagesModal({ project, onClose, onSendMessage }) {
   const [message, setMessage] = useState("");
 
   // Format timestamp to readable date and time
@@ -61,7 +61,7 @@ export default function MessagesModal({ fundraiser, onClose, onSendMessage }) {
                 Messages
               </h3>
               <p className="text-white/70 text-sm">
-                {fundraiser.title}
+                {project.title}
               </p>
             </div>
           </div>
@@ -69,7 +69,7 @@ export default function MessagesModal({ fundraiser, onClose, onSendMessage }) {
 
         {/* Body */}
         <div className="p-6 max-h-96 overflow-y-auto">
-          {fundraiser.messages.length === 0 ? (
+          {project.messages.length === 0 ? (
             <div className="text-center py-12">
               <div className="bg-astralightgray/50 w-16 h-16 rounded-full mx-auto flex items-center justify-center mb-4">
                 <MessageSquare className="w-8 h-8 text-astradarkgray/50" />
@@ -78,12 +78,12 @@ export default function MessagesModal({ fundraiser, onClose, onSendMessage }) {
                 No messages yet
               </h4>
               <p className="text-astradarkgray/70 text-sm">
-                Messages related to your fundraiser will appear here
+                Messages related to your project will appear here
               </p>
             </div>
           ) : (
             <div className="space-y-4">
-              {fundraiser.messages.map((msg) => (
+              {project.messages.map((msg) => (
                 <div
                   key={msg.id}
                   className={`flex gap-3 ${
@@ -116,7 +116,7 @@ export default function MessagesModal({ fundraiser, onClose, onSendMessage }) {
                         {formatTimestamp(msg.timestamp)}
                       </span>
                     </div>
-                    <p className="text-sm">{msg.content}</p>
+                    <p className="text-sm">{msg.content ? msg.content : <i>No response</i>}</p>
                   </div>
                 </div>
               ))}
@@ -125,7 +125,7 @@ export default function MessagesModal({ fundraiser, onClose, onSendMessage }) {
         </div>
 
         {/* Footer - Message Input */}
-        <div className="p-4 bg-astralightgray/40 border-t border-astragray/10">
+        {/* <div className="p-4 bg-astralightgray/40 border-t border-astragray/10">
           <div className="flex items-center gap-2">
             <input
               type="text"
@@ -153,7 +153,7 @@ export default function MessagesModal({ fundraiser, onClose, onSendMessage }) {
               Send
             </button>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

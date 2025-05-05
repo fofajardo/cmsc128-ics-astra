@@ -2,7 +2,10 @@ import httpStatus from "http-status-codes";
 import projectsService from "../services/projectsService.js";
 import contentsService from "../services/contentsService.js";
 import requestsService from "../services/requestsService.js";
+import alumniService from "../services/alumniProfilesService.js";
+import usersService from "../services/usersService.js";
 import { isValidUUID, isValidDate } from "../utils/validators.js";
+import { REQUEST_TYPE, REQUEST_STATUS, PROJECT_TYPE } from "../utils/enums.js";
 import {Actions, Subjects} from "../../common/scopes.js";
 import { v4 as uuvidv4 } from "uuid";
 
@@ -54,6 +57,112 @@ const getProjects = async (req, res) => {
     return res.status(httpStatus.OK).json({
       status: "OK",
       projects: combinedData || [],
+    });
+
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
+
+const getApprovedProjects = async (req, res) => {
+  if (req.you.cannot(Actions.READ, Subjects.PROJECT)) {
+    return res.status(httpStatus.FORBIDDEN).json({
+      status: "FORBIDDEN",
+      message: "You are not allowed to access this resource."
+    });
+  }
+
+  try {
+    const filters = {
+      type: [REQUEST_TYPE.PROJECT_FUNDS, REQUEST_TYPE.FUNDRAISING],
+      status: [REQUEST_STATUS.APPROVED],
+    };
+
+    const { data: requestData, error: requestError } = await requestsService.fetchProjectRequests(req.supabase, filters);
+
+    if (requestError) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: requestError.message
+      });
+    };
+
+    // get name and role from alumni profiles table
+    const { data: alumData, error: alumError } = await alumniService.fetchAlumniProfiles(req.supabase);
+
+    if (alumError) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: alumError.message
+      });
+    };
+
+    // get emails from Users table
+    const { data: userData, error: userError } = await usersService.fetchUsers(req.supabase);
+
+    if (userError) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: userError.message
+      });
+    };
+
+    // get project details from Projects table
+    const projectIds = requestData.map(request => request.content_id);
+    const projectFilter = { project_id: projectIds };
+    const { data: projectData, error: projectError } = await projectsService.fetchProjects(req.supabase, projectFilter);
+
+    if (projectError) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: projectError.message
+      });
+    };
+
+    // Create lookup maps
+    const alumMap = {};
+    alumData.forEach(alum => {
+      alumMap[alum.alum_id] = alum;
+    });
+
+    const userMap = {};
+    userData.forEach(user => {
+      userMap[user.id] = user;
+    });
+
+    const projectMap = {};
+    projectData.forEach(project => {
+      projectMap[project.project_id] = project;
+    });
+
+    // Combine everything
+    const combinedData = requestData.map(request => {
+      const alum = alumMap[request.user_id] || {};
+      const user = userMap[request.user_id] || {};
+      const project = projectMap[request.content_id] || {};
+
+      const full_name = [alum.first_name, alum.middle_name, alum.last_name]
+        .filter(Boolean) // remove undefined/null/empty values
+        .join(" ");
+
+      return {
+        request_id: request.id,
+        status: request.status,
+        projectData: project,
+        requesterData: {
+          full_name,
+          role: user.role || null,
+          email: user.email || null,
+        },
+      };
+    });
+
+    return res.status(httpStatus.OK).json({
+      status: "OK",
+      projects: combinedData,
     });
 
   } catch (error) {
@@ -169,7 +278,7 @@ const createProject = async (req, res) => {
       "title",
       "details",
       // "tags",
-      "project_id",
+      // "project_id",
       // "project_status",
       "due_date",
       // "date_completed",
@@ -208,7 +317,8 @@ const createProject = async (req, res) => {
             !isValidDate(due_date) ||
             (date_completed !== undefined && date_completed !== null && !isValidDate(date_completed)) ||
             typeof goal_amount !== "number" ||
-            typeof donation_link !== "string"
+            typeof donation_link !== "string" ||
+            ![PROJECT_TYPE.DONATION_DRIVE, PROJECT_TYPE.FUNDRAISING, PROJECT_TYPE.SCHOLARSHIP].includes(type.toString().toLowerCase())
     ) {
       return res.status(httpStatus.BAD_REQUEST).json({
         status: "FAILED",
@@ -271,7 +381,7 @@ const createProject = async (req, res) => {
       date_completed,
       goal_amount,
       donation_link: clean_donation_link,
-      type,
+      type: type.toString().toLowerCase(),
     });
 
     if (projectError) {
@@ -329,6 +439,16 @@ const updateProject = async (req, res) => {
       });
     }
 
+    // Check if content exists
+    const { data: contentData, error: contentError} = await contentsService.fetchContentById(req.supabase, projectId);
+
+    if (contentError || !contentData) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: "FAILED",
+        message: "Content not found"
+      });
+    }
+
     // TODO: Clarify if disallow edits to donation_link
     // if (
     //     ("donation_link" in req.body && req.body.donation_link !== projectData.donation_link)
@@ -341,54 +461,80 @@ const updateProject = async (req, res) => {
 
     // Update only allowed fields
     const {
-      project_id,
+      title,
+      details,
+      type,
+      donation_link,
+      goal_amount,
       project_status,
       due_date,
       date_completed,
-      goal_amount,
-      donation_link
     } = req.body;
 
-    const updateData = {
-      project_id,
-      project_status,
-      due_date,
-      date_completed,
-      goal_amount,
-      donation_link
+    const contentUpdateData = {
+      title,
+      details,
+      updated_at: new Date().toISOString(),  // Default to current date
     };
 
     // Remove undefined fields to avoid overwriting with nulls
-    Object.keys(updateData).forEach(key => {
-      if (updateData[key] === undefined) {
-        delete updateData[key];
+    Object.keys(contentUpdateData).forEach(key => {
+      if (contentUpdateData[key] === undefined) {
+        delete contentUpdateData[key];
+      }
+    });
+
+
+    const { error: updateContentError } = await contentsService.updateContentData(req.supabase, projectId, contentUpdateData);
+
+
+    if (updateContentError) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: updateContentError.message
+      });
+    }
+
+    const projectUpdateData = {
+      type,
+      donation_link,
+      goal_amount,
+      project_status,
+      due_date,
+      date_completed,
+    };
+
+    // Remove undefined fields to avoid overwriting with nulls
+    Object.keys(projectUpdateData).forEach(key => {
+      if (projectUpdateData[key] === undefined) {
+        delete projectUpdateData[key];
       }
     });
 
     // Validate request body
-    const allowedFields = ["project_status", "due_date", "date_completed", "goal_amount", "donation_link"];
+    // const allowedFields = ["project_status", "due_date", "date_completed", "goal_amount", "donation_link"];
 
-    allowedFields.forEach(field => {
-      if (!(field in req.body)) {
-        return;
-      }; // skip if field is not present
+    // allowedFields.forEach(field => {
+    //   if (!(field in req.body)) {
+    //     return;
+    //   }; // skip if field is not present
 
-      const value = req.body[field];
+    //   const value = req.body[field];
 
-      if ((field === "project_status" && (typeof value !== "number" || ![0, 1, 2].includes(value))) ||
-                (field === "due_date" && !isValidDate(value)) ||
-                (field === "date_completed" && (value !== null && !isValidDate(value))) ||
-                (field === "goal_amount" && typeof value !== "number") ||
-                (field === "donation_link" && typeof value !== "string")
-      ) {
-        return res.status(httpStatus.BAD_REQUEST).json({
-          status: "FAILED",
-          message: "Invalid field values",
-        });
-      }
-    });
+    //   if ((field === "project_status" && (typeof value !== "number" || ![0, 1, 2].includes(value))) ||
+    //             (field === "due_date" && !isValidDate(value)) ||
+    //             (field === "date_completed" && (value !== null && !isValidDate(value))) ||
+    //             (field === "goal_amount" && typeof value !== "number") ||
+    //             (field === "donation_link" && typeof value !== "string")
+    //   ) {
+    //     return res.status(httpStatus.BAD_REQUEST).json({
+    //       status: "FAILED",
+    //       message: "Invalid field values",
+    //     });
+    //   }
+    // });
 
-    const { data, error } = await projectsService.updateProjectData(req.supabase, projectId, updateData);
+    const { error } = await projectsService.updateProjectData(req.supabase, projectId, projectUpdateData);
 
     if (error) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -462,6 +608,7 @@ const deleteProject = async (req, res) => {
 
 const projectsController = {
   getProjects,
+  getApprovedProjects,
   getProjectById,
   createProject,
   updateProject,

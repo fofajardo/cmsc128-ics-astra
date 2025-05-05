@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import BackButton from "@/components/events/IndividualEvent/BackButton";
 
-const RequestFundraiserPhoto = () => {
+const RequestProjectPhoto = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -16,12 +16,13 @@ const RequestFundraiserPhoto = () => {
 
   // Retrieve previous page data
   const amount = searchParams.get("amount");
-  const zipCode = searchParams.get("zipCode");
+  const projectType = searchParams.get("projectType");
+  const targetDate = searchParams.get("targetDate");
   const title = searchParams.get("title");
   const description = searchParams.get("description");
 
-
   // Handle file input change
+  // TODO: Handle image upload and saving to storage
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -74,7 +75,7 @@ const RequestFundraiserPhoto = () => {
           <div className="flex flex-col items-center space-y-4 w-full md:w-[70%] mt-10">
             {/* Header */}
             <h3 className="font-l text-astrablack self-start w-full">
-              Almost done. Add a fundraiser photo
+              Almost done. Add a project photo
             </h3>
             <p className="font-s text-astrablack self-start w-full">
               A high-quality photo or video will help tell your story and build trust with donors
@@ -140,7 +141,14 @@ const RequestFundraiserPhoto = () => {
         <div className="flex justify-between px-6 md:px-12 py-5 border-astralightgray border-t-1">
           <BackButton />
           {isFormValid ? (
-            <Link href="/projects/request/preview" passHref>
+            <Link href={{ pathname:"/projects/request/preview",
+              query: {
+                amount: amount,
+                projectType: projectType,
+                targetDate: targetDate,
+                title: title,
+                description: description,
+              }}} passHref>
               <button className="blue-button font-semibold transition cursor-pointer w-[150px] h-[55px]">
                 Continue
               </button>
@@ -159,4 +167,4 @@ const RequestFundraiserPhoto = () => {
   );
 };
 
-export default RequestFundraiserPhoto;
+export default RequestProjectPhoto;
