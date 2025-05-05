@@ -15,7 +15,7 @@ const getActiveAlumniStats = async (req, res) => {
       message: error.message
     });
   }
-}
+};
 
 const getActiveJobsStats = async (req, res) => {
   try {
@@ -29,9 +29,9 @@ const getActiveJobsStats = async (req, res) => {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: "FAILED",
       message: error.message
-    })
+    });
   }
-}
+};
 
 const getActiveEventsStats = async (req, res) => {
   try {
@@ -45,9 +45,9 @@ const getActiveEventsStats = async (req, res) => {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: "FAILED",
       message: error.message
-    })
+    });
   }
-}
+};
 
 const getFundsRaisedStats = async (req, res) => {
   try {
@@ -61,9 +61,9 @@ const getFundsRaisedStats = async (req, res) => {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: "FAILED",
       message: error.message
-    })
+    });
   }
-}
+};
 
 const getUpcomingEvents = async (req, res) => {
   try {
@@ -77,9 +77,9 @@ const getUpcomingEvents = async (req, res) => {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: "FAILED",
       message: error.message
-    })
+    });
   }
-}
+};
 
 const getProjectDonationSummary = async (req, res) => {
   try {
@@ -93,9 +93,9 @@ const getProjectDonationSummary = async (req, res) => {
     res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: "FAILED",
       message: error.message
-    })
+    });
   }
-}
+};
 
 const statisticsController = {
   getActiveAlumniStats,

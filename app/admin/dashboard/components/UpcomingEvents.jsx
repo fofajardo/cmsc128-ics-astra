@@ -66,8 +66,7 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
     <button
       key={page}
       onClick={() => onPageChange(page)}
-      className={`px-2 md:px-4 py-2 rounded-sm md:rounded-xl font-s ${currentPage === page ? "bg-astraprimary text-astrawhite" : "bg-transparent text-astradarkgray hover:bg-astratintedwhite"
-        }`}
+      className={`px-2 md:px-4 py-2 rounded-sm md:rounded-xl font-s ${currentPage === page ? "bg-astraprimary text-astrawhite" : "bg-transparent text-astradarkgray hover:bg-astratintedwhite"}`}
     >
       {page}
     </button>

@@ -1,5 +1,5 @@
 import { applyFilter } from "../utils/applyFilter.js";
-import {RoleName} from "../../common/scopes.js";
+import { RoleName } from "../../common/scopes.js";
 
 const fetchUsers = async (supabase, page = 1, limit = 10, isRecent = false, isAlumni = false) => {
   const startIndex = (page - 1) * limit;
@@ -53,8 +53,8 @@ const fetchInactiveAlumni = async (supabase, page = 1, limit = 10) => {
   const endIndex = startIndex + Number(limit) - 1;
 
   const { data, error } = await supabase
-    .from('inactive_alumni_view')
-    .select('*')
+    .from("inactive_alumni_view")
+    .select("*")
     .range(startIndex, endIndex + 1);
 
   if (error) return { error };

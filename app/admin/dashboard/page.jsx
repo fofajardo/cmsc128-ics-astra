@@ -30,7 +30,7 @@ export default function Dashboard() {
       } catch (error) {
         console.log("Failed to fetch active alumni stats: ", error);
       }
-    }
+    };
 
     fetchStatistics();
   }, []);

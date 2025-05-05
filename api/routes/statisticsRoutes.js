@@ -12,6 +12,6 @@ const statisticsRouter = () => {
   router.get("/project-donation-summary", statisticsController.getProjectDonationSummary);
 
   return router;
-}
+};
 
 export default statisticsRouter;

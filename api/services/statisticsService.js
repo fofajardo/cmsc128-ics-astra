@@ -9,7 +9,7 @@ const fetchActiveAlumniStats = async (supabase) => {
   }
 
   return data;
-}
+};
 
 const fetchActiveJobsStats = async (supabase) => {
   const { data, error } = await supabase
@@ -22,7 +22,7 @@ const fetchActiveJobsStats = async (supabase) => {
   }
 
   return data;
-}
+};
 
 const fetchActiveEventsStats = async (supabase) => {
   const { data, error } = await supabase
@@ -35,7 +35,7 @@ const fetchActiveEventsStats = async (supabase) => {
   }
 
   return data;
-}
+};
 
 const fetchFundsRaisedStats = async (supabase) => {
   const { data, error } = await supabase
@@ -48,31 +48,31 @@ const fetchFundsRaisedStats = async (supabase) => {
   }
 
   return data;
-}
+};
 
 const fetchUpcomingEvents = async (supabase) => {
   const { data, error } = await supabase
     .from("upcoming_events")
     .select("*");
 
-    if (error) {
-      throw error;
-    }
+  if (error) {
+    throw error;
+  }
 
-    return data;
-}
+  return data;
+};
 
 const fetchProjectDonationSummary = async (supabase) => {
   const { data, error } = await supabase
     .from("project_donation_summary")
     .select("*");
 
-    if (error) {
-      throw error;
-    }
+  if (error) {
+    throw error;
+  }
 
-    return data;
-}
+  return data;
+};
 
 const statisticsService = {
   fetchActiveAlumniStats,
