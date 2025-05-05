@@ -2,71 +2,78 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState, useRef } from "react";
+import { usePathname } from "next/navigation"; // Import usePathname
 import logo from "../assets/logo.png";
 import avatar from "../assets/avatar.png"; // Replace with your actual avatar path
 import { Menu, X, LogOut, User, Settings } from "lucide-react";
 import axios from "axios";
-import {useSignedInUser} from "@/components/UserContext.jsx";
-import {LoadingSpinner} from "@/components/LoadingSpinner.jsx"; // Using lucide-react for icons
+import { useSignedInUser } from "@/components/UserContext.jsx";
+import { LoadingSpinner } from "@/components/LoadingSpinner.jsx"; // Using lucide-react for icons
 
-function HeaderMenu(toggleSidebar, isSidebarOpen) {
-  return <button
-    onClick={toggleSidebar}
-    className="lg:hidden flex items-center space-x-2 p-2"
-  >
-    {isSidebarOpen ? (
-      <X size={26} className="text-astrablack"/>
-    ) : (
-      <Menu size={26} className="text-astrablack"/>
-    )}
-  </button>;
+function HeaderMenu({ toggleSidebar, isSidebarOpen }) {
+  return (
+    <button onClick={toggleSidebar} className="lg:hidden flex items-center space-x-2 p-2">
+      {isSidebarOpen ? (
+        <X size={26} className="text-astrablack" />
+      ) : (
+        <Menu size={26} className="text-astrablack" />
+      )}
+    </button>
+  );
 }
 
 function HeaderLogo() {
-  return <Link href="/" className="flex items-center space-x-3 cursor-pointer">
-    <Image src={logo} alt="Logo" width={60} height={60} className="rounded-full"/>
-  </Link>;
+  return (
+    <Link href="/" className="flex items-center space-x-3 cursor-pointer">
+      <Image src={logo} alt="Logo" width={60} height={60} className="rounded-full" />
+    </Link>
+  );
 }
 
-function HeaderNavigation(navLinks, setActiveLink, activeLink) {
-  return <div className="hidden lg:flex gap-[75px] text-[15px] font-semibold relative">
-    {navLinks.map((link) => (
-      <Link
-        key={link.href}
-        href={link.href}
-        onClick={() => setActiveLink(link.href)}
-        className={`relative transition-all duration-300 ease-in-out text-astrablack hover:text-astraprimary
+function HeaderNavigation({ navLinks, activeLink }) {
+  return (
+    <div className="hidden lg:flex gap-[75px] text-[15px] font-semibold relative">
+      {navLinks.map((link) => (
+        <Link
+          key={link.href}
+          href={link.href}
+          className={`relative transition-all duration-300 ease-in-out text-astrablack hover:text-astraprimary
               ${activeLink === link.href ? "text-astraprimary" : ""} group`}
-      >
-        <span className="z-10 relative">{link.name}</span>
-        {/* Active Underline */}
-        <span
-          className={`absolute left-1/2 -translate-x-1/2 bottom-[-16px] h-[8px] w-[100px] rounded-tl-[10px] rounded-tr-[10px] transition-all duration-300
+        >
+          <span className="z-10 relative">{link.name}</span>
+          {/* Active Underline */}
+          <span
+            className={`absolute left-1/2 -translate-x-1/2 bottom-[-16px] h-[8px] w-[100px] rounded-tl-[10px] rounded-tr-[10px] transition-all duration-300
                 ${activeLink === link.href ? "bg-astraprimary opacity-100" : "opacity-0"}`}
-        />
-      </Link>
-    ))}
-  </div>;
+          />
+        </Link>
+      ))}
+    </div>
+  );
 }
 
 function HeaderAuth() {
-  return <div className="flex items-center space-x-3">
-    <Link href="/sign-in">
-      <button
-        className="cursor-pointer px-4 py-1 min-w-[90px] h-[35px] font-semibold text-astrawhite bg-astraprimary border-2 border-astraprimary rounded-[12px] transition-all duration-300 transform hover:scale-105 hover:shadow-astraprimary">
-        Sign In
-      </button>
-    </Link>
-    <Link href="/sign-up">
-      <button
-        className="cursor-pointer px-4 py-1 min-w-[90px] h-[35px] font-semibold text-astraprimary bg-astrawhite border-2 border-astraprimary rounded-[12px] transition-all duration-300 transform hover:scale-105 hover:shadow-astraprimary">
-        Sign Up
-      </button>
-    </Link>
-  </div>;
+  return (
+    <div className="flex items-center space-x-3">
+      <Link href="/sign-in">
+        <button
+          className="cursor-pointer px-4 py-1 min-w-[90px] h-[35px] font-semibold text-astrawhite bg-astraprimary border-2 border-astraprimary rounded-[12px] transition-all duration-300 transform hover:scale-105 hover:shadow-astraprimary"
+        >
+          Sign In
+        </button>
+      </Link>
+      <Link href="/sign-up">
+        <button
+          className="cursor-pointer px-4 py-1 min-w-[90px] h-[35px] font-semibold text-astraprimary bg-astrawhite border-2 border-astraprimary rounded-[12px] transition-all duration-300 transform hover:scale-105 hover:shadow-astraprimary"
+        >
+          Sign Up
+        </button>
+      </Link>
+    </div>
+  );
 }
 
-function HeaderAvatar({user}) {
+function HeaderAvatar({ user }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false); // State for dropdown menu
   const dropdownRef = useRef(null); // Ref for detecting click outside dropdown
 
@@ -81,85 +88,86 @@ function HeaderAvatar({user}) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  return <div className="relative flex items-center">
-    <Image
-      src={avatar}
-      alt="User Avatar"
-      width={46}
-      height={46}
-      className="rounded-full border-2 border-astraprimary shadow-md transition-all duration-300 hover:scale-105 cursor-pointer"
-      onClick={() => setIsMenuOpen(!isMenuOpen)} // Toggle dropdown
-    />
+  return (
+    <div className="relative flex items-center">
+      <Image
+        src={avatar}
+        alt="User Avatar"
+        width={46}
+        height={46}
+        className="rounded-full border-2 border-astraprimary shadow-md transition-all duration-300 hover:scale-105 cursor-pointer"
+        onClick={() => setIsMenuOpen(!isMenuOpen)} // Toggle dropdown
+      />
 
-    {/* Avatar Dropdown Menu */}
-    {isMenuOpen && (
-      <div
-        ref={dropdownRef}
-        className="absolute top-full mt-2 right-0 p-2 w-36 bg-white rounded-lg shadow-lg border border-astragray z-10"
-      >
-        <Link
-          href="/profile/alumni"
-          className="flex items-center p-2 w-full text-astrablack hover:bg-astraprimary hover:text-white rounded-md"
+      {/* Avatar Dropdown Menu */}
+      {isMenuOpen && (
+        <div
+          ref={dropdownRef}
+          className="absolute top-full mt-2 right-0 p-2 w-36 bg-white rounded-lg shadow-lg border border-astragray z-10"
         >
-          <User size={18} className="mr-2"/>
-          Profile
-        </Link>
-        <Link
-          href="/settings"
-          className="flex items-center p-2 w-full text-astrablack hover:bg-astraprimary hover:text-white rounded-md"
-        >
-          <Settings size={18} className="mr-2"/>
-          Settings
-        </Link>
-        <Link href="/sign-out">
-          <button
-            className="flex items-center p-2 w-full text-astrared hover:bg-astrared hover:text-white rounded-md"
+          <Link
+            href="/profile/alumni"
+            className="flex items-center p-2 w-full text-astrablack hover:bg-astraprimary hover:text-white rounded-md"
           >
-            <LogOut size={18} className="mr-2"/>
-            Sign Out
-          </button>
-        </Link>
-      </div>
-    )}
-  </div>;
+            <User size={18} className="mr-2" />
+            Profile
+          </Link>
+          <Link
+            href="/settings"
+            className="flex items-center p-2 w-full text-astrablack hover:bg-astraprimary hover:text-white rounded-md"
+          >
+            <Settings size={18} className="mr-2" />
+            Settings
+          </Link>
+          <Link href="/sign-out">
+            <button
+              className="flex items-center p-2 w-full text-astrared hover:bg-astrared hover:text-white rounded-md"
+            >
+              <LogOut size={18} className="mr-2" />
+              Sign Out
+            </button>
+          </Link>
+        </div>
+      )}
+    </div>
+  );
 }
 
-function HeaderSidebar(isSidebarOpen, toggleSidebar, navLinks, setActiveLink, activeLink) {
-  return <>
-    {isSidebarOpen && (
-      <div
-        className="fixed inset-0 z-40 bg-black/70 lg:hidden"
-        onClick={toggleSidebar}
-      />
-    )}
+function HeaderSidebar({ isSidebarOpen, toggleSidebar, navLinks, activeLink }) {
+  return (
+    <>
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/70 lg:hidden"
+          onClick={toggleSidebar}
+        />
+      )}
 
-    <div
-      className={`fixed top-0 left-0 z-50 h-full w-64 bg-white shadow-md transition-transform duration-300 transform ${
-        isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-      }`}
-    >
-      <div className="flex flex-col pt-20 px-4">
-        {navLinks.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            onClick={() => setActiveLink(link.href)}
-            className={`py-2 text-astrablack ${activeLink === link.href ? "text-astraprimary" : ""}`}
-          >
-            {link.name}
-          </Link>
-        ))}
+      <div
+        className={`fixed top-0 left-0 z-50 h-full w-64 bg-white shadow-md transition-transform duration-300 transform ${
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="flex flex-col pt-20 px-4">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`py-2 text-astrablack ${activeLink === link.href ? "text-astraprimary" : ""}`}
+            >
+              {link.name}
+            </Link>
+          ))}
+        </div>
       </div>
-    </div>
-  </>;
+    </>
+  );
 }
 
 export default function HeaderUser() {
   const user = useSignedInUser();
-
+  const pathname = usePathname(); // Get current pathname
   const [isScrolled, setIsScrolled] = useState(false);
-  const [activeLink, setActiveLink] = useState("/");
-
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State for sidebar menu
 
   const navLinks = [
@@ -179,28 +187,38 @@ export default function HeaderUser() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Set active link based on current pathname
+  const activeLink = navLinks.find((link) => link.href === pathname)?.href || "/";
+
   // Toggle Sidebar
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   return (
     <header
       className={"sticky top-0 z-50 w-full transition-all duration-300 bg-astrawhite shadow-md"}
-      style={{height: "80px"}}
+      style={{ height: "80px" }}
     >
-      <div className="flex items-center justify-between max-w-screen-xl mx-auto h-full px-4 sm:px-12 w-full">
-        {HeaderMenu(toggleSidebar, isSidebarOpen)}
-        {HeaderLogo()}
-        {HeaderNavigation(navLinks, setActiveLink, activeLink)}
-        {
-          user?.state?.initialized
-            ? user?.state?.user == null
-              ? <HeaderAuth />
-              : <HeaderAvatar user={user} />
-            : <LoadingSpinner className="h-12 w-12" />
-        }
+      <div className="flex items-center justify-between max-w-screen-xl mx-auto h-full px-12 md:px-4  w-full">
+        <HeaderMenu toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
+        <HeaderLogo />
+        <HeaderNavigation navLinks={navLinks} activeLink={activeLink} />
+        {user?.state?.initialized ? (
+          user?.state?.user == null ? (
+            <HeaderAuth />
+          ) : (
+            <HeaderAvatar user={user} />
+          )
+        ) : (
+          <LoadingSpinner className="h-12 w-12" />
+        )}
       </div>
 
-      {HeaderSidebar(isSidebarOpen, toggleSidebar, navLinks, setActiveLink, activeLink)}
+      <HeaderSidebar
+        isSidebarOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        navLinks={navLinks}
+        activeLink={activeLink}
+      />
     </header>
   );
 }
