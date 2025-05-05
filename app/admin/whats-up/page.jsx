@@ -59,19 +59,31 @@ export default function CommunicationPage() {
 
   useEffect(() => {
     const total = filteredAnnouncements.length;
-    const lastPage = Math.ceil(total / pagination.numToShow) || 1;
-    const validCurrPage = Math.min(pagination.currPage, lastPage);
-    const startIndex = (validCurrPage - 1) * pagination.numToShow;
+    const lastPage = Math.ceil(total / pagination.numToShow) || 1; // Ensure minimum 1 page
+
+    // Calculate the current range
+    const startIndex = (pagination.currPage - 1) * pagination.numToShow;
     const endIndex = Math.min(startIndex + pagination.numToShow, total);
 
-    setPagination((prev) => ({
+    // Make sure current page is valid (might not be if filters reduced the items count)
+    const validCurrPage = Math.min(pagination.currPage, lastPage);
+
+    // Only if the page changed due to filtering, recalculate display values
+    const actualStartIndex = (validCurrPage - 1) * pagination.numToShow;
+    const actualEndIndex = Math.min(actualStartIndex + pagination.numToShow, total);
+
+    setPagination(prev => ({
       ...prev,
       currPage: validCurrPage,
       total: total,
       lastPage: lastPage,
-      display: [total > 0 ? startIndex + 1 : 0, endIndex],
+      display: [
+        total > 0 ? actualStartIndex + 1 : 0, // If no items, start from 0
+        actualEndIndex
+      ]
     }));
   }, [filteredAnnouncements.length, pagination.currPage, pagination.numToShow]);
+
 
   const currentItems = filteredAnnouncements.slice(
     (pagination.currPage - 1) * pagination.numToShow,
@@ -205,6 +217,52 @@ export default function CommunicationPage() {
               </div>
             </div>
           )}
+
+          {currTab === "Newsletters" && (
+            <div className="bg-astrawhite p-6 rounded-xl shadow-sm">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-8">
+                {Array(12).fill().map((_, index) => (
+                  <Link
+                    href="https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+                    key={index}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group relative max-w-[280px] mx-auto w-full"
+                  >
+                    <div className="aspect-[3/4] relative bg-black rounded-lg overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+                      <img
+                        src="https://marketplace.canva.com/EAGWT7FdhOk/1/0/1131w/canva-black-and-grey-modern-business-company-email-newsletter-R_dH5ll-SAs.jpg"
+                        alt={`Volume ${index + 1}`}
+                        className="w-full h-full object-cover opacity-90"
+                      />
+                      <div className="absolute inset-0 bg-astradarkgray/50 group-hover:bg-astradarkgray/70 transition-colors" />
+                      {/* Delete Button */}
+                      <button
+                        onClick={(e) => handleDeleteNewsletter(index, e)}
+                        className="absolute top-2 right-2 p-2 bg-astrared text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-astrared/90"
+                        title="Delete newsletter"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                      <div className="absolute bottom-0 left-0 right-0 p-4 text-center">
+                        <h3 className="text-astrawhite font-rb text-lg mb-1">
+                          Volume {index + 1}
+                        </h3>
+                        <p className="text-astrawhite/80 font-s">
+                          Newsletter.pdf
+                        </p>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <PageTool
+            pagination={pagination}
+            setPagination={setPagination}
+          />
         </div>
       </div>
     </div>
