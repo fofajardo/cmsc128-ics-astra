@@ -15,7 +15,7 @@ import ConfirmationPrompt from "@/components/jobs/edit/confirmation";
 export default function Jobs() {
   const [showPrompt, setPrompt] = useState(false);
   const [jobToDelete, setJobToDelete] = useState(null);
-  const {setJobCounts} = useContext(TabContext)
+  const {setJobCounts} = useContext(TabContext);
   const [showFilter, setShowFilter] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
   const { currTab, info } = useTab();
@@ -202,13 +202,13 @@ export default function Jobs() {
           {/* <BottomButtons selectedCount={selectedIds.length} currTab={currTab} setToast={setToast}/> */}
         </div>
       </div>
-        {showPrompt && (
-          <ConfirmationPrompt
-            prompt="Are you sure you want to delete this job posting?"
-            close={() => setPrompt(false)}
-            handleConfirm={handleDelete}
-          />
-        )}
+      {showPrompt && (
+        <ConfirmationPrompt
+          prompt="Are you sure you want to delete this job posting?"
+          close={() => setPrompt(false)}
+          handleConfirm={handleDelete}
+        />
+      )}
     </div>
   );
 }
