@@ -1,8 +1,11 @@
 "use client";
 import { useState } from "react";
 import ToastNotification from "@/components/ToastNotification";
+import {useRouter} from "next/navigation";
+import {feRoutes} from "../../../../common/routes.js";
 
 export default function CheckEmail() {
+  const router = useRouter();
   const [showToast, setShowToast] = useState(false);
 
   const handleOpenEmailApp = () => {
@@ -14,6 +17,10 @@ export default function CheckEmail() {
       type: "success",
       message: "Email resent successfully!",
     });
+  };
+
+  const handleSignIn = function() {
+    router.push(feRoutes.auth.signIn());
   };
 
   return (
@@ -47,7 +54,7 @@ export default function CheckEmail() {
 
           <div
             className="text-sm cursor-pointer text-[var(--color-astraprimary)]"
-            onClick={() => (window.location.href = "/login")}
+            onClick={handleSignIn}
           >
             Back to Sign In
           </div>

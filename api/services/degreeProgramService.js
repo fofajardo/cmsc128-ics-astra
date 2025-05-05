@@ -1,9 +1,11 @@
-import { applyFilter } from "../utils/applyFilter.js";
-
-const fetchAllDegreePrograms = async (supabase) => {
-  return await supabase
+const fetchAllDegreePrograms = async (supabase, userId) => {
+  const query = supabase
     .from("degree_programs")
     .select("*");
+
+  return await (userId
+    ? query.eq("user_id", userId)
+    : query);
 };
 
 const fetchDegreeProgramById = async (supabase, id) => {
@@ -43,13 +45,6 @@ const fetchAlumniByYearGraduated = async (supabase, yearGraduated) => {
     .eq("year_graduated", yearGraduated);
 };
 
-const fetchDegreeProgramsByUserId = async (supabase, userId) => {
-  return await supabase
-    .from("degree_programs")
-    .select("*")
-    .eq("user_id", userId);
-};
-
 const degreeProgramService = {
   fetchAllDegreePrograms,
   fetchDegreeProgramById,
@@ -57,7 +52,6 @@ const degreeProgramService = {
   updateDegreeProgramById,
   deleteDegreeProgramById,
   fetchAlumniByYearGraduated,
-  fetchDegreeProgramsByUserId,
 };
 
 export default degreeProgramService;
