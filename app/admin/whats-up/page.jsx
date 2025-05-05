@@ -182,10 +182,10 @@ export default function CommunicationPage() {
                             <span className="text-sm text-astrawhite/90">
                               {announcement.updated_at
                                 ? new Date(announcement.updated_at).toLocaleDateString("en-US", {
-                                month: "short",
-                                day: "2-digit",
-                                year: "numeric",
-                              })
+                                  month: "short",
+                                  day: "2-digit",
+                                  year: "numeric",
+                                })
                                 : "No date"}
                             </span>
                           </div>
