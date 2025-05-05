@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import BackButton from "@/components/events/IndividualEvent/BackButton";
+import { capitalizeName } from "@/utils/format";
 import { PROJECT_TYPE } from "@/constants/projectConsts"; // TODO: Use constants for project type
 
 const RequestFundraiserGoal = () => {
@@ -165,15 +166,19 @@ const RequestFundraiserGoal = () => {
                 <label className="block text-astrablack font-r mb-2">
                   What type of project are you requesting?
                 </label>
-                <input  // TODO: Convert to dropdown with options: [donation drive, fundraising, scholarship]
-                  type="text"
+                <select
+                  name="projectType"
                   value={projectType}
                   onChange={handleProjectTypeChange}
-                  placeholder="Enter project type"
                   className={`w-full p-3 border rounded-md ${
                     projectTypeError ? "border-red-500" : "border-astradarkgray"
                   } focus:outline-none focus:ring-2 focus:ring-astraprimary`}
-                />
+                >
+                  <option value="">Select a Project Type</option>
+                  <option value={PROJECT_TYPE.FUNDRAISING}>{capitalizeName(PROJECT_TYPE.FUNDRAISING)}</option>
+                  <option value={PROJECT_TYPE.DONATION_DRIVE}>{capitalizeName(PROJECT_TYPE.DONATION_DRIVE)}</option>
+                  <option value={PROJECT_TYPE.SCHOLARSHIP}>{capitalizeName(PROJECT_TYPE.SCHOLARSHIP)}</option>
+                </select>
                 {projectTypeError && (
                   <p className="text-red-500 text-sm mt-1">{projectTypeError}</p>
                 )}
