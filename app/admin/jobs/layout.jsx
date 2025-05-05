@@ -19,7 +19,7 @@ export default function AdminJobsLayout({ children }) {
 
   const [jobCounts, setJobCounts] = useState({
     active: <Skeleton className="h-7 w-12 my-2" />,
-    closed: <Skeleton className="h-7 w-12 my-2" />,
+    expired: <Skeleton className="h-7 w-12 my-2" />,
     total: <Skeleton className="h-7 w-12 my-2" />,
     companies: <Skeleton className="h-7 w-12 my-2" />,
   });
@@ -86,7 +86,7 @@ export default function AdminJobsLayout({ children }) {
               <AdminStatCard
                 delay={0.1}
                 title="Closed Job Posts"
-                value={jobCounts.closed}
+                value={jobCounts.expired}
                 icon={<BriefcaseBusiness className="size-13 text-astrawhite" strokeWidth={2} />}
                 route={false}
                 onClick={() => {}}
