@@ -131,44 +131,44 @@ export default function Organizations() {
       "Created": renderText(org.created_at),
       "Quick Actions": renderActions(org.id, org.name, currTab),
     }));
-  }
+  };
 
   const orgList = orgData
-  .filter((org) => {
-    const matchesSearch =
-      org.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      org.acronym.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (org.type === 0 ? "university" : "outside").includes(searchQuery.toLowerCase());
+    .filter((org) => {
+      const matchesSearch =
+        org.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        org.acronym.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (org.type === 0 ? "university" : "outside").includes(searchQuery.toLowerCase());
 
-    const matchesOrgName = !filters.orgName || org.name.toLowerCase().includes(filters.orgName.toLowerCase());
+      const matchesOrgName = !filters.orgName || org.name.toLowerCase().includes(filters.orgName.toLowerCase());
 
-    const orgFoundedDate = new Date(org.founded_date);
-    const fromDate = filters.fromDate ? new Date(filters.fromDate) : null;
-    const toDate = filters.toDate ? new Date(filters.toDate) : null;
+      const orgFoundedDate = new Date(org.founded_date);
+      const fromDate = filters.fromDate ? new Date(filters.fromDate) : null;
+      const toDate = filters.toDate ? new Date(filters.toDate) : null;
 
-    const matchesFoundedDate =
-      (!fromDate || orgFoundedDate >= fromDate) &&
-      (!toDate || orgFoundedDate <= toDate);
+      const matchesFoundedDate =
+        (!fromDate || orgFoundedDate >= fromDate) &&
+        (!toDate || orgFoundedDate <= toDate);
 
-    return matchesSearch && matchesOrgName && matchesFoundedDate;
-  })
-  .sort((a, b) => {
-    // If no sortCategory is set, return as is (no sorting)
-    if (!filters.sortCategory) return 0;
+      return matchesSearch && matchesOrgName && matchesFoundedDate;
+    })
+    .sort((a, b) => {
+      // If no sortCategory is set, return as is (no sorting)
+      if (!filters.sortCategory) return 0;
 
-    // Get the values to be sorted
-    const aValue = a[filters.sortCategory];
-    const bValue = b[filters.sortCategory];
+      // Get the values to be sorted
+      const aValue = a[filters.sortCategory];
+      const bValue = b[filters.sortCategory];
 
-    // Handle sorting based on the category and order
-    if (aValue < bValue) {
-      return filters.sortOrder === "asc" ? -1 : 1;
-    }
-    if (aValue > bValue) {
-      return filters.sortOrder === "asc" ? 1 : -1;
-    }
-    return 0; // If equal, no change in order
-  });
+      // Handle sorting based on the category and order
+      if (aValue < bValue) {
+        return filters.sortOrder === "asc" ? -1 : 1;
+      }
+      if (aValue > bValue) {
+        return filters.sortOrder === "asc" ? 1 : -1;
+      }
+      return 0; // If equal, no change in order
+    });
 
   // console.log(orgList);
 

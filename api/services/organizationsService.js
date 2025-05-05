@@ -79,7 +79,7 @@ const fetchOrganizationStatistics = async (supabase) => {
     .from("organization_view")
     .select("*")
     .single();
-}
+};
 
 const organizationsService = {
   fetchOrganizations,
