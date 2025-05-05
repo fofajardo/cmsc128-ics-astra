@@ -4,7 +4,7 @@ import { useState } from "react";
 import { GoBackButton } from "@/components/Buttons";
 import { Image, Send, Save } from "lucide-react";
 import ToastNotification from "@/components/ToastNotification";
-import axios from 'axios';
+import axios from "axios";
 import { useSignedInUser } from "@/components/UserContext";
 
 export default function CreateAnnouncement() {
@@ -177,7 +177,7 @@ export default function CreateAnnouncement() {
                         if (selection) {
                           // Replace selected text with bold version
                           const content = editorContent;
-                          const textarea = document.getElementById('richTextEditor');
+                          const textarea = document.getElementById("richTextEditor");
                           const start = textarea.selectionStart;
                           const end = textarea.selectionEnd;
                           setEditorContent(
@@ -201,7 +201,7 @@ export default function CreateAnnouncement() {
                         if (selection) {
                           // Replace selected text with italic version
                           const content = editorContent;
-                          const textarea = document.getElementById('richTextEditor');
+                          const textarea = document.getElementById("richTextEditor");
                           const start = textarea.selectionStart;
                           const end = textarea.selectionEnd;
                           setEditorContent(
@@ -225,7 +225,7 @@ export default function CreateAnnouncement() {
                         if (selection) {
                           // Replace selected text with underlined version
                           const content = editorContent;
-                          const textarea = document.getElementById('richTextEditor');
+                          const textarea = document.getElementById("richTextEditor");
                           const start = textarea.selectionStart;
                           const end = textarea.selectionEnd;
                           setEditorContent(
@@ -318,7 +318,7 @@ export default function CreateAnnouncement() {
                 disabled={isLoading}
               >
                 <Send className="w-4 h-4" />
-                {isLoading ? 'Publishing...' : 'Publish'}
+                {isLoading ? "Publishing..." : "Publish"}
               </button>
             </div>
           </div>

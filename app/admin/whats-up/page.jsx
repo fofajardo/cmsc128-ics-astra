@@ -38,7 +38,7 @@ export default function CommunicationPage() {
     fetchContents();
   }, []);
 
-  console.log(announcements)
+  console.log(announcements);
 
   // Single info state definition
   const [info, setInfo] = useState({
@@ -63,41 +63,41 @@ export default function CommunicationPage() {
     total: 0
   });
 
-// Update pagination ONLY when filtered data changes or pagination page changes
-// NOT when derived values like startIndex/endIndex change
-useEffect(() => {
-  const total = filteredAnnouncements.length;
-  const lastPage = Math.ceil(total / pagination.numToShow) || 1; // Ensure minimum 1 page
+  // Update pagination ONLY when filtered data changes or pagination page changes
+  // NOT when derived values like startIndex/endIndex change
+  useEffect(() => {
+    const total = filteredAnnouncements.length;
+    const lastPage = Math.ceil(total / pagination.numToShow) || 1; // Ensure minimum 1 page
 
-  // Calculate the current range
-  const startIndex = (pagination.currPage - 1) * pagination.numToShow;
-  const endIndex = Math.min(startIndex + pagination.numToShow, total);
+    // Calculate the current range
+    const startIndex = (pagination.currPage - 1) * pagination.numToShow;
+    const endIndex = Math.min(startIndex + pagination.numToShow, total);
 
-  // Make sure current page is valid (might not be if filters reduced the items count)
-  const validCurrPage = Math.min(pagination.currPage, lastPage);
+    // Make sure current page is valid (might not be if filters reduced the items count)
+    const validCurrPage = Math.min(pagination.currPage, lastPage);
 
-  // Only if the page changed due to filtering, recalculate display values
-  const actualStartIndex = (validCurrPage - 1) * pagination.numToShow;
-  const actualEndIndex = Math.min(actualStartIndex + pagination.numToShow, total);
+    // Only if the page changed due to filtering, recalculate display values
+    const actualStartIndex = (validCurrPage - 1) * pagination.numToShow;
+    const actualEndIndex = Math.min(actualStartIndex + pagination.numToShow, total);
 
-  setPagination(prev => ({
-    ...prev,
-    currPage: validCurrPage,
-    total: total,
-    lastPage: lastPage,
-    display: [
-      total > 0 ? actualStartIndex + 1 : 0, // If no items, start from 0
-      actualEndIndex
-    ]
-  }));
-}, [filteredAnnouncements.length, pagination.currPage, pagination.numToShow]);
+    setPagination(prev => ({
+      ...prev,
+      currPage: validCurrPage,
+      total: total,
+      lastPage: lastPage,
+      display: [
+        total > 0 ? actualStartIndex + 1 : 0, // If no items, start from 0
+        actualEndIndex
+      ]
+    }));
+  }, [filteredAnnouncements.length, pagination.currPage, pagination.numToShow]);
 
-// Calculate current items to display based on pagination state
-// This doesn't update state, just calculates the current view
-const currentItems = filteredAnnouncements.slice(
-  (pagination.currPage - 1) * pagination.numToShow,
-  pagination.currPage * pagination.numToShow
-);
+  // Calculate current items to display based on pagination state
+  // This doesn't update state, just calculates the current view
+  const currentItems = filteredAnnouncements.slice(
+    (pagination.currPage - 1) * pagination.numToShow,
+    pagination.currPage * pagination.numToShow
+  );
 
   const handleDeleteNewsletter = (index, e) => {
     e.preventDefault(); // Prevent PDF from opening
@@ -207,11 +207,11 @@ const currentItems = filteredAnnouncements.slice(
                           <div className="flex items-center gap-2 mt-1">
                             <i className="fas fa-calendar-alt text-astrawhite text-sm"></i>
                             <span className="text-sm text-astrawhite/90">
-                              {announcement.updated_at ? new Date(announcement.updated_at).toLocaleDateString('en-US', {
-                                month: 'short',
-                                day: '2-digit',
-                                year: 'numeric'
-                              }) : 'No date'}
+                              {announcement.updated_at ? new Date(announcement.updated_at).toLocaleDateString("en-US", {
+                                month: "short",
+                                day: "2-digit",
+                                year: "numeric"
+                              }) : "No date"}
                             </span>
                           </div>
                           <p className="text-sm text-astrawhite/80 mt-2 line-clamp-2">
