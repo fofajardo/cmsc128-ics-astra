@@ -44,7 +44,10 @@ export function RouteGuard({mode, onChange}) {
     }
 
     if (onChange) {
-      onChange(userContext);
+      const changeResult = onChange(userContext);
+      if (typeof changeResult === "string" || changeResult instanceof String) {
+        return changeResult;
+      }
     }
 
     userContext.actions.setRouteInitialized(true);
