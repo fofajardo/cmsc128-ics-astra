@@ -104,6 +104,7 @@ export default function Page() {
               <div key={index} className="inline-block mr-8 w-100 h-76 relative">
                 <Image
                   src={image}
+                  alt={`Alumni ${index + 1}`}
                   fill
                   style={{ objectFit: "cover", borderRadius: "10px" }}
                 />

@@ -10,6 +10,11 @@ export default function DateFilter({ placeholder, value, onChange }) {
 
   const toggleCalendar = () => setIsOpen((prev) => !prev);
 
+  const handleClear = () => {
+    onChange?.(null);
+    setIsOpen(false);
+  };
+
   return (
     <div className="relative w-[180px] text-sm">
       <button
@@ -23,10 +28,22 @@ export default function DateFilter({ placeholder, value, onChange }) {
             {value ? new Intl.DateTimeFormat("en-GB").format(value) : placeholder}
           </span>
         </div>
+        <div className="flex items-center gap-1">
+          {value && (
+            <Icon
+              icon="mdi:close-circle-outline"
+              className="text-lg text-astrawhite hover:text-red-500"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleClear();
+              }}
+            />
+          )}
         <Icon
           icon="material-symbols:calendar-month"
           className={`text-xl ${value ? "text-astrawhite" : "text-astraprimary"} cursor-pointer`}
         />
+        </div>
       </button>
 
       {isOpen && (

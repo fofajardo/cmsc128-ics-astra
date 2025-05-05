@@ -25,20 +25,12 @@ export default function EventDetailPage() {
   // const [currentEvents, setCurrentEvents] = useState([]);
   // const [currentPage, setCurrentPage] = useState(1);
   const [numOfInterested, setNumOfInterested] = useState(0);
-  const user_id = "38f98c8d-af8d-4cef-ab9b-8a5d80e9c8b1"; //Only using this since userid is needed
-
-
-  // const fetchInterest = async (id) => {
-  //   try{
-  //     let interests = [];
-  //     const interest = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/content/${id}`);
-  //     if (interest.data.status === "OK") {
-  //       interests = interest.data|| [];
-  //     }
-  //   }catch(error){
-  //     console.error("Failed fetching interests:", error);
-  //   }
-  // };
+  //const user_id = "38f98c8d-af8d-4cef-ab9b-8a5d80e9c8b1"; //Only using this since userid is needed
+  console.log("user: ", user);
+  const isAlumn = user?.state?.isAlumnus;
+  const user_id = user?.state?.user?.id
+  console.log("isAlumnus: ",isAlumn);
+  console.log("user id: ", user?.state?.user?.id );
 
   const fetchEvent = async () => {
     try {
@@ -133,10 +125,11 @@ export default function EventDetailPage() {
     } catch (error) {
       console.log(`Failed to fetch photo for event_id ${contentId}:`, error);
     }
-    return venue2;
+    return venue2.src;
   };
 
   useEffect(() => {
+
     fetchEvent();
     //fetchInterest(id);
   }, [id]);
@@ -155,9 +148,11 @@ export default function EventDetailPage() {
 
       console.log("user:", user?.state?.user);
 
-      if (!user?.state?.isAlumnus ||!user?.state?.isAdmin||!user?.state?.isModerator ){
-        return;
-      }
+      console.log("click interests...");
+      console.log("not alumn", !user?.state?.isAlumnus);
+      const hasAccess = user?.state?.isAlumnus || user?.state?.isAdmin || user?.state?.isModerator;
+      if (!hasAccess) return;
+
       const interest = {
         user_id: user_id,
         content_id: event.id
@@ -194,8 +189,8 @@ export default function EventDetailPage() {
   const handleInterestClick = async () => {
     if (isInterestedLoading || isGoingLoading) return;
 
-    if (!user?.state?.isAlumnus || !user?.state?.isAdmin || !user?.state?.isModerator) return;
 
+    console.log("passed..");
     try {
       setIsInterestedLoading(true);
       const newIsInterested = !isInterested;
@@ -207,6 +202,7 @@ export default function EventDetailPage() {
       }
 
       await addDeleteInterest(newIsInterested);
+      console.log("added/deleted event interest");
 
       await fetchEvent();
     } catch (error) {

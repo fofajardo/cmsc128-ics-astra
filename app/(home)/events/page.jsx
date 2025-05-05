@@ -14,7 +14,6 @@ import EventCarousel from "@/components/events/GroupedEvents/CardCarousel/EventC
 import ExploreUPLBSection from "@/components/events/GroupedEvents/ExploreUPLBSection";
 import UPLBImageCollage from "@/components/events/GroupedEvents/UPLBImageCollage";
 
-import events from "../../data/events";
 import eventsVector from "../../assets/events-vector.png";
 import venue2 from "../../assets/venue2.jpeg";
 import { useSignedInUser } from "@/components/UserContext";
@@ -22,21 +21,7 @@ import { useSignedInUser } from "@/components/UserContext";
 export default function EventsPage() {
   const user = useSignedInUser();
   const itemsPerPage = 4;
-  const [contentList, setContents] = useState([]);
-  const [eventCounts, setEventCounts] = useState({
-    active: 0,
-    past: 0,
-    total: 0
-  });
-
-
-  const [pagination, setPagination] = useState({
-    display: [1, 10],
-    currPage: 1,
-    lastPage: 10,
-    numToShow: 10,
-    total: 0,
-  });
+  console.log("user: ", user);
 
   const [eventList, setEventList] = useState([]);
   const [currentEvents, setCurrentEvents] = useState([]);
@@ -70,11 +55,12 @@ export default function EventsPage() {
 
   const fetchAttendees = async (id) => {
     try{
+      console.log("in fetch attendees..:", user);
       if( user?.state?.isAlumnus || user?.state?.isAdmin||user?.state?.isModerator){
         console.log("fetchingg attendees...");
         const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/content/${id}`);
 
-        //console.log("fetched attendees:", response);
+        console.log("fetched attendees:", response);
         if (response.data.status === "OK"){
           const interestedUserNames = await Promise.all(
             response.data.list.map(async (user) => {
@@ -124,11 +110,13 @@ export default function EventsPage() {
           contentMap.set(content.id, content);
         });
 
+
         // array of promises to fetch event photos
         const eventsPromises = eventsRes.data.list.map(async (event) => {
           console.log(event);
           const matchedContent = contentMap.get(event.event_id) || {};
           const photoUrl = await fetchEventPhoto(event.event_id);
+          console.log("in fetch data, fetching user:", user);
           return {
             id: event.event_id,
             event_id: event.event_id,
@@ -157,9 +145,10 @@ export default function EventsPage() {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
-
+    if (user) {
+      fetchData();
+    }
+  }, [user]);
   useEffect(() => {
     console.log("Filtering triggered:", {
       eventList,
@@ -221,20 +210,22 @@ export default function EventsPage() {
     }
 
     if (endDateFilter) {
-      console.log("startDateFilder...:", endDateFilter);
+      console.log("endDateFilder...:", endDateFilter);
       const endDate = new Date(endDateFilter);
       filteredResults = filteredResults.filter(event =>
         new Date(event.date) <= endDate
       );
     }
     console.log("sortFilter...:", sortFilter);
-    if (sortFilter === "Most Recent") {
-
+    if (sortFilter?.label === "MOst Recent") {
       filteredResults.sort((a, b) => new Date(b.date) - new Date(a.date));
-    } else if (sortFilter === "Oldest") {
+      console.log("mpst recent", filteredResults);
+    } else if (sortFilter?.label === "Oldest") {
       filteredResults.sort((a, b) => new Date(a.date) - new Date(b.date));
-    } else if (sortFilter === "Popular") {
-      filteredResults.sort((a, b) => (b.attendees || 0) - (a.attendees || 0));
+      console.log("oldest", filteredResults);
+    } else if (sortFilter?.label === "Popular") {
+      filteredResults.sort((a, b) => (b.attendees.length || 0) - (a.attendees.length || 0));
+      console.log("popular", filteredResults);
     }
 
     setFilteredEvents(filteredResults);
@@ -344,14 +335,14 @@ export default function EventsPage() {
             <DateFilter
               placeholder="Start Date"
               value={startDateFilter}
-              onChange={(date) => setStartDateFilter(date)}
+              onChange={(date) => date === setStartDateFilter(date)}
             />
 
             <DateFilter
               placeholder="End Date"
               value={endDateFilter}
               onChange={(date) => {
-                console.log("date", date);
+                console.log("date:", date);
                 setEndDateFilter(date);
               }}
             />
@@ -367,7 +358,7 @@ export default function EventsPage() {
               placeholder="Sort"
               value={sortFilter}
               onChange={(selected) =>
-                selected.label === "All" ? setSortFilter(null) : setSortFilter(selected)
+                selected.label === "Clear" ? setSortFilter(null) : setSortFilter(selected)
               }
 
             />

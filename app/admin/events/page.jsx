@@ -1,5 +1,5 @@
 "use client";
-import { TableHeader, Table, PageTool } from "@/components/TableBuilder";
+import { EventTableHeader, Table, PageTool } from "@/components/TableBuilder";
 import { useTab } from "../../components/TabContext";
 import ToastNotification from "@/components/ToastNotification";
 import EventModal from "./EventModal";
@@ -18,12 +18,12 @@ export default function Events() {
   const user = useSignedInUser();
 
   // remove/comment out this if not signed in as admin
-  // const isAllowed =
-  //   user?.state?.role === "admin" || user?.state?.role === "moderator";
+  console.log(user);
+  const isAllowed = user?.state?.isAdmin || user?.state?.isModerator;
 
-  // if (!isAllowed) {
-  //   return <div>FORBIDDEN</div>;
-  // }
+  if (!isAllowed) {
+    return <div className="p-10 text-center text-xl">FORBIDDEN</div>;
+  }
   const { setEventCounts } = useContext(TabContext);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -561,7 +561,7 @@ export default function Events() {
       {/* Table Section */}
       <div className="bg-astradirtyastrawhite w-full px-4 py-8 md:px-12 lg:px-24 flex flex-col">
         <div className="flex flex-col py-4 px-1 md:px-4 lg:px-8">
-          <TableHeader //info, pagination, toggleFilter, setPagination, searchQuery, setSearchQuery
+          <EventTableHeader //info, pagination, toggleFilter, setPagination, searchQuery, setSearchQuery
             info={info}
             pagination={pagination}
             toggleFilter={toggleAddModal}
