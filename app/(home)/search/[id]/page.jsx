@@ -181,10 +181,10 @@ export default function AlumniSearchProfile({ params }) {
   }
 
   const skillsArray = alumnus.skills ?
-    (typeof alumnus.skills === 'string' ? alumnus.skills.split(",").map(skill => skill.trim()) : alumnus.skills) : [];
+    (typeof alumnus.skills === "string" ? alumnus.skills.split(",").map(skill => skill.trim()) : alumnus.skills) : [];
 
   const interestsArray = alumnus.interests ?
-    (typeof alumnus.interests === 'string' ? alumnus.interests.split(",").map(interest => interest.trim()) : alumnus.interests) : [];
+    (typeof alumnus.interests === "string" ? alumnus.interests.split(",").map(interest => interest.trim()) : alumnus.interests) : [];
 
   return (
     <div className="p-4 bg-astradirtywhite min-h-screen">
@@ -307,8 +307,8 @@ export default function AlumniSearchProfile({ params }) {
                         }) : "N/A"} - {
                           exp.end_date
                             ? new Date(exp.end_date).toLocaleDateString("en-US", {
-                                year: "numeric", month: "long", day: "numeric"
-                              })
+                              year: "numeric", month: "long", day: "numeric"
+                            })
                             : "Present"
                         }
                       </p>
@@ -340,8 +340,8 @@ export default function AlumniSearchProfile({ params }) {
                         }) : "N/A"} - {
                           aff.end_date
                             ? new Date(aff.end_date).toLocaleDateString("en-US", {
-                                year: "numeric", month: "long", day: "numeric"
-                              })
+                              year: "numeric", month: "long", day: "numeric"
+                            })
                             : "Present"
                         }
                         {aff.institution && <><br />{aff.institution}</>}
