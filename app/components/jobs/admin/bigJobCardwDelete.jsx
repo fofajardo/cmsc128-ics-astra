@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
+import { Trash2 } from "lucide-react";
 import ConfirmationPrompt from "../edit/confirmation";
 
 export default function BigJobCardwDelete({ job = {}, content = {} }) {
@@ -32,9 +33,9 @@ export default function BigJobCardwDelete({ job = {}, content = {} }) {
         </div>
         <button
           onClick={() => setPrompt(true)}
-          className="hover:scale-none hover:bg-astrared/85 bg-astrared !cursor-pointer text-astrawhite font-bold w-16 py-2 rounded-md text-xs"
+          className="hover:scale-none hover:bg-astrared/85 bg-astrared !cursor-pointer text-astrawhite font-bold w-8 py-2 rounded-md text-xs flex items-center justify-center"
         >
-          Delete
+          <Trash2 />
         </button>
       </div>
 

@@ -1,3 +1,10 @@
+export const RouteGuardMode = Object.freeze({
+  AUTO: "auto",
+  RA: "authenticated",
+  RU: "unauthenticated",
+  AUTH_SIGN_UP: "auth-sign-up",
+});
+
 const RoleName = Object.freeze({
   UNLINKED: "unlinked",
   ALUMNUS: "alumnus",

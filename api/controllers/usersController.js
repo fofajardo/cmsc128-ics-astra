@@ -100,12 +100,7 @@ const createUser = async (req, res) => {
     const {
       username,
       email,
-      password,
-      salt,
       is_enabled,
-      first_name,
-      middle_name,
-      last_name,
       created_at,
       updated_at,
       role
@@ -130,12 +125,7 @@ const createUser = async (req, res) => {
     const { data, error } = await usersService.insertUser(req.supabase, {
       username,
       email,
-      password,
-      salt,
       is_enabled,
-      first_name,
-      middle_name,
-      last_name,
       created_at,
       updated_at,
       role

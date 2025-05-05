@@ -1,6 +1,3 @@
-import { SupabaseAuthClient } from "@supabase/supabase-js/dist/module/lib/SupabaseAuthClient.js";
-import { applyFilter } from "../utils/applyFilter.js";
-
 async function fetchPosts (aSupabaseAuthClient, aFilters) {
   let query = aSupabaseAuthClient
     .from("posts")

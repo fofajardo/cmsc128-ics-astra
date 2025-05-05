@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { TableHeader, Table, PageTool } from "@/components/TableBuilder";
 import { Check, Wallet, Users, HeartHandshake } from "lucide-react";
 import AdminStatCard from "@/components/AdminStatCard";
@@ -8,11 +9,16 @@ import AdminTabs from "@/components/AdminTabs";
 import ToastNotification from "@/components/ToastNotification";
 import ProjectCardPending from "@/components/ProjectCardPending";
 import ProjectCardActive from "@/components/ProjectCardActive";
-import { formatCurrency } from "@/utils/format";
+import { formatCurrency, capitalizeName } from "@/utils/format";
+import { REQUEST_STATUS } from "@/constants/requestConsts";
+import { PROJECT_STATUS, PROJECT_TYPE } from "@/constants/projectConsts";
+import DeclineModal from "@/components/projects/DeclineModal";
 import Link from "next/link";
 import axios from "axios";
 
 export default function ProjectsAdmin() {
+  const router = useRouter();
+
   const [showFilter, setShowFilter] = useState(false);
   const [selectedType, setSelectedType] = useState("All");
   const [toast, setToast] = useState(null);
@@ -23,6 +29,10 @@ export default function ProjectsAdmin() {
   const [loading, setLoading] = useState(true);
 
   const [projectPhotos, setProjectPhotos] = useState({});
+  const [requestTo, setrequestIdToDecline] = useState("");
+  const [showDeclineModal, setShowDeclineModal] = useState(false);
+  const [declineReason, setDeclineReason] = useState("");
+  const [declineRequestData, setDeclineRequestData] = useState({});
 
   useEffect(() => {
     const fetchProjectRequests = async () => {
@@ -60,7 +70,7 @@ export default function ProjectsAdmin() {
           setProjects(
             projectData.list.map(
               project => ({
-                status: project.status,
+                status: project.projectData.project_status === PROJECT_STATUS.FINISHED ? REQUEST_STATUS.REJECTED : project.status,
                 request_id: project.request_id,
                 id: project.projectData.project_id,
                 image: photoMap[project.projectData.project_id] || "/projects/assets/Donation.jpg",
@@ -74,7 +84,12 @@ export default function ProjectsAdmin() {
                 endDate: project.projectData.due_date,
                 dateCompleted: project.projectData.date_complete,
                 donationLink: project.projectData.donation_link,
-                requester: project.requesterData.full_name,
+                requester: project.requesterData.full_name !== ""
+                  ? capitalizeName(project.requesterData.full_name)
+                  : project.requesterData.role === "unlinked"
+                    ? "Deleted User"
+                    : capitalizeName(project.requesterData.role)
+                ,
               })
             )
           );
@@ -110,7 +125,32 @@ export default function ProjectsAdmin() {
     fetchProjectRequests();
   }, []);
 
-  const handleUpdateCallback = (requestId, updatedStatus) => {
+  const updateProjectRequest = async (updatedStatus, requestId, requestResponse="") => {
+    try {
+      let data = {
+        status: updatedStatus
+      };
+
+      if (updatedStatus === REQUEST_STATUS.REJECTED) {
+        data = {
+          ...data,
+          response: requestResponse,
+        };
+      };
+
+      const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/requests/${encodeURI(requestId)}`, data);
+      if (response.data.status === "UPDATED") {
+        console.log("Successfully updated project request with id:", requestId);
+        handleUpdateCallback(updatedStatus, requestId);
+      } else {
+        console.error("Unexpected response:", response);
+      }
+    } catch (error) {
+      console.error("Failed to approve project request:", error);
+    }
+  };
+
+  const handleUpdateCallback = (updatedStatus, requestId) => {
     setProjects((prevProjects) =>
       prevProjects.map((project) =>
         project.request_id === requestId
@@ -118,6 +158,36 @@ export default function ProjectsAdmin() {
           : project
       )
     );
+  };
+
+  const handleApprove = (id, title) => (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log(id);
+    console.log(title);
+    updateProjectRequest(REQUEST_STATUS.APPROVED, id);
+    setToast({
+      type: "success",
+      message: `${title} has been approved!`
+    });
+  };
+
+  const handleDecline = (id, title) => (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowDeclineModal(true);
+    setDeclineRequestData({
+      id,
+      title,
+    });
+  };
+
+  const handleFinalDecline = () => {
+    updateProjectRequest(REQUEST_STATUS.REJECTED, declineRequestData.id, declineReason);
+    setToast({ type: "fail", message: `${declineRequestData.title} has been declined. Reason: ${declineReason}` });
+    setShowDeclineModal(false);
+    setDeclineReason("");
+    setTimeout(() => router.push("/admin/projects"), 2000);
   };
 
   const projectsData = projects;
@@ -244,8 +314,9 @@ export default function ProjectsAdmin() {
                   onChange={(e) => setTempSelectedType(e.target.value)}
                 >
                   <option value="All">All Projects</option>
-                  <option value="Fundraiser">Fundraisers</option>
-                  <option value="Scholarship">Scholarships</option>
+                  <option value={PROJECT_TYPE.DONATION_DRIVE}>{capitalizeName(PROJECT_TYPE.DONATION_DRIVE)}</option>
+                  <option value={PROJECT_TYPE.FUNDRAISING}>{capitalizeName(PROJECT_TYPE.FUNDRAISING)}</option>
+                  <option value={PROJECT_TYPE.SCHOLARSHIP}>{capitalizeName(PROJECT_TYPE.SCHOLARSHIP)}</option>
                 </select>
               </div>
               <div className="flex justify-end gap-3 mt-4">
@@ -277,7 +348,7 @@ export default function ProjectsAdmin() {
         <img
           src="/blue-bg.png"
           alt="Background"
-          className="h-80 w-full object-cover"
+          className="h-100 w-full object-cover"
         />
         <div className="absolute inset-2 flex flex-col items-center justify-evenly text-astrawhite z-20">
           <div className="text-center pt-6">
@@ -330,6 +401,13 @@ export default function ProjectsAdmin() {
               />
             </div>
           </div>
+
+          {/* Create a project button */}
+          <Link href="/projects/request/goal" passHref>
+            <button className="mt-2 border-2 border-astrawhite text-astrawhite hover:bg-astrawhite hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-[200px] h-[60px]">
+              Create a Project
+            </button>
+          </Link>
         </div>
       </div>
 
@@ -362,8 +440,8 @@ export default function ProjectsAdmin() {
                     requester={project.requester}
                     goal={project.goal}
                     description={project.description}
-                    setToast={setToast}
-                    onUpdate={handleUpdateCallback}
+                    onApprove={handleApprove(project.request_id, project.title)}
+                    onTriggerDeclineModal={handleDecline(project.request_id, project.title)}
                   />
                 ))}
 
@@ -402,6 +480,15 @@ export default function ProjectsAdmin() {
           <PageTool pagination={pagination} setPagination={setPagination} />
         </div>
       </div>
+
+      {showDeclineModal && (
+        <DeclineModal
+          reason={declineReason}
+          setReason={setDeclineReason}
+          onClose={() => setShowDeclineModal(false)}
+          onSubmit={handleFinalDecline}
+        />
+      )}
     </div>
   );
 }

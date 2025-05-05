@@ -5,6 +5,7 @@ const projectsRouter = () => {
   const router = express.Router();
 
   router.get("/", projectsController.getProjects);
+  router.get("/approved", projectsController.getApprovedProjects);
   router.get("/:projectId", projectsController.getProjectById);
   router.post("/", projectsController.createProject);
   router.put("/:projectId", projectsController.updateProject);

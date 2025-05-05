@@ -41,6 +41,82 @@ const getEvents = async (req, res) => {
   }
 };
 
+const getActiveEvents = async (req, res) => {
+  try {
+  //  console.log("User role:", req.user?.role);
+    //console.log("Permissions check:", req.you.can(Actions.READ, Subjects.EVENT)); //Fix: alumnus permission results to false here
+    const filters = req.query;
+
+    if (req.you.cannot(Actions.READ, Subjects.EVENT)) {
+      return res.status(httpStatus.FORBIDDEN).json({
+        status: "FORBIDDEN",
+        message: "You do not have permission to view events"
+
+      });
+    }
+
+    const { data, count, error } = await eventsService.fetchActiveEvents(req.supabase);
+
+    if (error) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error.message
+      });
+    }
+
+    return res.status(httpStatus.OK).json({
+      status: "OK",
+      list: data || [],
+      total: count || 0
+
+    });
+
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
+
+const getUpcomingEvents = async (req, res) => {
+  try {
+  //  console.log("User role:", req.user?.role);
+    //console.log("Permissions check:", req.you.can(Actions.READ, Subjects.EVENT)); //Fix: alumnus permission results to false here
+    const filters = req.query;
+
+    if (req.you.cannot(Actions.READ, Subjects.EVENT)) {
+      return res.status(httpStatus.FORBIDDEN).json({
+        status: "FORBIDDEN",
+        message: "You do not have permission to view events"
+
+      });
+    }
+
+    const { data, count, error } = await eventsService.fetchUpcomingEvents(req.supabase);
+
+    if (error) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error.message
+      });
+    }
+
+    return res.status(httpStatus.OK).json({
+      status: "OK",
+      list: data || [],
+      total: count || 0
+
+    });
+
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
+
 const getEventById = async (req, res) => {
   try {
     console.log("User role:", req.user?.role);
@@ -326,6 +402,8 @@ const deleteEvent = async (req, res) => {
 const eventsController = {
   getEvents,
   getEventById,
+  getActiveEvents,
+  getUpcomingEvents,
   createEvent,
   updateEvent,
   deleteEmptyEvent,

@@ -3,13 +3,13 @@ import eventInterestsService from "../services/eventInterestsService.js";
 import { isValidUUID } from "../utils/validators.js";
 import { Actions, Subjects } from "../../common/scopes.js";
 
-const userId = "38f98c8d-af8d-4cef-ab9b-8a5d80e9c8b1"; //Only using this since userid is needed
+// const userId = "38f98c8d-af8d-4cef-ab9b-8a5d80e9c8b1"; //Only using this since userid is needed
 
 const getEventInterests = async (req, res) => {
   try {
     const { page = 1, limit = 10 } = req.query;
-    //const currentUserId = req.user.data.id;
-    const currentUserId = userId;
+    const currentUserId = req.user.data.id;
+    //const currentUserId = userId;
     console.log("current userId: ",currentUserId);
 
     if (req.you.cannotAs(Actions.MANAGE, Subjects.EVENT_INTEREST,{alum_id:currentUserId})) {
@@ -43,8 +43,8 @@ const getEventInterests = async (req, res) => {
 const getEventInterestByAlumnId = async (req, res) => {
   try {
     const { alumnId } = req.params;
-    //const currentUserId = req.user.data.id;
-    const currentUserId = userId;
+    const currentUserId = req.user?.data?.id;
+    //const currentUserId = userId;
 
 
     console.log("current userId: ",currentUserId);
@@ -84,11 +84,11 @@ const getEventInterestByContentId = async (req, res) => {
   try {
     const { contentId } = req.params;
     //const currentUserId = req.user?.data?.id;
-    const currentUserId = userId;
+    ///  const currentUserId = userId;
 
-    console.log("current userId: ",currentUserId);
+    //    console.log("current userId: ",currentUserId);
 
-    if (req.you.cannotAs(Actions.MANAGE, Subjects.EVENT_INTEREST,{alum_id:currentUserId})) {
+    if (req.you.cannotAs(Actions.MANAGE, Subjects.EVENT_INTEREST)) {
       return res.status(httpStatus.FORBIDDEN).json({
         status: "FORBIDDEN",
         message: "You do not have permission to view event interests"
@@ -122,21 +122,16 @@ const getEventInterestStats = async(req,res)=>{
     const { contentId } = req.params;
 
     //const currentUserId = req.user?.data?.id;
-    const currentUserId = userId;
-    if (!isValidUUID(currentUserId)) {
-      return res.status(httpStatus.BAD_REQUEST).json({
-        status: "FAILED",
-        message: "Invalid alumnId format."
-      });
-    }
+    //const currentUserId = userId;
+
     if (!isValidUUID(contentId)) {
       return res.status(httpStatus.BAD_REQUEST).json({
         status: "FAILED",
         message: `Invalid eventId format.${contentId}, ${req?.params}`
       });
     }
-    console.log("current userId: ",currentUserId);
-    if (req.you.cannotAs(Actions.MANAGE, Subjects.EVENT_INTEREST, {alum_id:currentUserId})) {
+
+    if (req.you.cannotAs(Actions.MANAGE, Subjects.EVENT_INTEREST)) {
       console.log("dont have permission");
       return res.status(httpStatus.FORBIDDEN).json({
         status: "FORBIDDEN",
@@ -168,8 +163,8 @@ const getEventInterestStats = async(req,res)=>{
 
 const createEventInterest = async (req, res) => {
   try {
-    //const currentUserId = req.user.data.id;
-    const currentUserId = userId;
+    const currentUserId = req.user.data.id;
+    //const currentUserId = userId;
 
     console.log("current userId: ",currentUserId);
     if (req.you.cannotAs(Actions.MANAGE, Subjects.EVENT_INTEREST, {alum_id:currentUserId})) {

@@ -4,7 +4,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 export default function EventFormFields({
-  title, setTitle,
+  isEdit, title, setTitle,
   date, setDate,
   location, setLocation,
   status, setStatus,
@@ -71,7 +71,7 @@ export default function EventFormFields({
             onChange={(e) => setEventDetail(e.target.value)}
             className="w-full border rounded-md p-2"
             rows={4}
-            required
+            required={!isEdit}
           />
         </div>
       </div>

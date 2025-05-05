@@ -6,7 +6,8 @@ import { GraduationCap, HeartHandshake, Calendar, User, Goal, FileText, Phone, M
 import ToastNotification from "@/components/ToastNotification";
 import Link from "next/link";
 import axios from "axios";
-import { formatCurrency, formatDate } from "@/utils/format";
+import { formatCurrency, formatDate, capitalizeName } from "@/utils/format";
+import { PROJECT_STATUS, PROJECT_TYPE } from "@/constants/projectConsts";
 
 //for admin/projects/inactive/[id]
 export default function InactiveProjectDetail({ params }) {
@@ -44,7 +45,7 @@ export default function InactiveProjectDetail({ params }) {
           if (donationData.status === "OK") {
             formattedDonations = donationData.donations.map(donation => ({
               id: donation.id,
-              donor: donation.user_id,
+              donor: donation.donor,
               amount: donation.amount,
               date: donation.donation_date,
             }));
@@ -54,6 +55,8 @@ export default function InactiveProjectDetail({ params }) {
 
           setProjectData({
             id: projectId,
+            request_status: projectData.status,
+            project_status: projectData.list.projectData.project_status,
             title: projectData.list.projectData.title,
             type: projectData.list.projectData.type,
             image: null,
@@ -65,11 +68,14 @@ export default function InactiveProjectDetail({ params }) {
             donors: projectData.list.projectData.number_of_donors.toString(),
             requester: {
               name: projectData.list.requesterData.full_name,
-              email: "NA",
+              email: projectData.list.requesterData.email,
               phone: "NA",
-              position: projectData.list.requesterData.role || "NA",
+              position: projectData.list.requesterData.role === "unlinked" || projectData.list.requesterData.role === null
+                ? "N/A"
+                : projectData.list.requesterData.role,
             },
             submissionDate: projectData.list.date_requested,
+            dateReviewed: projectData.list.date_reviewed,
             startDate: "1999-01-01",
             endDate: projectData.list.projectData.due_date,
             eligibilityCriteria: "NA",
@@ -186,17 +192,17 @@ export default function InactiveProjectDetail({ params }) {
             </div>
             <div className="flex items-center mt-2">
               <div className="bg-astrawhite text-astradark px-3 py-1 rounded-lg text-sm font-s flex items-center gap-1">
-                {projectData?.type === "Scholarship" ? (
+                {projectData?.type === PROJECT_TYPE.SCHOLARSHIP ? (
                   <GraduationCap className="w-4 h-4" />
                 ) : (
                   <HeartHandshake className="w-4 h-4" />
                 )}
-                {projectData?.type}
+                {projectData?.type ? capitalizeName(projectData.type) : projectData?.type}
               </div>
 
               <div className="ml-4 bg-astrawhite text-astradark px-3 py-1 rounded-lg text-sm font-s flex items-center gap-1">
                 <Calendar className="w-4 h-4" />
-                <span>Ended: {new Date(projectData?.endDate).toLocaleDateString("en-PH")}</span>
+                <span>{projectData?.project_status === PROJECT_STATUS.FINISHED ? `Date Ended: ${formatDate(projectData?.endDate)}` : `Date Deleted: ${formatDate(projectData?.dateReviewed)}`}</span>
               </div>
             </div>
           </div>
@@ -257,9 +263,9 @@ export default function InactiveProjectDetail({ params }) {
                 <div className="flex gap-2 items-start">
                   <Calendar className="w-8 h-8  text-astraprimary mt-1" />
                   <div>
-                    <p className="font-sb">Project Duration</p>
+                    <p className="font-sb">Project Due Date</p>
                     <p className="text-astradarkgray">
-                      {new Date(projectData?.startDate).toLocaleDateString("en-PH")} to {new Date(projectData?.endDate).toLocaleDateString("en-PH")}
+                      {formatDate(projectData?.endDate, "long")}
                     </p>
                   </div>
                 </div>
@@ -305,8 +311,8 @@ export default function InactiveProjectDetail({ params }) {
                   {projectData?.transactions.map((transaction) => (
                     <tr key={transaction.id} className="hover:bg-astralightgray/10 transition-colors">
                       <td className="py-3 px-4">{transaction.donor}</td>
-                      <td className="py-3 px-4 text-right font-sb text-astraprimary">{transaction.amount}</td>
-                      <td className="py-3 px-4 text-right text-astradarkgray">{new Date(transaction.date).toLocaleDateString("en-PH")}</td>
+                      <td className="py-3 px-4 text-right font-sb text-astraprimary">{formatCurrency(transaction.amount)}</td>
+                      <td className="py-3 px-4 text-right text-astradarkgray">{formatDate(transaction.date)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -333,7 +339,7 @@ export default function InactiveProjectDetail({ params }) {
                 <User className="w-10 h-10 text-astraprimary" />
                 <div>
                   <p className="text-astradarkgray">{projectData?.requester.name}</p>
-                  <p className="text-astralightgray text-sm">{projectData?.requester.position}</p>
+                  <p className="text-astralightgray text-sm">{projectData?.requester?.position && projectData?.requester?.position !== "N/A" ? capitalizeName(projectData.requester.position) : projectData?.requester?.position}</p>
                 </div>
               </div>
 
@@ -344,12 +350,12 @@ export default function InactiveProjectDetail({ params }) {
                 </div>
               </div>
 
-              <div className="flex gap-2 items-start">
+              {/* <div className="flex gap-2 items-start">
                 <Phone className="w-6 h-6 text-astraprimary mr-2" />
                 <div>
                   <p className="text-astradarkgray">{projectData?.requester.phone}</p>
                 </div>
-              </div>
+              </div> */}
 
               <button
                 className="flex items-center gap-2 mt-4 bg-astraprimary text-astrawhite py-2 px-4 rounded-lg w-full justify-center font-sb transition-colors hover:bg-astraprimary/90"

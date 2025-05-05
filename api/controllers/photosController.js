@@ -343,6 +343,73 @@ const getPhotoByAlumId = async (req, res) => {
   }
 };
 
+const getDegreeProofPhotoByAlumId = async (req, res) => {
+  try {
+    const { alum_id } = req.params;
+    console.log("Alum ID:", alum_id);
+
+    // Fetch the photo record from the database
+    const { data, error } = await photosService.fetchDegreeProofPhoto(req.supabase, alum_id);
+
+    if (error || !data) {
+      return res.status(404).json({
+        status: "FAILED",
+        message: "Photo not found for the given Alum ID",
+      });
+    }
+
+    // Generate a signed URL for the photo
+    const { data: signedUrlData, error: signedUrlError } = await req.supabase
+      .storage
+      .from("user-photos-bucket")
+      .createSignedUrl(data.image_key, 60 * 60); // URL valid for 1 hour
+
+    if (signedUrlError) {
+      return res.status(500).json({
+        status: "FAILED",
+        message: "Failed to generate signed URL",
+      });
+    }
+
+    return res.status(200).json({
+      status: "OK",
+      photo: signedUrlData.signedUrl,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "FAILED",
+      message: error.message,
+    });
+  }
+};
+
+const getJsonOfDegreeProofPhotoByAlumId = async (req, res) => {
+  try {
+    const { alum_id } = req.params;
+    console.log("Alum ID:", alum_id);
+
+    // Fetch the photo record from the database
+    const { data, error } = await photosService.fetchDegreeProofPhoto(req.supabase, alum_id);
+
+    if (error || !data) {
+      return res.status(404).json({
+        status: "FAILED",
+        message: "Photo not found for the given Alum ID",
+      });
+    }
+
+    return res.status(200).json({
+      status: "OK",
+      ...data,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "FAILED",
+      message: error.message,
+    });
+  }
+};
+
 const getEventPhotoByContentId = async (req, res) => {
   try {
     const { content_id } = req.params;
@@ -493,6 +560,8 @@ const photosController = {
   getPhotoByAlumId,
   getEventPhotoByContentId,
   getProjectPhotoByContentId,
+  getDegreeProofPhotoByAlumId,
+  getJsonOfDegreeProofPhotoByAlumId,
 };
 
 export default photosController;
