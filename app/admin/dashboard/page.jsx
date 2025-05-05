@@ -70,10 +70,10 @@ export default function Dashboard() {
           <AlumAct_Events />
           <FundsDonut />
         </div>
-        <div className="flex flex-col lg:flex-row gap-4">
+        {/* <div className="flex flex-col lg:flex-row gap-4">
           <ActivityBreakdown />
           <Activity />
-        </div>
+        </div> */}
       </div>
     </>
   );

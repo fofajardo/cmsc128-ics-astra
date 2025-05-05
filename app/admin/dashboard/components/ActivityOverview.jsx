@@ -72,7 +72,9 @@ function AlumniItem({ alumni, router }) {
 
       </div>
       <div className="flex-1">
-        <p className="font-r">{alumni?.name}</p>
+        <p className="font-r"><span style={{ color: alumni?.name === null ? "red" : "inherit" }}>
+          {alumni?.name === null ? "No profile" : alumni?.name}
+        </span></p>
         <p className="font-s text-astradarkgray">{alumni?.email || ""}</p>
       </div>
       <div className="text-right">
@@ -185,9 +187,13 @@ export default function ActivityOverview() {
         if (response.data.status === "OK") {
           const updatedRecentRegisters = await Promise.all(
             response.data.list.map(async (user) => {
+              const hasProfile = user.alumni_profiles !== null;
+
               const userData = {
                 id: user.id,
-                name: capitalizeName(`${user.alumni_profiles.first_name} ${user.alumni_profiles.last_name}`),
+                name: hasProfile
+                  ? capitalizeName(`${user.alumni_profiles.first_name} ${user.alumni_profiles.last_name}`)
+                  : null,
                 email: "To be obtained",
                 date: user.created_at
               };
