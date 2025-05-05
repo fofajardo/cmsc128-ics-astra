@@ -30,6 +30,18 @@ const fetchEvents = async (supabase, filters) => {
   return await query;
 };
 
+const fetchActiveEvents = async (supabase)=>{
+  return await supabase
+    .from("active_events_view")
+    .select("active_events_count")
+    .single();
+};
+
+const fetchUpcomingEvents = async (supabase)=>{
+  return await supabase
+    .from("upcoming_events")
+    .select("*");
+};
 const fetchEventById = async (supabase, eventId) => {
   return await supabase
     .from("events")
@@ -84,6 +96,8 @@ const deleteEvent = async (supabase, eventId) => {
 const eventsService = {
   fetchEvents,
   fetchEventById,
+  fetchActiveEvents,
+  fetchUpcomingEvents,
   checkExistingEvent,
   checkExistingEventById,
   insertEvent,
