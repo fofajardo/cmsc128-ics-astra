@@ -76,7 +76,7 @@ export default function SetPassword() {
           </button>
           <div
             className="text-sm cursor-pointer text-[var(--color-astraprimary)]"
-            onClick={() => (window.location.href = "/login")}
+            onClick={() => (window.location.href = "/sign-in")}
           >
             Back to Sign In
           </div>
