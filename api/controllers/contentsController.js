@@ -70,7 +70,6 @@ const createContent = async (req, res) => {
     }
 
     const requiredFields = [
-      "user_id",
       "title",
       "details",
       "views"
@@ -97,6 +96,7 @@ const createContent = async (req, res) => {
       tags
     } = req.body;
 
+    console.log(user_id)
     // Validate user_id format
     const isValidUUID = /^[0-9a-fA-F-]{36}$/.test(user_id);
     if (!isValidUUID) {

@@ -15,7 +15,7 @@ export default function AdminAlumniLayout({ children }) {
   });
 
   const tabs = {
-    "Announcements": 3,
+    "Announcements": 0,
     "Newsletters": 0,
   };
 

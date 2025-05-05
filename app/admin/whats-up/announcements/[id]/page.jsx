@@ -23,6 +23,44 @@ export default function AnnouncementDetail() {
   // Simple text editor as a fallback solution
   const [editorContent, setEditorContent] = useState("");
 
+  const handleSubmit = async () => {
+    try {
+      const payload = {
+        title: formData.title,
+        details: formData.content,
+        image: formData.image,
+        tags: ["announcement", "published"]
+      };
+
+      await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`, payload);
+
+
+      setToast({ type: "success", message: "Announcement published successfully!" });
+      setTimeout(() => router.push("/admin/whats-up"), 2000);
+    } catch (error) {
+      console.error("Publish failed", error);
+      setToast({ type: "error", message: "Failed to publish announcement" });
+    }
+  };
+
+  const handleSaveDraft = async () => {
+    try {
+      const payload = {
+        title: formData.title,
+        details: formData.content,
+        image: formData.image,
+        tags: ["announcement", "draft"]
+      };
+
+        await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`, payload);
+
+      setToast({ type: "success", message: "Draft saved successfully!" });
+    } catch (error) {
+      console.error("Save draft failed", error);
+      setToast({ type: "error", message: "Failed to save draft" });
+    }
+  };
+
   useEffect(() => {
     if (id !== "new") {
       setIsLoading(true);
@@ -57,10 +95,22 @@ export default function AnnouncementDetail() {
     }
   };
 
-  const handleDelete = () => {
-    setShowDeleteModal(false);
-    setToast({ type: "success", message: "Announcement deleted successfully" });
-    setTimeout(() => router.push("/admin/whats-up"), 2000);
+  const handleDelete = async () => {
+    try {
+      setShowDeleteModal(false);
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`);
+      setToast({ type: "success", message: "Announcement deleted successfully" });
+
+      // Redirect after short delay
+      setTimeout(() => {
+        router.push("/admin/whats-up");
+      }, 1000);
+    } catch (error) {
+      console.error("Delete failed:", error);
+      setToast({ type: "error", message: "Failed to delete announcement" });
+    } finally {
+      setShowDeleteModal(false);
+    }
   };
 
   return (
@@ -121,14 +171,6 @@ export default function AnnouncementDetail() {
             />
 
             <textarea
-              value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              className="w-full font-rb text-astradarkgray mb-6 p-2 border border-transparent hover:border-astragray focus:border-astraprimary rounded-lg outline-none resize-none"
-              placeholder="Enter short description"
-              rows={2}
-            />
-
-            <textarea
               value={formData.content}
               onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
               className="w-full font-r text-astrablack p-2 border border-transparent hover:border-astragray focus:border-astraprimary rounded-lg outline-none resize-none"
@@ -145,11 +187,11 @@ export default function AnnouncementDetail() {
                 <Trash2 className="w-4 h-4" />
                 Delete
               </button>
-              <button className="font-rb px-4 py-2 text-astrawhite bg-astradarkgray hover:bg-astradarkgray/90 rounded-lg flex items-center gap-2">
+              <button onClick={handleSaveDraft} className="font-rb px-4 py-2 text-astrawhite bg-astradarkgray hover:bg-astradarkgray/90 rounded-lg flex items-center gap-2">
                 <Save className="w-4 h-4" />
                 Save Draft
               </button>
-              <button className="blue-button flex items-center gap-2">
+              <button onClick={handleSubmit} className="blue-button flex items-center gap-2" >
                 <Send className="w-4 h-4" />
                 Publish
               </button>

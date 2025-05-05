@@ -52,9 +52,10 @@ export default function CommunicationPage() {
   }, []);
 
   const filteredAnnouncements = announcements.filter((announcement) => {
+    const hasAnnouncementTag = announcement.tags?.includes("announcement");
     const matchesType = selectedType === "All" || announcement.type === selectedType;
     const matchesSearch = announcement.title.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesType && matchesSearch;
+    return hasAnnouncementTag && matchesType && matchesSearch;
   });
 
   useEffect(() => {
