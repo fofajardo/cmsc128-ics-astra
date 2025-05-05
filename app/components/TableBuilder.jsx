@@ -19,10 +19,15 @@
 import { useState } from "react";
 import { Search, SlidersHorizontal, ArrowLeft, ArrowRight } from "lucide-react";
 
-export function TableHeader({ info, pagination, toggleFilter, setPagination, searchQuery, setSearchQuery }) {
+export function TableHeader({ info, pagination, toggleFilter, setPagination, searchQuery, setSearchQuery, addButton}) {
   return (
     <div>
       <div className='flex md:hidden flex-col gap-4'>
+        {addButton ??
+              <button
+                onClick={addButton}
+                className="flex items-center gap-2 px-4 py-2 text-white bg-astraprimary rounded-lg"
+              ></button>}
         <SearchComponent placeholder={info.search} setSearchQuery={setSearchQuery} searchQuery={searchQuery}/>
         <Toolbar toggleFilter={toggleFilter} pagination={pagination} setPagination={setPagination}/>
         <Header title={info.title} pagination={pagination} />
