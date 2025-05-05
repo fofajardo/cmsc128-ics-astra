@@ -47,7 +47,7 @@ export default function CheckEmail() {
 
           <div
             className="text-sm cursor-pointer text-[var(--color-astraprimary)]"
-            onClick={() => (window.location.href = "/sign-in")}
+            onClick={() => (window.location.href = "/login")}
           >
             Back to Sign In
           </div>

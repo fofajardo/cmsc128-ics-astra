@@ -57,7 +57,7 @@ export default function SignupPage() {
 
           <div className="mb-6 flex justify-between items-center">
             <h2 className="text-xl md:text-2xl font-semibold text-[var(--color-astrablack)]">Sign Up</h2>
-            <Link href="/sign-in" className="text-[var(--color-astraprimary)] text-sm md:text-base hover:underline">
+            <Link href="/login" className="text-[var(--color-astraprimary)] text-sm md:text-base hover:underline">
               I have an account
             </Link>
           </div>
