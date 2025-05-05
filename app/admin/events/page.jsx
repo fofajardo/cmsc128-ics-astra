@@ -14,17 +14,8 @@ import { useSignedInUser } from "@/components/UserContext";
 import { CenteredSkeleton } from "@/components/ui/skeleton";
 
 export default function Events() {
-
-  const user = useSignedInUser();
-
-  // remove/comment out this if not signed in as admin
-  console.log(user);
-  const isAllowed = user?.state?.isAdmin || user?.state?.isModerator;
-
-  if (!isAllowed) {
-    return <div className="p-10 text-center text-xl">FORBIDDEN</div>;
-  }
   const { setEventCounts } = useContext(TabContext);
+  const user = useSignedInUser();
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
@@ -488,6 +479,12 @@ export default function Events() {
     }
   };
 
+  console.log(user);
+  const isAllowed = user?.state?.isAdmin || user?.state?.isModerator;
+
+  if (!isAllowed) {
+    return <div className="p-10 text-center text-xl">FORBIDDEN</div>;
+  }
 
 
   return (
