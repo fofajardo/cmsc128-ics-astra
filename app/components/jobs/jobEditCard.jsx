@@ -1,5 +1,4 @@
 "use client";
-
 import { Clock, OctagonAlert } from "lucide-react";
 import Image from "next/image";
 import ConfirmationPrompt from "./edit/confirmation";

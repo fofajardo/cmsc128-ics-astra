@@ -40,7 +40,7 @@ export default function BigJobCardwEdit({ job = {}, content = {} }) {
       </div>
 
       <p className="mt-5 text-black text-justify whitespace-pre-wrap">{`${content.details}`}</p>
-      {showForm ? <JobForm close={()=>setForm(false)} job={job}/> : <></>}
+      {showForm ? <JobForm close={() => setForm(false)} job={job} content={content} /> : <></>}
       {showPrompt ? <ConfirmationPrompt prompt={"Are you sure you want to delete this job posting?"} close={()=>setPrompt(false)} object={id} handleConfirm={handleDelete}/> : <></>}
     </div>
   );}
