@@ -200,19 +200,6 @@ const updateContent = async (req, res) => {
       });
     }
 
-    if (title === "") {
-      return res.status(httpStatus.BAD_REQUEST).json({
-        status: "FAILED",
-        message: "Title cannot be empty",
-      });
-    }
-
-    if (details === "") {
-      return res.status(httpStatus.BAD_REQUEST).json({
-        status: "FAILED",
-        message: "Details cannot be empty",
-      });
-    }
 
     const hasRestrictedFieldChanges =
         user_id !== undefined ||
