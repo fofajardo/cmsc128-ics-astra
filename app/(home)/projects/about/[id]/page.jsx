@@ -319,7 +319,7 @@ export default function ProjectDetails({ params }) {
                 <div className="text-right">
                   <p className="font-medium">{projectData?.topDonator.donor}</p>
                   <p className="text-sm text-astradarkgray">
-                    {projectData?.topDonator?.amount ? formatCurrency(projectData.topDonator.amount) : 0}
+                    {projectData?.topDonator?.amount ? formatCurrency(projectData.topDonator.amount) : ""}
                   </p>
                 </div>
               </div>
@@ -334,7 +334,7 @@ export default function ProjectDetails({ params }) {
                 <div className="text-right">
                   <p className="font-medium">{projectData?.recentDonator.donor}</p>
                   <p className="text-sm text-astradarkgray">
-                    {projectData?.recentDonator?.amount ? formatCurrency(projectData.recentDonator.amount) : 0}
+                    {projectData?.recentDonator?.amount ? formatCurrency(projectData.recentDonator.amount) : ""}
                   </p>
                 </div>
               </div>
@@ -349,7 +349,7 @@ export default function ProjectDetails({ params }) {
                 <div className="text-right">
                   <p className="font-medium">{projectData?.firstDonator.donor}</p>
                   <p className="text-sm text-astradarkgray">
-                    {projectData?.firstDonator?.amount ? formatCurrency(projectData.firstDonator.amount) : 0}
+                    {projectData?.firstDonator?.amount ? formatCurrency(projectData.firstDonator.amount) : ""}
                   </p>
                 </div>
               </div>
