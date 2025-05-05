@@ -6,6 +6,7 @@ import {useRefetchUser, useSignedInUser} from "@/components/UserContext.jsx";
 import LoadingOverlay from "@/components/LoadingOverlay.jsx";
 import Link from "next/link.js";
 import httpStatus from "http-status-codes";
+import {FaEnvelope, FaGoogle} from "react-icons/fa";
 
 export default function SignUpStep1({onSetPage, onSetEmail}) {
   const initialValues = {
@@ -66,10 +67,21 @@ export default function SignUpStep1({onSetPage, onSetEmail}) {
 
         <button
           type="submit"
-          className="text-sm md:text-base w-full bg-[var(--color-astraprimary)] text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
+          className="w-full bg-[var(--color-astraprimary)] hover:bg-blue-700 rounded-md py-2 px-4 flex items-center justify-center transition-colors"
         >
-          Next
+          <FaEnvelope size={18} className="mr-2 text-white" />
+          <span className="text-sm md:text-base text-white">Sign Up with Email</span>
         </button>
+
+        <Link href={clientRoutes.auth.signInExternal("google")}>
+          <button
+            type="button"
+            className="w-full bg-[var(--color-astraprimary)] hover:bg-blue-700 rounded-md py-2 px-4 flex items-center justify-center transition-colors"
+          >
+            <FaGoogle size={18} className="mr-2 text-white" />
+            <span className="text-sm md:text-base text-white">Sign Up with Google</span>
+          </button>
+        </Link>
       </Form>
     );
   };

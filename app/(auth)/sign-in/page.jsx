@@ -9,6 +9,7 @@ import {useRouter} from "next/navigation";
 import {useRefetchUser, useSignedInUser} from "@/components/UserContext.jsx";
 import {AuthBackToHomeLink} from "@/(auth)/AuthBackToHomeLink.jsx";
 import {RouteGuardUnauthenticated} from "@/components/RouteGuard.jsx";
+import {FaGoogle} from "react-icons/fa";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -68,10 +69,11 @@ export default function LoginPage() {
         </button>
         <Link href={clientRoutes.auth.signInExternal("google")}>
           <button
-            className="text-sm md:text-base w-full bg-[var(--color-astraprimary)] text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
-            disabled={isSubmitting}
+            type="button"
+            className="w-full bg-[var(--color-astraprimary)] hover:bg-blue-700 rounded-md py-2 px-4 flex items-center justify-center transition-colors"
           >
-            Sign In with Google
+            <FaGoogle size={18} className="mr-2 text-white" />
+            <span className="text-sm md:text-base text-white">Sign In with Google</span>
           </button>
         </Link>
       </Form>
