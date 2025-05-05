@@ -104,6 +104,11 @@ class BaseRoutes {
       base: (append = "") => `${this.BASE_URL}/jobs${append}`,
     };
 
+
+    this.statistics = {
+      base: (append = "") => `${this.BASE_URL}/statistics${append}`
+    };
+      
     this.announcements = {
       base: (append = "") => `${this.BASE_URL}/announcements${append}`,
     };
