@@ -119,11 +119,17 @@ export default function AlumniSearchProfile({ params }) {
         {/* left section */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 w-full md:w-auto">
           {/* avatar placeholder */}
-          <img
-            src={profileImage || user?.image || "https://cdn-icons-png.flaticon.com/512/145/145974.png"}
-            alt={profile.first_name}
-            className="w-18 h-18 rounded-full bg-gray-200 mx-auto sm:mx-4"
-          />
+          <div className="w-18 h-18 rounded-full overflow-hidden bg-gray-200 mx-auto sm:mx-4 flex items-center justify-center">
+            <img
+              src={profileImage || user?.image || "https://cdn-icons-png.flaticon.com/512/145/145974.png"}
+              alt={`${profile.first_name} ${profile.last_name}`}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = "https://cdn-icons-png.flaticon.com/512/145/145974.png";
+              }}
+            />
+          </div>
 
           {/* text info */}
           <div className="mt-2 sm:mt-0 text-center sm:text-left">

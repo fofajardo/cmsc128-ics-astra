@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react"; // Add useMemo
 import { useRouter } from "next/navigation";
 import { TableHeader, Table, PageTool } from "@/components/TableBuilder";
 import { users, alumniProfiles } from "@/components/DummyData";
@@ -18,7 +18,8 @@ export default function AlumniSearch() {
   const toggleFilter = () => { setShowFilter((prev) => !prev); };
   const [loading, setLoading] = useState(true);
 
-  const [alumList, updateAlumList] = useState([]);
+  const [rawAlumList, setRawAlumList] = useState([]); // Store raw data from API
+  const [alumList, updateAlumList] = useState([]); // Filtered/sorted data for display
   const [appliedFilters, updateFilters] = useState({
     yearFrom: "",
     yearTo: "",
@@ -37,7 +38,6 @@ export default function AlumniSearch() {
   });
   const [searchQuery, setSearchQuery] = useState("");
 
-
   // FOR BACKEND PEEPS
   useEffect(() => {
     console.log("State updated:", {
@@ -49,12 +49,14 @@ export default function AlumniSearch() {
     const fetchAlumniProfiles = async () => {
       setLoading(true);
       try {
+        // For better search, fetch all or more profiles when searching
+        // This allows for more sophisticated client-side filtering
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles`,
           {
             params: {
-              page: pagination.currPage,
-              limit: pagination.numToShow,
+              page: searchQuery ? 1 : pagination.currPage,
+              limit: searchQuery ? 50 : pagination.numToShow, // Fetch more when searching
             },
           }
         );
@@ -65,6 +67,8 @@ export default function AlumniSearch() {
               const alumData = {
                 id: alum.alum_id,
                 alumname: capitalizeName(`${alum.first_name} ${alum.last_name}`),
+                firstName: alum.first_name.toLowerCase(), // Store for searching
+                lastName: alum.last_name.toLowerCase(),   // Store for searching
                 email: alum.email,
                 graduationYear: "N/A",
                 location: alum.location,
@@ -127,18 +131,124 @@ export default function AlumniSearch() {
             })
           );
 
-          updateAlumList(updatedAlumList);
+          // Store raw data
+          setRawAlumList(updatedAlumList);
           setLoading(false);
         } else {
           console.error("Unexpected response:", response.data);
+          setLoading(false);
         }
       } catch (error) {
         console.error("Failed to fetch alumni:", error);
+        setLoading(false);
       }
     };
 
     fetchAlumniProfiles();
-  }, [appliedFilters, pagination, searchQuery]);
+  }, [pagination.currPage, pagination.numToShow]); // Don't refetch when search or filters change
+
+  // Apply search and filtering using the raw alumni list
+  const filteredAlumList = useMemo(() => {
+    if (!rawAlumList.length) return [];
+
+    return rawAlumList.filter(alum => {
+      // Search functionality - Order-specific search
+      let searchMatch = true;
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        const fullName = `${alum.firstName} ${alum.lastName}`;
+
+        // Substring matches only (order-specific)
+        const firstNameMatch = alum.firstName.includes(query);
+        const lastNameMatch = alum.lastName.includes(query);
+        const fullNameMatch = fullName.includes(query);
+
+        searchMatch = firstNameMatch || lastNameMatch || fullNameMatch;
+      }
+
+      // Year range filtering
+      const alumYear = alum.graduationYear !== "N/A" ? parseInt(alum.graduationYear, 10) : 0;
+      const yearFromMatch = !appliedFilters.yearFrom ||
+                           (alumYear && alumYear >= parseInt(appliedFilters.yearFrom, 10));
+      const yearToMatch = !appliedFilters.yearTo ||
+                         (alumYear && alumYear <= parseInt(appliedFilters.yearTo, 10));
+
+      // Location filtering
+      const locationMatch = !appliedFilters.location ||
+                           (alum.location && alum.location.toLowerCase().includes(appliedFilters.location.toLowerCase()));
+
+      // Field filtering
+      const fieldMatch = !appliedFilters.field ||
+                        (alum.fieldOfWork && alum.fieldOfWork.toLowerCase().includes(appliedFilters.field.toLowerCase()));
+
+      // Skills filtering
+      const skillsMatch = appliedFilters.skills.length === 0 ||
+                         appliedFilters.skills.some(filterSkill =>
+                           alum.skills.some(alumSkill =>
+                             alumSkill.toLowerCase().includes(filterSkill.toLowerCase())
+                           )
+                         );
+
+      return searchMatch && yearFromMatch && yearToMatch && locationMatch && fieldMatch && skillsMatch;
+    });
+  }, [rawAlumList, searchQuery, appliedFilters]);
+
+  // Apply sorting
+  const sortedAlumList = useMemo(() => {
+    if (!filteredAlumList.length) return [];
+
+    let sorted = [...filteredAlumList];
+
+    if (appliedFilters.sortCategory === "name") {
+      sorted.sort((a, b) => {
+        return appliedFilters.sortOrder === "asc"
+          ? a.alumname.localeCompare(b.alumname)
+          : b.alumname.localeCompare(a.alumname);
+      });
+    }
+    else if (appliedFilters.sortCategory === "year") {
+      sorted.sort((a, b) => {
+        const yearA = a.graduationYear !== "N/A" ? parseInt(a.graduationYear, 10) : 0;
+        const yearB = b.graduationYear !== "N/A" ? parseInt(b.graduationYear, 10) : 0;
+        return appliedFilters.sortOrder === "asc" ? yearA - yearB : yearB - yearA;
+      });
+    }
+    else if (appliedFilters.sortCategory === "location") {
+      sorted.sort((a, b) => {
+        return appliedFilters.sortOrder === "asc"
+          ? (a.location || "").localeCompare(b.location || "")
+          : (b.location || "").localeCompare(a.location || "");
+      });
+    }
+
+    return sorted;
+  }, [filteredAlumList, appliedFilters.sortCategory, appliedFilters.sortOrder]);
+
+  // Apply pagination
+  const paginatedAlumList = useMemo(() => {
+    if (!sortedAlumList.length) return [];
+
+    const startIndex = (pagination.currPage - 1) * pagination.numToShow;
+    const endIndex = startIndex + pagination.numToShow;
+    return sortedAlumList.slice(startIndex, endIndex);
+  }, [sortedAlumList, pagination.currPage, pagination.numToShow]);
+
+  // Update alumList and pagination when filtered/sorted results change
+  useEffect(() => {
+    // Update alumni list for display
+    updateAlumList(paginatedAlumList);
+
+    // Update pagination info
+    setPagination(prev => ({
+      ...prev,
+      total: sortedAlumList.length,
+      lastPage: Math.max(1, Math.ceil(sortedAlumList.length / prev.numToShow)),
+      display: [
+        (prev.currPage - 1) * prev.numToShow + 1,
+        Math.min(prev.currPage * prev.numToShow, sortedAlumList.length)
+      ]
+    }));
+  }, [paginatedAlumList, sortedAlumList.length]);
 
   return (
     <div>
@@ -188,6 +298,8 @@ export default function AlumniSearch() {
     </div>
   );
 }
+
+// Rest of the code remains unchanged
 
 const cols = [
   { label: "Image:label-hidden", justify: "center", visible: "all" },
