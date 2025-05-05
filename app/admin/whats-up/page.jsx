@@ -6,6 +6,7 @@ import { useTab } from "@/components/TabContext";
 import ToastNotification from "@/components/ToastNotification";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import axios from "axios";
 
 export default function CommunicationPage() {
   const router = useRouter();
@@ -14,73 +15,104 @@ export default function CommunicationPage() {
   const [showFilter, setShowFilter] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("All");
-  const [tempSelectedType, setTempSelectedType] = useState(selectedType);
+  const [tempSelectedType, setTempSelectedType] = useState("All");
+  const [announcements, setAnnouncements] = useState([]);
 
-  // Single info state definition
   const [info, setInfo] = useState({
     title: currTab === "Newsletters" ? "Newsletters" : "Announcements",
     search: currTab === "Newsletters" ? "Search newsletters" : "Search announcements",
   });
 
-  // Simplified pagination state
   const [pagination, setPagination] = useState({
     display: [1, 10],
     currPage: 1,
-    lastPage: Math.ceil(announcements.length / 10),
-    numToShow: 10,
-    total: announcements.length
+    lastPage: 1,
+    numToShow: 12,
+    total: 0
   });
 
-  // Filter announcements
+  useEffect(() => {
+    const fetchContents = async () => {
+      try {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents`);
+        if (response.data.status === "OK") {
+          const list = response.data.list || response.data.data?.list || [];
+          setAnnouncements(list);
+        } else {
+          console.error("Unexpected response format:", response.data);
+          setAnnouncements([]);
+        }
+      } catch (error) {
+        console.error("Failed to fetch contents:", error);
+        setAnnouncements([]);
+      }
+    };
+
+    fetchContents();
+  }, []);
+
   const filteredAnnouncements = announcements.filter((announcement) => {
     const matchesType = selectedType === "All" || announcement.type === selectedType;
     const matchesSearch = announcement.title.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesType && matchesSearch;
   });
 
-  // Calculate pagination with fixed page size
-  const startIndex = (pagination.currPage - 1) * pagination.numToShow;
-  const endIndex = Math.min(startIndex + pagination.numToShow, filteredAnnouncements.length);
-  const currentItems = filteredAnnouncements.slice(startIndex, endIndex);
-
-  // Update pagination when filters change
   useEffect(() => {
+    const total = filteredAnnouncements.length;
+    const lastPage = Math.ceil(total / pagination.numToShow) || 1; // Ensure minimum 1 page
+
+    // Calculate the current range
+    const startIndex = (pagination.currPage - 1) * pagination.numToShow;
+    const endIndex = Math.min(startIndex + pagination.numToShow, total);
+
+    // Make sure current page is valid (might not be if filters reduced the items count)
+    const validCurrPage = Math.min(pagination.currPage, lastPage);
+
+    // Only if the page changed due to filtering, recalculate display values
+    const actualStartIndex = (validCurrPage - 1) * pagination.numToShow;
+    const actualEndIndex = Math.min(actualStartIndex + pagination.numToShow, total);
+
     setPagination(prev => ({
       ...prev,
-      total: filteredAnnouncements.length,
-      lastPage: Math.ceil(filteredAnnouncements.length / prev.numToShow),
-      display: [startIndex + 1, endIndex]
+      currPage: validCurrPage,
+      total: total,
+      lastPage: lastPage,
+      display: [
+        total > 0 ? actualStartIndex + 1 : 0, // If no items, start from 0
+        actualEndIndex
+      ]
     }));
-  }, [filteredAnnouncements, startIndex, endIndex]);
+  }, [filteredAnnouncements.length, pagination.currPage, pagination.numToShow]);
+
+
+  const currentItems = filteredAnnouncements.slice(
+    (pagination.currPage - 1) * pagination.numToShow,
+    pagination.currPage * pagination.numToShow
+  );
 
   const handleDeleteNewsletter = (index, e) => {
-    e.preventDefault(); // Prevent PDF from opening
-    e.stopPropagation(); // Prevent event bubbling
+    e.preventDefault();
+    e.stopPropagation();
     setToast({ type: "success", message: "Newsletter deleted successfully" });
   };
 
   const handleAddNew = () => {
-    const path = currTab === "Newsletters"
-      ? "/admin/whats-up/create/newsletter"
-      : "/admin/whats-up/create/announcement";
+    const path =
+      currTab === "Newsletters"
+        ? "/admin/whats-up/create/newsletter"
+        : "/admin/whats-up/create/announcement";
     router.push(path);
   };
 
   return (
     <div>
-      {/* Filter Modal */}
       {showFilter && (
-        <div
-          onClick={() => setShowFilter(false)}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-        >
-          <div onClick={e => e.stopPropagation()} className="bg-astrawhite p-8 rounded-xl w-80">
+        <div onClick={() => setShowFilter(false)} className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div onClick={(e) => e.stopPropagation()} className="bg-astrawhite p-8 rounded-xl w-80">
             <h3 className="font-lb text-xl mb-4">Filter Announcements</h3>
             <div className="flex flex-col gap-4">
               <div>
-                <label className="font-s text-astradarkgray mb-2 block">
-                  Announcement Type
-                </label>
+                <label className="font-s text-astradarkgray mb-2 block">Announcement Type</label>
                 <select
                   className="w-full p-2 border border-astragray rounded-lg"
                   value={tempSelectedType}
@@ -92,6 +124,13 @@ export default function CommunicationPage() {
                   <option value="Update">Updates</option>
                 </select>
               </div>
+              <button
+                onClick={handleAddNew}
+                className="flex items-center justify-center gap-2 px-4 py-2 text-white bg-astraprimary rounded-lg"
+              >
+                <Plus className="w-4 h-4" />
+                Add New
+              </button>
               <div className="flex justify-end gap-3 mt-4">
                 <button className="gray-button" onClick={() => setShowFilter(false)}>
                   Cancel
@@ -128,24 +167,15 @@ export default function CommunicationPage() {
             toggleFilter={() => setShowFilter(true)}
             searchQuery={searchTerm}
             setSearchQuery={setSearchTerm}
-            addButton={{
-              label: "Add New",
-              onClick: handleAddNew
-            }}
           />
 
-          {/* Content sections */}
           {currTab === "Announcements" && (
             <div className="bg-astrawhite p-6 rounded-xl shadow-sm">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
                 {currentItems.map((announcement) => (
                   <div key={announcement.id} className="group relative">
-                    <Link
-                      href={`/admin/whats-up/announcements/${announcement.id}`}
-                    >
-                      <div
-                        className="relative aspect-[4/3] rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
-                      >
+                    <Link href={`/admin/whats-up/announcements/${announcement.id}`}>
+                      <div className="relative aspect-[4/3] rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer">
                         <img
                           src={announcement.image}
                           className="w-full h-full object-cover"
@@ -158,18 +188,25 @@ export default function CommunicationPage() {
                           <div className="flex items-center gap-2 mt-1">
                             <i className="fas fa-calendar-alt text-astrawhite text-sm"></i>
                             <span className="text-sm text-astrawhite/90">
-                              {announcement.datePublished}
+                              {announcement.updated_at
+                                ? new Date(announcement.updated_at).toLocaleDateString("en-US", {
+                                  month: "short",
+                                  day: "2-digit",
+                                  year: "numeric",
+                                })
+                                : "No date"}
                             </span>
                           </div>
                           <p className="text-sm text-astrawhite/80 mt-2 line-clamp-2">
-                            {announcement.description}
+                            {announcement.details}
                           </p>
                         </div>
                       </div>
                     </Link>
-                    {/* Edit Button */}
                     <button
-                      onClick={() => router.push(`/admin/whats-up/announcements/${announcement.id}`)}
+                      onClick={() =>
+                        router.push(`/admin/whats-up/announcements/${announcement.id}`)
+                      }
                       className="absolute top-2 right-2 p-2 bg-astraprimary text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-astradark"
                       title="Edit announcement"
                     >
@@ -231,206 +268,3 @@ export default function CommunicationPage() {
     </div>
   );
 }
-
-const announcements = [
-  {
-    id: 1,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Upcoming Hackathon 2025",
-    datePublished: "2025-04-25",
-    description: "Join us for the annual coding competition! Register now and showcase your skills in software development.",
-    type: "Event"
-  },
-  {
-    id: 2,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Alumni Networking Event",
-    datePublished: "2025-05-10",
-    description: "Reconnect with fellow alumni and industry leaders at our exclusive networking event. Reserve your spot today!",
-    type: "Event"
-  },
-  {
-    id: 3,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "AI & Machine Learning Course",
-    datePublished: "2025-06-01",
-    description: "Our university is launching a new course on AI & Machine Learning! Enroll to stay ahead in the tech industry.",
-    type: "Update"
-  },
-  {
-    id: 4,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Graduation Ceremony 2025",
-    datePublished: "2025-07-15",
-    description: "Celebrate the achievements of our graduates! The commencement ceremony will be held at the university auditorium.",
-    type: "Event"
-  },
-  {
-    id: 5,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Scholarship Applications Open",
-    datePublished: "2025-08-05",
-    description: "Apply now for merit-based scholarships and financial aid opportunities available to eligible students.",
-    type: "Update"
-  },
-  {
-    id: 6,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Scholarship Applications Open",
-    datePublished: "2025-08-05",
-    description: "Apply now for merit-based scholarships and financial aid opportunities available to eligible students.",
-    type: "Update"
-  },
-  {
-    id: 7,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Scholarship Applications Open",
-    datePublished: "2025-08-05",
-    description: "Apply now for merit-based scholarships and financial aid opportunities available to eligible students.",
-    type: "Update"
-  },
-  {
-    id: 8,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Scholarship Applications Open",
-    datePublished: "2025-08-05",
-    description: "Apply now for merit-based scholarships and financial aid opportunities available to eligible students.",
-    type: "Update"
-  },
-  {
-    id: 9,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Scholarship Applications Open",
-    datePublished: "2025-08-05",
-    description: "Apply now for merit-based scholarships and financial aid opportunities available to eligible students.",
-    type: "Update"
-  },
-  {
-    id: 10,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Scholarship Applications Open",
-    datePublished: "2025-08-05",
-    description: "Apply now for merit-based scholarships and financial aid opportunities available to eligible students.",
-    type: "Update"
-  },
-  {
-    id: 11,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Research Symposium 2025",
-    datePublished: "2025-09-01",
-    description: "Present your research at our annual symposium. Open for submissions in various computer science domains.",
-    type: "Event"
-  },
-  {
-    id: 12,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "New Computer Lab Opening",
-    datePublished: "2025-09-15",
-    description: "State-of-the-art facilities featuring the latest hardware and software for students.",
-    type: "News"
-  },
-  {
-    id: 13,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Industry Partnership Program",
-    datePublished: "2025-09-20",
-    description: "New collaborations with leading tech companies offering internship opportunities.",
-    type: "Update"
-  },
-  {
-    id: 14,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Alumni Mentorship Program",
-    datePublished: "2025-10-01",
-    description: "Connect with experienced alumni mentors in your field of interest.",
-    type: "Event"
-  },
-  {
-    id: 15,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Programming Competition",
-    datePublished: "2025-10-15",
-    description: "Test your coding skills against fellow students. Attractive prizes to be won!",
-    type: "Event"
-  },
-  {
-    id: 16,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Software Engineering Workshop",
-    datePublished: "2025-10-30",
-    description: "Learn industry-standard practices and tools from experienced professionals.",
-    type: "Event"
-  },
-  {
-    id: 17,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Department Recognition Day",
-    datePublished: "2025-11-05",
-    description: "Celebrating outstanding achievements of students and faculty members.",
-    type: "News"
-  },
-  {
-    id: 18,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Curriculum Updates 2026",
-    datePublished: "2025-11-15",
-    description: "Important changes to course offerings and program requirements.",
-    type: "Update"
-  },
-  {
-    id: 19,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Tech Start-up Fair",
-    datePublished: "2025-11-30",
-    description: "Meet innovative start-ups and explore career opportunities.",
-    type: "Event"
-  },
-  {
-    id: 20,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Holiday Coding Camp",
-    datePublished: "2025-12-10",
-    description: "Join our winter break programming bootcamp for students.",
-    type: "Event"
-  },
-  {
-    id: 21,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Faculty Research Grants",
-    datePublished: "2025-12-15",
-    description: "New funding opportunities for research projects in computer science.",
-    type: "News"
-  },
-  {
-    id: 22,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Library System Upgrade",
-    datePublished: "2025-12-20",
-    description: "Enhanced digital resources and improved search functionality.",
-    type: "Update"
-  },
-  {
-    id: 23,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "New Year Tech Conference",
-    datePublished: "2026-01-05",
-    description: "Annual technology conference featuring keynote speakers from leading tech companies.",
-    type: "Event"
-  },
-  {
-    id: 24,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Student Excellence Awards",
-    datePublished: "2026-01-15",
-    description: "Recognizing outstanding academic and extracurricular achievements.",
-    type: "News"
-  },
-  {
-    id: 25,
-    image: "/whats-up/assets/Announcement.jpg",
-    title: "Spring Semester Updates",
-    datePublished: "2026-01-20",
-    description: "Important information about upcoming semester changes and events.",
-    type: "Update"
-  }
-];
