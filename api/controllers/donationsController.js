@@ -28,15 +28,24 @@ const getDonations = async (req, res) => {
     const userIds = data.map(donation => donation.user_id);
     const { data: alumniData, error: alumniError } = await alumniService.fetchAlumniProfilesByFilter(req.supabase, { alum_id: userIds });
 
+    const { data: userData, error: userError } = await usersService.fetchUsersByFilter(req.supabase, { id: userIds });
+
     const donationsWithDonors = data.map(donation => {
       const alum = alumniData.find(a => a.alum_id === donation.user_id);
+      const user = userData.find(u => u.id === donation.user_id);
 
-      let full_name = "Deleted user";
-      if (alum) {
+      let full_name;
+      if (user.role === "moderator") {    // TODO: Clarify if moderator/admin users will have profiles (and names)
+        full_name = "Moderator";
+      } else if (user.role === "admin") {
+        full_name = "Admin";
+      } else if (!alum) {
+        full_name = "Deleted user";
+      } else {
         full_name = [alum.first_name, alum.middle_name, alum.last_name]
           .filter(Boolean) // remove undefined/null/empty values
           .join(" ");
-      }
+      };
 
       return {
         ...donation,
