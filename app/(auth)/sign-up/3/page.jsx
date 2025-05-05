@@ -180,7 +180,7 @@ export default function EducationalInfoPage() {
             </p>
 
             <div className="flex space-x-4 mt-6">
-              <Link href="/signup/2" className="flex-1">
+              <Link href="/sign-up/2" className="flex-1">
                 <button
                   type="button"
                   className="text-sm md:text-base w-full border border-[var(--color-astraprimary)] text-[var(--color-astraprimary)] bg-[var(--color-astrawhite)] py-2 px-4 rounded-md hover:bg-[var(--color-astradirtywhite)] transition-colors"
