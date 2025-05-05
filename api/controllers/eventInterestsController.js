@@ -84,9 +84,9 @@ const getEventInterestByContentId = async (req, res) => {
   try {
     const { contentId } = req.params;
     //const currentUserId = req.user?.data?.id;
-  ///  const currentUserId = userId;
+    ///  const currentUserId = userId;
 
-//    console.log("current userId: ",currentUserId);
+    //    console.log("current userId: ",currentUserId);
 
     if (req.you.cannotAs(Actions.MANAGE, Subjects.EVENT_INTEREST)) {
       return res.status(httpStatus.FORBIDDEN).json({

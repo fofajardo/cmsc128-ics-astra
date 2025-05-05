@@ -34,6 +34,7 @@ export default function EventsPage() {
   const [statusFilter, setStatusFilter] = useState(null);
   const [startDateFilter, setStartDateFilter] = useState(null);
   const [endDateFilter, setEndDateFilter] = useState(null);
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
   const fetchUserName = async (id) => {
     try{
       const response = await axios
@@ -137,18 +138,54 @@ export default function EventsPage() {
         setEventList(mergedEvents);
         console.log("mergedEvents:",mergedEvents  );
         setTotalPages(Math.ceil(mergedEvents.length / itemsPerPage));
+
+        fetchUpcomingEvent(contentMap);
       }
     } catch (error) {
-      console.error("Failed fetching events or contents:", error);
+      console.log("Failed fetching events or contents:", error);
       setEventList([]);
     }
   };
 
+  const fetchUpcomingEvent = async (contentMap) => {
+    try {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/upcoming-events`);
+
+      if (response.data.status === "OK"){
+        const upcomingEventsPromises = response.data.list.map(async (event) => {
+          console.log(event);
+          const matchedContent = contentMap.get(event.event_id) || {};
+          const photoUrl = await fetchEventPhoto(event.event_id);
+          console.log("in fetch data, fetching user:", user);
+          return {
+            id: event.event_id,
+            event_id: event.event_id,
+            imageSrc: photoUrl || venue2,  // Use fetched photo or default
+            title: matchedContent.title || "Untitled",
+            description: matchedContent.details || "No description",
+            date: new Date(event.event_date).toDateString(),
+            isOnline: event.online,
+            location: event.venue,
+            attendees: await fetchAttendees(event.event_id),
+            status: new Date(event.event_date) < new Date() ? "Closed" : "Open",
+            avatars: [],
+          };
+        });
+
+        const mergedUpcommingEvents = await Promise.all(upcomingEventsPromises);
+        setUpcomingEvents(mergedUpcommingEvents);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
     if (user) {
       fetchData();
+
     }
   }, [user]);
+
   useEffect(() => {
     console.log("Filtering triggered:", {
       eventList,
@@ -398,7 +435,7 @@ export default function EventsPage() {
 
       {/* Carousel */}
       <div className="max-w-[1440px] mx-auto px-12 mt-24 pb-20 bg-astradirtywhite">
-        <EventCarousel events={eventList} />
+        <EventCarousel events={upcomingEvents} />
       </div>
 
       {/* Explore UPLB Section */}

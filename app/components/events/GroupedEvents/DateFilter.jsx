@@ -39,10 +39,10 @@ export default function DateFilter({ placeholder, value, onChange }) {
               }}
             />
           )}
-        <Icon
-          icon="material-symbols:calendar-month"
-          className={`text-xl ${value ? "text-astrawhite" : "text-astraprimary"} cursor-pointer`}
-        />
+          <Icon
+            icon="material-symbols:calendar-month"
+            className={`text-xl ${value ? "text-astrawhite" : "text-astraprimary"} cursor-pointer`}
+          />
         </div>
       </button>
 

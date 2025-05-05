@@ -28,7 +28,7 @@ export default function EventDetailPage() {
   //const user_id = "38f98c8d-af8d-4cef-ab9b-8a5d80e9c8b1"; //Only using this since userid is needed
   console.log("user: ", user);
   const isAlumn = user?.state?.isAlumnus;
-  const user_id = user?.state?.user?.id
+  const user_id = user?.state?.user?.id;
   console.log("isAlumnus: ",isAlumn);
   console.log("user id: ", user?.state?.user?.id );
 

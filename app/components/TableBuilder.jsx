@@ -80,7 +80,7 @@ export function EventToolbar({ toggleFilter, pagination, setPagination }) {
 
   return (
     <div className="flex flex-row gap-2 justify-end h-12">
-            <select
+      <select
         value={pagination.numToShow}
         onChange={handleNumToShowChange}
         className="px-4 py-2 rounded-xl bg-astrawhite text-astradarkgray border border-astradarkgray outline-none"

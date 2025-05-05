@@ -35,7 +35,13 @@ const fetchActiveEvents = async (supabase)=>{
     .from("active_events_view")
     .select("active_events_count")
     .single();
-}
+};
+
+const fetchUpcomingEvents = async (supabase)=>{
+  return await supabase
+    .from("upcoming_events")
+    .select("*");
+};
 const fetchEventById = async (supabase, eventId) => {
   return await supabase
     .from("events")
@@ -91,6 +97,7 @@ const eventsService = {
   fetchEvents,
   fetchEventById,
   fetchActiveEvents,
+  fetchUpcomingEvents,
   checkExistingEvent,
   checkExistingEventById,
   insertEvent,
