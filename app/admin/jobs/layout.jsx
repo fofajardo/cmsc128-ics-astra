@@ -1,12 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import AdminStatCard from "@/components/AdminStatCard";
+import AdminTabs from "@/components/AdminTabs";
 import { BriefcaseBusiness } from "lucide-react";
-import { TabContext } from "@/components/TabContext";
 import { Skeleton } from "@/components/ui/skeleton";
+import { TabContext } from "@/components/TabContext";
 
 export default function AdminJobsLayout({ children }) {
+  const router = useRouter();
+  const pathname = usePathname();
+
   const [info, setInfo] = useState({
     title: "Job Openings",
     search: "Search for a job post",
@@ -16,7 +21,41 @@ export default function AdminJobsLayout({ children }) {
     active: <Skeleton className="h-7 w-12 my-2" />,
     closed: <Skeleton className="h-7 w-12 my-2" />,
     total: <Skeleton className="h-7 w-12 my-2" />,
+    companies: <Skeleton className="h-7 w-12 my-2" />,
   });
+
+  const tabs = {
+    All: 3,
+    Reported: 0,
+  };
+
+  const [currTab, setCurrTab] = useState("All");
+
+  const handleTabChange = (newTab) => {
+    setCurrTab(newTab);
+    setInfo((prev) => ({
+      ...prev,
+      title: `${newTab} Jobs`,
+    }));
+    // Reset filters/pagination and refetch if needed
+  };
+
+  const handleGoToTab = (newTab) => {
+    setCurrTab(newTab);
+    setInfo((prev) => ({
+      ...prev,
+      title: `${newTab} Jobs`,
+    }));
+    router.push("/admin/jobs");
+  };
+
+  const dynamicTabClick = (tabName) => {
+    if (pathname === "/admin/alumni/manage-access") {
+      handleTabChange(tabName);
+    } else {
+      handleGoToTab(tabName);
+    }
+  };
 
   return (
     <>
@@ -47,7 +86,7 @@ export default function AdminJobsLayout({ children }) {
               <AdminStatCard
                 delay={0.1}
                 title="Closed Job Posts"
-                value={jobCounts.expired}
+                value={jobCounts.closed}
                 icon={<BriefcaseBusiness className="size-13 text-astrawhite" strokeWidth={2} />}
                 route={false}
                 onClick={() => {}}
@@ -60,13 +99,22 @@ export default function AdminJobsLayout({ children }) {
                 route={false}
                 onClick={() => {}}
               />
+              <AdminStatCard
+                delay={0.3}
+                title="Total Companies"
+                value={jobCounts.companies}
+                icon={<BriefcaseBusiness className="size-13 text-astrawhite" strokeWidth={2} />}
+                route={false}
+                onClick={() => {}}
+              />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Provide context to children */}
+      {/* Tabs + children context */}
       <TabContext.Provider value={{ info, setInfo, setJobCounts }}>
+        <AdminTabs tabs={tabs} currTab={currTab} handleTabChange={dynamicTabClick} />
         {children}
       </TabContext.Provider>
     </>
