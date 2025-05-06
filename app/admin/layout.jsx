@@ -1,10 +1,13 @@
 import NavbarAdmin from "@/components/NavbarAdmin";
 import Footer from "@/components/Footer";
 import "@/styles/globals.css";
+import {RouteGuard} from "@/components/RouteGuard.jsx";
+import {RouteGuardMode} from "../../common/scopes.js";
 
 export default function RootLayout({ children }) {
   return (
     <div className="relative min-h-screen max-w-screen overflow-x-hidden">
+      <RouteGuard mode={RouteGuardMode.ADMIN} />
       <div className="fixed top-0 left-0 w-full z-50">
         <NavbarAdmin />
       </div>
