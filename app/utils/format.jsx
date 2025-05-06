@@ -1,4 +1,8 @@
 export function capitalizeName(name) {
+  if (!name) {
+    return "";
+  }
+
   return name
     .toLowerCase()
     .split(" ")
