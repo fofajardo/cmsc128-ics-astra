@@ -430,7 +430,7 @@ export default function ProjectsAdmin() {
 
           {/* Projects Grid */}
           {loading ? (
-            <div className="bg-astrawhite shadow-md p-6 rounded-b-xl flex items-center justify-center">
+            <div className="bg-astrawhite p-6 rounded-b-xl flex items-center justify-center">
               <LoadingSpinner className="h-10 w-10" />
             </div>
           ) : (
