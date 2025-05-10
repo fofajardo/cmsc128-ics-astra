@@ -205,7 +205,7 @@ const getProjectRequests = async (req, res) => {
 
     // get name and role from alumni profiles table
     const userIds = requestData.map(request => request.user_id);
-    const { data: alumData, error: alumError } = await alumniService.fetchAlumniProfilesByFilter(req.supabase, { alum_id: userIds });
+    const { data: alumData, error: alumError } = await alumniService.fetchAlumniProfilesByFilter(req.supabase, { alum_id: userIds, page: -1 });
 
     if (alumError) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -215,7 +215,7 @@ const getProjectRequests = async (req, res) => {
     };
 
     // get emails from Users table
-    const { data: userData, error: userError } = await usersService.fetchUsersByFilter(req.supabase, { id: userIds });
+    const { data: userData, error: userError } = await usersService.fetchUsersByFilter(req.supabase, { id: userIds, page: -1 });
 
     if (userError) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
