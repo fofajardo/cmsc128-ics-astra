@@ -190,7 +190,20 @@ export default function HeaderUser() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const activeLink = navLinks.find((link) => link.href === pathname)?.href || "/";
+  const getActiveLink = () => {
+    const exactMatch = navLinks.find((link) => link.href === pathname)?.href;
+    if (exactMatch) return exactMatch;
+
+    // handles nested routes like /events/[id]
+    const nestedMatch = navLinks
+      .filter(link => link.href !== "/")
+      .find(link => pathname.startsWith(`${link.href}/`))?.href;
+
+    if (nestedMatch) return nestedMatch;
+    return "/";
+  };
+
+  const activeLink = getActiveLink();
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
