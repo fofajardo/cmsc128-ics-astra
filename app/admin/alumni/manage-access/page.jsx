@@ -9,6 +9,7 @@ import ConfirmModal from "@/components/ConfirmModal";
 import ToastNotification from "@/components/ToastNotification";
 import axios from "axios";
 import { capitalizeName } from "@/utils/format";
+import { CenteredSkeleton, NameEmailSkeleton, Skeleton } from "@/components/ui/skeleton";
 
 
 export default function AlumniAccess() {
@@ -18,8 +19,9 @@ export default function AlumniAccess() {
   const [toast, setToast] = useState(null);
   const toggleFilter = () => { setShowFilter((prev) => !prev); };
   // console.log("Current tab from layout:", info);
+  const [loading, setLoading] = useState(true);
 
-  const [alumList, setAlumList] = useState(mockdata);
+  const [alumList, setAlumList] = useState([]);
   const [appliedFilters, updateFilters] = useState({
     yearFrom: "",
     yearTo: "",
@@ -52,6 +54,7 @@ export default function AlumniAccess() {
     });
 
     const fetchAlumniProfiles = async () => {
+      setLoading(true);
       try {
         // For better search, fetch all or more profiles when searching
         // This allows for more sophisticated client-side filtering
@@ -71,9 +74,8 @@ export default function AlumniAccess() {
               const alumData = {
                 id: alum.alum_id,
                 alumname: capitalizeName(`${alum.first_name} ${alum.last_name}`),
-                firstName: alum.first_name.toLowerCase(), // Store for searching
-                lastName: alum.last_name.toLowerCase(),   // Store for searching
-                email: alum.email,
+                firstName: alum.first_name.toLowerCase(),
+                lastName: alum.last_name.toLowerCase(),
                 student_num: alum.student_num,
                 graduationYear: "N/A",
                 location: alum.location,
@@ -82,7 +84,30 @@ export default function AlumniAccess() {
                 skills: alum.skills ? alum.skills.split(",") : [],
                 image:
                   "https://cdn-icons-png.flaticon.com/512/145/145974.png",
+                degreeProgram: "N/A",
               };
+
+              // Fetch email from /v1/users/{user_id}
+              try {
+                const userId = alum.user_id || alum.alum_id;
+                if (userId) {
+                  const userResponse = await axios.get(
+                    `${process.env.NEXT_PUBLIC_API_URL}/v1/users/${userId}`
+                  );
+                  if (
+                    userResponse.data.status === "OK" &&
+                    userResponse.data.user &&
+                    userResponse.data.user.email
+                  ) {
+                    alumData.email = userResponse.data.user.email;
+                  }
+                }
+              } catch (userError) {
+                console.log(
+                  `Failed to fetch user/email for alum_id ${alum.alum_id}:`,
+                  userError
+                );
+              }
 
               try {
                 const photoResponse = await axios.get(
@@ -109,11 +134,12 @@ export default function AlumniAccess() {
                   );
                   if (
                     degreeResponse.data.status === "OK" &&
-                    degreeResponse.data.degreePrograms?.length > 0
+                    Array.isArray(degreeResponse.data.degreePrograms) &&
+                    degreeResponse.data.degreePrograms.length > 0
                   ) {
-                    const sortedPrograms = [
-                      ...degreeResponse.data.degreePrograms,
-                    ].sort(
+                    const degreePrograms = degreeResponse.data.degreePrograms;
+                    // Sort and set graduation year
+                    const sortedPrograms = [...degreePrograms].sort(
                       (a, b) =>
                         new Date(b.year_graduated) -
                         new Date(a.year_graduated)
@@ -123,6 +149,7 @@ export default function AlumniAccess() {
                     )
                       .getFullYear()
                       .toString();
+                    alumData.degreeProgram = sortedPrograms[0].name;
                   }
                 }
               } catch (degreeError) {
@@ -136,13 +163,15 @@ export default function AlumniAccess() {
             })
           );
 
-          // Store raw data
           setAlumList(updatedAlumList);
         } else {
           console.error("Unexpected response:", response.data);
         }
       } catch (error) {
         console.error("Failed to fetch alumni:", error);
+      }
+      finally {
+        setLoading(false);
       }
     };
 
@@ -183,7 +212,7 @@ export default function AlumniAccess() {
             toggleFilter={toggleFilter}
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery} />
-          <Table cols={cols} data={createRows(alumList, selectedIds, setSelectedIds, currTab)} />
+          <Table cols={cols} data={loading ? skeletonRows : createRows(alumList, selectedIds, setSelectedIds, currTab)} />
           <PageTool pagination={pagination} setPagination={setPagination} />
         </div>
         <div className="flex flex-row justify-between md:pl-4 lg:pl-8">
@@ -350,7 +379,15 @@ function BottomButtons({ selectedCount, currTab, setToast }) {
 }
 
 
-
+const skeletonRows = Array(10).fill({
+  "Checkbox:label-hidden": <CenteredSkeleton className="w-6 h-6 ml-1" />,
+  "Image:label-hidden": <CenteredSkeleton className="w-12 h-12 my-3" />,
+  Name: <NameEmailSkeleton />,
+  "Graduation Year": <CenteredSkeleton className="w-16 h-4" />,
+  "Student ID": <CenteredSkeleton className="w-24 h-4" />,
+  "Course": <CenteredSkeleton className="w-32 h-4" />,
+  "Quick Actions": <CenteredSkeleton className="h-4 w-44" />,
+});
 
 const cols = [
   { label: "Checkbox:label-hidden", justify: "center", visible: "all" },
@@ -358,7 +395,7 @@ const cols = [
   { label: "Name", justify: "start", visible: "all" },
   { label: "Graduation Year", justify: "center", visible: "lg" },
   { label: "Student ID", justify: "center", visible: "md" },
-  // { label: "Course", justify: "center", visible: "md" },
+  { label: "Course", justify: "center", visible: "md" },
   { label: "Quick Actions", justify: "center", visible: "all" },
 ];
 
@@ -369,7 +406,7 @@ function createRows(alumList, selectedIds, setSelectedIds, currTab) {
     Name: renderName(alum.alumname, alum.email),
     "Graduation Year": renderText(alum.graduationYear),
     "Student ID": renderText(alum.student_num),
-    // "Course": renderText(alum.course),
+    "Course": renderText(alum.degreeProgram),
     "Quick Actions": renderActions(alum.id, alum.alumname, currTab),
   }));
 }
