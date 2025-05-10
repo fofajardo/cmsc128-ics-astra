@@ -9,6 +9,7 @@ import ConfirmModal from "@/components/ConfirmModal";
 import ToastNotification from "@/components/ToastNotification";
 import axios from "axios";
 import { capitalizeName } from "@/utils/format";
+import { CenteredSkeleton, NameEmailSkeleton, Skeleton } from "@/components/ui/skeleton";
 
 
 export default function AlumniAccess() {
@@ -18,8 +19,9 @@ export default function AlumniAccess() {
   const [toast, setToast] = useState(null);
   const toggleFilter = () => { setShowFilter((prev) => !prev); };
   // console.log("Current tab from layout:", info);
+  const [loading, setLoading] = useState(true);
 
-  const [alumList, setAlumList] = useState(mockdata);
+  const [alumList, setAlumList] = useState([]);
   const [appliedFilters, updateFilters] = useState({
     yearFrom: "",
     yearTo: "",
@@ -52,6 +54,7 @@ export default function AlumniAccess() {
     });
 
     const fetchAlumniProfiles = async () => {
+      setLoading(true);
       try {
         // For better search, fetch all or more profiles when searching
         // This allows for more sophisticated client-side filtering
@@ -83,7 +86,7 @@ export default function AlumniAccess() {
                 image:
                   "https://cdn-icons-png.flaticon.com/512/145/145974.png",
               };
-
+              console.log(alumData);
               try {
                 const photoResponse = await axios.get(
                   `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/alum/${alum.alum_id}`
@@ -144,6 +147,9 @@ export default function AlumniAccess() {
       } catch (error) {
         console.error("Failed to fetch alumni:", error);
       }
+      finally {
+        setLoading(false);
+      }
     };
 
     fetchAlumniProfiles();
@@ -183,7 +189,7 @@ export default function AlumniAccess() {
             toggleFilter={toggleFilter}
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery} />
-          <Table cols={cols} data={createRows(alumList, selectedIds, setSelectedIds, currTab)} />
+          <Table cols={cols} data={loading ? skeletonRows : createRows(alumList, selectedIds, setSelectedIds, currTab)} />
           <PageTool pagination={pagination} setPagination={setPagination} />
         </div>
         <div className="flex flex-row justify-between md:pl-4 lg:pl-8">
@@ -350,7 +356,15 @@ function BottomButtons({ selectedCount, currTab, setToast }) {
 }
 
 
-
+const skeletonRows = Array(10).fill({
+  "Checkbox:label-hidden": <CenteredSkeleton className="w-6 h-6 ml-1" />,
+  "Image:label-hidden": <CenteredSkeleton className="w-12 h-12 my-3" />,
+  Name: <NameEmailSkeleton />,
+  "Graduation Year": <CenteredSkeleton className="w-16 h-4" />,
+  "Student ID": <CenteredSkeleton className="w-24 h-4" />,
+  // "Course": <CenteredSkeleton className="w-16 h-4" />,
+  "Quick Actions": <CenteredSkeleton className="h-4 w-44" />,
+})
 
 const cols = [
   { label: "Checkbox:label-hidden", justify: "center", visible: "all" },
