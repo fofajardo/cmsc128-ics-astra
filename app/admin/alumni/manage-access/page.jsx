@@ -387,7 +387,7 @@ const skeletonRows = Array(10).fill({
   "Student ID": <CenteredSkeleton className="w-24 h-4" />,
   "Course": <CenteredSkeleton className="w-32 h-4" />,
   "Quick Actions": <CenteredSkeleton className="h-4 w-44" />,
-})
+});
 
 const cols = [
   { label: "Checkbox:label-hidden", justify: "center", visible: "all" },
