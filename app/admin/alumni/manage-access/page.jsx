@@ -36,6 +36,36 @@ export default function AlumniAccess() {
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
+    setPagination({
+      display: [1, 10],
+      currPage: 1,
+      lastPage: 10,
+      numToShow: 10,
+      total: 0
+    });
+
+    // Reset filters
+    updateFilters({
+      yearFrom: "",
+      yearTo: "",
+      location: "",
+      field: "",
+      skills: [],
+      sortCategory: "",
+      sortOrder: "asc",
+    });
+
+    // Clear search query
+    setSearchQuery("");
+
+    // Optionally clear selected rows
+    setSelectedIds([]);
+
+    // You can also optionally scroll to top:
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [currTab]);
+
+  useEffect(() => {
     const fetchAlumniProfiles = async () => {
       try {
         // For better search, fetch all or more profiles when searching
@@ -54,10 +84,18 @@ export default function AlumniAccess() {
           {
             params: {
               page: searchQuery ? 1 : pagination.currPage,
-              limit: searchQuery ? 50 : pagination.numToShow, // Fetch more when searching
+              limit: searchQuery ? 50 : pagination.numToShow,
             },
           }
         );
+
+        const totalResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-stats`);
+
+        const totals = {
+          Pending: totalResponse.data.stats.pending_alumni_count,
+          Approved: totalResponse.data.stats.approved_alumni_count,
+          Inactive: totalResponse.data.stats.inactive_alumni_count
+        }
 
         if (response.data.status === "OK") {
           const updatedAlumList = await Promise.all(
@@ -129,11 +167,15 @@ export default function AlumniAccess() {
               return alumData;
             })
           );
-          const totalCount = updatedAlumList.length;
+          const totalCount = totals[currTab];
+          const listLength = updatedAlumList.length;
+          const lowerBound = listLength === 0 ? 0 : (pagination.currPage - 1) * pagination.numToShow + 1;
+          const upperBound = listLength === 0 ? 0 : lowerBound + listLength - 1;
 
           // Set total and lastPage based on the fetched total count
           setPagination((prev) => ({
             ...prev,
+            display: [lowerBound, upperBound],
             total: totalCount,
             lastPage: Math.ceil(totalCount / prev.numToShow),
           }));
@@ -522,126 +564,3 @@ function renderActions(id, name, currTab) {
     </div>
   );
 }
-
-// const mockdata = [
-//   {
-//     id: 1,
-//     image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-//     alumname: "Emma Johnson",
-//     email: "emma.johnson@example.com",
-//     graduationYear: 2015,
-//     student_num: "2022-03814",
-//     course: "BS Computer Science",
-//     location: "New York, NY",
-//     fieldOfWork: "Backend Development",
-//     skills: ["Java", "Spring Boot", "REST APIs", "PostgreSQL"]
-//   },
-//   {
-//     id: 2,
-//     image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-//     alumname: "Liam Smith",
-//     email: "liam.smith@example.com",
-//     graduationYear: 2018,
-//     student_num: "2021-03814",
-//     course: "BS Civil Engineering",
-//     location: "San Francisco, CA",
-//     fieldOfWork: "Machine Learning Engineering",
-//     skills: ["Python", "Scikit-learn", "Pandas"]
-//   },
-//   {
-//     id: 3,
-//     image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-//     alumname: "Olivia Brown",
-//     email: "olivia.brown@example.com",
-//     graduationYear: 2012,
-//     student_num: "2020-03814",
-//     course: "BS Education",
-//     location: "Chicago, IL",
-//     fieldOfWork: "Frontend Development",
-//     skills: ["HTML", "CSS", "JavaScript", "Vue.js"]
-//   },
-//   {
-//     id: 4,
-//     image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-//     alumname: "Noah Davis",
-//     email: "noah.davis@example.com",
-//     graduationYear: 2020,
-//     student_num: "2022-30214",
-//     course: "BS Computer Science",
-//     location: "Austin, TX",
-//     fieldOfWork: "DevOps Engineering",
-//     skills: ["Docker", "Kubernetes", "AWS", "CI/CD", "Terraform"]
-//   },
-//   {
-//     id: 5,
-//     image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-//     alumname: "Ava Wilson",
-//     email: "ava.wilson@example.com",
-//     graduationYear: 2017,
-//     student_num: "2020-12314",
-//     course: "BS Computer Science",
-//     location: "Seattle, WA",
-//     fieldOfWork: "Mobile App Development",
-//     skills: ["Swift", "iOS", "Firebase"]
-//   },
-//   {
-//     id: 6,
-//     image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-//     alumname: "William Martinez",
-//     email: "william.martinez@example.com",
-//     graduationYear: 2014,
-//     student_num: "2021-41237",
-//     course: "BS Chemical Engineering",
-//     location: "Miami, FL",
-//     fieldOfWork: "Full Stack Development",
-//     skills: ["Node.js", "React", "MongoDB", "GraphQL"]
-//   },
-//   {
-//     id: 7,
-//     image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-//     alumname: "Sophia Garcia",
-//     email: "sophia.garcia@example.com",
-//     graduationYear: 2016,
-//     student_num: "2022-99632",
-//     course: "BS Forestry",
-//     location: "Denver, CO",
-//     fieldOfWork: "Cloud Engineering",
-//     skills: ["Azure", "Linux", "Networking", "Python"]
-//   },
-//   {
-//     id: 8,
-//     image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-//     alumname: "James Anderson",
-//     email: "james.anderson@example.com",
-//     graduationYear: 2013,
-//     student_num: "2017-26934",
-//     course: "BS Computer Science",
-//     location: "Boston, MA",
-//     fieldOfWork: "Security Engineering",
-//     skills: ["Penetration Testing", "OWASP", "Metasploit"]
-//   },
-//   {
-//     id: 9,
-//     image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-//     alumname: "Isabella Thomas",
-//     email: "isabella.thomas@example.com",
-//     graduationYear: 2019,
-//     student_num: "2015-04814",
-//     course: "BS Industrial Engineering",
-//     location: "Los Angeles, CA",
-//     fieldOfWork: "AI Research",
-//     skills: ["PyTorch", "Deep Learning", "NLP"]
-//   },
-//   {
-//     id: 10,
-//     image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-//     alumname: "Benjamin Lee",
-//     email: "benjamin.lee@example.com",
-//     graduationYear: 2011,
-//     student_num: "2013-03825",
-//     course: "BS Information Technology",
-//     location: "Atlanta, GA",
-//     fieldOfWork: "Database Administration",
-//     skills: ["SQL", "Oracle", "Database Tuning", "Shell Scripting", "PL/SQL"]
-//   }
-// ];

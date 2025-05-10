@@ -16,9 +16,9 @@ export default function AdminAlumniLayout({ children }) {
   });
 
   const [tabs, setTabs] = useState({
-    "Pending": 3,
+    "Pending": 0,
     "Approved": 0,
-    "Inactive": 2,
+    "Inactive": 0,
   });
 
   const [stats, setStats] = useState({
@@ -58,10 +58,6 @@ export default function AdminAlumniLayout({ children }) {
       ...prev,
       title: `${newTab} Accounts`,
     }));
-
-    // Reset Filters and Pagination
-    // Then refetch alumList
-
   };
 
   // main tab switcher for the list page
