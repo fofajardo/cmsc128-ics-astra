@@ -26,6 +26,12 @@ export default function ProjectsAdmin() {
   const [tempSelectedType, setTempSelectedType] = useState(selectedType);
 
   const [projects, setProjects] = useState([]);
+  const [filteredProjects, setFilteredProjects] = useState([]);
+  const [paginatedProjects, setPaginatedProjects] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  //this is for the current showed tab
+  const [currTab, setCurrTab] = useState("Pending");
+
   const [donationsSummary, setDonationsSummary] = useState({});
   const [loading, setLoading] = useState(true);
 
@@ -34,98 +40,159 @@ export default function ProjectsAdmin() {
   const [showDeclineModal, setShowDeclineModal] = useState(false);
   const [declineReason, setDeclineReason] = useState("");
   const [declineRequestData, setDeclineRequestData] = useState({});
+  const itemsPerPage = 5;
+
+  const toggleFilter = () => {
+    setTempSelectedType(selectedType); // reset modal input to current selection
+    setShowFilter((prev) => !prev);
+  };
+
+  //this is the one beside the pending/active/inactive projects
+  //must change lastPage and total to what is in the database
+  const [pagination, setPagination] = useState({
+    display: [1, itemsPerPage],
+    currPage: 1,
+    lastPage: 1,
+    numToShow: itemsPerPage,
+    total: 0,
+    itemsPerPage
+  });
+
+  const fetchProjectRequests = async function () {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/requests/projects`);
+      const projectData = response.data;
+      if (projectData.status === "OK") {
+        console.log("Fetched projects:", projectData);
+
+        // extract project id's
+        const projectIds = projectData.list.map(project => project.projectData.project_id);
+        console.log(projectIds);
+
+        // map for photos initialization
+        const photoMap = {};
+
+        // fetch individual project photos
+        const photoPromises = projectIds.map(async (projectId) => {
+          try {
+            const photoResponse = await axios.get(
+              `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/project/${projectId}`
+            );
+
+            if (photoResponse.data.status === "OK" && photoResponse.data.photo) {
+              photoMap[projectId] = photoResponse.data.photo;
+            }
+          } catch (error) {
+            console.log(`Failed to fetch photo for project_id ${projectId}:`, error);
+          }
+        });
+
+        await Promise.all(photoPromises);
+        setProjectPhotos(photoMap);
+
+        setProjects(
+          projectData.list.map(
+            project => ({
+              status: project.projectData.project_status === PROJECT_STATUS.FINISHED ? REQUEST_STATUS.REJECTED : project.status,
+              request_id: project.request_id,
+              id: project.projectData.project_id,
+              image: photoMap[project.projectData.project_id] || "/projects/assets/Donation.jpg",
+              project_status: project.projectData.project_status,
+              title: project.projectData.title,
+              description: project.projectData.details,
+              goal: project.projectData.goal_amount.toString(),
+              raised: project.projectData.total_donations.toString(),
+              donors: project.projectData.number_of_donors,
+              type: project.projectData.type,
+              endDate: project.projectData.due_date,
+              dateCompleted: project.projectData.date_complete,
+              donationLink: project.projectData.donation_link,
+              requester: project.requesterData?.full_name !== ""
+                ? capitalizeName(project.requesterData?.full_name)
+                : project.requesterData?.role === "unlinked"
+                  ? "Deleted User"
+                  : capitalizeName(project.requesterData?.role)
+              ,
+            })
+          )
+        );
+      } else {
+        console.error("Unexpected response:", projectData);
+      }
+    } catch (error) {
+      console.error("Failed to fetch projects:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchDonationsSummary = async function () {
+    try {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations/summary`);
+      const donationSummaryData = response.data;
+      if (donationSummaryData.status === "OK") {
+        console.log("Fetched donation summary:", donationSummaryData);
+        setDonationsSummary({
+          total_raised: donationSummaryData.summary.total_raised,
+          contributors: donationSummaryData.summary.contributors
+        });
+      } else {
+        console.error("Unexpected response:", donationSummaryData);
+      }
+    } catch (error) {
+      console.error("Failed to fetch donation summary:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchProjectRequests = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/requests/projects`);
-        const projectData = response.data;
-        if (projectData.status === "OK") {
-          console.log("Fetched projects:", projectData);
-
-          // extract project id's
-          const projectIds = projectData.list.map(project => project.projectData.project_id);
-          console.log(projectIds);
-
-          // map for photos initialization
-          const photoMap = {};
-
-          // fetch individual project photos
-          const photoPromises = projectIds.map(async (projectId) => {
-            try {
-              const photoResponse = await axios.get(
-                `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/project/${projectId}`
-              );
-
-              if (photoResponse.data.status === "OK" && photoResponse.data.photo) {
-                photoMap[projectId] = photoResponse.data.photo;
-              }
-            } catch (error) {
-              console.log(`Failed to fetch photo for project_id ${projectId}:`, error);
-            }
-          });
-
-          await Promise.all(photoPromises);
-          setProjectPhotos(photoMap);
-
-          setProjects(
-            projectData.list.map(
-              project => ({
-                status: project.projectData.project_status === PROJECT_STATUS.FINISHED ? REQUEST_STATUS.REJECTED : project.status,
-                request_id: project.request_id,
-                id: project.projectData.project_id,
-                image: photoMap[project.projectData.project_id] || "/projects/assets/Donation.jpg",
-                project_status: project.projectData.project_status,
-                title: project.projectData.title,
-                description: project.projectData.details,
-                goal: project.projectData.goal_amount.toString(),
-                raised: project.projectData.total_donations.toString(),
-                donors: project.projectData.number_of_donors,
-                type: project.projectData.type,
-                endDate: project.projectData.due_date,
-                dateCompleted: project.projectData.date_complete,
-                donationLink: project.projectData.donation_link,
-                requester: project.requesterData?.full_name !== ""
-                  ? capitalizeName(project.requesterData?.full_name)
-                  : project.requesterData?.role === "unlinked"
-                    ? "Deleted User"
-                    : capitalizeName(project.requesterData?.role)
-                ,
-              })
-            )
-          );
-        } else {
-          console.error("Unexpected response:", projectData);
-        }
-      } catch (error) {
-        console.error("Failed to fetch projects:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const fetchDonationsSummary = async () => {
-      try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations/summary`);
-        const donationSummaryData = response.data;
-        if (donationSummaryData.status === "OK") {
-          console.log("Fetched donation summary:", donationSummaryData);
-          setDonationsSummary({
-            total_raised: donationSummaryData.summary.total_raised,
-            contributors: donationSummaryData.summary.contributors
-          });
-        } else {
-          console.error("Unexpected response:", donationSummaryData);
-        }
-      } catch (error) {
-        console.error("Failed to fetch donation summary:", error);
-      }
-    };
-
     fetchDonationsSummary();
     fetchProjectRequests();
   }, []);
+
+  useEffect(() => {
+    setFilteredProjects(projects);
+  }, [projects]);
+
+  useEffect(() => {
+    const filteredProjectsByType = selectedType === "All"
+      ? projects
+      : projects.filter((project) => project.type === selectedType.toLowerCase());
+    const filteredProjectsByStatusTab = filteredProjectsByType.filter(
+      (project) => statusToTab[project.status].toLowerCase() === currTab.toLowerCase()
+    );
+    setFilteredProjects(filteredProjectsByStatusTab);
+  }, [projects, selectedType, currTab]);
+
+  useEffect(() => {
+    const total = filteredProjects.length;
+    const lastPage = Math.max(1, Math.ceil(total / itemsPerPage));
+
+    setPagination({
+      display: [1, Math.min(itemsPerPage, total)],
+      currPage: 1,
+      lastPage,
+      numToShow: itemsPerPage,
+      total,
+      itemsPerPage
+    });
+  }, [filteredProjects, searchQuery]);
+
+  useEffect(() => {
+    const start = (pagination.currPage - 1) * pagination.itemsPerPage;
+    const end = start + pagination.itemsPerPage;
+    setPaginatedProjects(filteredProjects.slice(start, end));
+  }, [filteredProjects, pagination.currPage, pagination.itemsPerPage]);
+
+  const handleSearch = (searchInput) => {
+    const lower = (searchInput || "").toLowerCase();
+    const filtered = filteredProjects.filter(project =>
+      (project.title || "").toLowerCase().includes(lower)
+    );
+
+    setSearchQuery(searchInput);
+    setFilteredProjects(filtered);
+  };
 
   const updateProjectRequest = async (updatedStatus, requestId, requestResponse="") => {
     try {
@@ -192,8 +259,6 @@ export default function ProjectsAdmin() {
     setTimeout(() => router.push("/admin/projects"), 2000);
   };
 
-  const projectsData = projects;
-
   const statusToTab = {
     0: "Pending",
     1: "Active",
@@ -207,15 +272,12 @@ export default function ProjectsAdmin() {
   });
 
   //tabs for different projects
-  const tabs = Object.values(projectsData).reduce((acc, project) => {
+  const tabs = Object.values(projects).reduce((acc, project) => {
     if (project.status === 0) acc.Pending++;
     else if (project.status === 1) acc.Active++;
     else if (project.status === 2) acc.Inactive++;
     return acc;
   }, { Pending: 0, Active: 0, Inactive: 0 });
-
-  //this is for the current showed tab
-  const [currTab, setCurrTab] = useState("Pending");
 
   //function for changing the tab
   const handleTabChange = (newTab) => {
@@ -230,58 +292,6 @@ export default function ProjectsAdmin() {
     //reset Filters and Pagination
     setSelectedType("All");
   };
-
-  const toggleFilter = () => {
-    setTempSelectedType(selectedType); // reset modal input to current selection
-    setShowFilter((prev) => !prev);
-  };
-
-  //this is the one beside the pending/active/inactive projects
-  //must change lastPage and total to what is in the database
-  const [pagination, setPagination] = useState({
-    display: [1, 8],
-    currPage: 1,
-    lastPage: 2,
-    numToShow: 8,
-    total: 16,
-  });
-
-  //for filtering projects by type
-  //scholarship
-  //fundraiser
-  const filteredProjects =
-    selectedType === "All"
-      ? projectsData
-      : projectsData.filter((project) => project.type === selectedType.toLowerCase());
-
-  //for filtering projects by status
-  const filteredByTabProjects = filteredProjects.filter(
-    (project) => statusToTab[project.status].toLowerCase() === currTab.toLowerCase()
-  );
-
-  // Update pagination total and lastPage
-  useEffect(() => {
-    const totalItems = filteredByTabProjects.length;
-    const lastPage = Math.max(1, Math.ceil(totalItems / pagination.numToShow));
-    setPagination((prev) => ({
-      ...prev,
-      total: totalItems,
-      lastPage: lastPage,
-      currPage: Math.min(prev.currPage, lastPage), // Avoid invalid page
-      display: [
-        (Math.min(prev.currPage, lastPage) - 1) * prev.numToShow + 1,
-        Math.min(totalItems, Math.min(prev.currPage, lastPage) * prev.numToShow),
-      ],
-    }));
-  }, [filteredProjects, currTab, pagination.numToShow]);
-
-  //this is for getting the projects for current page and handling the tab status
-  const currentProjects = filteredProjects
-    .filter((project) => statusToTab[project.status].toLowerCase() === currTab.toLowerCase())
-    .slice(
-      (pagination.currPage - 1) * pagination.numToShow,
-      pagination.currPage * pagination.numToShow
-    );
 
   return (
     <div>
@@ -329,11 +339,6 @@ export default function ProjectsAdmin() {
                   className="blue-button"
                   onClick={() => {
                     setSelectedType(tempSelectedType); // apply the filter
-                    setPagination((prev) => ({
-                      ...prev,
-                      currPage: 1,
-                      display: [1, prev.numToShow],
-                    }));
                     toggleFilter();
                   }}
                 >
@@ -425,7 +430,10 @@ export default function ProjectsAdmin() {
           <TableHeader
             info={info}
             pagination={pagination}
+            setPagination={setPagination}
             toggleFilter={toggleFilter}
+            setSearchQuery={handleSearch}
+            serachQuery={searchQuery}
           />
 
           {/* Projects Grid */}
@@ -437,7 +445,7 @@ export default function ProjectsAdmin() {
             <div className="bg-astrawhite shadow-md p-6 rounded-b-xl">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {currTab === "Pending" &&
-                  currentProjects.map((project) => (
+                  paginatedProjects.map((project) => (
                     <ProjectCardPending
                       key={project.id}
                       id={project.request_id}
@@ -453,7 +461,7 @@ export default function ProjectsAdmin() {
                   ))}
 
                 {(currTab === "Active" || currTab === "Inactive") &&
-                  currentProjects.map((project) => (
+                  paginatedProjects.map((project) => (
                     <ProjectCardActive
                       key={project.id}
                       id={project.request_id}
@@ -470,7 +478,7 @@ export default function ProjectsAdmin() {
               </div>
 
               {/* If no projects match the filter */}
-              {currentProjects.length === 0 && (
+              {paginatedProjects.length === 0 && (
                 <div className="text-center py-12">
                   <p className="text-astradarkgray font-s">
                     No{" "}
