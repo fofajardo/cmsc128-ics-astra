@@ -47,11 +47,18 @@ const RequestFundraiserGoal = () => {
   const handleAmountChange = (e) => {
     const value = e.target.value;
     setAmount(value);
-    updateUrlParams("amount", value);
+    // updateUrlParams("amount", value);
+
+    // Allow only valid integer input
+    const validValue = value.replace(/[^0-9-]/g, ""); // Remove non-numeric characters except minus
 
     // Validate that it's a number
-    if (value && isNaN(value)) {
-      setAmountError("Please enter a valid number");
+    if (value && value < 0) {
+      setAmountError("Please enter a positive number");
+    } else if (value && validValue !== value) {
+      setAmountError("Please enter a valid amount in Pesos");
+    } else if (value && isNaN(value)) {
+      setAmountError("Please enter a valid amount in Pesos");
     } else {
       setAmountError("");
     }
@@ -61,7 +68,7 @@ const RequestFundraiserGoal = () => {
   const handleProjectTypeChange = (e) => {
     const value = e.target.value;
     setProjectType(value);
-    updateUrlParams("projectType", value);
+    // updateUrlParams("projectType", value);
 
     // Validate that it's a number
     if (value && !Object.values(PROJECT_TYPE).includes(value.toLowerCase())) {
@@ -75,7 +82,7 @@ const RequestFundraiserGoal = () => {
   const handleTargetDateChange = (e) => {
     const value = e.target.value;
     setTargetDate(value);
-    updateUrlParams("targetDate", value);
+    // updateUrlParams("targetDate", value);
 
     // Validate date is in the future
     if (value) {
