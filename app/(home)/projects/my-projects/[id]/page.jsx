@@ -26,6 +26,7 @@ import axios from "axios";
 import { formatCurrency, capitalizeName } from "@/utils/format";
 import { PROJECT_TYPE } from "@/constants/projectConsts";
 import { REQUEST_STATUS, REQUEST_STATUS_LABELS } from "@/constants/requestConsts";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 export default function UserProjects() {
   const { id: user_id } = useParams();
@@ -330,255 +331,261 @@ export default function UserProjects() {
 
           <div className="p-6">
             <div className="space-y-6">
-              {filteredProjects.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="bg-astralightgray/50 w-20 h-20 rounded-full mx-auto flex items-center justify-center mb-4">
-                    <AlertCircle className="w-10 h-10 text-astradarkgray/50" />
-                  </div>
-                  <h3 className="text-xl font-medium text-astradarkgray mb-2">
-                    No {activeTab !== "all" ? activeTab.toLowerCase() : ""} projects found
-                  </h3>
-                  <p className="text-astradarkgray/80 max-w-md mx-auto">
-                    {activeTab === "all"
-                      ? "You haven't created any projects yet. Start by creating your first project!"
-                      : `You don't have any ${activeTab.toLowerCase()} projects at the moment.`}
-                  </p>
+              {loading ? (
+                <div className="bg-astrawhite p-6 rounded-b-xl flex items-center justify-center">
+                  <LoadingSpinner className="h-10 w-10" />
                 </div>
               ) : (
-                filteredProjects.map((project) => (
-                  <div
-                    key={project.id}
-                    className="bg-astrawhite rounded-xl shadow hover:shadow-lg transition-all border border-astragray/10 overflow-hidden"
-                  >
-                    <div className="p-6">
-                      <div className="flex flex-col md:flex-row gap-6">
-                        {/* Image */}
-                        <div className="md:w-48 h-36 relative rounded-lg overflow-hidden flex-shrink-0">
-                          <Image
-                            src={project.image}
-                            alt={project.title}
-                            layout="fill"
-                            objectFit="cover"
-                          />
-                        </div>
-
-                        {/* Content */}
-                        <div className="flex-1">
-                          <div className="flex flex-wrap items-center gap-3 mb-2">
-                            <h2 className="text-xl font-bold text-astrablack">
-                              {project.title}
-                            </h2>
-                            <span
-                              className={`${getStatusColor(
-                                REQUEST_STATUS_LABELS[project.status]
-                              )} px-3 py-1 rounded-lg text-sm font-medium flex items-center gap-1.5`}
-                            >
-                              {getStatusIcon(REQUEST_STATUS_LABELS[project.status])}
-                              {capitalizeName(REQUEST_STATUS_LABELS[project.status])}
-                            </span>
-                          </div>
-
-                          <div className="flex flex-wrap items-center gap-4 mb-3">
-                            <div className="flex items-center gap-1.5 text-sm text-astradarkgray">
-                              <div className="bg-astragray/20 p-1 rounded">
-                                {project.type === PROJECT_TYPE.SCHOLARSHIP ? (
-                                  <GraduationCap className="w-3.5 h-3.5" />
-                                ) : (
-                                  <HeartHandshake className="w-3.5 h-3.5" />
-                                )}
-                              </div>
-                              {capitalizeName(project.type)}
-                            </div>
-                            <div className="flex items-center gap-1.5 text-sm text-astradarkgray">
-                              <div className="bg-astragray/20 p-1 rounded">
-                                <Calendar className="w-3.5 h-3.5" />
-                              </div>
-                              Created: {new Date(project.createdAt).toLocaleDateString()}
-                            </div>
-                          </div>
-
-                          <p className="text-astradarkgray mb-4 line-clamp-2">
-                            {project.description}
-                          </p>
-
-                          {/* Progress bar (only for approved projects) */}
-                          {project.status === REQUEST_STATUS_LABELS[REQUEST_STATUS.APPROVED] && (
-                            <div className="mb-4">
-                              <div className="flex justify-between items-center mb-1 text-sm">
-                                <span className="font-medium">Progress</span>
-                                <span>
-                                  {project.raised} of {project.goal}
-                                </span>
-                              </div>
-                              <div className="h-2 bg-astralightgray rounded-full overflow-hidden">
-                                <div
-                                  className="h-full bg-astraprimary transition-all duration-500"
-                                  style={{
-                                    width: `${Math.min(
-                                      Math.round(
-                                        (parseInt(project.raised.replace(/[^\d]/g, "")) /
-                                          parseInt(project.goal.replace(/[^\d]/g, ""))) *
-                                          100
-                                      ),
-                                      100
-                                    )}%`,
-                                  }}
-                                ></div>
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Action buttons */}
-                          <div className="flex flex-wrap gap-3">
-                            {project.status === REQUEST_STATUS_LABELS[REQUEST_STATUS.APPROVED] && (
-                              <button
-                                onClick={() => handleOpenEditModal(project)}
-                                className="flex items-center gap-1.5 bg-amber-100 text-amber-700 py-2 px-4 rounded-lg text-sm hover:bg-amber-200 transition-colors"
-                              >
-                                <Edit3 className="w-4 h-4" />
-                                Request Edit
-                              </button>
-                            )}
-
-                            {project.status === REQUEST_STATUS_LABELS[REQUEST_STATUS.REJECTED] && (
-                              <button
-                                onClick={() =>
-                                  handleOpenRejectionDetailsModal(project)
-                                }
-                                className="flex items-center gap-1.5 bg-red-100 text-red-700 py-2 px-4 rounded-lg text-sm hover:bg-red-200 transition-colors"
-                              >
-                                <AlertCircle className="w-4 h-4" />
-                                View Rejection Details
-                              </button>
-                            )}
-
-                            <button
-                              onClick={() => handleOpenMessagesModal(project)}
-                              className="flex items-center gap-1.5 bg-astralightgray text-astradarkgray py-2 px-4 rounded-lg text-sm hover:bg-astragray/20 transition-colors relative"
-                            >
-                              <MessageSquare className="w-4 h-4" />
-                              Messages
-                              {getUnreadMessagesCount(project) > 0 && (
-                                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-                                  {getUnreadMessagesCount(project)}
-                                </span>
-                              )}
-                            </button>
-
-                            <button
-                              onClick={() => toggleExpandProject(project.id)}
-                              className="ml-auto flex items-center gap-1 text-astradarkgray hover:text-astraprimary transition-colors"
-                            >
-                              {expandedProject === project.id
-                                ? "Less Details"
-                                : "More Details"}
-                              <ChevronDown
-                                className={`w-4 h-4 transition-transform ${
-                                  expandedProject === project.id
-                                    ? "transform rotate-180"
-                                    : ""
-                                }`}
-                              />
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Expanded details */}
-                      {expandedProject === project.id && (
-                        <div className="mt-6 pt-6 border-t border-astragray/20 space-y-4 animate-expandDown">
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div>
-                              <h4 className="font-medium mb-2 text-astrablack">
-                                Project Details
-                              </h4>
-                              <ul className="space-y-2 text-sm">
-                                <li className="flex justify-between">
-                                  <span className="text-astradarkgray">
-                                    Goal Amount:
-                                  </span>
-                                  <span className="font-medium">
-                                    {formatCurrency(project.goal)}
-                                  </span>
-                                </li>
-                                <li className="flex justify-between">
-                                  <span className="text-astradarkgray">
-                                    End Date:
-                                  </span>
-                                  <span className="font-medium">
-                                    {new Date(
-                                      project.endDate
-                                    ).toLocaleDateString()}
-                                  </span>
-                                </li>
-                                {project.status === REQUEST_STATUS_LABELS[REQUEST_STATUS.APPROVED] && (
-                                  <>
-                                    <li className="flex justify-between">
-                                      <span className="text-astradarkgray">
-                                        Amount Raised:
-                                      </span>
-                                      <span className="font-medium">
-                                        {project.raised}
-                                      </span>
-                                    </li>
-                                    <li className="flex justify-between">
-                                      <span className="text-astradarkgray">
-                                        Number of Donors:
-                                      </span>
-                                      <span className="font-medium">
-                                        {project.donors}
-                                      </span>
-                                    </li>
-                                  </>
-                                )}
-                              </ul>
-                            </div>
-
-                            <div className="md:col-span-2">
-                              <h4 className="font-medium mb-2 text-astrablack">
-                                Description
-                              </h4>
-                              <p className="text-sm text-astradarkgray">
-                                {project.description}
-                              </p>
-                            </div>
-                          </div>
-
-                          <div className="flex justify-end pt-4">
-                            {project.status === REQUEST_STATUS_LABELS[REQUEST_STATUS.REJECTED] ? (
-                              <button
-                                onClick={() => router.push("/projects/request/goal")}
-                                className="flex items-center gap-1.5 bg-astraprimary text-astrawhite py-2 px-4 rounded-lg text-sm hover:bg-astraprimary/90 transition-colors"
-                              >
-                                <Edit3 className="w-4 h-4" />
-                                Resubmit Project
-                              </button>
-                            ) : project.status === REQUEST_STATUS_LABELS[REQUEST_STATUS.SENT] ? (
-                              <button
-                                onClick={() => {
-                                  // Handle cancellation logic
-                                  const updatedProjects = projects.filter(
-                                    (f) => f.id !== project.id
-                                  );
-                                  setProjects(updatedProjects);
-                                  setToast({
-                                    type: "success",
-                                    message:
-                                      "Project request cancelled successfully!",
-                                  });
-                                }}
-                                className="flex items-center gap-1.5 bg-red-100 text-red-700 py-2 px-4 rounded-lg text-sm hover:bg-red-200 transition-colors"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                                Cancel Request
-                              </button>
-                            ) : null}
-                          </div>
-                        </div>
-                      )}
+                filteredProjects.length === 0 ? (
+                  <div className="text-center py-12">
+                    <div className="bg-astralightgray/50 w-20 h-20 rounded-full mx-auto flex items-center justify-center mb-4">
+                      <AlertCircle className="w-10 h-10 text-astradarkgray/50" />
                     </div>
+                    <h3 className="text-xl font-medium text-astradarkgray mb-2">
+                      No {activeTab !== "all" ? activeTab.toLowerCase() : ""} projects found
+                    </h3>
+                    <p className="text-astradarkgray/80 max-w-md mx-auto">
+                      {activeTab === "all"
+                        ? "You haven't created any projects yet. Start by creating your first project!"
+                        : `You don't have any ${activeTab.toLowerCase()} projects at the moment.`}
+                    </p>
                   </div>
-                ))
+                ) : (
+                  filteredProjects.map((project) => (
+                    <div
+                      key={project.id}
+                      className="bg-astrawhite rounded-xl shadow hover:shadow-lg transition-all border border-astragray/10 overflow-hidden"
+                    >
+                      <div className="p-6">
+                        <div className="flex flex-col md:flex-row gap-6">
+                          {/* Image */}
+                          <div className="md:w-48 h-36 relative rounded-lg overflow-hidden flex-shrink-0">
+                            <Image
+                              src={project.image}
+                              alt={project.title}
+                              layout="fill"
+                              objectFit="cover"
+                            />
+                          </div>
+
+                          {/* Content */}
+                          <div className="flex-1">
+                            <div className="flex flex-wrap items-center gap-3 mb-2">
+                              <h2 className="text-xl font-bold text-astrablack">
+                                {project.title}
+                              </h2>
+                              <span
+                                className={`${getStatusColor(
+                                  REQUEST_STATUS_LABELS[project.status]
+                                )} px-3 py-1 rounded-lg text-sm font-medium flex items-center gap-1.5`}
+                              >
+                                {getStatusIcon(REQUEST_STATUS_LABELS[project.status])}
+                                {capitalizeName(REQUEST_STATUS_LABELS[project.status])}
+                              </span>
+                            </div>
+
+                            <div className="flex flex-wrap items-center gap-4 mb-3">
+                              <div className="flex items-center gap-1.5 text-sm text-astradarkgray">
+                                <div className="bg-astragray/20 p-1 rounded">
+                                  {project.type === PROJECT_TYPE.SCHOLARSHIP ? (
+                                    <GraduationCap className="w-3.5 h-3.5" />
+                                  ) : (
+                                    <HeartHandshake className="w-3.5 h-3.5" />
+                                  )}
+                                </div>
+                                {capitalizeName(project.type)}
+                              </div>
+                              <div className="flex items-center gap-1.5 text-sm text-astradarkgray">
+                                <div className="bg-astragray/20 p-1 rounded">
+                                  <Calendar className="w-3.5 h-3.5" />
+                                </div>
+                                Created: {new Date(project.createdAt).toLocaleDateString()}
+                              </div>
+                            </div>
+
+                            <p className="text-astradarkgray mb-4 line-clamp-2">
+                              {project.description}
+                            </p>
+
+                            {/* Progress bar (only for approved projects) */}
+                            {project.status === REQUEST_STATUS_LABELS[REQUEST_STATUS.APPROVED] && (
+                              <div className="mb-4">
+                                <div className="flex justify-between items-center mb-1 text-sm">
+                                  <span className="font-medium">Progress</span>
+                                  <span>
+                                    {project.raised} of {project.goal}
+                                  </span>
+                                </div>
+                                <div className="h-2 bg-astralightgray rounded-full overflow-hidden">
+                                  <div
+                                    className="h-full bg-astraprimary transition-all duration-500"
+                                    style={{
+                                      width: `${Math.min(
+                                        Math.round(
+                                          (parseInt(project.raised.replace(/[^\d]/g, "")) /
+                                            parseInt(project.goal.replace(/[^\d]/g, ""))) *
+                                            100
+                                        ),
+                                        100
+                                      )}%`,
+                                    }}
+                                  ></div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Action buttons */}
+                            <div className="flex flex-wrap gap-3">
+                              {project.status === REQUEST_STATUS_LABELS[REQUEST_STATUS.APPROVED] && (
+                                <button
+                                  onClick={() => handleOpenEditModal(project)}
+                                  className="flex items-center gap-1.5 bg-amber-100 text-amber-700 py-2 px-4 rounded-lg text-sm hover:bg-amber-200 transition-colors"
+                                >
+                                  <Edit3 className="w-4 h-4" />
+                                  Request Edit
+                                </button>
+                              )}
+
+                              {project.status === REQUEST_STATUS_LABELS[REQUEST_STATUS.REJECTED] && (
+                                <button
+                                  onClick={() =>
+                                    handleOpenRejectionDetailsModal(project)
+                                  }
+                                  className="flex items-center gap-1.5 bg-red-100 text-red-700 py-2 px-4 rounded-lg text-sm hover:bg-red-200 transition-colors"
+                                >
+                                  <AlertCircle className="w-4 h-4" />
+                                  View Rejection Details
+                                </button>
+                              )}
+
+                              <button
+                                onClick={() => handleOpenMessagesModal(project)}
+                                className="flex items-center gap-1.5 bg-astralightgray text-astradarkgray py-2 px-4 rounded-lg text-sm hover:bg-astragray/20 transition-colors relative"
+                              >
+                                <MessageSquare className="w-4 h-4" />
+                                Messages
+                                {getUnreadMessagesCount(project) > 0 && (
+                                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                                    {getUnreadMessagesCount(project)}
+                                  </span>
+                                )}
+                              </button>
+
+                              <button
+                                onClick={() => toggleExpandProject(project.id)}
+                                className="ml-auto flex items-center gap-1 text-astradarkgray hover:text-astraprimary transition-colors"
+                              >
+                                {expandedProject === project.id
+                                  ? "Less Details"
+                                  : "More Details"}
+                                <ChevronDown
+                                  className={`w-4 h-4 transition-transform ${
+                                    expandedProject === project.id
+                                      ? "transform rotate-180"
+                                      : ""
+                                  }`}
+                                />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Expanded details */}
+                        {expandedProject === project.id && (
+                          <div className="mt-6 pt-6 border-t border-astragray/20 space-y-4 animate-expandDown">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                              <div>
+                                <h4 className="font-medium mb-2 text-astrablack">
+                                  Project Details
+                                </h4>
+                                <ul className="space-y-2 text-sm">
+                                  <li className="flex justify-between">
+                                    <span className="text-astradarkgray">
+                                      Goal Amount:
+                                    </span>
+                                    <span className="font-medium">
+                                      {formatCurrency(project.goal)}
+                                    </span>
+                                  </li>
+                                  <li className="flex justify-between">
+                                    <span className="text-astradarkgray">
+                                      End Date:
+                                    </span>
+                                    <span className="font-medium">
+                                      {new Date(
+                                        project.endDate
+                                      ).toLocaleDateString()}
+                                    </span>
+                                  </li>
+                                  {project.status === REQUEST_STATUS_LABELS[REQUEST_STATUS.APPROVED] && (
+                                    <>
+                                      <li className="flex justify-between">
+                                        <span className="text-astradarkgray">
+                                          Amount Raised:
+                                        </span>
+                                        <span className="font-medium">
+                                          {project.raised}
+                                        </span>
+                                      </li>
+                                      <li className="flex justify-between">
+                                        <span className="text-astradarkgray">
+                                          Number of Donors:
+                                        </span>
+                                        <span className="font-medium">
+                                          {project.donors}
+                                        </span>
+                                      </li>
+                                    </>
+                                  )}
+                                </ul>
+                              </div>
+
+                              <div className="md:col-span-2">
+                                <h4 className="font-medium mb-2 text-astrablack">
+                                  Description
+                                </h4>
+                                <p className="text-sm text-astradarkgray">
+                                  {project.description}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="flex justify-end pt-4">
+                              {project.status === REQUEST_STATUS_LABELS[REQUEST_STATUS.REJECTED] ? (
+                                <button
+                                  onClick={() => router.push("/projects/request/goal")}
+                                  className="flex items-center gap-1.5 bg-astraprimary text-astrawhite py-2 px-4 rounded-lg text-sm hover:bg-astraprimary/90 transition-colors"
+                                >
+                                  <Edit3 className="w-4 h-4" />
+                                  Resubmit Project
+                                </button>
+                              ) : project.status === REQUEST_STATUS_LABELS[REQUEST_STATUS.SENT] ? (
+                                <button
+                                  onClick={() => {
+                                    // Handle cancellation logic
+                                    const updatedProjects = projects.filter(
+                                      (f) => f.id !== project.id
+                                    );
+                                    setProjects(updatedProjects);
+                                    setToast({
+                                      type: "success",
+                                      message:
+                                        "Project request cancelled successfully!",
+                                    });
+                                  }}
+                                  className="flex items-center gap-1.5 bg-red-100 text-red-700 py-2 px-4 rounded-lg text-sm hover:bg-red-200 transition-colors"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                  Cancel Request
+                                </button>
+                              ) : null}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                )
               )}
             </div>
           </div>
