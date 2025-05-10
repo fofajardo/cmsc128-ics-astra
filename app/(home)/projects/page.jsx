@@ -11,6 +11,7 @@ import axios from "axios";
 import { PROJECT_STATUS, PROJECT_STATUS_LABELS, PROJECT_TYPE } from "@/constants/projectConsts.js";
 import { capitalizeName } from "@/utils/format.jsx";
 import { useSignedInUser } from "@/components/UserContext.jsx";
+import { LoadingSpinner } from "@/components/LoadingSpinner.jsx";
 
 export default function ProjectsPage() {
   const user = useSignedInUser();
@@ -320,61 +321,67 @@ export default function ProjectsPage() {
             </div>
           )}
 
-          {filteredProjects.length > 0 ? (
-            <>
-              {/* Dynamic Grid*/}
-              <div
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8"
-                style={{
-                  gridAutoRows: "1fr",
-                }}
-              >
-                {filteredProjects.slice(0, visibleCount).map((project) => (
-                  <Link
-                    href={`/projects/about/${project.request_id}`}
-                    key={project.id}
-                    className="block h-full"
-                  >
-                    <ProjectCard
-                      id={project.id}
-                      image={project.image}
-                      title={project.title}
-                      description={project.description}
-                      goal={project.goal}
-                      raised={project.raised}
-                      donors={project.donors}
-                      type={project.type}
-                      endDate={project.endDate}
-                    />
-                  </Link>
-                ))}
-              </div>
-
-              {/* Loading Indicator for large datasets */}
-              {visibleCount < filteredProjects.length &&
-                filteredProjects.length > 20 && (
-                <div className="flex justify-center items-center py-4">
-                  <div className="animate-pulse text-astradarkgray">
-                    Loading more projects...
-                  </div>
-                </div>
-              )}
-            </>
-          ) : (
-            <div className="text-center py-16">
-              <p className="text-astradarkgray font-s text-lg">
-                No projects found matching your criteria.
-              </p>
-              <button
-                onClick={() => {
-                  setSelectedType("All");
-                  setSearchTerm("");
-                }}
-                className="mt-4 blue-button"
-              >
-                Reset Filters
-              </button>
+          {loading ? (
+            <div className="bg-astrawhite shadow-md p-6 rounded-b-xl flex items-center justify-center">
+              <LoadingSpinner className="h-10 w-10" />
             </div>
+          ) : (
+            filteredProjects.length > 0 ? (
+              <>
+                {/* Dynamic Grid*/}
+                <div
+                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8"
+                  style={{
+                    gridAutoRows: "1fr",
+                  }}
+                >
+                  {filteredProjects.slice(0, visibleCount).map((project) => (
+                    <Link
+                      href={`/projects/about/${project.request_id}`}
+                      key={project.id}
+                      className="block h-full"
+                    >
+                      <ProjectCard
+                        id={project.id}
+                        image={project.image}
+                        title={project.title}
+                        description={project.description}
+                        goal={project.goal}
+                        raised={project.raised}
+                        donors={project.donors}
+                        type={project.type}
+                        endDate={project.endDate}
+                      />
+                    </Link>
+                  ))}
+                </div>
+
+                {/* Loading Indicator for large datasets */}
+                {visibleCount < filteredProjects.length &&
+                  filteredProjects.length > 20 && (
+                  <div className="flex justify-center items-center py-4">
+                    <div className="animate-pulse text-astradarkgray">
+                      Loading more projects...
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="text-center py-16">
+                <p className="text-astradarkgray font-s text-lg">
+                  No projects found matching your criteria.
+                </p>
+                <button
+                  onClick={() => {
+                    setSelectedType("All");
+                    setSearchTerm("");
+                  }}
+                  className="mt-4 blue-button"
+                >
+                  Reset Filters
+                </button>
+              </div>
+            )
           )}
 
           {/* See More Button */}
