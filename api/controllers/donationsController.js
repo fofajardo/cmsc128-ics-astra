@@ -16,7 +16,11 @@ const getDonations = async (req, res) => {
 
   try {
     const filters = req.query;
-    const { data, error } = await donationsService.fetchDonations(req.supabase, filters);
+    const completeFilters = {
+      ...filters,
+      page: -1, // Get all donations
+    };
+    const { data, error } = await donationsService.fetchDonations(req.supabase, completeFilters);
 
     if (error) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -26,9 +30,9 @@ const getDonations = async (req, res) => {
     }
 
     const userIds = data.map(donation => donation.user_id);
-    const { data: alumniData, error: alumniError } = await alumniService.fetchAlumniProfilesByFilter(req.supabase, { alum_id: userIds });
+    const { data: alumniData, error: alumniError } = await alumniService.fetchAlumniProfilesByFilter(req.supabase, { alum_id: userIds, page: -1 });
 
-    const { data: userData, error: userError } = await usersService.fetchUsersByFilter(req.supabase, { id: userIds });
+    const { data: userData, error: userError } = await usersService.fetchUsersByFilter(req.supabase, { id: userIds, page: -1 });
 
     const donationsWithDonors = data.map(donation => {
       const alum = alumniData.find(a => a.alum_id === donation.user_id);
