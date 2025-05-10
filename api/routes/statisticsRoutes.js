@@ -4,6 +4,7 @@ import statisticsController from "../controllers/statisticsController.js";
 const statisticsRouter = () => {
   const router = express.Router();
 
+  router.get("/alumni-stats", statisticsController.getAlumniStats);
   router.get("/active-alumni", statisticsController.getActiveAlumniStats);
   router.get("/active-jobs", statisticsController.getActiveJobsStats);
   router.get("/active-events", statisticsController.getActiveEventsStats);

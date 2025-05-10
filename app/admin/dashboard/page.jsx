@@ -19,7 +19,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchStatistics = async () => {
       try {
-        const alumniRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/active-alumni`);
+        const alumniRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-stats`);
         const jobsRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/active-jobs`);
         const eventsRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/active-events`);
         const fundsRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/funds-raised`);
