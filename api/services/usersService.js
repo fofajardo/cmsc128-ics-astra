@@ -55,7 +55,35 @@ const fetchInactiveAlumni = async (supabase, page = 1, limit = 10) => {
   const { data, error } = await supabase
     .from("inactive_alumni_view")
     .select("*")
-    .range(startIndex, endIndex + 1);
+    .range(startIndex, endIndex);
+
+  if (error) return { error };
+
+  return { data };
+};
+
+const fetchApprovedAlumni = async (supabase, page = 1, limit = 10) => {
+  const startIndex = (page - 1) * limit;
+  const endIndex = startIndex + Number(limit) - 1;
+
+  const { data, error } = await supabase
+    .from("approved_alumni_view")
+    .select("*")
+    .range(startIndex, endIndex);
+
+  if (error) return { error };
+
+  return { data };
+};
+
+const fetchPendingAlumni = async (supabase, page = 1, limit = 10) => {
+  const startIndex = (page - 1) * limit;
+  const endIndex = startIndex + Number(limit) - 1;
+
+  const { data, error } = await supabase
+    .from("pending_alumni_view")
+    .select("*")
+    .range(startIndex, endIndex);
 
   if (error) return { error };
 
@@ -125,6 +153,8 @@ const hardDeleteUser = async (supabase, userId) => {
 const usersService = {
   fetchUsers,
   fetchInactiveAlumni,
+  fetchApprovedAlumni,
+  fetchPendingAlumni,
   fetchUserById,
   fetchUsersByFilter,
   checkExistingUser,

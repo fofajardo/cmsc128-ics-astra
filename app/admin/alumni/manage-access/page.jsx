@@ -10,16 +10,13 @@ import ToastNotification from "@/components/ToastNotification";
 import axios from "axios";
 import { capitalizeName } from "@/utils/format";
 
-
 export default function AlumniAccess() {
   const [showFilter, setShowFilter] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
   const { currTab, info } = useTab();
   const [toast, setToast] = useState(null);
   const toggleFilter = () => { setShowFilter((prev) => !prev); };
-  // console.log("Current tab from layout:", info);
-
-  const [alumList, setAlumList] = useState(mockdata);
+  const [alumList, setAlumList] = useState([]);
   const [appliedFilters, updateFilters] = useState({
     yearFrom: "",
     yearTo: "",
@@ -39,24 +36,21 @@ export default function AlumniAccess() {
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    setSelectedIds([]);
-  }, [currTab]);
-
-
-  // FOR BACKEND PEEPS
-  useEffect(() => {
-    console.log("State updated:", {
-      appliedFilters,
-      pagination,
-      searchQuery,
-    });
-
     const fetchAlumniProfiles = async () => {
       try {
         // For better search, fetch all or more profiles when searching
         // This allows for more sophisticated client-side filtering
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles`,
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+
+        const endpoints = {
+          Pending: "/v1/users/pending-alumni",
+          Approved: "/v1/users/approved-alumni",
+          Inactive: "/v1/users/inactive-alumni",
+        };
+
+        const route = `${baseUrl}${endpoints[currTab] || endpoints["Pending"]}`;
+
+        const response = await axios.get(route,
           {
             params: {
               page: searchQuery ? 1 : pagination.currPage,
@@ -135,7 +129,14 @@ export default function AlumniAccess() {
               return alumData;
             })
           );
+          const totalCount = updatedAlumList.length;
 
+          // Set total and lastPage based on the fetched total count
+          setPagination((prev) => ({
+            ...prev,
+            total: totalCount,
+            lastPage: Math.ceil(totalCount / prev.numToShow),
+          }));
           // Store raw data
           setAlumList(updatedAlumList);
         } else {
@@ -147,7 +148,7 @@ export default function AlumniAccess() {
     };
 
     fetchAlumniProfiles();
-  }, [pagination.currPage, pagination.numToShow]);
+  }, [pagination.currPage, pagination.numToShow, currTab]);
 
   return (
     <div>
@@ -196,41 +197,38 @@ export default function AlumniAccess() {
   );
 }
 
-
-
 function getNotifyContent(action, selectedCount) {
   const plural = selectedCount > 1 ? "s" : "";
   let message = "";
   let type = "success";
 
   switch (action) {
-  case "approve":
-    message = selectedCount > 0
-      ? `${selectedCount} pending account${plural} have been approved!`
-      : "All pending accounts have been approved!";
-    break;
-  case "decline":
-    message = selectedCount > 0
-      ? `${selectedCount} pending account${plural} have been declined!`
-      : "All pending accounts have been declined!";
-    type = "fail";
-    break;
-  case "remove":
-    message = selectedCount > 0
-      ? `Access has been removed from ${selectedCount} accounts!`
-      : "Access has been removed from all active accounts!";
-    type = "fail";
-    break;
-  case "reactivate":
-    message = selectedCount > 0
-      ? `${selectedCount} inactive account${plural} have been reactivated!`
-      : "All inactive accounts have been reactivated!";
-    break;
+    case "approve":
+      message = selectedCount > 0
+        ? `${selectedCount} pending account${plural} have been approved!`
+        : "All pending accounts have been approved!";
+      break;
+    case "decline":
+      message = selectedCount > 0
+        ? `${selectedCount} pending account${plural} have been declined!`
+        : "All pending accounts have been declined!";
+      type = "fail";
+      break;
+    case "remove":
+      message = selectedCount > 0
+        ? `Access has been removed from ${selectedCount} accounts!`
+        : "Access has been removed from all active accounts!";
+      type = "fail";
+      break;
+    case "reactivate":
+      message = selectedCount > 0
+        ? `${selectedCount} inactive account${plural} have been reactivated!`
+        : "All inactive accounts have been reactivated!";
+      break;
   }
 
   return { notifyMessage: message, notifyType: type };
 }
-
 
 function BottomButtons({ selectedCount, currTab, setToast }) {
   const [modal, setModal] = useState({
@@ -261,7 +259,6 @@ function BottomButtons({ selectedCount, currTab, setToast }) {
       });
     }, 50);
   };
-
 
   const modals = {
     approve: {
@@ -349,9 +346,6 @@ function BottomButtons({ selectedCount, currTab, setToast }) {
   );
 }
 
-
-
-
 const cols = [
   { label: "Checkbox:label-hidden", justify: "center", visible: "all" },
   { label: "Image:label-hidden", justify: "center", visible: "all" },
@@ -402,8 +396,6 @@ function renderCheckboxes(id, selectedIds, setSelectedIds) {
   );
 }
 
-
-
 function renderAvatar(image, name) {
   return (
     <div className="flex justify-center">
@@ -430,7 +422,6 @@ function renderName(name, email) {
 function renderText(text) {
   return <div className="text-center text-astradarkgray font-s">{text}</div>;
 }
-
 
 function renderActions(id, name, currTab) {
   // Based muna sa currTab pero I think mas maganda kung sa mismong account/user kukunin yung active status*/
@@ -532,127 +523,125 @@ function renderActions(id, name, currTab) {
   );
 }
 
-
-
-const mockdata = [
-  {
-    id: 1,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "Emma Johnson",
-    email: "emma.johnson@example.com",
-    graduationYear: 2015,
-    student_num: "2022-03814",
-    course: "BS Computer Science",
-    location: "New York, NY",
-    fieldOfWork: "Backend Development",
-    skills: ["Java", "Spring Boot", "REST APIs", "PostgreSQL"]
-  },
-  {
-    id: 2,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "Liam Smith",
-    email: "liam.smith@example.com",
-    graduationYear: 2018,
-    student_num: "2021-03814",
-    course: "BS Civil Engineering",
-    location: "San Francisco, CA",
-    fieldOfWork: "Machine Learning Engineering",
-    skills: ["Python", "Scikit-learn", "Pandas"]
-  },
-  {
-    id: 3,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "Olivia Brown",
-    email: "olivia.brown@example.com",
-    graduationYear: 2012,
-    student_num: "2020-03814",
-    course: "BS Education",
-    location: "Chicago, IL",
-    fieldOfWork: "Frontend Development",
-    skills: ["HTML", "CSS", "JavaScript", "Vue.js"]
-  },
-  {
-    id: 4,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "Noah Davis",
-    email: "noah.davis@example.com",
-    graduationYear: 2020,
-    student_num: "2022-30214",
-    course: "BS Computer Science",
-    location: "Austin, TX",
-    fieldOfWork: "DevOps Engineering",
-    skills: ["Docker", "Kubernetes", "AWS", "CI/CD", "Terraform"]
-  },
-  {
-    id: 5,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "Ava Wilson",
-    email: "ava.wilson@example.com",
-    graduationYear: 2017,
-    student_num: "2020-12314",
-    course: "BS Computer Science",
-    location: "Seattle, WA",
-    fieldOfWork: "Mobile App Development",
-    skills: ["Swift", "iOS", "Firebase"]
-  },
-  {
-    id: 6,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "William Martinez",
-    email: "william.martinez@example.com",
-    graduationYear: 2014,
-    student_num: "2021-41237",
-    course: "BS Chemical Engineering",
-    location: "Miami, FL",
-    fieldOfWork: "Full Stack Development",
-    skills: ["Node.js", "React", "MongoDB", "GraphQL"]
-  },
-  {
-    id: 7,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "Sophia Garcia",
-    email: "sophia.garcia@example.com",
-    graduationYear: 2016,
-    student_num: "2022-99632",
-    course: "BS Forestry",
-    location: "Denver, CO",
-    fieldOfWork: "Cloud Engineering",
-    skills: ["Azure", "Linux", "Networking", "Python"]
-  },
-  {
-    id: 8,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "James Anderson",
-    email: "james.anderson@example.com",
-    graduationYear: 2013,
-    student_num: "2017-26934",
-    course: "BS Computer Science",
-    location: "Boston, MA",
-    fieldOfWork: "Security Engineering",
-    skills: ["Penetration Testing", "OWASP", "Metasploit"]
-  },
-  {
-    id: 9,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "Isabella Thomas",
-    email: "isabella.thomas@example.com",
-    graduationYear: 2019,
-    student_num: "2015-04814",
-    course: "BS Industrial Engineering",
-    location: "Los Angeles, CA",
-    fieldOfWork: "AI Research",
-    skills: ["PyTorch", "Deep Learning", "NLP"]
-  },
-  {
-    id: 10,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "Benjamin Lee",
-    email: "benjamin.lee@example.com",
-    graduationYear: 2011,
-    student_num: "2013-03825",
-    course: "BS Information Technology",
-    location: "Atlanta, GA",
-    fieldOfWork: "Database Administration",
-    skills: ["SQL", "Oracle", "Database Tuning", "Shell Scripting", "PL/SQL"]
-  }
-];
+// const mockdata = [
+//   {
+//     id: 1,
+//     image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
+//     alumname: "Emma Johnson",
+//     email: "emma.johnson@example.com",
+//     graduationYear: 2015,
+//     student_num: "2022-03814",
+//     course: "BS Computer Science",
+//     location: "New York, NY",
+//     fieldOfWork: "Backend Development",
+//     skills: ["Java", "Spring Boot", "REST APIs", "PostgreSQL"]
+//   },
+//   {
+//     id: 2,
+//     image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
+//     alumname: "Liam Smith",
+//     email: "liam.smith@example.com",
+//     graduationYear: 2018,
+//     student_num: "2021-03814",
+//     course: "BS Civil Engineering",
+//     location: "San Francisco, CA",
+//     fieldOfWork: "Machine Learning Engineering",
+//     skills: ["Python", "Scikit-learn", "Pandas"]
+//   },
+//   {
+//     id: 3,
+//     image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
+//     alumname: "Olivia Brown",
+//     email: "olivia.brown@example.com",
+//     graduationYear: 2012,
+//     student_num: "2020-03814",
+//     course: "BS Education",
+//     location: "Chicago, IL",
+//     fieldOfWork: "Frontend Development",
+//     skills: ["HTML", "CSS", "JavaScript", "Vue.js"]
+//   },
+//   {
+//     id: 4,
+//     image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
+//     alumname: "Noah Davis",
+//     email: "noah.davis@example.com",
+//     graduationYear: 2020,
+//     student_num: "2022-30214",
+//     course: "BS Computer Science",
+//     location: "Austin, TX",
+//     fieldOfWork: "DevOps Engineering",
+//     skills: ["Docker", "Kubernetes", "AWS", "CI/CD", "Terraform"]
+//   },
+//   {
+//     id: 5,
+//     image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
+//     alumname: "Ava Wilson",
+//     email: "ava.wilson@example.com",
+//     graduationYear: 2017,
+//     student_num: "2020-12314",
+//     course: "BS Computer Science",
+//     location: "Seattle, WA",
+//     fieldOfWork: "Mobile App Development",
+//     skills: ["Swift", "iOS", "Firebase"]
+//   },
+//   {
+//     id: 6,
+//     image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
+//     alumname: "William Martinez",
+//     email: "william.martinez@example.com",
+//     graduationYear: 2014,
+//     student_num: "2021-41237",
+//     course: "BS Chemical Engineering",
+//     location: "Miami, FL",
+//     fieldOfWork: "Full Stack Development",
+//     skills: ["Node.js", "React", "MongoDB", "GraphQL"]
+//   },
+//   {
+//     id: 7,
+//     image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
+//     alumname: "Sophia Garcia",
+//     email: "sophia.garcia@example.com",
+//     graduationYear: 2016,
+//     student_num: "2022-99632",
+//     course: "BS Forestry",
+//     location: "Denver, CO",
+//     fieldOfWork: "Cloud Engineering",
+//     skills: ["Azure", "Linux", "Networking", "Python"]
+//   },
+//   {
+//     id: 8,
+//     image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
+//     alumname: "James Anderson",
+//     email: "james.anderson@example.com",
+//     graduationYear: 2013,
+//     student_num: "2017-26934",
+//     course: "BS Computer Science",
+//     location: "Boston, MA",
+//     fieldOfWork: "Security Engineering",
+//     skills: ["Penetration Testing", "OWASP", "Metasploit"]
+//   },
+//   {
+//     id: 9,
+//     image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
+//     alumname: "Isabella Thomas",
+//     email: "isabella.thomas@example.com",
+//     graduationYear: 2019,
+//     student_num: "2015-04814",
+//     course: "BS Industrial Engineering",
+//     location: "Los Angeles, CA",
+//     fieldOfWork: "AI Research",
+//     skills: ["PyTorch", "Deep Learning", "NLP"]
+//   },
+//   {
+//     id: 10,
+//     image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
+//     alumname: "Benjamin Lee",
+//     email: "benjamin.lee@example.com",
+//     graduationYear: 2011,
+//     student_num: "2013-03825",
+//     course: "BS Information Technology",
+//     location: "Atlanta, GA",
+//     fieldOfWork: "Database Administration",
+//     skills: ["SQL", "Oracle", "Database Tuning", "Shell Scripting", "PL/SQL"]
+//   }
+// ];

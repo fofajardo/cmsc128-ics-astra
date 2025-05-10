@@ -45,8 +45,72 @@ const getInactiveAlumni = async (req, res) => {
   }
 
   try {
-    const { page = 1, limit = 10} = req.query;
+    const { page = 1, limit = 10 } = req.query;
     const { data, error } = await usersService.fetchInactiveAlumni(req.supabase, page, limit);
+
+    if (error) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error.message
+      });
+    }
+
+    return res.status(httpStatus.OK).json({
+      status: "OK",
+      list: data || [],
+    });
+
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
+
+const getApprovedAlumni = async (req, res) => {
+  if (req.you.cannot(Actions.READ, Subjects.USER)) {
+    return res.status(httpStatus.FORBIDDEN).json({
+      status: "FORBIDDEN",
+      message: "You are not allowed to access this resource."
+    });
+  }
+
+  try {
+    const { page = 1, limit = 10 } = req.query;
+    const { data, error } = await usersService.fetchApprovedAlumni(req.supabase, page, limit);
+
+    if (error) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error.message
+      });
+    }
+
+    return res.status(httpStatus.OK).json({
+      status: "OK",
+      list: data || [],
+    });
+
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
+
+const getPendingAlumni = async (req, res) => {
+  if (req.you.cannot(Actions.READ, Subjects.USER)) {
+    return res.status(httpStatus.FORBIDDEN).json({
+      status: "FORBIDDEN",
+      message: "You are not allowed to access this resource."
+    });
+  }
+
+  try {
+    const { page = 1, limit = 10 } = req.query;
+    const { data, error } = await usersService.fetchPendingAlumni(req.supabase, page, limit);
 
     if (error) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -305,6 +369,8 @@ const deleteUser = async (req, res) => {
 const usersController = {
   getUsers,
   getInactiveAlumni,
+  getApprovedAlumni,
+  getPendingAlumni,
   getUserById,
   createUser,
   updateUser,

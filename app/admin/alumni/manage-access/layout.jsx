@@ -45,7 +45,7 @@ export default function AdminAlumniLayout({ children }) {
     router.push("/admin/alumni/manage-access");
   };
 
-  //if from profile page, go back and set tab
+  // if from profile page, go back and set tab
   const dynamicTabClick = (tabName) => {
     if (pathname === "/admin/alumni/manage-access"){
       handleTabChange(tabName);
