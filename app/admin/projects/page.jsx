@@ -12,6 +12,7 @@ import ProjectCardActive from "@/components/ProjectCardActive";
 import { formatCurrency, capitalizeName } from "@/utils/format";
 import { REQUEST_STATUS } from "@/constants/requestConsts";
 import { PROJECT_STATUS, PROJECT_TYPE } from "@/constants/projectConsts";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 import DeclineModal from "@/components/projects/DeclineModal";
 import Link from "next/link";
 import axios from "axios";
@@ -45,6 +46,7 @@ export default function ProjectsAdmin() {
 
           // extract project id's
           const projectIds = projectData.list.map(project => project.projectData.project_id);
+          console.log(projectIds);
 
           // map for photos initialization
           const photoMap = {};
@@ -427,54 +429,60 @@ export default function ProjectsAdmin() {
           />
 
           {/* Projects Grid */}
-          <div className="bg-astrawhite shadow-md p-6 rounded-b-xl">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {currTab === "Pending" &&
-                currentProjects.map((project) => (
-                  <ProjectCardPending
-                    key={project.id}
-                    id={project.request_id}
-                    image={project.image}
-                    title={project.title}
-                    type={project.type}
-                    requester={project.requester}
-                    goal={project.goal}
-                    description={project.description}
-                    onApprove={handleApprove(project.request_id, project.title)}
-                    onTriggerDeclineModal={handleDecline(project.request_id, project.title)}
-                  />
-                ))}
-
-              {(currTab === "Active" || currTab === "Inactive") &&
-                currentProjects.map((project) => (
-                  <ProjectCardActive
-                    key={project.id}
-                    id={project.request_id}
-                    image={project.image}
-                    title={project.title}
-                    type={project.type}
-                    goal={project.goal}
-                    raised={project.raised}
-                    donors={project.donors}
-                    endDate={project.endDate}
-                    isActive={currTab === "Active"}
-                  />
-                ))}
+          {loading ? (
+            <div className="bg-astrawhite shadow-md p-6 rounded-b-xl flex items-center justify-center">
+              <LoadingSpinner className="h-10 w-10" />
             </div>
+          ) : (
+            <div className="bg-astrawhite shadow-md p-6 rounded-b-xl">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {currTab === "Pending" &&
+                  currentProjects.map((project) => (
+                    <ProjectCardPending
+                      key={project.id}
+                      id={project.request_id}
+                      image={project.image}
+                      title={project.title}
+                      type={project.type}
+                      requester={project.requester}
+                      goal={project.goal}
+                      description={project.description}
+                      onApprove={handleApprove(project.request_id, project.title)}
+                      onTriggerDeclineModal={handleDecline(project.request_id, project.title)}
+                    />
+                  ))}
 
-            {/* If no projects match the filter */}
-            {currentProjects.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-astradarkgray font-s">
-                  No{" "}
-                  {selectedType.toLowerCase() !== "all"
-                    ? selectedType.toLowerCase()
-                    : ""}{" "}
-                  projects found.
-                </p>
+                {(currTab === "Active" || currTab === "Inactive") &&
+                  currentProjects.map((project) => (
+                    <ProjectCardActive
+                      key={project.id}
+                      id={project.request_id}
+                      image={project.image}
+                      title={project.title}
+                      type={project.type}
+                      goal={project.goal}
+                      raised={project.raised}
+                      donors={project.donors}
+                      endDate={project.endDate}
+                      isActive={currTab === "Active"}
+                    />
+                  ))}
               </div>
-            )}
-          </div>
+
+              {/* If no projects match the filter */}
+              {currentProjects.length === 0 && (
+                <div className="text-center py-12">
+                  <p className="text-astradarkgray font-s">
+                    No{" "}
+                    {selectedType.toLowerCase() !== "all"
+                      ? selectedType.toLowerCase()
+                      : ""}{" "}
+                    projects found.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Pagination for projects */}
           <PageTool pagination={pagination} setPagination={setPagination} />
