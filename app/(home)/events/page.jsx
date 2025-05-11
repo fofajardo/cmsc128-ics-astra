@@ -15,6 +15,7 @@ import ExploreUPLBSection from "@/components/events/GroupedEvents/ExploreUPLBSec
 import UPLBImageCollage from "@/components/events/GroupedEvents/UPLBImageCollage";
 
 import eventsVector from "../../assets/events-vector.png";
+import venue1 from "../../assets/venue1.jpg";
 import venue2 from "../../assets/venue2.jpeg";
 import { useSignedInUser } from "@/components/UserContext";
 
@@ -166,10 +167,11 @@ export default function EventsPage() {
           // const matchedContent = contentMap.get(event.event_id) || {};
           const photoUrl = await fetchEventPhoto(event.event_id);
           console.log("in fetch data, fetching user:", user);
+          let defaultVenue = Math.random() < 0.5 ? venue1.src : venue2.src; // Cycle between venue1 and venue2
           return {
             id: event.event_id,
             event_id: event.event_id,
-            imageSrc: photoUrl || venue2,  // Use fetched photo or default
+            imageSrc: photoUrl || defaultVenue,  // Use fetched photo or default
             title: event.title || "Untitled",
             description: event.details || "No description",
             date: new Date(event.event_date).toDateString(),
