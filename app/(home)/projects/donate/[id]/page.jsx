@@ -10,6 +10,7 @@ import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 import { DONATION_MODE_OF_PAYMENT } from "@/constants/donationConsts";
 import { useSignedInUser } from "@/components/UserContext";
+import { formatCurrency } from "@/utils/format";
 
 export default function DonatePage() {
   const { id } = useParams();
@@ -18,6 +19,7 @@ export default function DonatePage() {
   const [amount, setAmount] = useState(1000);
   const [paymentMethod, setPaymentMethod] = useState("bank");
   const [receipt, setReceipt] = useState(null);
+  const [isAnonymous, setIsAnonymous] = useState(null);
   const [status, setStatus] = useState("idle");
   const [showToast, setShowToast] = useState(null);
 
@@ -40,7 +42,7 @@ export default function DonatePage() {
         reference_num: generatedRefNum,
         mode_of_payment: DONATION_MODE_OF_PAYMENT.BANK_TRANSFER,
         amount: amount,
-        is_anonymous: false,  // TODO: Add is_anonymous field
+        is_anonymous: isAnonymous,
         comment: null,  // TODO: Add comment field
       };
 
@@ -61,6 +63,12 @@ export default function DonatePage() {
   };
 
   const handleDonate = () => {
+    const amountRegex = /^\d+$/;
+    if (!amountRegex.test(amount) || amount <= 0) {
+      setShowToast({ type: "fail", message: "Please enter a valid non-zero amount in pesos." });
+      return;
+    }
+
     if (paymentMethod === "paypal") {
       window.location.href = "https://www.paypal.com/signin";
       return;
@@ -68,13 +76,18 @@ export default function DonatePage() {
 
     if (paymentMethod === "credit") {
       if (!cardNumber || !expiry || !cvv || !cardName) {
-        setShowToast({ type: "error", message: "Please complete all credit/debit card fields." });
+        setShowToast({ type: "fail", message: "Please complete all credit/debit card fields." });
         return;
       }
     }
 
     if (paymentMethod === "bank" && !receipt) {
-      setShowToast({ type: "error", message: "Please upload a receipt before donating." });
+      setShowToast({ type: "fail", message: "Please upload a receipt before donating." });
+      return;
+    }
+
+    if (isAnonymous === null) {
+      setShowToast({ type: "fail", message: "Please select whether you want to donate anonymously." });
       return;
     }
 
@@ -132,7 +145,7 @@ export default function DonatePage() {
               onChange={(e) => handleAmountChange(e.target.value)}
               className="flex-1 px-3 py-2 border border-astralightgray-300 rounded-md text-center font-semibold text-lg focus:outline-none"
             />
-            <button className="text-sm bg-[var(--color-astraprimary)] text-astrawhite px-4 py-2 rounded-md font-medium hover:bg-opacity-90 transition">
+            <button disabled={true} className="select-none cursor-default hover:none text-sm bg-[var(--color-astraprimary)] text-astrawhite px-4 py-2 rounded-md font-medium">
               Cash Amount
             </button>
           </div>
@@ -141,7 +154,7 @@ export default function DonatePage() {
         {/* Payment Method Section */}
         <div className="border-b border-astralightgray-200 pb-6 mb-6">
           <h3 className="text-sm font-medium mb-4">Select Payment Method</h3>
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 mb-6">
             {/* PayPal */}
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -226,13 +239,50 @@ export default function DonatePage() {
               </div>
             )}
           </div>
+
+          <div className="flex justify-between items-center">
+            <label
+              htmlFor="anonymous-yes"
+              className="text-sm text-astralightgray-700"
+            >
+              Donate anonymously
+            </label>
+
+            <div className="flex gap-4">
+              <label className="flex items-center gap-2 cursor-pointer text-sm">
+                <input
+                  type="radio"
+                  id="anonymous-yes"
+                  name="anonymous"
+                  value="yes"
+                  checked={isAnonymous === true}
+                  onChange={() => setIsAnonymous(true)}
+                  className="h-4 w-4 text-[var(--color-astraprimary)] bg-white border border-astralightgray-300 rounded focus:ring-[var(--color-astraprimary)]"
+                />
+                <span>Yes</span>
+              </label>
+
+              <label className="flex items-center gap-2 cursor-pointer text-sm">
+                <input
+                  type="radio"
+                  id="anonymous-no"
+                  name="anonymous"
+                  value="no"
+                  checked={isAnonymous === false}
+                  onChange={() => setIsAnonymous(false)}
+                  className="h-4 w-4 text-[var(--color-astraprimary)] bg-white border border-astralightgray-300 rounded focus:ring-[var(--color-astraprimary)]"
+                />
+                <span>No</span>
+              </label>
+            </div>
+          </div>
         </div>
 
         {/* Summary + Donate Button */}
         <div className="flex justify-between items-center mb-6">
           <p className="text-sm font-medium">Your Donation</p>
           <p className="text-2xl font-bold">
-            ₱{amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+            {formatCurrency(amount)}
           </p>
         </div>
 
