@@ -31,7 +31,7 @@ export default function AlumniAccess() {
     currPage: 1,            // Current active page
     lastPage: 10,           // Last Page => total/numToShow
     numToShow: 10,          // How many alum to show
-    total: 999              // How many alum in db
+    total: 0                // How many alum in db
   });
   const [searchQuery, setSearchQuery] = useState("");
 
