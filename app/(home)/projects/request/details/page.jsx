@@ -52,7 +52,7 @@ const RequestFundraiserDetails = () => {
   const handleTitleChange = (e) => {
     const value = e.target.value;
     setTitle(value);
-    updateUrlParams("title", value);
+    // updateUrlParams("title", value);
 
     // Validate title is not empty
     if (!value.trim()) {
@@ -66,7 +66,7 @@ const RequestFundraiserDetails = () => {
   const handleDescriptionChange = (e) => {
     const value = e.target.value;
     setDescription(value);
-    updateUrlParams("description", value);
+    // updateUrlParams("description", value);
 
     // Validate description is not empty
     if (!value.trim()) {
