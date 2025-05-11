@@ -184,68 +184,68 @@ export default function Events() {
     } catch (error) {
       console.error("Failed to fetch event statistics:", error);
       return { past: 0, active: 0, total: 0 };
+    };
+  };
+
+  const fetchEvents = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events`);
+      const eventData = response.data;
+
+      if (eventData.status === "OK") {
+        const events = eventData.list;
+
+        // Fetch photos, contents, and interests concurrently
+        const [contents, interests, stats] = await Promise.all([
+          fetchContents(events),
+          fetchEventInterests(events),
+          updateStats()
+        ]);
+
+        // Update state
+        setContents(contents);
+        setEventInterests(interests);
+        setEventCounts(stats);
+
+        const eventList = await Promise.all(
+          events.map((event) => ({
+            id: event.event_id,
+            event_id: event.event_id,
+            content_id: event.event_id,
+            event_name: contents[event.event_id]?.title || "Unknown",
+            location: event.venue || "Unknown Location",
+            type: event.online ? "Online" : "In-Person",
+            date: new Date(event.event_date).toDateString(),
+            going: event.going ?? 10,
+            interested: interests[event.event_id] || 0,
+          }))
+        );
+
+        // Set events using the fetched data
+        setEvents(eventList);
+
+      } else {
+        throw new Error("Failed to fetch events");
+      }
+    } catch (error) {
+      console.error("Failed to fetch events:", error);
+      setToast({
+        type: "error",
+        message: error.response
+          ? `Server error: ${error.response.status} - ${error.response.data.message || "Unknown error"}`
+          : error.code === "ERR_NETWORK"
+            ? "Network error: Cannot connect to the server. Please check your connection."
+            : "An unexpected error occurred. Please try again later.",
+      });
+      setEvents([]);
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   // FOR BACKEND PEEPS
   useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events`);
-        const eventData = response.data;
-
-        if (eventData.status === "OK") {
-          const events = eventData.list;
-
-          // Fetch photos, contents, and interests concurrently
-          const [contents, interests, stats] = await Promise.all([
-            fetchContents(events),
-            fetchEventInterests(events),
-            updateStats()
-          ]);
-
-          // Update state
-          setContents(contents);
-          setEventInterests(interests);
-          setEventCounts(stats);
-
-          const eventList = await Promise.all(
-            events.map((event) => ({
-              id: event.event_id,
-              event_id: event.event_id,
-              content_id: event.event_id,
-              event_name: contents[event.event_id]?.title || "Unknown",
-              location: event.venue || "Unknown Location",
-              type: event.online ? "Online" : "In-Person",
-              date: new Date(event.event_date).toDateString(),
-              going: event.going ?? 10,
-              interested: interests[event.event_id] || 0,
-            }))
-          );
-
-          // Set events using the fetched data
-          setEvents(eventList);
-
-        } else {
-          throw new Error("Failed to fetch events");
-        }
-      } catch (error) {
-        console.error("Failed to fetch events:", error);
-        setToast({
-          type: "error",
-          message: error.response
-            ? `Server error: ${error.response.status} - ${error.response.data.message || "Unknown error"}`
-            : error.code === "ERR_NETWORK"
-            ? "Network error: Cannot connect to the server. Please check your connection."
-            : "An unexpected error occurred. Please try again later.",
-        });
-        setEvents([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchEvents();
   }, [pagination.currPage, pagination.numToShow]);
 
@@ -271,10 +271,10 @@ export default function Events() {
   }, [filteredEvents, pagination.currPage, pagination.numToShow]);
 
   useEffect(() => {
-      if (eventList && Array.isArray(eventList)) {
-        setFilteredEvents(eventList);
-      }
-    }, [eventList]);
+    if (eventList && Array.isArray(eventList)) {
+      setFilteredEvents(eventList);
+    }
+  }, [eventList]);
 
   // useEffect(() => {
   //   if (!Array.isArray(eventList)) return;
