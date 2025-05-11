@@ -37,9 +37,10 @@ export default function ProjectDetails({ params }) {
   const [loading, setLoading] = useState(true);
   const [projectData, setProjectData] = useState(null);
   const [projectPhoto, setProjectPhoto] = useState({});
+  const [error, setError] = useState(null);
 
-  const goalValue = parseInt(projectData?.goal.replace(/[^\d]/g, ""));
-  const raisedValue = parseInt(projectData?.raised.replace(/[^\d]/g, ""));
+  const goalValue = parseInt(projectData?.goal?.replace(/[^\d]/g, "") || "0");
+  const raisedValue = parseInt(projectData?.raised?.replace(/[^\d]/g, "") || "0");
   const progressPercentage = Math.min(
     Math.round((raisedValue / goalValue) * 100),
     100
@@ -49,6 +50,7 @@ export default function ProjectDetails({ params }) {
     const fetchProjectRequest = async () => {
       try {
         setLoading(true);
+        setError(null);
         const projectResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/requests/projects/${id}`);
         const projectData = projectResponse.data;
         console.log(projectData);
@@ -117,9 +119,11 @@ export default function ProjectDetails({ params }) {
           }
         } else {
           console.error("Unexpected response:", projectData);
+          setError("Project not found");
         }
       } catch (error) {
         console.error("Failed to fetch projects and donations:", error);
+        setError("Project not found");
       } finally {
         setLoading(false);
       }
@@ -136,6 +140,40 @@ export default function ProjectDetails({ params }) {
     setIsContactModalOpen(false);
     setMessage("");
   };
+
+  if (loading) {
+    return (
+      <div className="bg-astradirtywhite min-h-screen pb-12">
+        <div className="max-w-6xl mx-auto px-6 mt-6">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
+            <div className="h-64 bg-gray-200 rounded mb-4"></div>
+            <div className="h-32 bg-gray-200 rounded"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-astradirtywhite min-h-screen">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="flex flex-col items-center justify-center py-16 sm:py-24 md:py-32">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-astraprimary mb-3 sm:mb-4">404</h1>
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-astradarkgray mb-3 sm:mb-4">Project Not Found</h2>
+            <p className="text-sm sm:text-base text-astradarkgray mb-6 sm:mb-8 text-center max-w-md px-4">The project you're looking for doesn't exist or has been removed.</p>
+            <button
+              onClick={() => router.push('/projects')}
+              className="bg-astraprimary text-astrawhite px-5 sm:px-6 py-2 sm:py-2.5 rounded-lg hover:bg-astraprimary/90 transition-colors text-sm sm:text-base"
+            >
+              Back to Projects
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-astradirtywhite min-h-screen pb-12">
