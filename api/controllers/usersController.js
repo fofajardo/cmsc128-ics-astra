@@ -45,8 +45,20 @@ const getInactiveAlumni = async (req, res) => {
   }
 
   try {
-    const { page = 1, limit = 10 } = req.query;
-    const { data, error } = await usersService.fetchInactiveAlumni(req.supabase, page, limit);
+    const {
+      page = 1,
+      limit = 10,
+      search = "",
+      filters = {}
+    } = req.query;
+
+    const { data, total, error } = await usersService.fetchInactiveAlumni(
+      req.supabase,
+      page,
+      limit,
+      search,
+      filters
+    );
 
     if (error) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -58,6 +70,7 @@ const getInactiveAlumni = async (req, res) => {
     return res.status(httpStatus.OK).json({
       status: "OK",
       list: data || [],
+      total: total
     });
 
   } catch (error) {
@@ -77,8 +90,20 @@ const getApprovedAlumni = async (req, res) => {
   }
 
   try {
-    const { page = 1, limit = 10 } = req.query;
-    const { data, error } = await usersService.fetchApprovedAlumni(req.supabase, page, limit);
+    const {
+      page = 1,
+      limit = 10,
+      search = "",
+      filters = {}
+    } = req.query;
+
+    const { data, total, error } = await usersService.fetchApprovedAlumni(
+      req.supabase,
+      page,
+      limit,
+      search,
+      filters
+    );
 
     if (error) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -90,6 +115,7 @@ const getApprovedAlumni = async (req, res) => {
     return res.status(httpStatus.OK).json({
       status: "OK",
       list: data || [],
+      total: total
     });
 
   } catch (error) {
@@ -109,8 +135,20 @@ const getPendingAlumni = async (req, res) => {
   }
 
   try {
-    const { page = 1, limit = 10 } = req.query;
-    const { data, error } = await usersService.fetchPendingAlumni(req.supabase, page, limit);
+    const {
+      page = 1,
+      limit = 10,
+      search = "",
+      filters = {}
+    } = req.query;
+
+    const { data, total, error } = await usersService.fetchPendingAlumni(
+      req.supabase,
+      page,
+      limit,
+      search,
+      filters
+    );
 
     if (error) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -122,6 +160,7 @@ const getPendingAlumni = async (req, res) => {
     return res.status(httpStatus.OK).json({
       status: "OK",
       list: data || [],
+      total: total
     });
 
   } catch (error) {

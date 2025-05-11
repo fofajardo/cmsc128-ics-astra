@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { TableHeader, Table, PageTool } from "@/components/TableBuilder";
 import SearchFilter from "admin/alumni/search/filter";
 import { Check, Eye, Trash2, CheckCircle2, ShieldCheck } from "lucide-react";
@@ -34,6 +34,8 @@ export default function AlumniAccess() {
     total: 0                // How many alum in db
   });
   const [searchQuery, setSearchQuery] = useState("");
+
+  const stableFilters = useMemo(() => appliedFilters, [JSON.stringify(appliedFilters)]);
 
   useEffect(() => {
     setPagination({
@@ -83,8 +85,10 @@ export default function AlumniAccess() {
         const response = await axios.get(route,
           {
             params: {
-              page: searchQuery ? 1 : pagination.currPage,
-              limit: searchQuery ? 50 : pagination.numToShow,
+              page: pagination.currPage,
+              limit: pagination.numToShow,
+              search: searchQuery,
+              filters: stableFilters
             },
           }
         );
@@ -95,23 +99,16 @@ export default function AlumniAccess() {
           Pending: totalResponse.data.stats.pending_alumni_count,
           Approved: totalResponse.data.stats.approved_alumni_count,
           Inactive: totalResponse.data.stats.inactive_alumni_count
-        }
+        };
 
         if (response.data.status === "OK") {
           const updatedAlumList = await Promise.all(
             response.data.list.map(async (alum) => {
               const alumData = {
                 id: alum.alum_id,
-                alumname: capitalizeName(`${alum.first_name} ${alum.last_name}`),
-                firstName: alum.first_name.toLowerCase(), // Store for searching
-                lastName: alum.last_name.toLowerCase(),   // Store for searching
-                email: alum.email,
-                student_num: alum.student_num,
+                alumname: capitalizeName(`${alum.first_name} ${alum.middle_name} ${alum.last_name}`),
                 graduationYear: "N/A",
-                location: alum.location,
-                fieldOfWork:
-                  alum.primary_work_experience?.field || "No Position Title",
-                skills: alum.skills ? alum.skills.split(",") : [],
+                student_num: alum.student_num,
                 image:
                   "https://cdn-icons-png.flaticon.com/512/145/145974.png",
               };
@@ -133,40 +130,10 @@ export default function AlumniAccess() {
                 );
               }
 
-              try {
-                const idForDegree = alum.user_id || alum.alum_id;
-                if (idForDegree) {
-                  const degreeResponse = await axios.get(
-                    `${process.env.NEXT_PUBLIC_API_URL}/v1/degree-programs/alumni/${idForDegree}`
-                  );
-                  if (
-                    degreeResponse.data.status === "OK" &&
-                    degreeResponse.data.degreePrograms?.length > 0
-                  ) {
-                    const sortedPrograms = [
-                      ...degreeResponse.data.degreePrograms,
-                    ].sort(
-                      (a, b) =>
-                        new Date(b.year_graduated) -
-                        new Date(a.year_graduated)
-                    );
-                    alumData.graduationYear = new Date(
-                      sortedPrograms[0].year_graduated
-                    )
-                      .getFullYear()
-                      .toString();
-                  }
-                }
-              } catch (degreeError) {
-                console.error(
-                  `Failed to fetch degree programs for alum ${alum.alum_id}:`,
-                  degreeError
-                );
-              }
-
               return alumData;
             })
           );
+
           const totalCount = totals[currTab];
           const listLength = updatedAlumList.length;
           const lowerBound = listLength === 0 ? 0 : (pagination.currPage - 1) * pagination.numToShow + 1;
@@ -190,7 +157,7 @@ export default function AlumniAccess() {
     };
 
     fetchAlumniProfiles();
-  }, [pagination.currPage, pagination.numToShow, currTab]);
+  }, [pagination.currPage, pagination.numToShow, currTab, searchQuery, stableFilters]);
 
   return (
     <div>
@@ -245,28 +212,28 @@ function getNotifyContent(action, selectedCount) {
   let type = "success";
 
   switch (action) {
-    case "approve":
-      message = selectedCount > 0
-        ? `${selectedCount} pending account${plural} have been approved!`
-        : "All pending accounts have been approved!";
-      break;
-    case "decline":
-      message = selectedCount > 0
-        ? `${selectedCount} pending account${plural} have been declined!`
-        : "All pending accounts have been declined!";
-      type = "fail";
-      break;
-    case "remove":
-      message = selectedCount > 0
-        ? `Access has been removed from ${selectedCount} accounts!`
-        : "Access has been removed from all active accounts!";
-      type = "fail";
-      break;
-    case "reactivate":
-      message = selectedCount > 0
-        ? `${selectedCount} inactive account${plural} have been reactivated!`
-        : "All inactive accounts have been reactivated!";
-      break;
+  case "approve":
+    message = selectedCount > 0
+      ? `${selectedCount} pending account${plural} have been approved!`
+      : "All pending accounts have been approved!";
+    break;
+  case "decline":
+    message = selectedCount > 0
+      ? `${selectedCount} pending account${plural} have been declined!`
+      : "All pending accounts have been declined!";
+    type = "fail";
+    break;
+  case "remove":
+    message = selectedCount > 0
+      ? `Access has been removed from ${selectedCount} accounts!`
+      : "Access has been removed from all active accounts!";
+    type = "fail";
+    break;
+  case "reactivate":
+    message = selectedCount > 0
+      ? `${selectedCount} inactive account${plural} have been reactivated!`
+      : "All inactive accounts have been reactivated!";
+    break;
   }
 
   return { notifyMessage: message, notifyType: type };

@@ -28,7 +28,7 @@ export default function AlumniSearch() {
     currPage: 1,            // Current active page
     lastPage: 10,           // Last Page => total/numToShow
     numToShow: 10,          // How many alum to show
-    total: 999              // How many alum in db
+    total: 0              // How many alum in db
   });
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -36,12 +36,6 @@ export default function AlumniSearch() {
 
   // FOR BACKEND PEEPS
   useEffect(() => {
-    // console.log("State updated:", {
-    //   appliedFilters,
-    //   pagination,
-    //   searchQuery,
-    // });
-
     const fetchAlumniProfiles = async () => {
       setLoading(true);
       try {
@@ -68,7 +62,7 @@ export default function AlumniSearch() {
                 graduationYear: alum.year_graduated,
                 location: alum.location,
                 fieldOfWork:
-                  alum.field || "N/A",
+                  alum.primary_work_experience?.field || "N/A",
                 skills: alum.skills ? alum.skills.split(",") : [],
                 image:
                   "https://cdn-icons-png.flaticon.com/512/145/145974.png",
