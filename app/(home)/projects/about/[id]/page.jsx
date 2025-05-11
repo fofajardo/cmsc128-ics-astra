@@ -164,7 +164,8 @@ export default function ProjectDetails({ params }) {
 
   const handleSendMessage = async () => {
     try {
-      // Get the current user's information from localStorage or your auth system
+
+      // get the current user's information from localStorage or your auth system
       const currentUser = JSON.parse(localStorage.getItem('user'));
 
       if (!currentUser) {
@@ -204,7 +205,7 @@ export default function ProjectDetails({ params }) {
     } catch (error) {
       console.error("Failed to send message:", error);
       setToast({
-        type: "error",
+        type: "fail",
         message: error.message || "Failed to send message. Please try again.",
       });
     }
