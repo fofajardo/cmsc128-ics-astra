@@ -262,26 +262,47 @@ export default function EventAdminDetailPage() {
     }
   };
 
+  const updateStats = async () => {
+    try {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/events-summary`);
+      if (response.data.status === "OK") {
+        const { active_events, past_events, total_events } = response.data.list[0];
+        console.log("stats: ", response.data.list[0]);
+        const counts = {
+          past : past_events || 0,
+          active : active_events || 0,
+          total : total_events || 0,
+        };
+        setEventCounts(counts);
+        return counts;
+      } else {
+        console.error("Failed to fetch event statistics:", response.data);
+        return { past: 0, active: 0, total: 0 };
+      }
+    } catch (error) {
+      console.error("Failed to fetch event statistics:", error);
+      return { past: 0, active: 0, total: 0 };
+    }
+  };
+
   const fetchEvent = async () =>{
     try {
       console.log("id: ", id);
-      const [eventRes, contentRes,interestStatsRes,interestRes,eventsResponse,actResponse] = await Promise.all([
+      const [eventRes, contentRes,interestStatsRes,interestRes,eventsResponse,actResponse, stats] = await Promise.all([
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/${id}`),
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`),
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/${id}`),
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/content/${id}`),
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events`),
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/active-events`),
+        updateStats(),
         //TODO: fetch the photo
 
       ]);
       if(eventsResponse.data.status === "OK" && actResponse.data.status === "OK") {
         console.log("events responses: ",eventsResponse);
         console.log("acts responses: ",actResponse);
-        setEventCounts({active:actResponse.data.list.active_events_count,
-          past: eventsResponse.data.list.length- actResponse.data.list.active_events_count,
-          total:eventsResponse.data.list.length
-        });
+
       }
       console.log("eventResponse:",eventRes);
       if (eventRes.data.status === "OK" && contentRes.data.status === "OK" ) {
@@ -324,6 +345,12 @@ export default function EventAdminDetailPage() {
         };
         console.log("mergedEvent", mergedEvent);
         setEvent(mergedEvent);
+
+
+      }
+
+      if (stats) {
+        setEventCounts(stats);
       }
     } catch (error) {
       console.error("Failed fetching event, content, or interests:", error);
