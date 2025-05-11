@@ -8,6 +8,7 @@ import { PROJECT_TYPE } from "@/constants/projectConsts";
 
 export default function ProjectCard({
   id,
+  request_id,
   image,
   title = "Snacks to Support Student Success",
   description = "This project aims to provide middle school students the resources they need to excel academically, emotionally, and physically...",
@@ -54,6 +55,15 @@ export default function ProjectCard({
     };
   }, []);
 
+  const handleCardClick = () => {
+    router.push(`/projects/about/${request_id}`);
+  };
+
+  const handleDonateClick = (e) => {
+    e.stopPropagation(); // prevents the outer link from triggering
+    router.push(`/projects/donate/${id}?title=${encodeURIComponent(title)}`);
+  };
+
   // Adjust image height based on screen size
   const getImageHeight = () => {
     if (!isMounted) return "h-48";
@@ -71,7 +81,9 @@ export default function ProjectCard({
   };
 
   return (
-    <div className="group bg-astrawhite rounded-2xl shadow hover:shadow-lg transition-all duration-300 cursor-pointer border-2 border-transparent hover:border-astraprimary overflow-hidden h-full flex flex-col">
+    <div
+      onClick={handleCardClick}
+      className="group bg-astrawhite rounded-2xl shadow hover:shadow-lg transition-all duration-300 cursor-pointer border-2 border-transparent hover:border-astraprimary overflow-hidden h-full flex flex-col">
       {/* Project Image */}
       <div className={`relative ${getImageHeight()} w-full overflow-hidden`}>
         <Image
@@ -125,7 +137,7 @@ export default function ProjectCard({
         {/* Action Button */}
         {showDonate && (
           <button
-            onClick={() => router.push(`/projects/donate/${id}`)}
+            onClick={handleDonateClick}
             className="mt-3 w-full blue-button font-s py-1"
           >
             Donate

@@ -336,13 +336,12 @@ export default function ProjectsPage() {
                   }}
                 >
                   {filteredProjects.slice(0, visibleCount).map((project) => (
-                    <Link
-                      href={`/projects/about/${project.request_id}`}
+                    <div className="block h-full"
                       key={project.id}
-                      className="block h-full"
                     >
                       <ProjectCard
                         id={project.id}
+                        request_id={project.request_id}
                         image={project.image}
                         title={project.title}
                         description={project.description}
@@ -352,7 +351,7 @@ export default function ProjectsPage() {
                         type={project.type}
                         endDate={project.endDate}
                       />
-                    </Link>
+                    </div>
                   ))}
                 </div>
 
