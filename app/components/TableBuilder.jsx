@@ -19,7 +19,7 @@
 import { useState } from "react";
 import { Search, SlidersHorizontal, CirclePlus, ArrowLeft, ArrowRight } from "lucide-react";
 
-export function TableHeader({ info, pagination, toggleFilter, setPagination, searchQuery, setSearchQuery, addButton}) {
+export function TableHeader({ info, pagination, toggleFilter, setPagination, searchQuery, setSearchQuery, addButton, optionValues=["5","10","15","20","25"] }) {
   return (
     <div>
       <div className='flex md:hidden flex-col gap-4'>
@@ -29,7 +29,7 @@ export function TableHeader({ info, pagination, toggleFilter, setPagination, sea
                 className="flex items-center gap-2 px-4 py-2 text-white bg-astraprimary rounded-lg"
               ></button>}
         <SearchComponent placeholder={info.search} setSearchQuery={setSearchQuery} searchQuery={searchQuery}/>
-        <Toolbar toggleFilter={toggleFilter} pagination={pagination} setPagination={setPagination}/>
+        <Toolbar toggleFilter={toggleFilter} pagination={pagination} setPagination={setPagination} optionValues={optionValues}/>
         <Header title={info.title} pagination={pagination} />
       </div>
 
@@ -37,7 +37,7 @@ export function TableHeader({ info, pagination, toggleFilter, setPagination, sea
         <Header title={info.title} pagination={pagination} />
         <div className='flex flex-row w-full justify-end gap-4'>
           <SearchComponent placeholder={info.search} setSearchQuery={setSearchQuery} searchQuery={searchQuery}/>
-          <Toolbar toggleFilter={toggleFilter} pagination={pagination} setPagination={setPagination}/>
+          <Toolbar toggleFilter={toggleFilter} pagination={pagination} setPagination={setPagination} optionValues={optionValues}/>
         </div>
       </div>
     </div>
@@ -148,7 +148,7 @@ export function Header({ title, pagination }) {
   );
 }
 
-export function Toolbar({ toggleFilter, pagination, setPagination }) {
+export function Toolbar({ toggleFilter, pagination, setPagination, optionValues=["5","10","15","20","25"] }) {
   const handleNumToShowChange = (e) => {
     const newNumToShow = parseInt(e.target.value);
     const total = pagination.total;
@@ -179,11 +179,11 @@ export function Toolbar({ toggleFilter, pagination, setPagination }) {
         onChange={handleNumToShowChange}
         className="px-4 py-2 rounded-xl bg-astrawhite text-astradarkgray border border-astradarkgray outline-none"
       >
-        <option value="5">5</option>
-        <option value="10">10</option>
-        <option value="15">15</option>
-        <option value="20">20</option>
-        <option value="25">25</option>
+        <option value={optionValues[0]}>{optionValues[0]}</option>
+        <option value={optionValues[1]}>{optionValues[1]}</option>
+        <option value={optionValues[2]}>{optionValues[2]}</option>
+        <option value={optionValues[3]}>{optionValues[3]}</option>
+        <option value={optionValues[4]}>{optionValues[4]}</option>
       </select>
     </div>
   );
