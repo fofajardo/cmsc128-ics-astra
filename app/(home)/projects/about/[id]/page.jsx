@@ -143,13 +143,10 @@ export default function ProjectDetails({ params }) {
 
   if (loading) {
     return (
-      <div className="bg-astradirtywhite min-h-screen pb-12">
-        <div className="max-w-6xl mx-auto px-6 mt-6">
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
-            <div className="h-64 bg-gray-200 rounded mb-4"></div>
-            <div className="h-32 bg-gray-200 rounded"></div>
-          </div>
+      <div className="bg-astradirtywhite min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-astraprimary"></div>
+          <p className="text-astraprimary font-medium">Loading project details...</p>
         </div>
       </div>
     );
