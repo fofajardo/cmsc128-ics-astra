@@ -162,13 +162,52 @@ export default function ProjectDetails({ params }) {
     fetchProjectRequest();
   }, []);
 
-  const handleSendMessage = () => {
-    setToast({
-      type: "success",
-      message: "Message sent successfully!",
-    });
-    setIsContactModalOpen(false);
-    setMessage("");
+  const handleSendMessage = async () => {
+    try {
+      // Get the current user's information from localStorage or your auth system
+      const currentUser = JSON.parse(localStorage.getItem('user'));
+
+      if (!currentUser) {
+        setToast({
+          type: "fail",
+          message: "Please log in to send messages",
+        });
+        setIsContactModalOpen(false);
+        setMessage("");
+        return;
+      }
+
+      const messageData = {
+        project_id: projectData.id,
+        sender_id: currentUser.id,
+        receiver_id: projectData.organizer.id,
+        content: message,
+        timestamp: new Date().toISOString(),
+        is_read: false
+      };
+
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/messages`,
+        messageData
+      );
+
+      if (response.data.status === "OK") {
+        setToast({
+          type: "success",
+          message: "Message sent successfully!",
+        });
+        setIsContactModalOpen(false);
+        setMessage("");
+      } else {
+        throw new Error(response.data.message || "Failed to send message");
+      }
+    } catch (error) {
+      console.error("Failed to send message:", error);
+      setToast({
+        type: "error",
+        message: error.message || "Failed to send message. Please try again.",
+      });
+    }
   };
 
   if (loading) {
