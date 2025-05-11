@@ -21,6 +21,8 @@ import axios from "axios";
 import { formatCurrency, formatDate, capitalizeName } from "@/utils/format";
 import { PROJECT_TYPE } from "@/constants/projectConsts";
 
+// Add constant for fallback image
+const FALLBACK_IMAGE = "/projects/assets/Donation.png";
 
 export default function ProjectDetails({ params }) {
   const router = useRouter();
@@ -40,7 +42,7 @@ export default function ProjectDetails({ params }) {
   const [error, setError] = useState(null);
   const [imageLoading, setImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
-  const [imageSrc, setImageSrc] = useState("/projects/assets/Donation.png");
+  const [imageSrc, setImageSrc] = useState(FALLBACK_IMAGE);
 
   const goalValue = parseInt(projectData?.goal?.replace(/[^\d]/g, "") || "0");
   const raisedValue = parseInt(projectData?.raised?.replace(/[^\d]/g, "") || "0");
@@ -56,7 +58,7 @@ export default function ProjectDetails({ params }) {
       timeoutId = setTimeout(() => {
         setImageLoading(false);
         setImageError(true);
-        setImageSrc("/projects/assets/Donation.png");
+        setImageSrc(FALLBACK_IMAGE);
       }, 5000); // 5 second timeout
     }
     return () => {
@@ -98,7 +100,7 @@ export default function ProjectDetails({ params }) {
             id: projectId,
             title: projectData.list.projectData.title,
             type: projectData.list.projectData.type,
-            image: "/projects/assets/Donation.png",//default image
+            image: FALLBACK_IMAGE, // Use constant for default image
             urlLink: projectData.list.projectData.donation_link,
             status: projectData.list.projectData.project_status,  // TODO: Clarify status
             description: projectData.list.projectData.details,
@@ -137,13 +139,13 @@ export default function ProjectDetails({ params }) {
               // Handle case where photo data is not in expected format
               setImageLoading(false);
               setImageError(true);
-              setImageSrc("/projects/assets/Donation.png");
+              setImageSrc(FALLBACK_IMAGE);
             }
           } catch (photoError) {
             console.log(`Failed to fetch photo for project_id ${projectId}:`, photoError);
             setImageError(true);
             setImageLoading(false);
-            setImageSrc("/projects/assets/Donation.png");
+            setImageSrc(FALLBACK_IMAGE);
           }
         } else {
           console.error("Unexpected response:", projectData);
@@ -269,9 +271,10 @@ export default function ProjectDetails({ params }) {
             onLoad={() => {
               setImageLoading(false);
             }}
-            onError={() => {
+            onError={(e) => {
+              console.error('Image failed to load:', e);
               setImageError(true);
-              setImageSrc("/projects/assets/Donation.png");
+              setImageSrc(FALLBACK_IMAGE);
               setImageLoading(false);
             }}
           />
