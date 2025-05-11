@@ -10,6 +10,7 @@ const statisticsRouter = () => {
   router.get("/funds-raised", statisticsController.getFundsRaisedStats);
   router.get("/upcoming-events", statisticsController.getUpcomingEvents);
   router.get("/project-donation-summary", statisticsController.getProjectDonationSummary);
+  router.get("/events-summary", statisticsController.getEventsSummary);
 
   return router;
 };

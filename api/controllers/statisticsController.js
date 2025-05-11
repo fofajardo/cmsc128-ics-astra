@@ -97,13 +97,31 @@ const getProjectDonationSummary = async (req, res) => {
   }
 };
 
+const getEventsSummary = async (req, res) => {
+  try {
+    const eventsSummary = await statisticsService.fetchEventsSummary(req.supabase);
+
+    res.status(httpStatus.OK).json({
+      status: "OK",
+      list: eventsSummary
+    });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
+
+
 const statisticsController = {
   getActiveAlumniStats,
   getActiveJobsStats,
   getActiveEventsStats,
   getFundsRaisedStats,
   getUpcomingEvents,
-  getProjectDonationSummary
+  getProjectDonationSummary,
+  getEventsSummary
 };
 
 export default statisticsController;

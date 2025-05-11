@@ -30,7 +30,6 @@ const getEvents = async (req, res) => {
       status: "OK",
       list: data || [],
       total: count || 0
-
     });
 
   } catch (error) {
