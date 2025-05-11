@@ -22,10 +22,12 @@ export default function Events() {
   const { currTab, info } = useTab();
   const [toast, setToast] = useState(null);
   const [eventList, setEvents] = useState([]);
-  const [contentList, setContents] = useState([]);
+  const [contentMap, setContents] = useState({});
+  const [eventInterests, setEventInterests] = useState({});
   const [selectedContentId, setSelectedContentId] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [loading, setloading] = useState(true);
+  const [loading, setLoading] = useState(true);
+
   // const [searchQuery, setSearchQuery] = useState("");
 
   const cols = [
@@ -58,6 +60,7 @@ export default function Events() {
     description: "",
     tags : [],
   });
+
   const defaultFormData = {
     title: "",
     venue: "",
@@ -78,7 +81,6 @@ export default function Events() {
   const [eventToDelete, setEventToDelete] = useState(null);
   const [filters, setFilters] = useState(null);
   const [editId,setEditId] = useState(false);
-
 
   const resetForm = () => {
     setAddFormData(defaultFormData);
@@ -114,54 +116,204 @@ export default function Events() {
     return changed;
   };
 
+  const fetchContents = async (events) => {
+    const contentMap = {};
+    const contentPromises = events.map(async (event) => {
+      try {
+        const contentResponse = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${event.event_id}`
+        );
+        if (contentResponse.data.status === "OK") {
+          const content = contentResponse.data.content;
+          contentMap[event.event_id] = {
+            title: content.title || "Unknown Title",
+            details: content.details || "",
+          };
+        } else {
+          console.error("Failed to fetch content:", contentResponse.data);
+          contentMap[event.event_id] = { title: "Unknown Title", details: "" };
+        }
+      } catch (error) {
+        console.error(`Failed to fetch content for event_id ${event.event_id}:`, error);
+        contentMap[event.event_id] = { title: "Unknown Title", details: "" };
+      }
+    });
+    await Promise.all(contentPromises);
+    return contentMap;
+  };
+
+  const fetchEventInterests = async (events) => {
+    const interestMap = {};
+    const interestPromises = events.map(async (event) => {
+      try {
+        const interestResponse = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/${event.event_id}`
+        );
+        if (interestResponse.data.status === "OK") {
+          interestMap[event.event_id] = interestResponse.data.list.interest_count || 0;
+        } else {
+          console.error("Failed to fetch interests:", interestResponse.data);
+          interestMap[event.event_id] = 0; // Fallback
+        }
+      } catch (error) {
+        console.error(`Failed to fetch interests for event_id ${event.event_id}:`, error);
+        interestMap[event.event_id] = 0; // Fallback
+      }
+    });
+    await Promise.all(interestPromises);
+    return interestMap;
+  };
+
+  const updateStats = async () => {
+    try {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/events-summary`);
+      if (response.data.status === "OK") {
+        const { active_events, past_events, total_events } = response.data.list[0];
+        console.log("stats: ", response.data.list[0]);
+        const counts = {
+          past : past_events || 0,
+          active : active_events || 0,
+          total : total_events || 0,
+        };
+        setEventCounts(counts);
+        return counts;
+      } else {
+        console.error("Failed to fetch event statistics:", response.data);
+        return { past: 0, active: 0, total: 0 };
+      }
+    } catch (error) {
+      console.error("Failed to fetch event statistics:", error);
+      return { past: 0, active: 0, total: 0 };
+    }
+  }
+
   // FOR BACKEND PEEPS
   useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events`);
+        const eventData = response.data;
+
+        if (eventData.status === "OK") {
+          const events = eventData.list;
+
+          // Fetch photos, contents, and interests concurrently
+          const [contents, interests, stats] = await Promise.all([
+            fetchContents(events),
+            fetchEventInterests(events),
+            updateStats()
+          ]);
+
+          // Update state
+          setContents(contents);
+          setEventInterests(interests);
+          setEventCounts(stats);
+
+          const eventList = await Promise.all(
+            events.map((event) => ({
+              id: event.event_id,
+              event_id: event.event_id,
+              content_id: event.event_id,
+              event_name: contents[event.event_id]?.title || "Unknown",
+              location: event.venue || "Unknown Location",
+              type: event.online ? "Online" : "In-Person",
+              date: new Date(event.event_date).toDateString(),
+              going: event.going ?? 10,
+              interested: interests[event.event_id] || 0,
+            }))
+          );
+
+          // Set events using the fetched data
+          setEvents(eventList);
+
+        } else {
+          throw new Error("Failed to fetch events");
+        }
+      } catch (error) {
+        console.error("Failed to fetch events:", error);
+        setToast({
+          type: "error",
+          message: error.response
+            ? `Server error: ${error.response.status} - ${error.response.data.message || "Unknown error"}`
+            : error.code === "ERR_NETWORK"
+            ? "Network error: Cannot connect to the server. Please check your connection."
+            : "An unexpected error occurred. Please try again later.",
+        });
+        setEvents([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchEvents();
-    //fetchContents();
-    console.log(eventList);
-  }, []);
-
-
+  }, [pagination.currPage, pagination.numToShow]);
 
   useEffect(() => {
-    if (!Array.isArray(eventList)) return;
-
-    const filtered = eventList.filter(event =>
-      event?.event_name?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-
-    setFilteredEvents(filtered);
-    setPagination((prev) => ({ ...prev, currPage: 1 }));
-  }, [searchQuery, eventList]);
-
-  useEffect(() => {
-    const total = filteredEvents.length;
+    const total = pagination.total;
     const lastPage = Math.max(1, Math.ceil(total / pagination.numToShow));
-
     setPagination((prev) => ({
       ...prev,
       currPage: Math.min(prev.currPage, lastPage),
-      total,
       lastPage,
+      total : total,
       display: [
-        total === 0 ? 0 : (prev.currPage - 1) * pagination.numToShow + 1,
-        Math.min(prev.currPage * pagination.numToShow, total),
+        (Math.min(prev.currPage, lastPage) - 1) * pagination.numToShow + 1,
+        Math.min(total, Math.min(prev.currPage, lastPage) * prev.numToShow),
       ],
     }));
-  }, [filteredEvents,pagination.numToShow]);
-
+  }, [pagination.numToShow]);
 
   const currentPageData = useMemo(() => {
     const startIndex = (pagination.currPage - 1) * pagination.numToShow;
     const endIndex = startIndex + pagination.numToShow;
-    return filteredEvents.slice(startIndex, endIndex);
+    return eventList.slice(startIndex, endIndex);
   }, [filteredEvents, pagination.currPage, pagination.numToShow]);
 
   useEffect(() => {
-    if (eventList && Array.isArray(eventList)) {
-      setFilteredEvents(eventList);
-    }
-  }, [eventList]);
+      if (eventList && Array.isArray(eventList)) {
+        setFilteredEvents(eventList);
+      }
+    }, [eventList]);
+
+  // useEffect(() => {
+  //   if (!Array.isArray(eventList)) return;
+
+  //   const filtered = eventList.filter(event =>
+  //     event?.event_name?.toLowerCase().includes(searchQuery.toLowerCase())
+  //   );
+
+  //   setFilteredEvents(filtered);
+  //   setPagination((prev) => ({ ...prev, currPage: 1 }));
+  // }, [searchQuery, eventList]);
+
+  // useEffect(() => {
+  //   const total = pagination.total;
+  //   const lastPage = Math.max(1, Math.ceil(total / pagination.numToShow));
+
+  //   setPagination((prev) => ({
+  //     ...prev,
+  //     currPage: Math.min(prev.currPage, lastPage),
+  //     lastPage,
+  //     display: [
+  //       total === 0 ? 0 : (prev.currPage - 1) * pagination.numToShow + 1,
+  //       Math.min(prev.currPage * pagination.numToShow, total),
+  //     ],
+  //   }));
+  // }, [filteredEvents,pagination.numToShow]);
+
+
+  // const currentPageData = useMemo(() => {
+  //   const startIndex = (pagination.currPage - 1) * pagination.numToShow;
+  //   const endIndex = startIndex + pagination.numToShow;
+  //   return filteredEvents.slice(startIndex, endIndex);
+  // }, [filteredEvents, pagination.currPage, pagination.numToShow]);
+
+  // useEffect(() => {
+  //   if (eventList && Array.isArray(eventList)) {
+  //     setFilteredEvents(eventList);
+  //   }
+  // }, [eventList]);
 
   const toggleAddModal = () => {
     setShowAddModal((prev) => !prev);
@@ -182,113 +334,6 @@ export default function Events() {
       [name]: value
     }));
 
-  };
-
-  const getActivePastEvents = (listOfEvents, totalEvents) =>{
-    const result = listOfEvents.filter((event) => new Date(event.date) < new Date());
-    setEventCounts({
-      past: result.length,
-      active: totalEvents - result.length,
-      total: totalEvents
-    });
-  };
-
-  const fetchInterest = async (id) => {
-    try{
-      const interest = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/${id}`);
-      if (interest.data.status === "OK") {
-        const selectEventName = interest.data.list.interest_count;
-        console.log("select event name:",selectEventName, "type", typeof(selectEventName));
-        return selectEventName;
-      } else {
-        console.error("Unexpected interest:", interest.data);
-      }
-    }catch(error){
-      console.log(error);
-    }
-  };
-  const fetchContentName = async (id) => {
-    try {
-      const response = await axios
-        .get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`);
-
-      console.log(response);
-      if (response.data.status === "OK") {
-
-        const selectEventName = response.data.content.title;
-        console.log("select event name:",selectEventName, "type", typeof(selectEventName));
-        return selectEventName;
-      } else {
-        console.error("Unexpected response:", response.data);
-      }
-    }catch(error){
-      console.error("Failed to get content:", error);
-    }
-    return "unknown";
-  };
-
-  const fetchEvents = async () => {
-    try {
-      if (!process.env.NEXT_PUBLIC_API_URL) {
-        console.error("API URL is not defined in environment variables");
-        setEvents([]);
-        return;
-      }
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events`
-        , {
-          params: {
-            page: pagination.currPage,
-            limit: pagination.numToShow
-          }
-        }
-      );
-      console.log("Fetched events:", response.data);
-
-      if (response.data.status === "OK") {
-        console.log("First event object:", response.data.list[0]);
-
-        const eventList = await Promise.all(
-          response.data.list.map(async (event) => ({
-            id: event.event_id,
-            event_id: event.event_id,
-            content_id: event.event_id,
-            event_name: await fetchContentName(event.event_id),
-            location: event.venue,
-            type: event.online === true ? "Online" : "In-Person",
-            date: new Date(event.event_date).toDateString(),
-            going: event.going ?? 10, // TODO: implement the
-            interested:await fetchInterest(event.event_id)
-          }))
-        );
-
-        setEvents(eventList);
-        console.log("list: ", response.data.list.length);
-
-        getActivePastEvents(eventList,response.data.total);
-        setloading(false);
-      } else {
-        console.error("Unexpected response:", response.data);
-      }
-    } catch (error) {
-      console.error("Failed to fetch events:", error);
-      if (error.code === "ERR_NETWORK") {
-        setToast({
-          type: "error",
-          message: "Network error: Cannot connect to the server. Please check your connection."
-        });
-      } else if (error.response) {
-        setToast({
-          type: "error",
-          message: `Server error: ${error.response.status} - ${error.response.data.message || "Unknown error"}`
-        });
-      } else {
-        setToast({
-          type: "error",
-          message: "An unexpected error occurred. Please try again later."
-        });
-      }
-      setEvents([]);
-    }
   };
 
   const confirmDelete = (id, name) => {
@@ -570,6 +615,7 @@ export default function Events() {
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
           />
+          <div> {`(${eventList.length})`} </div>
           <Table
             cols={cols}
             data={loading ? skeletonRows : createRows(currentPageData, confirmDelete, toggleEditModal)}
