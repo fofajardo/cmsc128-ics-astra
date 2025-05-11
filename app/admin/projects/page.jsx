@@ -40,7 +40,7 @@ export default function ProjectsAdmin() {
   const [showDeclineModal, setShowDeclineModal] = useState(false);
   const [declineReason, setDeclineReason] = useState("");
   const [declineRequestData, setDeclineRequestData] = useState({});
-  const itemsPerPage = 5;
+  const itemsPerPage = 4;
 
   const toggleFilter = () => {
     setTempSelectedType(selectedType); // reset modal input to current selection
@@ -161,7 +161,11 @@ export default function ProjectsAdmin() {
     const filteredProjectsByStatusTab = filteredProjectsByType.filter(
       (project) => statusToTab[project.status].toLowerCase() === currTab.toLowerCase()
     );
-    setFilteredProjects(filteredProjectsByStatusTab);
+    const lower = (searchQuery || "").toLowerCase();
+    const filtered = filteredProjectsByStatusTab.filter(project =>
+      (project.title || "").toLowerCase().includes(lower)
+    );
+    setFilteredProjects(filtered);
   }, [projects, selectedType, currTab]);
 
   useEffect(() => {
@@ -186,12 +190,15 @@ export default function ProjectsAdmin() {
 
   const handleSearch = (searchInput) => {
     const lower = (searchInput || "").toLowerCase();
-    const filtered = filteredProjects.filter(project =>
+    const filtered = projects.filter(project =>
       (project.title || "").toLowerCase().includes(lower)
+    );
+    const filteredByStatusTab = filtered.filter(
+      (project) => statusToTab[project.status].toLowerCase() === currTab.toLowerCase()
     );
 
     setSearchQuery(searchInput);
-    setFilteredProjects(filtered);
+    setFilteredProjects(filteredByStatusTab);
   };
 
   const updateProjectRequest = async (updatedStatus, requestId, requestResponse="") => {
@@ -433,7 +440,8 @@ export default function ProjectsAdmin() {
             setPagination={setPagination}
             toggleFilter={toggleFilter}
             setSearchQuery={handleSearch}
-            serachQuery={searchQuery}
+            searchQuery={searchQuery}
+            optionValues={["4","8","12","16","20"]}
           />
 
           {/* Projects Grid */}
