@@ -80,7 +80,7 @@ export default function ProjectDetails({ params }) {
             id: projectId,
             title: projectData.list.projectData.title,
             type: projectData.list.projectData.type,
-            image: null,
+            image: "/projects/assets/Donation.svg",//default image
             urlLink: projectData.list.projectData.donation_link,
             status: projectData.list.projectData.project_status,  // TODO: Clarify status
             description: projectData.list.projectData.details,
@@ -112,7 +112,10 @@ export default function ProjectDetails({ params }) {
             );
 
             if (photoResponse.data.status === "OK" && photoResponse.data.photo) {
-              setProjectPhoto(photoResponse.data.photo);
+              setProjectData(prev => ({
+                ...prev,
+                image: photoResponse.data.photo
+              }));
             }
           } catch (photoError) {
             console.log(`Failed to fetch photo for project_id ${projectId}:`, photoError);
@@ -227,11 +230,12 @@ export default function ProjectDetails({ params }) {
         <BackButton />
         <div className="mt-4 rounded-xl overflow-hidden h-64 w-full relative">
           <Image
-            src={projectData?.image}
-            alt={projectData?.title}
+            src={projectData?.image || "/projects/assets/Donation.svg"}
+            alt={projectData?.title || "Project Image"}
             layout="fill"
             objectFit="cover"
             className="rounded-xl"
+            priority
           />
         </div>
       </div>
