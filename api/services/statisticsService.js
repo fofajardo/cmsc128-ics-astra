@@ -84,7 +84,7 @@ const fetchEventsSummary = async (supabase) => {
   }
 
   return data;
-}
+};
 
 const statisticsService = {
   fetchActiveAlumniStats,
