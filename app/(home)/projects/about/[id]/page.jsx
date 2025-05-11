@@ -38,6 +38,9 @@ export default function ProjectDetails({ params }) {
   const [projectData, setProjectData] = useState(null);
   const [projectPhoto, setProjectPhoto] = useState({});
   const [error, setError] = useState(null);
+  const [imageLoading, setImageLoading] = useState(true);
+  const [imageError, setImageError] = useState(false);
+  const [imageSrc, setImageSrc] = useState("/projects/assets/Donation.png");
 
   const goalValue = parseInt(projectData?.goal?.replace(/[^\d]/g, "") || "0");
   const raisedValue = parseInt(projectData?.raised?.replace(/[^\d]/g, "") || "0");
@@ -45,6 +48,21 @@ export default function ProjectDetails({ params }) {
     Math.round((raisedValue / goalValue) * 100),
     100
   );
+
+  // Add timeout for image loading
+  useEffect(() => {
+    let timeoutId;
+    if (imageLoading) {
+      timeoutId = setTimeout(() => {
+        setImageLoading(false);
+        setImageError(true);
+        setImageSrc("/projects/assets/Donation.png");
+      }, 5000); // 5 second timeout
+    }
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [imageLoading]);
 
   useEffect(() => {
     const fetchProjectRequest = async () => {
@@ -80,7 +98,7 @@ export default function ProjectDetails({ params }) {
             id: projectId,
             title: projectData.list.projectData.title,
             type: projectData.list.projectData.type,
-            image: "/projects/assets/Donation.svg",//default image
+            image: "/projects/assets/Donation.png",//default image
             urlLink: projectData.list.projectData.donation_link,
             status: projectData.list.projectData.project_status,  // TODO: Clarify status
             description: projectData.list.projectData.details,
@@ -112,13 +130,20 @@ export default function ProjectDetails({ params }) {
             );
 
             if (photoResponse.data.status === "OK" && photoResponse.data.photo) {
-              setProjectData(prev => ({
-                ...prev,
-                image: photoResponse.data.photo
-              }));
+              setImageLoading(true);
+              setImageError(false);
+              setImageSrc(photoResponse.data.photo);
+            } else {
+              // Handle case where photo data is not in expected format
+              setImageLoading(false);
+              setImageError(true);
+              setImageSrc("/projects/assets/Donation.png");
             }
           } catch (photoError) {
             console.log(`Failed to fetch photo for project_id ${projectId}:`, photoError);
+            setImageError(true);
+            setImageLoading(false);
+            setImageSrc("/projects/assets/Donation.png");
           }
         } else {
           console.error("Unexpected response:", projectData);
@@ -229,13 +254,26 @@ export default function ProjectDetails({ params }) {
       <div className="max-w-6xl mx-auto px-6 mt-6 ">
         <BackButton />
         <div className="mt-4 rounded-xl overflow-hidden h-64 w-full relative">
+          {imageLoading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-astralightgray/50 z-10">
+              <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-astraprimary"></div>
+            </div>
+          )}
           <Image
-            src={projectData?.image || "/projects/assets/Donation.svg"}
+            src={imageSrc}
             alt={projectData?.title || "Project Image"}
             layout="fill"
             objectFit="cover"
-            className="rounded-xl"
+            className={`rounded-xl transition-opacity duration-300 ${imageLoading ? 'opacity-0' : 'opacity-100'}`}
             priority
+            onLoad={() => {
+              setImageLoading(false);
+            }}
+            onError={() => {
+              setImageError(true);
+              setImageSrc("/projects/assets/Donation.png");
+              setImageLoading(false);
+            }}
           />
         </div>
       </div>
