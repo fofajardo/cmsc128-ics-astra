@@ -190,10 +190,10 @@ export default function EventModal({
             <label className="block font-medium mb-1">Event Image</label>
             <div className="border-2 border-dashed border-astraprimary rounded-xl w-full h-48 flex items-center justify-center relative hover:bg-blue-50 transition cursor-pointer overflow-hidden">
               {imagePreview ? (
-                <img 
-                  src={imagePreview} 
-                  alt="Event preview" 
-                  className="w-full h-full object-cover rounded-xl" 
+                <img
+                  src={imagePreview}
+                  alt="Event preview"
+                  className="w-full h-full object-cover rounded-xl"
                 />
               ) : (
                 <div className="flex flex-col items-center justify-center text-astraprimary text-sm">
@@ -209,7 +209,7 @@ export default function EventModal({
                 className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
               />
             </div>
-            
+
             <div className="mt-2 bg-astrawhite border border-blue-200 rounded-md px-3 py-2 flex items-center justify-between text-sm text-blue-800">
               <div className="flex items-center gap-2">
                 <ImageIcon className="w-4 h-4" />

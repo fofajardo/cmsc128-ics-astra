@@ -80,7 +80,7 @@ export default function Events() {
   const [filters, setFilters] = useState(null);
   const [editId,setEditId] = useState(false);
 
-  
+
   const resetForm = () => {
     setAddFormData(defaultFormData);
     setSelectedContentId("");
@@ -385,7 +385,7 @@ export default function Events() {
             formData.append("File", addFormData.imageFile);
             formData.append("content_id", contentId);
             formData.append("type", 3); // Type 3 is for event_pic as defined in the API
-            
+
             // Upload the image
             const photoResponse = await axios.post(
               `${process.env.NEXT_PUBLIC_API_URL}/v1/photos`,
@@ -396,7 +396,7 @@ export default function Events() {
                 },
               }
             );
-            
+
             if (photoResponse.data.status === "CREATED") {
               console.log("Event photo uploaded successfully");
             }

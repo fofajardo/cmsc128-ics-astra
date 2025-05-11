@@ -578,31 +578,31 @@ const getJobPhotoByContentId = async (req, res) => {
       photo: "/jobs/assets/default-job.jpg" // Default job image
     });
   }
-}
+};
 
 const getContentPhotoTypes = async (req, res) => {
   try {
     const { content_ids } = req.query;
-    
+
     if (!content_ids) {
       return res.status(httpStatus.BAD_REQUEST).json({
         status: "FAILED",
         message: "Content IDs are required"
       });
     }
-    
+
     // Split the comma-separated IDs and create an array
-    const contentIdArray = content_ids.split(',');
-    
+    const contentIdArray = content_ids.split(",");
+
     const { data, error } = await photosService.fetchPhotoTypesByContentIds(req.supabase, contentIdArray);
-    
+
     if (error) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
         status: "FAILED",
         message: error.message
       });
     }
-    
+
     return res.status(httpStatus.OK).json({
       status: "OK",
       types: data
@@ -618,28 +618,28 @@ const getContentPhotoTypes = async (req, res) => {
 const getPhotosByContentId = async (req, res) => {
   try {
     const { contentId } = req.params;
-    
+
     if (!contentId) {
       return res.status(httpStatus.BAD_REQUEST).json({
         status: "FAILED",
         message: "Content ID is required"
       });
     }
-    
+
     const { data, error } = await photosService.fetchPhotosByContentId(req.supabase, contentId);
-    
+
     if (error) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
         status: "FAILED",
         message: error.message
       });
     }
-    
+
     return res.status(httpStatus.OK).json({
       status: "OK",
       photos: data || []
     });
-    
+
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: "FAILED",
