@@ -1,17 +1,18 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import BackButton from "@/components/events/IndividualEvent/BackButton";
 import { capitalizeName } from "@/utils/format";
 import { PROJECT_TYPE } from "@/constants/projectConsts"; // TODO: Use constants for project type
+import { useProjectRequestForm } from "@/utils/hooks/useProjectRequestForm";
 
 const RequestFundraiserGoal = () => {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const { formData, updateFormData } = useProjectRequestForm();
 
-  // Initialize states with URL parameters if they exist
+  // Initialize states
   const [amount, setAmount] = useState("");
   const [projectType, setProjectType] = useState("");
   const [targetDate, setTargetDate] = useState("");
@@ -19,35 +20,20 @@ const RequestFundraiserGoal = () => {
   const [projectTypeError, setProjectTypeError] = useState("");
   const [targetDateError, setTargetDateError] = useState("");
 
-  // Load data from URL parameters on component mount
+  // Load saved form data on mount and when formData
+  // Initially, through url siya, now using local storage na
   useEffect(() => {
-    const urlAmount = searchParams.get("amount");
-    const urlProjectType = searchParams.get("projectType");
-    const urlTargetDate = searchParams.get("targetDate");
-
-    if (urlAmount) setAmount(urlAmount);
-    if (urlProjectType) setProjectType(urlProjectType);
-    if (urlTargetDate) setTargetDate(urlTargetDate);
-  }, [searchParams]);
-
-  // Update URL without navigation whenever values change
-  const updateUrlParams = (key, value) => {
-    const current = new URLSearchParams(Array.from(searchParams.entries()));
-    if (value) {
-      current.set(key, value);
-    } else {
-      current.delete(key);
+    if (formData) {
+      if (formData.amount) setAmount(formData.amount);
+      if (formData.projectType) setProjectType(formData.projectType);
+      if (formData.targetDate) setTargetDate(formData.targetDate);
     }
-    const search = current.toString();
-    const query = search ? `?${search}` : "";
-    router.replace(`${window.location.pathname}${query}`, { scroll: false });
-  };
+  }, [formData]);
 
   // Handle amount input change
   const handleAmountChange = (e) => {
     const value = e.target.value;
     setAmount(value);
-    // updateUrlParams("amount", value);
 
     // Allow only valid integer input
     const validValue = value.replace(/[^0-9-]/g, ""); // Remove non-numeric characters except minus
@@ -59,22 +45,24 @@ const RequestFundraiserGoal = () => {
       setAmountError("Please enter a valid amount in Pesos");
     } else if (value && isNaN(value)) {
       setAmountError("Please enter a valid amount in Pesos");
+    } else if (value && parseInt(value) > 1000000000) {
+      setAmountError("Amount cannot exceed 1 billion Pesos");
     } else {
       setAmountError("");
+      updateFormData({ amount: value });
     }
   };
 
-  // Handle ZIP code input change
+  // Handle project type input change
   const handleProjectTypeChange = (e) => {
     const value = e.target.value;
     setProjectType(value);
-    // updateUrlParams("projectType", value);
 
-    // Validate that it's a number
     if (value && !Object.values(PROJECT_TYPE).includes(value.toLowerCase())) {
       setProjectTypeError("Please enter a valid project type");
     } else {
       setProjectTypeError("");
+      updateFormData({ projectType: value });
     }
   };
 
@@ -82,7 +70,6 @@ const RequestFundraiserGoal = () => {
   const handleTargetDateChange = (e) => {
     const value = e.target.value;
     setTargetDate(value);
-    // updateUrlParams("targetDate", value);
 
     // Validate date is in the future
     if (value) {
@@ -94,6 +81,7 @@ const RequestFundraiserGoal = () => {
         setTargetDateError("Please select a future date");
       } else {
         setTargetDateError("");
+        updateFormData({ targetDate: value });
       }
     } else {
       setTargetDateError("");
@@ -198,12 +186,7 @@ const RequestFundraiserGoal = () => {
         <div className="flex justify-between px-6 md:px-12 py-5 border-astralightgray border-t-1">
           <BackButton />
           {isFormValid ? (
-            <Link href={{ pathname:"/projects/request/details",
-              query: {
-                amount: amount,
-                projectType: projectType,
-                targetDate: targetDate,
-              }}} passHref>
+            <Link href="/projects/request/details" passHref>
               <button className="blue-button font-semibold transition cursor-pointer w-[150px] h-[55px]">
                 Continue
               </button>
