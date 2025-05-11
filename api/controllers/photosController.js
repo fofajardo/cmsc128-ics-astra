@@ -550,6 +550,104 @@ const getProjectPhotoByContentId = async (req, res) => {
   }
 };
 
+const getJobPhotoByContentId = async (req, res) => {
+  try {
+    const { job_id } = req.params;
+    // console.log("Job ID:", job_id);
+    // console.log("Looking for photo with content_id:", job_id, "and type: 4");
+
+    // Fetch the photo record from the database
+    const { data, error } = await photosService.fetchJobPhotos(req.supabase, job_id);
+
+    if (error || !data) {
+      console.log("Photo not found for job_id:", job_id, "Error:", error);
+      return res.status(200).json({
+        status: "OK",
+        photo: "/jobs/assets/default-job.jpg" // Default job image
+      });
+    }
+
+    return res.status(200).json({
+      status: "OK",
+      photo: data.image_key,
+    });
+  } catch (error) {
+    console.error("Error in getJobPhotoByContentId:", error);
+    return res.status(200).json({
+      status: "OK",
+      photo: "/jobs/assets/default-job.jpg" // Default job image
+    });
+  }
+}
+
+const getContentPhotoTypes = async (req, res) => {
+  try {
+    const { content_ids } = req.query;
+    
+    if (!content_ids) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "Content IDs are required"
+      });
+    }
+    
+    // Split the comma-separated IDs and create an array
+    const contentIdArray = content_ids.split(',');
+    
+    const { data, error } = await photosService.fetchPhotoTypesByContentIds(req.supabase, contentIdArray);
+    
+    if (error) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error.message
+      });
+    }
+    
+    return res.status(httpStatus.OK).json({
+      status: "OK",
+      types: data
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
+
+const getPhotosByContentId = async (req, res) => {
+  try {
+    const { contentId } = req.params;
+    
+    if (!contentId) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "Content ID is required"
+      });
+    }
+    
+    const { data, error } = await photosService.fetchPhotosByContentId(req.supabase, contentId);
+    
+    if (error) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error.message
+      });
+    }
+    
+    return res.status(httpStatus.OK).json({
+      status: "OK",
+      photos: data || []
+    });
+    
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
+
 const photosController = {
   getAllPhotos,
   getPhotoById,
@@ -562,6 +660,9 @@ const photosController = {
   getProjectPhotoByContentId,
   getDegreeProofPhotoByAlumId,
   getJsonOfDegreeProofPhotoByAlumId,
+  getJobPhotoByContentId,
+  getContentPhotoTypes,
+  getPhotosByContentId,
 };
 
 export default photosController;
