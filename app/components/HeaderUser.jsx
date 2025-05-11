@@ -190,7 +190,9 @@ export default function HeaderUser() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const activeLink = navLinks.find((link) => link.href === pathname)?.href || "/";
+  const activeLink = navLinks.find((link) =>
+    link.href === "/" ? pathname === "/" : pathname.startsWith(link.href)
+  )?.href || "/";
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
