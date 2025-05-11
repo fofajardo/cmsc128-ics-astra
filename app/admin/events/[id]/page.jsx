@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useState,useEffect, useContext } from "react";
-import eventList from "../eventDummy";
+// import eventList from "../eventDummy";
 
 import BackButton from "@/components/events/IndividualEvent/BackButton";
 import HeaderEvent from "@/components/events/IndividualEvent/HeaderEvent";
@@ -16,6 +16,7 @@ import EventDetailsCard from "./EventDetails.Card";
 import SendEventCard from "./SendEventCard";
 import AttendeesTabs from "./AttendeesTabs";
 import AttendeesList from "./AttendeesList";
+import venue1 from "../../../assets/venue1.jpeg";
 import venue2 from "../../../assets/venue2.jpeg";
 
 export default function EventAdminDetailPage() {
@@ -40,7 +41,6 @@ export default function EventAdminDetailPage() {
     setShowEditModal(false);
     setToastData({ type: "success", message: "Event updated successfully!" });
   };
-
 
   const handleDeleteContent = async (id) => {
     try{
@@ -245,12 +245,21 @@ export default function EventAdminDetailPage() {
       );
 
       if (response.data.status === "OK" && response.data.photo) {
+        if (response.data.photo.includes("default")) {
+          if (response.data.photo.includes("default")) {
+            const venue = Math.random() < 0.5 ? 1 : 2;
+            if (venue === 1) {
+              return venue1.src;
+            } else {
+              return venue2.src;
+            }
+          }
+        }
         return response.data.photo;
       }
     } catch (error) {
       console.log(`Failed to fetch photo for event_id ${contentId}:`, error);
     }
-    return venue2.src;
   };
 
   const fetchEvent = async () =>{
@@ -304,7 +313,7 @@ export default function EventAdminDetailPage() {
         const mergedEvent = {
           id: eventResponse.event.event_id,
           event_id: eventResponse.event.event_id,
-          imageSrc: photoUrl || venue2, // fetch this on photo entity;
+          imageSrc: photoUrl, // fetch this on photo entity;
           title: contentResponse.content.title || "Untitled",
           description: contentResponse?.content.details || "No description",
           date: new Date(eventResponse.event.event_date).toDateString(),

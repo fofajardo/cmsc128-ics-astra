@@ -120,6 +120,7 @@ export default function EventDetailPage() {
       );
 
       if (response.data.status === "OK" && response.data.photo) {
+        if(response.data.photo == "/events/default-event.jpg") return venue2.src; //added this since the default-event.jpg not working
         return response.data.photo;
       }
     } catch (error) {
@@ -152,13 +153,15 @@ export default function EventDetailPage() {
       console.log("not alumn", !user?.state?.isAlumnus);
       const hasAccess = user?.state?.isAlumnus || user?.state?.isAdmin || user?.state?.isModerator;
       if (!hasAccess) return;
-
+      console.log("adding interest: ", user_id, event.id);
       const interest = {
         user_id: user_id,
         content_id: event.id
       };
+
       console.log("s interested: ",newIsInterested);
       if(newIsInterested){
+        console.log("adding to interest: ", interest);
         const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests`, interest);
 
         if(response.status === "CREATED"){

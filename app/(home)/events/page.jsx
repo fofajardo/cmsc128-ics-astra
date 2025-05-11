@@ -82,17 +82,21 @@ export default function EventsPage() {
 
   const fetchEventPhoto = async (contentId) => {
     try {
+      console.log(" currently fetching photo");
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/event/${contentId}`
       );
 
       if (response.data.status === "OK" && response.data.photo) {
+        // console.log("photo url", response.data);
+        if(response.data.photo == "/events/default-event.jpg") return venue2.src; //added this since the default-event.jpg not working
         return response.data.photo;
       }
     } catch (error) {
       console.log(`Failed to fetch photo for event_id ${contentId}:`, error);
     }
-    return venue2; // Return default image if fetch fails
+    console.log("default photo: ", venue2);
+    return venue2.src; // Return default image if fetch fails
   };
 
   const fetchData = async () => {
@@ -158,16 +162,16 @@ export default function EventsPage() {
 
       if (response.data.status === "OK"){
         const upcomingEventsPromises = response.data.list.map(async (event) => {
-          console.log(event);
-          const matchedContent = contentMap.get(event.event_id) || {};
+          console.log("upcoming event: ",event);
+          // const matchedContent = contentMap.get(event.event_id) || {};
           const photoUrl = await fetchEventPhoto(event.event_id);
           console.log("in fetch data, fetching user:", user);
           return {
             id: event.event_id,
             event_id: event.event_id,
             imageSrc: photoUrl || venue2,  // Use fetched photo or default
-            title: matchedContent.title || "Untitled",
-            description: matchedContent.details || "No description",
+            title: event.title || "Untitled",
+            description: event.details || "No description",
             date: new Date(event.event_date).toDateString(),
             isOnline: event.online,
             location: event.venue,
@@ -258,10 +262,10 @@ export default function EventsPage() {
       );
     }
     console.log("sortFilter...:", sortFilter);
-    if (sortFilter?.label === "MOst Recent") {
+    if (sortFilter?.label === "Newest First") {
       filteredResults.sort((a, b) => new Date(b.date) - new Date(a.date));
       console.log("mpst recent", filteredResults);
-    } else if (sortFilter?.label === "Oldest") {
+    } else if (sortFilter?.label === "Oldest First") {
       filteredResults.sort((a, b) => new Date(a.date) - new Date(b.date));
       console.log("oldest", filteredResults);
     } else if (sortFilter?.label === "Popular") {
@@ -290,6 +294,10 @@ export default function EventsPage() {
     );
   }, [currentPage, filteredEvents, itemsPerPage]);
 
+  useEffect(() => {
+    const pages = Math.ceil(filteredEvents.length / itemsPerPage);
+    setTotalPages(pages);
+  }, [filteredEvents, itemsPerPage]);
 
   return (
     <div className="w-full bg-astradirtywhite">
@@ -392,8 +400,8 @@ export default function EventsPage() {
               icon="material-symbols:sort"
               options={[
                 { label: "Clear", icon: "mdi:close-circle-outline" },
-                { label: "Most Recent", icon: "mdi:sort-calendar-descending" },
-                { label: "Oldest", icon: "mdi:sort-calendar-ascending" },
+                { label: "Newest First", icon: "mdi:sort-calendar-descending" },
+                { label: "Oldest First", icon: "mdi:sort-calendar-ascending" },
                 { label: "Popular", icon: "mdi:star-outline" },
               ]}
               placeholder="Sort"
