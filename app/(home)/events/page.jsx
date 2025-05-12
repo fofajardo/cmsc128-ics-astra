@@ -15,7 +15,7 @@ import ExploreUPLBSection from "@/components/events/GroupedEvents/ExploreUPLBSec
 import UPLBImageCollage from "@/components/events/GroupedEvents/UPLBImageCollage";
 
 import eventsVector from "../../assets/events-vector.png";
-import venue1 from "../../assets/venue1.jpg";
+import venue1 from "../../assets/venue1.jpeg";
 import venue2 from "../../assets/venue2.jpeg";
 import { useSignedInUser } from "@/components/UserContext";
 
@@ -138,7 +138,8 @@ export default function EventsPage() {
             isOnline: event.online,
             location: event.venue,
             attendees: await fetchAttendees(event.event_id),
-            status: new Date(event.event_date) < new Date() ? "Closed" : "Open",
+            status: event.status,
+            slot: event.slots,
             avatars: [],
           };
         });

@@ -12,6 +12,7 @@ export default function EventModal({
   handleChange,
   handleSubmit,
   toggleModal,
+  reset
 }) {
   const [selectedDate, setSelectedDate] = useState(
     formData.event_date ? new Date(formData.event_date) : null
@@ -78,7 +79,7 @@ export default function EventModal({
             <label className="block font-medium mb-1">Event Type</label>
             <select
               name="event_type"
-              value={formData.type}
+              value={formData.event_type}
               onChange={handleChange}
               className="border rounded px-3 py-2 w-full"
               required={!isEdit}
@@ -151,6 +152,7 @@ export default function EventModal({
               <option value="">Please Select</option>
               <option>Open</option>
               <option>Closed</option>
+              <option> Cancelled</option>
             </select>
           </div>
 
@@ -196,7 +198,7 @@ export default function EventModal({
           <div className="flex justify-between mt-6 col-span-2">
             <button
               type="button"
-              onClick={toggleModal}
+              onClick={isEdit ? toggleModal : reset}
               className="text-blue-600 border border-blue-600 px-4 py-2 rounded-md font-semibold hover:bg-blue-50"
             >
               {isEdit ? "Cancel" : "Clear Details"}

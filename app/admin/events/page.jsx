@@ -58,6 +58,7 @@ export default function Events() {
     external_link: "",
     access_link: "",
     description: "",
+
     tags : [],
   });
 
@@ -84,7 +85,7 @@ export default function Events() {
 
   const resetForm = () => {
     setAddFormData(defaultFormData);
-    setSelectedContentId("");
+    //setSelectedContentId("");
 
   };
 
@@ -317,6 +318,7 @@ export default function Events() {
 
   const toggleAddModal = () => {
     setShowAddModal((prev) => !prev);
+    resetForm();
   };
 
   const toggleEditModal = (event) => {
@@ -549,6 +551,7 @@ export default function Events() {
             handleAdd(editId);
           }}
           toggleModal={toggleAddModal}
+          reset = {resetForm}
         />
       )}
 
@@ -564,6 +567,7 @@ export default function Events() {
             handleEdit(id);
           }}
           toggleModal={() => setShowEditModal(false)}
+          reset = {resetForm}
         />
       )}
 
