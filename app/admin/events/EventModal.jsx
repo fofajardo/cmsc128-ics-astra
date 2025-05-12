@@ -138,6 +138,7 @@ export default function EventModal({
                 selected={selectedDate}
                 onChange={handleDateChange}
                 dateFormat="yyyy-MM-dd"
+                minDate={new Date()}
                 placeholderText="Select date"
                 className="w-full outline-none cursor-pointer"
                 required={!isEdit}

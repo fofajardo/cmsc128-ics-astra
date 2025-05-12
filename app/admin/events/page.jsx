@@ -27,6 +27,19 @@ export default function Events() {
   const [selectedContentId, setSelectedContentId] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [currEvent, setCurrEvent] = useState({
+    title: "",
+    venue: "",
+    event_type: "",
+    online: false,
+    event_date: "",
+    max_slots: "",
+    status: "open",
+    external_link: "",
+    access_link: "",
+    description: "",
+    tags : [],
+  });
 
   // const [searchQuery, setSearchQuery] = useState("");
 
@@ -51,14 +64,12 @@ export default function Events() {
     title: "",
     venue: "",
     event_type: "",
-    online: false,
     event_date: "",
     max_slots: "",
     status: "open",
     external_link: "",
     access_link: "",
     description: "",
-
     tags : [],
   });
 
@@ -66,7 +77,6 @@ export default function Events() {
     title: "",
     venue: "",
     event_type: "",
-    online: false,
     event_date: "",
     max_slots: "",
     status: "open",
@@ -85,7 +95,7 @@ export default function Events() {
 
   const resetForm = () => {
     setAddFormData(defaultFormData);
-    //setSelectedContentId("");
+    setSelectedContentId("");
 
   };
 
@@ -129,6 +139,7 @@ export default function Events() {
           contentMap[event.event_id] = {
             title: content.title || "Unknown Title",
             details: content.details || "",
+            tags:content.tags || []
           };
         } else {
           console.error("Failed to fetch content:", contentResponse.data);
@@ -218,11 +229,16 @@ export default function Events() {
             location: event.venue || "Unknown Location",
             type: event.online ? "Online" : "In-Person",
             date: new Date(event.event_date).toDateString(),
-            going: event.going ?? 10,
+            max_slot : event.slots,
+            status: event.status,
+            external_link: event.external_link,
+            access_link: event.access_link,
+            description: contents[event.event_id]?.description || "No Description",
             interested: interests[event.event_id] || 0,
+            tags: contents[event.event_id]?.tags || []
           }))
         );
-
+        console.log("event list:",eventList);
         // Set events using the fetched data
         setEvents(eventList);
 
@@ -525,7 +541,7 @@ export default function Events() {
       setToast({ type: "error", message: "Failed to edit event." });
     } finally{
       setShowEditModal(false);
-      resetForm;
+      resetForm();
       fetchEvents();
     }
   };
@@ -622,7 +638,7 @@ export default function Events() {
           <div> {`(${eventList.length})`} </div>
           <Table
             cols={cols}
-            data={loading ? skeletonRows : createRows(currentPageData, confirmDelete, toggleEditModal)}
+            data={loading ? skeletonRows : createRows(currentPageData, confirmDelete, toggleEditModal, setAddFormData)}
           />
           <PageTool pagination={pagination} setPagination={setPagination} />
         </div>
@@ -641,14 +657,14 @@ const skeletonRows = Array(10).fill({
   Actions: <CenteredSkeleton className="h-4 w-18"/>
 });
 
-function createRows(events, confirmDelete, toggleEditModal) {
+function createRows(events, confirmDelete, toggleEditModal,setAddFormData) {
   return events.map((event) => ({
     Event: renderTitle(event.event_name),
     Location: renderText(event.location),
     Type: renderText(event.type),
     Date: renderText(event.date),
     Interested: renderText(event.interested),
-    Actions: renderActions(event, confirmDelete, toggleEditModal),
+    Actions: renderActions(event, confirmDelete, toggleEditModal, setAddFormData),
   }));
 }
 
@@ -660,7 +676,7 @@ function renderText(text) {
   return <div className="text-center text-astradarkgray font-s">{text}</div>;
 }
 
-function renderActions(event, confirmDelete, toggleEditModal) {
+function renderActions(event, confirmDelete, toggleEditModal,setAddFormData) {
   const { id, event_name } = event;
   // console.log("event in renderaction:",event);
   return (
@@ -673,8 +689,28 @@ function renderActions(event, confirmDelete, toggleEditModal) {
           View
         </a>
         <button
-          onClick={() =>
-            toggleEditModal(event)}
+          onClick={() =>{
+            console.log("Event before setting form data:", event);
+
+            setAddFormData({
+              title: event.event_name || "",
+              venue: event.location || "",
+              event_type: event.type || "",
+              event_date: event.date || "",
+              max_slots: event.max_slot,
+              status: event.status || "open",
+              external_link: event.external_link || "",
+              access_link: event.access_link || "",
+              description: event.description || "",
+              tags: event.tags || [],
+            });
+
+            // Log state after setting (though this will be async)
+            setTimeout(() => {
+              //console.log("Form data after setting:", addFormData);
+              toggleEditModal(event);
+            }, 10);
+          }}
           className="bg-astraprimary text-astrawhite px-4 py-2 rounded-md text-sm font-semibold hover:bg-[#0062cc]"
         >
           Edit
@@ -694,8 +730,29 @@ function renderActions(event, confirmDelete, toggleEditModal) {
           <Eye size={20} />
         </a>
         <button
-          onClick={() =>
-            toggleEditModal(event)}
+          onClick={() => {
+
+            console.log("Event before setting form data:", event);
+
+            setAddFormData({
+              title: event.event_name || "",
+              venue: event.location || "",
+              event_type: event.type || "",
+              event_date: event.date || "",
+              max_slots: event.max_slot,
+              status: event.status || "open",
+              external_link: event.external_link || "",
+              access_link: event.access_link || "",
+              description: event.description || "",
+              tags: event.tags || [],
+            });
+
+            // Log state after setting (though this will be async)
+            setTimeout(() => {
+              console.log("Form data after setting:", addFormData);
+              toggleEditModal(event);
+            }, 10);
+          }}
           className="bg-astraprimary text-astrawhite p-2 rounded-md"
         >
           <Pencil size={20} />
