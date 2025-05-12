@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import BackButton from "@/components/events/IndividualEvent/BackButton";
 import { useProjectRequestForm } from "@/utils/hooks/useProjectRequestForm";
+import ToastNotification from "@/components/ToastNotification";
 
 const RequestFundraiserPreview = () => {
   const router = useRouter();
@@ -13,6 +14,8 @@ const RequestFundraiserPreview = () => {
   const [photoPreview, setPhotoPreview] = useState(null);
   const [photoError, setPhotoError] = useState("");
   const [isDragging, setIsDragging] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showToast, setShowToast] = useState(false);
 
   // Format amount to currency
   const formatAmount = (amount) => {
@@ -85,10 +88,22 @@ const RequestFundraiserPreview = () => {
 
   // Handle form submission
   const handleSubmit = () => {
-    // Here you would typically handle the form submission
-    // For now, we'll just clear the form data
-    clearFormData();
-    router.push('/projects');
+    setIsSubmitting(true);
+
+    // Simulate API call with setTimeout
+    setTimeout(() => {
+      // Clear form data
+      clearFormData();
+
+      // Show success toast
+      setShowToast(true);
+
+      // Hide toast and redirect after 2 seconds
+      setTimeout(() => {
+        setShowToast(false);
+        router.push('/projects');
+      }, 2000);
+    }, 1000); // Simulate 1 second API call
   };
 
   return (
@@ -219,12 +234,34 @@ const RequestFundraiserPreview = () => {
           <BackButton />
           <button
             onClick={handleSubmit}
-            className="blue-button font-semibold transition cursor-pointer w-[120px] md:w-[150px] h-[45px] md:h-[55px] text-sm md:text-base"
+            disabled={isSubmitting}
+            className={`blue-button font-semibold transition cursor-pointer w-[120px] md:w-[150px] h-[45px] md:h-[55px] text-sm md:text-base flex items-center justify-center ${
+              isSubmitting ? 'opacity-75' : ''
+            }`}
           >
-            Submit
+            {isSubmitting ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Submitting...
+              </>
+            ) : (
+              'Submit'
+            )}
           </button>
         </div>
       </div>
+
+      {/* Toast Notification */}
+      {showToast && (
+        <ToastNotification
+          type="success"
+          message="Project request submitted successfully!"
+          onClose={() => setShowToast(false)}
+        />
+      )}
     </div>
   );
 };
