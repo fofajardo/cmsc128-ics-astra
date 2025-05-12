@@ -278,7 +278,7 @@ export default function AlumniSearchProfile({ params }) {
             {/* text info */}
             <div className="mt-2 sm:mt-0 text-center sm:text-left">
               <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2 justify-center sm:justify-start">
-                <h3 className="font-lb text-astrablack">{profile.first_name} {profile.middle_name} {profile.last_name}</h3>
+                <h3 className="font-lb text-astrablack">{capitalizeName(profile.first_name + " " + profile.middle_name + " " + profile.last_name)}</h3>
                 {getStatusBadge(profile.status)}
               </div>
               <a className="block font-s text-astradark hover:underline">
@@ -319,15 +319,15 @@ export default function AlumniSearchProfile({ params }) {
             {/* Personal Info */}
             <div className="grid grid-cols-3 gap-y-8 text-center text-sm text-astrablack py-10">
               <div>
-                <p className="font-rb">{profile.first_name}</p>
+                <p className="font-rb">{capitalizeName(profile.first_name)}</p>
                 <p className="text-astradarkgray">First Name</p>
               </div>
               <div>
-                <p className="font-rb">{profile.middle_name || "N/A"}</p>
+                <p className="font-rb">{capitalizeName(profile.middle_name) || "N/A"}</p>
                 <p className="text-astradarkgray">Middle Name</p>
               </div>
               <div>
-                <p className="font-rb">{profile.last_name}</p>
+                <p className="font-rb">{capitalizeName(profile.last_name)}</p>
                 <p className="text-astradarkgray">Surname</p>
               </div>
 
