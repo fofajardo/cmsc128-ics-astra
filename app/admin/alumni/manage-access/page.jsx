@@ -47,7 +47,6 @@ export default function AlumniAccess() {
       total: 0
     });
 
-    // Reset filters
     updateFilters({
       yearFrom: "",
       yearTo: "",
@@ -58,13 +57,8 @@ export default function AlumniAccess() {
       sortOrder: "asc",
     });
 
-    // Clear search query
     setSearchQuery("");
-
-    // Optionally clear selected rows
     setSelectedIds([]);
-
-    // You can also optionally scroll to top:
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [currTab]);
 
@@ -72,8 +66,6 @@ export default function AlumniAccess() {
     const fetchAlumniProfiles = async () => {
       setLoading(true);
       try {
-        // For better search, fetch all or more profiles when searching
-        // This allows for more sophisticated client-side filtering
         const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
         const endpoints = {
@@ -95,25 +87,17 @@ export default function AlumniAccess() {
           }
         );
 
-        const totalResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-stats`);
-
-        const totals = {
-          Pending: totalResponse.data.stats.pending_alumni_count,
-          Approved: totalResponse.data.stats.approved_alumni_count,
-          Inactive: totalResponse.data.stats.inactive_alumni_count
-        };
-
         if (response.data.status === "OK") {
           const updatedAlumList = await Promise.all(
             response.data.list.map(async (alum) => {
               const alumData = {
                 id: alum.alum_id,
                 alumname: capitalizeName(`${alum.first_name} ${alum.middle_name} ${alum.last_name}`),
-                graduationYear: "N/A",
+                graduationYear: alum.year_graduated,
                 student_num: alum.student_num,
                 image:
                   "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-                degreeProgram: "N/A",
+                degreeProgram: alum.course
               };
 
               // Fetch email from /v1/users/{user_id}
@@ -159,19 +143,18 @@ export default function AlumniAccess() {
             })
           );
 
-          const totalCount = totals[currTab];
+          const totalCount = response.data.total;
           const listLength = updatedAlumList.length;
           const lowerBound = listLength === 0 ? 0 : (pagination.currPage - 1) * pagination.numToShow + 1;
           const upperBound = listLength === 0 ? 0 : lowerBound + listLength - 1;
 
-          // Set total and lastPage based on the fetched total count
           setPagination((prev) => ({
             ...prev,
             display: [lowerBound, upperBound],
             total: totalCount,
             lastPage: Math.ceil(totalCount / prev.numToShow),
           }));
-          // Store raw data
+
           setAlumList(updatedAlumList);
         } else {
           console.error("Unexpected response:", response.data);
@@ -186,6 +169,15 @@ export default function AlumniAccess() {
 
     fetchAlumniProfiles();
   }, [pagination.currPage, pagination.numToShow, currTab, searchQuery, stableFilters, refreshTrigger]);
+
+  useEffect(() => {
+    if (pagination.lastPage < pagination.currPage) {
+      setPagination((prev) => ({
+        ...prev,
+        currPage: prev.lastPage
+      }));
+    }
+  }, [pagination.lastPage]);
 
   return (
     <div>
@@ -227,7 +219,7 @@ export default function AlumniAccess() {
         <div className="flex flex-row justify-between md:pl-4 lg:pl-8">
           <ActionButton label="Reset Selection" color="blue" onClick={() => setSelectedIds([])} />
 
-          <BottomButtons selectedCount={selectedIds.length} currTab={currTab} setToast={setToast} />
+          <BottomButtons selectedCount={selectedIds.length} currTab={currTab} setToast={setToast} selectedIds={selectedIds} setRefreshTrigger={setRefreshTrigger} alumList={alumList} pagination={pagination} setPagination={setPagination} />
         </div>
       </div>
     </div>
@@ -267,7 +259,7 @@ function getNotifyContent(action, selectedCount) {
   return { notifyMessage: message, notifyType: type };
 }
 
-function BottomButtons({ selectedCount, currTab, setToast }) {
+function BottomButtons({ selectedCount, currTab, setToast, selectedIds, setRefreshTrigger, alumList, pagination, setPagination }) {
   const [modal, setModal] = useState({
     open: false,
     action: null, // "approve", "decline", etc.
@@ -284,17 +276,112 @@ function BottomButtons({ selectedCount, currTab, setToast }) {
     setModal({ open: false, action: null });
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     const { notifyMessage, notifyType } = getNotifyContent(modal.action, selectedCount);
+    closeModal();
 
-    closeModal(); // first close the modal
+    const allIds = selectedCount > 0 ? selectedIds : alumList.map(alum => alum.id);
+    const isRemovingAllFromPage = selectedCount === 0 || selectedCount === alumList.length;
+    const isNotFirstPage = pagination.currPage > 1;
 
-    setTimeout(() => {
-      setToast({
-        type: notifyType,
-        message: notifyMessage
-      });
-    }, 50);
+    if (modal.action === "approve") {
+      try {
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/multiple-approve`,
+          allIds
+        );
+
+        if (response.data.status === "CREATED") {
+          if (isRemovingAllFromPage && isNotFirstPage) {
+            setPagination(prev => ({
+              ...prev,
+              currPage: prev.currPage - 1
+            }));
+          }
+          setRefreshTrigger(prev => prev + 1);
+          setToast({
+            type: "success",
+            message: response.data?.message || notifyMessage
+          });
+        } else {
+          setToast({ type: "error", message: `Failed to approve selected profiles. ${response.data.message}` });
+        }
+
+      } catch (err) {
+        console.error("Approval failed", err);
+        setToast({
+          type: "error",
+          message: err?.response?.data?.message || "Failed to approve selected profiles."
+        });
+      }
+    } else if (modal.action === "remove") {
+      try {
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/multiple-remove`,
+          allIds
+        );
+
+        if (response.data.status === "CREATED") {
+          if (isRemovingAllFromPage && isNotFirstPage) {
+            setPagination(prev => ({
+              ...prev,
+              currPage: prev.currPage - 1
+            }));
+          }
+          setRefreshTrigger(prev => prev + 1);
+          setToast({
+            type: "success",
+            message: response.data?.message || notifyMessage
+          });
+        } else {
+          setToast({ type: "error", message: `Failed to remove selected profiles' access. ${response.data.message}` });
+        }
+
+      } catch (err) {
+        console.error("Remove failed", err);
+        setToast({
+          type: "error",
+          message: err?.response?.data?.message || "Failed to remove selected profiles' access."
+        });
+      }
+    } else if (modal.action === "reactivate") {
+      try {
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/multiple-reactivate`,
+          allIds
+        );
+
+        if (response.data.status === "CREATED") {
+          if (isRemovingAllFromPage && isNotFirstPage) {
+            setPagination(prev => ({
+              ...prev,
+              currPage: prev.currPage - 1
+            }));
+          }
+          setRefreshTrigger(prev => prev + 1);
+          setToast({
+            type: "success",
+            message: response.data?.message || notifyMessage
+          });
+        } else {
+          setToast({ type: "error", message: `Failed to reactivate selected profiles. ${response.data.message}` });
+        }
+
+      } catch (err) {
+        console.error("Reactivate failed", err);
+        setToast({
+          type: "error",
+          message: err?.response?.data?.message || "Failed to reactivate selected profiles."
+        });
+      }
+    } else {
+      setTimeout(() => {
+        setToast({
+          type: notifyType,
+          message: notifyMessage
+        });
+      }, 50);
+    }
   };
 
   const modals = {
@@ -496,8 +583,7 @@ function renderActions(id, name, currTab, setRefreshTrigger, setToast) {
 
       const newProfile = {
         ...rest,
-        approved: true,
-        created_at: new Date().toISOString()
+        approved: true
       };
 
       const postResponse = await axios.post(
@@ -539,11 +625,8 @@ function renderActions(id, name, currTab, setRefreshTrigger, setToast) {
 
       const newProfile = {
         ...rest,
-        approved: false,
-        created_at: new Date().toISOString()
+        approved: false
       };
-
-      console.log(newProfile);
 
       const postResponse = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/${id}`,
@@ -559,6 +642,46 @@ function renderActions(id, name, currTab, setRefreshTrigger, setToast) {
     } catch (error) {
       console.error(`Failed to remove ${name}'s access:`, error);
       setToast({ type: "error", message: `An error occurred while removing ${name}'s access.` });
+    }
+  };
+
+  const handleReactivate = async () => {
+    try {
+      const getResponse = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/${id}`
+      );
+
+      const latestProfile = getResponse.data?.alumniProfile;
+
+      if (!latestProfile) {
+        setToast({ type: "error", message: `No existing profile found for ${name}.` });
+        return;
+      }
+
+      const {
+        id: _,
+        created_at: __,
+        ...rest
+      } = latestProfile;
+
+      const newProfile = {
+        ...rest
+      };
+
+      const postResponse = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/${id}`,
+        newProfile
+      );
+
+      if (postResponse.data.status === "CREATED") {
+        setToast({ type: "success", message: `${name} has been reactivated!` });
+        setRefreshTrigger(prev => prev + 1);
+      } else {
+        setToast({ type: "error", message: `Failed to reactivate ${name}. ${postResponse.data.message}` });
+      }
+    } catch (error) {
+      console.error(`Failed to reactivate ${name}:`, error);
+      setToast({ type: "error", message: `An error occurred while reactivating ${name}.` });
     }
   };
 
@@ -648,6 +771,7 @@ function renderActions(id, name, currTab, setRefreshTrigger, setToast) {
               color="blue"
               notifyMessage={`${name} has been reactivated!`}
               notifyType="success"
+              onClick={handleReactivate}
             />
           </div>
           <div className="block md:hidden">
@@ -656,6 +780,7 @@ function renderActions(id, name, currTab, setRefreshTrigger, setToast) {
               color="blue"
               notifyMessage={`${name} has been reactivated!`}
               notifyType="success"
+              onClick={handleReactivate}
             />
           </div>
         </>

@@ -65,7 +65,8 @@ const fetchInactiveAlumni = async (supabase, page = 1, limit = 10, search = "", 
       primary_work_experience:work_experiences (
         field
       ),
-      student_num
+      student_num,
+      course
     `);
 
   if (profilesError) throw profilesError;
@@ -190,7 +191,8 @@ const fetchApprovedAlumni = async (supabase, page = 1, limit = 10, search = "", 
       primary_work_experience:work_experiences (
         field
       ),
-      student_num
+      student_num,
+      course
     `);
 
   if (profilesError) throw profilesError;
@@ -315,7 +317,8 @@ const fetchPendingAlumni = async (supabase, page = 1, limit = 10, search = "", f
       primary_work_experience:work_experiences (
         field
       ),
-      student_num
+      student_num,
+      course
     `);
 
   if (profilesError) throw profilesError;
