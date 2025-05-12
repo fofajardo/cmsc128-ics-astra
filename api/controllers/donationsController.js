@@ -5,6 +5,7 @@ import {Actions, Subjects} from "../../common/scopes.js";
 import alumniService from "../services/alumniProfilesService.js";
 import usersService from "../services/usersService.js";
 import projectsService from "../services/projectsService.js";
+import contentsService from "../services/contentsService.js";
 
 const getDonations = async (req, res) => {
   if (req.you.cannot(Actions.READ, Subjects.DONATION)) {
@@ -29,6 +30,9 @@ const getDonations = async (req, res) => {
       });
     }
 
+    const projectIds = data.map(donation => donation.project_id);
+    const { data: contentData, error: contentError } = await contentsService.fetchContentByFilter(req.supabase, { id: projectIds, page: -1 });
+
     const userIds = data.map(donation => donation.user_id);
     const { data: alumniData, error: alumniError } = await alumniService.fetchAlumniProfilesByFilter(req.supabase, { alum_id: userIds, page: -1 });
 
@@ -37,6 +41,7 @@ const getDonations = async (req, res) => {
     const donationsWithDonors = data.map(donation => {
       const alum = alumniData.find(a => a.alum_id === donation.user_id);
       const user = userData.find(u => u.id === donation.user_id);
+      const content = contentData.find(c => c.id === donation.project_id);
 
       let full_name;
       if (user.role === "moderator") {    // TODO: Clarify if moderator/admin users will have profiles (and names)
@@ -53,6 +58,7 @@ const getDonations = async (req, res) => {
 
       return {
         ...donation,
+        project_title: content ? content.title : "Deleted Project",
         donor: donation.is_anonymous ? "Anonymous" : full_name,
       };
     });
@@ -386,7 +392,9 @@ const updateDonation = async (req, res) => {
       mode_of_payment,
       amount,
       comment,
-      is_anonymous
+      is_anonymous,
+      is_verified,
+      verified_by_user_id
     } = req.body;
 
     const updateData = {
@@ -397,7 +405,10 @@ const updateDonation = async (req, res) => {
       mode_of_payment,
       amount,
       comment,
-      is_anonymous
+      is_anonymous,
+      is_verified,
+      verified_by_user_id,
+      updated_at: new Date().toISOString()
     };
 
     // Remove undefined fields to avoid overwriting with nulls
@@ -408,7 +419,7 @@ const updateDonation = async (req, res) => {
     });
 
     // Validate request body
-    const allowedFields = ["user_id", "project_id", "donation_date", "reference_num", "mode_of_payment", "amount", "comment", "is_anonymous"];
+    const allowedFields = ["user_id", "project_id", "donation_date", "reference_num", "mode_of_payment", "amount", "comment", "is_anonymous", "is_verified", "verified_by_user_id"];
 
     allowedFields.forEach(field => {
       if (!(field in req.body)) {
