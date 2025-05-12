@@ -7,7 +7,6 @@ import {
   HeartHandshake,
   Calendar,
   User,
-  MessageSquare,
   Trash2,
   Edit3,
   AlertCircle,
@@ -19,7 +18,6 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import ToastNotification from "@/components/ToastNotification";
-import MessagesModal from "./MessagesModal";
 import EditModal from "./EditModal";
 import RejectionModal from "./RejectionModal";
 import axios from "axios";
@@ -33,7 +31,6 @@ export default function UserProjects() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("all");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isViewMessagesModalOpen, setIsViewMessagesModalOpen] = useState(false);
   const [isRejectionDetailsModalOpen, setIsRejectionDetailsModalOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
   const [toast, setToast] = useState(null);
@@ -97,13 +94,6 @@ export default function UserProjects() {
                 dateCompleted: project.projectData.date_complete,
                 status: project.status,
                 request_id: project.request_id,
-                messages: [{
-                  id: project.projectData.project_id,
-                  sender: "Admin",
-                  content: project.response,
-                  timestamp: project.date_reviewed,
-                  isRead: false,
-                }],
               })
             )
           );
@@ -155,33 +145,6 @@ export default function UserProjects() {
     setIsEditModalOpen(true);
   };
 
-  const handleOpenMessagesModal = (openProject) => {
-    setSelectedProject(openProject);
-    setIsViewMessagesModalOpen(true);
-
-    // Mark all messages as read
-    const updatedProjects = projects.map((project) => {
-      if (project.id === openProject.id) {
-        return {
-          ...project,
-          messages: project.messages.map((msg) => ({
-            ...msg,
-            isRead: true,
-          })),
-        };
-      }
-      return project;
-    });
-
-    setProjects(updatedProjects);
-
-    //Update selected project with read messages
-    const updatedSelectedProject = updatedProjects.find(
-      (project) => project.id === openProject.id
-    );
-    setSelectedProject(updatedSelectedProject);
-  };
-
   const handleOpenRejectionDetailsModal = (project) => {
     setSelectedProject(project);
     setIsRejectionDetailsModalOpen(true);
@@ -209,44 +172,6 @@ export default function UserProjects() {
     return REQUEST_STATUS_LABELS[project.status].toLowerCase() === activeTab.toLowerCase();
   });
 
-  const getUnreadMessagesCount = (project) => {
-    return project.messages.filter((message) => !message.isRead).length;
-  };
-
-  const handleMessageSent = (projectId, newMessage) => {
-    const updatedProjects = projects.map((project) => {
-      if (project.id === projectId) {
-        return {
-          ...project,
-          messages: [
-            ...project.messages,
-            {
-              id: `m${Math.random().toString(36).substr(2, 9)}`,
-              sender: "You",
-              content: newMessage,
-              timestamp: new Date().toISOString(),
-              isRead: true,
-            },
-          ],
-        };
-      }
-      return project;
-    });
-
-    setProjects(updatedProjects);
-
-    //Update the selected project with the new messages
-    const updatedSelectedProject = updatedProjects.find(
-      (project) => project.id === projectId
-    );
-    setSelectedProject(updatedSelectedProject);
-
-    setToast({
-      type: "success",
-      message: "Message sent successfully!",
-    });
-  };
-
   return (
     <div className="bg-astradirtywhite min-h-screen pb-12">
       {toast && (
@@ -257,21 +182,17 @@ export default function UserProjects() {
         />
       )}
 
-      {/*Back Navigation */}
-      <div className="max-w-6xl mx-auto px-6 pt-5 pb-5">
-        <button
-          onClick={() => router.push("/projects")}
-          className="flex items-center gap-2 text-astraprimary font-medium hover:text-astraprimary/80 transition-colors py-2 px-3 rounded-lg border border-astragray/20 bg-astrawhite shadow-sm"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          Back to Projects
-        </button>
-      </div>
-
-      {/* Header */}
+      {/* Header with integrated back button */}
       <div className="bg-gradient-to-r from-astraprimary to-astraprimary/90 pt-6 pb-24">
         <div className="max-w-6xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div className="flex flex-col gap-4">
+            <button
+              onClick={() => router.push("/projects")}
+              className="flex items-center gap-2 text-astrawhite bg-astrablack hover:bg-astradarkgray transition-colors w-fit px-4 py-2 rounded-lg"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              Back to Projects
+            </button>
             <div>
               <h1 className="text-3xl font-bold text-astrawhite mb-2">My Projects</h1>
               <p className="text-astrawhite/80">
@@ -459,19 +380,6 @@ export default function UserProjects() {
                               )}
 
                               <button
-                                onClick={() => handleOpenMessagesModal(project)}
-                                className="flex items-center gap-1.5 bg-astralightgray text-astradarkgray py-2 px-4 rounded-lg text-sm hover:bg-astragray/20 transition-colors relative"
-                              >
-                                <MessageSquare className="w-4 h-4" />
-                                Messages
-                                {getUnreadMessagesCount(project) > 0 && (
-                                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-                                    {getUnreadMessagesCount(project)}
-                                  </span>
-                                )}
-                              </button>
-
-                              <button
                                 onClick={() => toggleExpandProject(project.id)}
                                 className="ml-auto flex items-center gap-1 text-astradarkgray hover:text-astraprimary transition-colors"
                               >
@@ -493,92 +401,44 @@ export default function UserProjects() {
                         {/* Expanded details */}
                         {expandedProject === project.id && (
                           <div className="mt-6 pt-6 border-t border-astragray/20 space-y-4 animate-expandDown">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                               <div>
                                 <h4 className="font-medium mb-2 text-astrablack">
                                   Project Details
                                 </h4>
-                                <ul className="space-y-2 text-sm">
-                                  <li className="flex justify-between">
-                                    <span className="text-astradarkgray">
-                                      Goal Amount:
-                                    </span>
-                                    <span className="font-medium">
-                                      {formatCurrency(project.goal)}
-                                    </span>
-                                  </li>
-                                  <li className="flex justify-between">
-                                    <span className="text-astradarkgray">
-                                      End Date:
-                                    </span>
-                                    <span className="font-medium">
-                                      {new Date(
-                                        project.endDate
-                                      ).toLocaleDateString()}
-                                    </span>
-                                  </li>
-                                  {project.status === REQUEST_STATUS_LABELS[REQUEST_STATUS.APPROVED] && (
-                                    <>
-                                      <li className="flex justify-between">
-                                        <span className="text-astradarkgray">
-                                          Amount Raised:
-                                        </span>
-                                        <span className="font-medium">
-                                          {project.raised}
-                                        </span>
-                                      </li>
-                                      <li className="flex justify-between">
-                                        <span className="text-astradarkgray">
-                                          Number of Donors:
-                                        </span>
-                                        <span className="font-medium">
-                                          {project.donors}
-                                        </span>
-                                      </li>
-                                    </>
-                                  )}
-                                </ul>
+                                <div className="space-y-2">
+                                  <p className="text-sm text-astradarkgray">
+                                    <span className="font-medium">Type:</span>{" "}
+                                    {capitalizeName(project.type)}
+                                  </p>
+                                  <p className="text-sm text-astradarkgray">
+                                    <span className="font-medium">Created:</span>{" "}
+                                    {new Date(project.createdAt).toLocaleDateString()}
+                                  </p>
+                                  <p className="text-sm text-astradarkgray">
+                                    <span className="font-medium">End Date:</span>{" "}
+                                    {new Date(project.endDate).toLocaleDateString()}
+                                  </p>
+                                </div>
                               </div>
 
-                              <div className="md:col-span-2">
+                              <div>
                                 <h4 className="font-medium mb-2 text-astrablack">
-                                  Description
+                                  Status Details
                                 </h4>
-                                <p className="text-sm text-astradarkgray">
-                                  {project.description}
-                                </p>
+                                <div className="space-y-2">
+                                  <p className="text-sm text-astradarkgray">
+                                    <span className="font-medium">Status:</span>{" "}
+                                    {capitalizeName(REQUEST_STATUS_LABELS[project.status])}
+                                  </p>
+                                  {project.status === REQUEST_STATUS_LABELS[REQUEST_STATUS.APPROVED] && (
+                                    <p className="text-sm text-astradarkgray">
+                                      <span className="font-medium">Donors:</span>{" "}
+                                      {project.donors}
+                                    </p>
+                                  )}
+                                </div>
                               </div>
-                            </div>
-
-                            <div className="flex justify-end pt-4">
-                              {project.status === REQUEST_STATUS_LABELS[REQUEST_STATUS.REJECTED] ? (
-                                <button
-                                  onClick={() => router.push("/projects/request/goal")}
-                                  className="flex items-center gap-1.5 bg-astraprimary text-astrawhite py-2 px-4 rounded-lg text-sm hover:bg-astraprimary/90 transition-colors"
-                                >
-                                  <Edit3 className="w-4 h-4" />
-                                  Resubmit Project
-                                </button>
-                              ) : project.status === REQUEST_STATUS_LABELS[REQUEST_STATUS.SENT] ? (
-                                <button
-                                  onClick={() => {
-                                    // Handle cancellation logic
-                                    const updatedProjects = projects.filter(
-                                      (f) => f.id !== project.id
-                                    );
-                                    setProjects(updatedProjects);
-                                    setToast({
-                                      type: "success",
-                                      message:
-                                        "Project request cancelled successfully!",
-                                    });
-                                  }}
-                                  className="flex items-center gap-1.5 bg-red-100 text-red-700 py-2 px-4 rounded-lg text-sm hover:bg-red-200 transition-colors"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                  Cancel Request
-                                </button>
-                              ) : null}
                             </div>
                           </div>
                         )}
@@ -592,7 +452,7 @@ export default function UserProjects() {
         </div>
       </div>
 
-      {/* Modals */}
+      {/* Edit Modal */}
       {isEditModalOpen && selectedProject && (
         <EditModal
           project={selectedProject}
@@ -601,22 +461,11 @@ export default function UserProjects() {
         />
       )}
 
-      {isViewMessagesModalOpen && selectedProject && (
-        <MessagesModal
-          project={selectedProject}
-          onClose={() => setIsViewMessagesModalOpen(false)}
-          onSendMessage={(message) => handleMessageSent(selectedProject.id, message)}
-        />
-      )}
-
+      {/* Rejection Details Modal */}
       {isRejectionDetailsModalOpen && selectedProject && (
         <RejectionModal
           project={selectedProject}
           onClose={() => setIsRejectionDetailsModalOpen(false)}
-          onResubmit={() => {
-            setIsRejectionDetailsModalOpen(false);
-            router.push("/projects/create");
-          }}
         />
       )}
     </div>
