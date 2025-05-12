@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams,useSearchParams } from "next/navigation";
 import Throbber from "../../../../components/projects/Throbber";
 import DonationSuccess from "../../../../components/projects/DonationSuccess";
@@ -14,14 +14,14 @@ import { formatCurrency } from "@/utils/format";
 
 export default function DonatePage() {
   const { id } = useParams();
-  const searchParams = useSearchParams();
-  const title = searchParams.get("title");
+  const [projectData, setProjectData] = useState(null);
   const [amount, setAmount] = useState(1000);
-  const [paymentMethod, setPaymentMethod] = useState("bank");
+  const [paymentMethod, setPaymentMethod] = useState(null);
   const [receipt, setReceipt] = useState(null);
   const [isAnonymous, setIsAnonymous] = useState(null);
   const [status, setStatus] = useState("idle");
   const [showToast, setShowToast] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   // Credit/debit fields
   const [cardNumber, setCardNumber] = useState("");
@@ -31,13 +31,46 @@ export default function DonatePage() {
 
   const user = useSignedInUser();
 
+  useEffect(() => {
+    const fetchProjectRequest = async () => {
+      try {
+        setLoading(true);
+        const projectResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/requests/projects/${id}`);
+        const projectData = projectResponse.data;
+        console.log(projectData);
+        if (projectData.status === "OK") {
+          const projectId = projectData.list.projectData.project_id;
+          const donationLink = projectData.list.projectData.donation_link;
+          const isAbsoluteUrl = /^(https?:\/\/)/.test(donationLink);
+
+          setProjectData({
+            id: projectId,
+            title: projectData.list.projectData.title,
+            donationLink: isAbsoluteUrl ? donationLink : `https://${donationLink}`,
+          });
+
+          setPaymentMethod(donationLink ? "external" : "bank");
+
+        } else {
+          console.error("Unexpected response: ", projectData);
+        }
+      } catch (error) {
+        console.error("Failed to fetch project:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjectRequest();
+  }, []);
+
   const createDonation = async () => {
     try {
       const generatedRefNum = "REF" + uuidv4();
 
       const data = {
         user_id: user?.state?.user?.id,
-        project_id: id,
+        project_id: projectData.id,
         donation_date: new Date().toISOString(),
         reference_num: generatedRefNum,
         mode_of_payment: DONATION_MODE_OF_PAYMENT.BANK_TRANSFER,
@@ -81,7 +114,7 @@ export default function DonatePage() {
       }
     }
 
-    if (paymentMethod === "bank" && !receipt) {
+    if (paymentMethod === "bank" || paymentMethod === "external" && !receipt) {
       setShowToast({ type: "fail", message: "Please upload a receipt before donating." });
       return;
     }
@@ -116,7 +149,7 @@ export default function DonatePage() {
 
       <div className="max-w-xl mx-auto bg-astrawhite shadow-md rounded-lg px-6 py-8">
         <h1 className="text-xl font-semibold mb-2">Your Donation</h1>
-        <p className="text-sm text-astralightgray-500 mb-6">Donating to: <strong>{title || "Donation Drive"}</strong></p>
+        <p className="text-sm text-astralightgray-500 mb-6">Donating to: <strong>{projectData?.title || "Donation Drive"}</strong></p>
 
         {/* Amount Section */}
         <div className="border-b border-astralightgray-200 pb-6 mb-6">
@@ -218,23 +251,57 @@ export default function DonatePage() {
 
             {/* Bank Transfer */}
             <label className="flex items-center gap-2 cursor-pointer text-sm">
-              <input
+              {projectData?.donationLink ? <input
                 type="radio"
                 name="payment"
                 value="bank"
                 checked={paymentMethod === "bank"}
                 onChange={(e) => setPaymentMethod(e.target.value)}
-              />
+                disabled
+              /> :
+                <input
+                  type="radio"
+                  name="payment"
+                  value="bank"
+                  checked={paymentMethod === "bank"}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                />}
               Bank Transfer
             </label>
 
-            {paymentMethod === "bank" && (
+            {/* Bank Transfer */}
+            <label className="flex items-center gap-2 cursor-pointer text-sm">
+              <input
+                type="radio"
+                name="payment"
+                value="external"
+                checked={paymentMethod === "external"}
+                onChange={(e) => setPaymentMethod(e.target.value)}
+              />
+              External Donation Link
+            </label>
+
+            {paymentMethod === "external" && (
               <div className="pl-6">
+                <a
+                  href={projectData?.donationLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 underline hover:text-blue-800"
+                >
+                  {projectData?.donationLink}
+                </a>
+              </div>
+            )}
+
+            {paymentMethod === "bank" || paymentMethod === "external" && (
+              <div className="">
+                <h3 className="text-sm font-medium mb-4">Upload your receipt</h3>
                 <input
                   type="file"
                   accept="image/*,application/pdf"
                   onChange={(e) => setReceipt(e.target.files[0])}
-                  className="w-full text-sm text-astradarkgray file:py-2 file:px-4 file:rounded-md file:border file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100"
+                  className="pl-6 w-full text-sm text-astradarkgray file:py-2 file:px-4 file:rounded-md file:border file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100"
                 />
               </div>
             )}

@@ -341,15 +341,17 @@ export default function ProjectsPage() {
                     >
                       <ProjectCard
                         id={project.id}
-                        request_id={project.request_id}
                         image={project.image}
                         title={project.title}
                         description={project.description}
                         goal={project.goal}
                         raised={project.raised}
                         donors={project.donors}
-                        type={project.type}
                         endDate={project.endDate}
+                        type={project.type}
+                        requestId={project.request_id}
+                        donationLink={project.donationLink}
+                        showDonate={project.project_status !== PROJECT_STATUS.FINISHED ? true : false}
                       />
                     </div>
                   ))}

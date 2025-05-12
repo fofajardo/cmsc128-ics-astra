@@ -8,7 +8,6 @@ import { PROJECT_TYPE } from "@/constants/projectConsts";
 
 export default function ProjectCard({
   id,
-  request_id,
   image,
   title = "Snacks to Support Student Success",
   description = "This project aims to provide middle school students the resources they need to excel academically, emotionally, and physically...",
@@ -17,6 +16,8 @@ export default function ProjectCard({
   donors = "30K",
   endDate = "2025-06-30",
   type = "Fundraiser",
+  requestId = "",
+  donationLink = "",
   showDonate = true
 }) {
   const router = useRouter();
@@ -56,12 +57,12 @@ export default function ProjectCard({
   }, []);
 
   const handleCardClick = () => {
-    router.push(`/projects/about/${request_id}`);
+    router.push(`/projects/about/${requestId}`);
   };
 
   const handleDonateClick = (e) => {
     e.stopPropagation(); // prevents the outer link from triggering
-    router.push(`/projects/donate/${id}?title=${encodeURIComponent(title)}`);
+    router.push(`/projects/donate/${requestId}`);
   };
 
   // Adjust image height based on screen size
