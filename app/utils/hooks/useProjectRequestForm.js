@@ -9,6 +9,8 @@ export const useProjectRequestForm = () => {
     amount: '',
     projectType: '',
     targetDate: '',
+    title: '',
+    description: ''
   });
 
   // Load data from localStorage on mount
@@ -48,6 +50,8 @@ export const useProjectRequestForm = () => {
           amount: '',
           projectType: '',
           targetDate: '',
+          title: '',
+          description: ''
         });
         localStorage.removeItem(STORAGE_KEY);
       } catch (error) {
