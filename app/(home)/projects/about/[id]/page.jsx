@@ -20,6 +20,7 @@ import ToastNotification from "@/components/ToastNotification";
 import axios from "axios";
 import { formatCurrency, formatDate, capitalizeName } from "@/utils/format";
 import { PROJECT_TYPE } from "@/constants/projectConsts";
+import { useSignedInUser } from "@/components/UserContext.jsx";
 
 // Add constant for fallback image
 const FALLBACK_IMAGE = "/projects/assets/Donation.png";
@@ -27,6 +28,7 @@ const FALLBACK_IMAGE = "/projects/assets/Donation.png";
 export default function ProjectDetails({ params }) {
   const router = useRouter();
   const { id } = useParams();
+  const userContext = useSignedInUser();
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -43,6 +45,7 @@ export default function ProjectDetails({ params }) {
   const [imageLoading, setImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
   const [imageSrc, setImageSrc] = useState(FALLBACK_IMAGE);
+  const MAX_MESSAGE_LENGTH = 500;
 
   const goalValue = parseInt(projectData?.goal?.replace(/[^\d]/g, "") || "0");
   const raisedValue = parseInt(projectData?.raised?.replace(/[^\d]/g, "") || "0");
@@ -162,52 +165,48 @@ export default function ProjectDetails({ params }) {
     fetchProjectRequest();
   }, []);
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = () => {
     try {
-
-      // get the current user's information from localStorage or your auth system
-      const currentUser = JSON.parse(localStorage.getItem('user'));
-
-      if (!currentUser) {
+      // Check if user is logged in using context
+      if (!userContext.state.user) {
         setToast({
           type: "fail",
-          message: "Please log in to send messages",
+          message: "Please log in to contact the organizer",
         });
         setIsContactModalOpen(false);
         setMessage("");
         return;
       }
 
-      const messageData = {
-        project_id: projectData.id,
-        sender_id: currentUser.id,
-        receiver_id: projectData.organizer.id,
-        content: message,
-        timestamp: new Date().toISOString(),
-        is_read: false
-      };
+      // Create email subject and body
+      const subject = `Inquiry about ${projectData.title}`;
+      const emailBody = `Hello ${projectData.organizer.name},\n\n${message}\n\nBest regards,\n${userContext.state.user.name || userContext.state.user.email}`;
 
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/v1/messages`,
-        messageData
-      );
+      // Create Gmail URL with pre-filled information
+      const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(projectData.organizer.email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
 
-      if (response.data.status === "OK") {
-        setToast({
-          type: "success",
-          message: "Message sent successfully!",
-        });
-        setIsContactModalOpen(false);
-        setMessage("");
-      } else {
-        throw new Error(response.data.message || "Failed to send message");
-      }
+      // Open Gmail in a new tab
+      window.open(gmailUrl, '_blank');
+
+      setToast({
+        type: "success",
+        message: "Opening Gmail...",
+      });
+      setIsContactModalOpen(false);
+      setMessage("");
     } catch (error) {
-      console.error("Failed to send message:", error);
+      console.error("Failed to open Gmail:", error);
       setToast({
         type: "fail",
-        message: error.message || "Failed to send message. Please try again.",
+        message: "Failed to open Gmail. Please try again.",
       });
+    }
+  };
+
+  const handleMessageChange = (e) => {
+    const newMessage = e.target.value;
+    if (newMessage.length <= MAX_MESSAGE_LENGTH) {
+      setMessage(newMessage);
     }
   };
 
@@ -801,7 +800,8 @@ export default function ProjectDetails({ params }) {
                     className="w-full border border-astragray/30 rounded-lg p-4 min-h-32 focus:ring-2 focus:ring-astraprimary/30 focus:border-astraprimary transition-all bg-white shadow-inner"
                     placeholder="Introduce yourself and explain why you're reaching out..."
                     value={message}
-                    onChange={(e) => setMessage(e.target.value)}
+                    onChange={handleMessageChange}
+                    maxLength={MAX_MESSAGE_LENGTH}
                   ></textarea>
                 </div>
 
@@ -809,10 +809,10 @@ export default function ProjectDetails({ params }) {
                   <p>Be professional and clear about your intent</p>
                   <p
                     className={`${
-                      message.length > 500 ? "text-red-500 font-medium" : ""
+                      message.length >= MAX_MESSAGE_LENGTH ? "text-red-500 font-medium" : ""
                     }`}
                   >
-                    {message.length}/1000 characters
+                    {message.length}/{MAX_MESSAGE_LENGTH} characters
                   </p>
                 </div>
               </div>
