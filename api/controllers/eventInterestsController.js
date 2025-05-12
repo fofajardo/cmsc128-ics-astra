@@ -163,7 +163,7 @@ const getEventInterestStats = async(req,res)=>{
 
 const createEventInterest = async (req, res) => {
   try {
-    const currentUserId = req.user.data.id;
+    const currentUserId = req.body.user_id;
     //const currentUserId = userId;
 
     console.log("current userId: ",currentUserId);
