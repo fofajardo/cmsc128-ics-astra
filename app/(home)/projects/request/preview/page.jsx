@@ -6,10 +6,13 @@ import Link from "next/link";
 import BackButton from "@/components/events/IndividualEvent/BackButton";
 import { useProjectRequestForm } from "@/utils/hooks/useProjectRequestForm";
 import ToastNotification from "@/components/ToastNotification";
+import { useSignedInUser } from "@/components/UserContext";
+import axios from "axios";
 
 const RequestFundraiserPreview = () => {
   const router = useRouter();
   const { formData, clearFormData } = useProjectRequestForm();
+  const user = useSignedInUser();
   const [photo, setPhoto] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [photoError, setPhotoError] = useState("");
@@ -86,24 +89,77 @@ const RequestFundraiserPreview = () => {
     }
   };
 
+  // Request project function
+  const requestProject = async () => {
+    try {
+      const data = {
+        user_id: user?.state?.user?.id,
+        title: formData.title,
+        details: formData.description,
+        due_date: new Date(formData.targetDate),
+        goal_amount: Number(formData.amount),
+        donation_link: formData.externalLink || "test_link",
+        type: formData.projectType.toLowerCase(),
+      };
+
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/v1/projects`, data);
+      const projectData = response.data;
+
+      if (projectData.status === "CREATED") {
+        console.log("Created project:", projectData);
+        return true;
+      } else {
+        console.error("Unexpected response:", projectData);
+        return false;
+      }
+    } catch (error) {
+      console.error("Failed to create project request:", error);
+      throw error;
+    }
+  };
+
   // Handle form submission
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    // Check if user is logged in
+    if (!user?.state?.user) {
+      setShowToast({
+        type: "fail",
+        message: "Please log in to submit a project request"
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
-    // Simulate API call with setTimeout
-    setTimeout(() => {
-      // Clear form data
-      clearFormData();
+    try {
+      const success = await requestProject();
 
-      // Show success toast
-      setShowToast(true);
+      if (success) {
+        // Clear form data
+        clearFormData();
 
-      // Hide toast and redirect after 2 seconds
-      setTimeout(() => {
-        setShowToast(false);
-        router.push('/projects');
-      }, 2000);
-    }, 1000); // Simulate 1 second API call
+        // Show success toast
+        setShowToast({
+          type: "success",
+          message: "Project request submitted successfully!"
+        });
+
+        // Redirect after 2 seconds
+        setTimeout(() => {
+          router.push("/projects");
+        }, 2000);
+      } else {
+        throw new Error("Failed to create project");
+      }
+    } catch (error) {
+      console.error("Error submitting project:", error);
+      setShowToast({
+        type: "fail",
+        message: "Failed to submit project. Please try again."
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -257,8 +313,8 @@ const RequestFundraiserPreview = () => {
       {/* Toast Notification */}
       {showToast && (
         <ToastNotification
-          type="success"
-          message="Project request submitted successfully!"
+          type={showToast.type}
+          message={showToast.message}
           onClose={() => setShowToast(false)}
         />
       )}
