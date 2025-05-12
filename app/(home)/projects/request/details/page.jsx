@@ -29,7 +29,9 @@ const RequestFundraiserDetails = () => {
     const value = e.target.value;
     setTitle(value);
 
-    if (value.length > 100) {
+    if (!value.trim()) {
+      setTitleError("Title cannot be empty");
+    } else if (value.length > 100) {
       setTitleError("Title cannot exceed 100 characters");
     } else {
       setTitleError("");
@@ -42,7 +44,9 @@ const RequestFundraiserDetails = () => {
     const value = e.target.value;
     setDescription(value);
 
-    if (value.length > 1000) {
+    if (!value.trim()) {
+      setDescriptionError("Description cannot be empty");
+    } else if (value.length > 1000) {
       setDescriptionError("Description cannot exceed 1000 characters");
     } else {
       setDescriptionError("");
@@ -51,7 +55,7 @@ const RequestFundraiserDetails = () => {
   };
 
   // Check if all fields are valid and filled
-  const isFormValid = title && description && !titleError && !descriptionError;
+  const isFormValid = title.trim() && description.trim() && !titleError && !descriptionError;
 
   return (
     <div className="min-h-screen w-full flex flex-col md:flex-row">
