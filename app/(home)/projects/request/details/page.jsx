@@ -187,7 +187,7 @@ const RequestFundraiserDetails = () => {
         <div className="flex justify-between px-4 md:px-12 py-4 md:py-5 border-astralightgray border-t-1">
           <BackButton />
           {isFormValid ? (
-            <Link href="/projects/request/photo" passHref>
+            <Link href="/projects/request/preview" passHref>
               <button className="blue-button font-semibold transition cursor-pointer w-[120px] md:w-[150px] h-[45px] md:h-[55px] text-sm md:text-base">
                 Continue
               </button>
