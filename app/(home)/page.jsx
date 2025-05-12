@@ -9,14 +9,12 @@ import { Rocket, Users, Code, Database, Star } from "lucide-react";
 import Link from "next/link";
 import {RouteGuard} from "@/components/RouteGuard.jsx";
 
-
 const initialLoopImages1 = [
   "/icsloop1.jpg",
   "/icsloop2.jpg",
   "/icsloop3.jpg",
   "/icsloop4.jpg",
   "/icsloop5.jpg",
-
 ];
 
 const initialLoopImages2 = [
@@ -32,6 +30,12 @@ const numberOfDuplicates = 4;
 const loopImages1 = Array.from({ length: numberOfDuplicates }, () => initialLoopImages1).flat();
 const loopImages2 = Array.from({ length: numberOfDuplicates }, () => initialLoopImages2).flat();
 
+const textVariants = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+  exit: { opacity: 0, y: -20, transition: { duration: 0.3 } },
+};
+
 export default function Page() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-[var(--color-astrawhite)] to-[var(--color-astratintedwhite)]">
@@ -45,68 +49,77 @@ export default function Page() {
         <Slideshow />
       </section>
 
-
-
       <section
         id="mission"
-        className="py-24 md:py-32 w-full relative overflow-hidden"
+        className="py-16 md:py-24 lg:py-32 w-full relative overflow-hidden"
       >
         <div className="absolute inset-0 bg-astratintedwhite"></div>
-        <div className="absolute top-0 left-1/2 w-full h-64 blur-3xl -translate-x-1/2 rounded-full"></div>
-        <div className="px-6 sm:px-8 md:px-12 max-w-6xl mx-auto relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-50 items-center">
-          <div className="flex justify-center order-1 md:order-1">
+        <div className="absolute top-0 left-1/2 w-full h-32 md:h-48 lg:h-64 blur-xl md:blur-2xl lg:blur-3xl -translate-x-1/2 rounded-full"></div>
+        <div className="px-4 sm:px-6 md:px-8 lg:px-12 max-w-6xl mx-auto relative z-10 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-24 items-center">
+          <div className="flex justify-center order-2 md:order-1">
             <motion.div
-              initial={{ opacity: 0, x: 50 }}
+              initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
+              className="max-w-md"
             >
-              <h2 className="text-[var(--color-astraprimary)] text-4xl md:text-5xl font-bold mb-8 md:mb-10">
+              <motion.h2
+                variants={textVariants}
+                initial="initial"
+                animate="animate"
+                className="text-[var(--color-astraprimary)] text-3xl md:text-4xl lg:text-5xl font-bold mb-6 md:mb-8 lg:mb-10"
+              >
                 Join the Excitement!
-              </h2>
-              <div className="space-y-6 md:space-y-8">
-                <div className="flex items-start gap-4">
-                  <p className="text-[var(--color-astrablack)] text-base md:text-lg">
-                    From engaging workshops to exciting celebrations, there’s always something happening. Don’t just watch—participate, engage, and make each event unforgettable!
-                  </p>
-                </div>
-                <Link href="/events" passHref>
-                  <button className="mt-12 border-2 border-astraprimary text-astrawhite bg-astraprimary hover:bg-astrawhite hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-[200px] h-[60px]">
-                    See Events
-                  </button>
-                </Link>
+              </motion.h2>
+              <div className="space-y-4 md:space-y-6 lg:space-y-8">
+                <motion.div variants={textVariants} initial="initial" animate="animate" transition={{ delay: 0.2 }}>
+                  <div className="flex items-start gap-3 md:gap-4">
+                    <p className="text-[var(--color-astrablack)] text-base md:text-lg">
+                      From engaging workshops to exciting celebrations, there’s always something happening. Don’t just watch—participate, engage, and make each event unforgettable!
+                    </p>
+                  </div>
+                </motion.div>
+                <motion.div variants={textVariants} initial="initial" animate="animate" transition={{ delay: 0.4 }}>
+                  <Link href="/events" passHref>
+                    <button className="mt-8 md:mt-10 border-2 border-astraprimary text-astraprimary bg-astrawhite hover:bg-astraprimary hover:text-astrawhite rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-full sm:w-[200px] h-14 md:h-16">
+                      See Events
+                    </button>
+                  </Link>
+                </motion.div>
               </div>
             </motion.div>
           </div>
           <motion.div
-            initial={{ opacity: 0, rotateY: -30 }}
+            initial={{ opacity: 0, rotateY: 30 }}
             whileInView={{ opacity: 1, rotateY: 0 }}
             transition={{ duration: 1 }}
             viewport={{ once: true }}
-            className="relative order-2 md:order-2"
+            className="relative order-1 md:order-2 flex justify-center"
           >
-            <div className="absolute rounded-full blur-xl opacity-30 animate-pulse"></div>
+            <div className="absolute rounded-full blur-xl opacity-30 animate-pulse w-48 h-48 md:w-64 md:h-64 lg:w-80 lg:h-80"></div>
             <Image
               src="/homepage-vector1.gif"
               alt="Institute of Computer Science Logo"
-              width={500}
-              height={500}
-              className="relative z-10 transform transition-all duration-500 hover:scale-105 object-contain"
+              width={800}
+              height={800}
+              className="relative z-10 transform transition-all duration-500 hover:scale-105 object-contain w-full max-w-md"
             />
           </motion.div>
         </div>
       </section>
-
-
       {/* Looping Image Section going left */}
-      <section className="py-3 bg-astratintedwhite overflow-hidden">
+      <section className="pt-4 bg-astrablack overflow-hidden">
         <div className="loop-container">
           <div className="loop-track-left">
             {loopImages1.map((image, index) => (
-              <div key={index} className="inline-block mr-8 w-100 h-76 relative">
+              <div
+                key={index}
+                className="inline-block mr-4 relative"
+                style={{ width: "280px", height: "210px" }} // Example fixed dimensions
+              >
                 <Image
                   src={image}
-                  alt={`Alumni ${index + 1}`}
                   fill
                   style={{ objectFit: "cover", borderRadius: "10px" }}
                 />
@@ -117,11 +130,15 @@ export default function Page() {
       </section>
 
       {/* New Looping Image Section going right */}
-      <section className="py-0 bg-astratintedwhite overflow-hidden">
+      <section className="pb-2 bg-astrablack overflow-hidden">
         <div className="loop-container">
           <div className="loop-track-right">
             {loopImages2.map((image, index) => (
-              <div key={index} className="inline-block mr-8 w-100 h-76 relative">
+              <div
+                key={index}
+                className="inline-block mr-4 relative"
+                style={{ width: "280px", height: "210px" }} // Example different fixed dimensions
+              >
                 <Image
                   src={image}
                   alt={`Alumni ${index + 1}`}
@@ -136,57 +153,65 @@ export default function Page() {
 
       <section
         id="mission"
-        className="py-24 md:py-32 w-full relative overflow-hidden"
+        className="py-16 md:py-24 lg:py-32 w-full relative overflow-hidden"
       >
         <div className="absolute inset-0 bg-astratintedwhite"></div>
-        <div className="absolute top-0 left-1/2 w-full h-64  blur-3xl -translate-x-1/2 rounded-full"></div>
-        <div className="px-6 sm:px-8 md:px-12 max-w-6xl mx-auto relative z-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-50 items-center">
-            <div className="flex justify-center order-1 md:order-1">
-              <motion.div
-                initial={{ opacity: 0, rotateY: -30 }}
-                whileInView={{ opacity: 1, rotateY: 0 }}
-                transition={{ duration: 1 }}
-                viewport={{ once: true }}
-                className="relative"
-              >
-                <div className="absolute rounded-full blur-xl opacity-30 animate-pulse"></div>
-                <Image
-                  src="/homepage-vector2.gif"
-                  alt="Institute of Computer Science Logo"
-                  width={500}
-                  height={500}
-                  className="relative z-10 transform transition-all duration-500 hover:scale-105 object-contain"
-                />
-              </motion.div>
-            </div>
+        <div className="absolute top-0 left-1/2 w-full h-32 md:h-48 lg:h-64 blur-xl md:blur-2xl lg:blur-3xl -translate-x-1/2 rounded-full"></div>
+        <div className="px-4 sm:px-6 md:px-8 lg:px-12 max-w-6xl mx-auto relative z-10 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-24 items-center">
+          {/* Switch the order here */}
+          <div className="flex justify-center order-1 md:order-2">
             <motion.div
-              initial={{ opacity: 0, x: 50 }}
+              initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
-              className="order-2 md:order-2"
+              className="max-w-md"
             >
-              <h2 className="text-[var(--color-astraprimary)] text-4xl md:text-5xl font-bold mb-8 md:mb-10">
-                Stay Connected with ICS
-              </h2>
-              <div className="space-y-6 md:space-y-8">
-                <div className="flex items-start gap-4">
-                  <p className="text-[var(--color-astrablack)] text-base md:text-lg">
-                    Stay connected with the latest updates from Astra-ICS. From
-                    important news to exciting announcements, find out what’s
-                    happening, what’s new, and what’s coming next — all right
-                    here.
-                  </p>
-                </div>
-                <Link href="/whats-up" passHref>
-                  <button className="mt-12 border-2 border-astraprimary text-astrawhite bg-astraprimary hover:bg-astrawhite hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-[200px] h-[60px]">
-                    See Latest Updates
-                  </button>
-                </Link>
+              <motion.h2
+                variants={textVariants}
+                initial="initial"
+                animate="animate"
+                className="text-[var(--color-astraprimary)] text-3xl md:text-4xl lg:text-5xl font-bold mb-6 md:mb-8 lg:mb-10"
+              >
+                Stay Connected with Us!
+              </motion.h2>
+              <div className="space-y-4 md:space-y-6 lg:space-y-8">
+                <motion.div variants={textVariants} initial="initial" animate="animate" transition={{ delay: 0.2 }}>
+                  <div className="flex items-start gap-3 md:gap-4">
+                    <p className="text-[var(--color-astrablack)] text-base md:text-lg">
+                      Stay connected with the latest updates from Astra-ICS. From
+                      important news to exciting announcements, find out what’s
+                      happening, what’s new, and what’s coming next — all right
+                      here.              </p>
+                  </div>
+                </motion.div>
+                <motion.div variants={textVariants} initial="initial" animate="animate" transition={{ delay: 0.4 }}>
+                  <Link href="/events" passHref>
+                    <button className="mt-8 md:mt-10 border-2 border-astraprimary text-astraprimary bg-astrawhite hover:bg-astraprimary hover:text-astrawhite rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-full sm:w-[200px] h-14 md:h-16">
+                      See Latest Updates
+                    </button>
+                  </Link>
+                </motion.div>
               </div>
             </motion.div>
           </div>
+          {/* Vector Image on Left */}
+          <motion.div
+            initial={{ opacity: 0, rotateY: 30 }}
+            whileInView={{ opacity: 1, rotateY: 0 }}
+            transition={{ duration: 1 }}
+            viewport={{ once: true }}
+            className="relative order-2 md:order-1 flex justify-center"
+          >
+            <div className="absolute rounded-full blur-xl opacity-30 animate-pulse w-48 h-48 md:w-64 md:h-64 lg:w-80 lg:h-80"></div>
+            <Image
+              src="/homepage-vector2.gif"
+              alt="Institute of Computer Science Logo"
+              width={800}
+              height={800}
+              className="relative z-10 transform transition-all duration-500 hover:scale-105 object-contain w-full max-w-md"
+            />
+          </motion.div>
         </div>
       </section>
 
@@ -223,6 +248,43 @@ export default function Page() {
             }
             100% {
               transform: translateX(0%); /* Move to the right */
+            }
+          }
+
+          /* Responsive adjustments */
+          @media (max-width: 768px) {
+            .loop-track-left {
+              animation-duration: 200s; /* Faster scroll on smaller screens */
+            }
+            .loop-track-right {
+              animation-duration: 200s; /* Faster scroll on smaller screens */
+            }
+            .loop-container div > div { /* Target the image wrappers */
+              margin-right: 1rem;
+            }
+          }
+
+          @media (max-width: 640px) {
+            .grid {
+              grid-template-columns: 1fr; /* Stack columns on smaller screens */
+            }
+            .order-1 {
+              order: 1;
+            }
+            .order-2 {
+              order: 2;
+            }
+            .max-w-md {
+              max-width: 100%; /* Allow text to take full width */
+            }
+            .text-3xl {
+              font-size: 2.5rem;
+            }
+            .mt-8 {
+              margin-top: 2rem;
+            }
+            .h-14 {
+              height: 3.5rem;
             }
           }
         `}
