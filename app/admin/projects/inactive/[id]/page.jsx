@@ -8,6 +8,7 @@ import Link from "next/link";
 import axios from "axios";
 import { formatCurrency, formatDate, capitalizeName } from "@/utils/format";
 import { PROJECT_STATUS, PROJECT_TYPE } from "@/constants/projectConsts";
+import { feRoutes } from "../../../../../common/routes";
 
 //for admin/projects/inactive/[id]
 export default function InactiveProjectDetail({ params }) {
@@ -428,7 +429,7 @@ export default function InactiveProjectDetail({ params }) {
                 <input
                   type="text"
                   readOnly
-                  value={projectData?.urlLink}
+                  value={feRoutes.projects.about(id)}
                   className="w-full text-sm py-1 bg-transparent focus:outline-none text-gray-700 overflow-hidden text-ellipsis"
                 />
               </div>
@@ -437,7 +438,7 @@ export default function InactiveProjectDetail({ params }) {
             <div className="mt-6 flex justify-center">
               <button
                 onClick={() => {
-                  navigator.clipboard.writeText(projectData?.urlLink);
+                  navigator.clipboard.writeText(feRoutes.projects.about(id));
 
                   // Show success animation in button
                   const btn = document.getElementById("copyBtn");
@@ -473,7 +474,7 @@ export default function InactiveProjectDetail({ params }) {
                 <p className="text-xs text-gray-500 mb-3">Or share directly to</p>
                 <div className="flex space-x-4 justify-center">
                   <a
-                    href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(projectData?.urlLink)}`}
+                    href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(feRoutes.projects.about(id))}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition-colors"
@@ -483,7 +484,7 @@ export default function InactiveProjectDetail({ params }) {
                     </svg>
                   </a>
                   <a
-                    href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(projectData?.urlLink)}&text=Check out this project!`}
+                    href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(feRoutes.projects.about(id))}&text=Check out this project!`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-blue-400 text-white p-2 rounded-full hover:bg-blue-500 transition-colors"
@@ -493,7 +494,7 @@ export default function InactiveProjectDetail({ params }) {
                     </svg>
                   </a>
                   <a
-                    href={`https://api.whatsapp.com/send?text=Check out this project! ${encodeURIComponent(projectData?.urlLink)}`}
+                    href={`https://api.whatsapp.com/send?text=Check out this project! ${encodeURIComponent(feRoutes.projects.about(id))}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-green-500 text-white p-2 rounded-full hover:bg-green-600 transition-colors"
@@ -503,7 +504,7 @@ export default function InactiveProjectDetail({ params }) {
                     </svg>
                   </a>
                   <a
-                    href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(projectData?.urlLink)}`}
+                    href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(feRoutes.projects.about(id))}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition-colors"
