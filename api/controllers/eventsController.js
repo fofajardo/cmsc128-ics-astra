@@ -164,7 +164,8 @@ const createEvent = async (req, res) => {
       "venue",
       "external_link",
       "access_link",
-      "online"
+      "online",
+      ""
     ];
     const missingFields = requiredFields.filter(field => !(field in req.body));
     if (missingFields.length > 0) {
@@ -180,7 +181,9 @@ const createEvent = async (req, res) => {
       venue,
       external_link,
       access_link,
-      online
+      online,
+      slots,
+      status
     } = req.body;
 
     const parsedDate = new Date(event_date);
@@ -192,7 +195,9 @@ const createEvent = async (req, res) => {
             typeof venue === "string" &&
             typeof external_link === "string" &&
             typeof access_link === "string" &&
-            typeof online === "boolean";
+            typeof online === "boolean" &&
+            typeof slots === "number" &&
+            typeof status === "string"
 
     if (!isValidTypes) {
       return res.status(httpStatus.BAD_REQUEST).json({
@@ -229,7 +234,10 @@ const createEvent = async (req, res) => {
       venue,
       external_link,
       access_link,
-      online
+      online,
+      slots,
+      status
+
     });
 
     if (error) {

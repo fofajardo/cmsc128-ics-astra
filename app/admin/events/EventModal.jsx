@@ -159,9 +159,9 @@ export default function EventModal({
 
             >
               <option value="">Please Select</option>
-              <option>Open</option>
-              <option>Closed</option>
-              <option> Cancelled</option>
+              <option value="Open">Open</option>
+              <option value="Closed">Closed</option>
+              <option value="Canceled">Canceled</option>
             </select>
           </div>
 

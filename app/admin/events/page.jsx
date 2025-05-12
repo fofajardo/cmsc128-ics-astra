@@ -434,6 +434,8 @@ export default function Events() {
           external_link: addFormData.external_link || "",
           access_link: addFormData.access_link || "",
           online: isOnline,
+          slots: Number(addFormData.max_slots) || 0,
+          status: addFormData.status
         };
         try{
           const eventResponse = await axios.post(
@@ -705,11 +707,7 @@ function renderActions(event, confirmDelete, toggleEditModal,setAddFormData) {
               tags: event.tags || [],
             });
 
-            // Log state after setting (though this will be async)
-            setTimeout(() => {
-              //console.log("Form data after setting:", addFormData);
               toggleEditModal(event);
-            }, 10);
           }}
           className="bg-astraprimary text-astrawhite px-4 py-2 rounded-md text-sm font-semibold hover:bg-[#0062cc]"
         >
@@ -747,11 +745,8 @@ function renderActions(event, confirmDelete, toggleEditModal,setAddFormData) {
               tags: event.tags || [],
             });
 
-            // Log state after setting (though this will be async)
-            setTimeout(() => {
-              console.log("Form data after setting:", addFormData);
               toggleEditModal(event);
-            }, 10);
+
           }}
           className="bg-astraprimary text-astrawhite p-2 rounded-md"
         >

@@ -59,7 +59,7 @@ export default function EventFormFields({
             >
               <option value="Open">Open</option>
               <option value="Closed">Closed</option>
-              <option value="Postponed">Postponed</option>
+              <option value="Canceled">Canceled</option>
             </select>
           </div>
         </div>

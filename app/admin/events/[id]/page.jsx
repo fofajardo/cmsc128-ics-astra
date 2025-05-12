@@ -340,8 +340,7 @@ export default function EventAdminDetailPage() {
           date: new Date(eventResponse.event.event_date).toDateString(),
           location: eventResponse.event.venue,
           attendees: interestedUsers, //
-          status: eventResponse.online ? "Online" : "Offline",
-          avatars: [],
+          status: eventResponse.event.status
         };
         console.log("mergedEvent", mergedEvent);
         setEvent(mergedEvent);
