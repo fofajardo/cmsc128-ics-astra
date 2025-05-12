@@ -329,10 +329,9 @@ const updateAlumniProfile = async (req, res) => {
       "approved"
     ];
 
-    // Construct updateData only from allowed fields that are present in the request body
     const updateData = {};
     allowedFields.forEach(field => {
-      if (req.body.hasOwnProperty(field)) {
+      if (Object.prototype.hasOwnProperty.call(req.body, field)) {
         updateData[field] = req.body[field];
       }
     });
