@@ -135,17 +135,15 @@ const RequestFundraiserPreview = () => {
       const success = await requestProject();
 
       if (success) {
-        // Clear form data
-        clearFormData();
-
         // Show success toast
         setShowToast({
           type: "success",
           message: "Project request submitted successfully!"
         });
 
-        // Redirect after 2 seconds
+        // Clear form data and redirect after 2 seconds
         setTimeout(() => {
+          clearFormData();
           router.push("/projects");
         }, 2000);
       } else {
