@@ -307,7 +307,7 @@ const updateAlumniProfile = async (req, res) => {
     // Disallow edits to birthdate and student_num
     if (
       ("birthdate" in req.body && req.body.birthdate !== alumniData.birthdate) ||
-            ("student_num" in req.body && req.body.student_num !== alumniData.student_num)
+      ("student_num" in req.body && req.body.student_num !== alumniData.student_num)
     ) {
       return res.status(httpStatus.FORBIDDEN).json({
         status: "FORBIDDEN",
@@ -315,37 +315,41 @@ const updateAlumniProfile = async (req, res) => {
       });
     }
 
-    // Update only allowed fields
-    const {
-      location,
-      address,
-      gender,
-      skills,
-      honorifics,
-      citizenship,
-      civil_status,
-      is_profile_public
-    } = req.body;
+    // Define fields that can be updated
+    const allowedFields = [
+      "location",
+      "address",
+      "gender",
+      "skills",
+      "honorifics",
+      "citizenship",
+      "civil_status",
+      "is_profile_public",
+      "first_name",
+      "middle_name",
+      "last_name",
+      "suffix",
+      "sex",
+      "primary_work_experience_id",
+      "approved"
+    ];
 
-    const updateData = {
-      location,
-      address,
-      gender,
-      skills,
-      honorifics,
-      citizenship,
-      civil_status,
-      is_profile_public
-    };
-
-    // Remove undefined fields to avoid overwriting with nulls
-    Object.keys(updateData).forEach(key => {
-      if (updateData[key] === undefined) {
-        delete updateData[key];
+    // Construct updateData only from allowed fields that are present in the request body
+    const updateData = {};
+    allowedFields.forEach(field => {
+      if (req.body.hasOwnProperty(field)) {
+        updateData[field] = req.body[field];
       }
     });
 
-    const { data, error } = await alumniProfilesService.updateAlumniProfileData(req.supabase, userId, updateData);
+    if (Object.keys(updateData).length === 0) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "No valid fields provided for update"
+      });
+    }
+
+    const { result, error } = await alumniProfilesService.updateAlumniProfileData(req.supabase, userId, updateData);
 
     if (error) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
