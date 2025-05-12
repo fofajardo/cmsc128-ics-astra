@@ -1,7 +1,20 @@
+const fetchAlumniStats = async (supabase) => {
+  const { data, error } = await supabase
+    .from("alumni_stats")
+    .select("*")
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+};
+
 const fetchActiveAlumniStats = async (supabase) => {
   const { data, error } = await supabase
-    .from("active_alumni_stats")
-    .select("*")
+    .from("alumni_stats")
+    .select("active_alumni_count")
     .single();
 
   if (error) {
@@ -75,6 +88,7 @@ const fetchProjectDonationSummary = async (supabase) => {
 };
 
 const statisticsService = {
+  fetchAlumniStats,
   fetchActiveAlumniStats,
   fetchActiveJobsStats,
   fetchActiveEventsStats,

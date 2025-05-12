@@ -6,8 +6,20 @@ import { Actions, Subjects } from "../../common/scopes.js";
 
 const getAlumniProfiles = async (req, res) => {
   try {
-    const { page = 1, limit = 10 } = req.query;
-    const { data, error } = await alumniProfilesService.fetchAlumniProfiles(req.supabase, page, limit);
+    const {
+      page = 1,
+      limit = 10,
+      search = "",
+      filters = {}
+    } = req.query;
+
+    const { data, error } = await alumniProfilesService.fetchAlumniProfiles(
+      req.supabase,
+      page,
+      limit,
+      search,
+      filters
+    );
 
     if (error) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -19,6 +31,44 @@ const getAlumniProfiles = async (req, res) => {
     return res.status(httpStatus.OK).json({
       status: "OK",
       list: data || [],
+    });
+
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
+
+const getAlumniSearch = async (req, res) => {
+  try {
+    const {
+      page = 1,
+      limit = 10,
+      search = "",
+      filters = {}
+    } = req.query;
+
+    const { data, total, error } = await alumniProfilesService.fetchAlumniSearch(
+      req.supabase,
+      page,
+      limit,
+      search,
+      filters
+    );
+
+    if (error) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error.message
+      });
+    }
+
+    return res.status(httpStatus.OK).json({
+      status: "OK",
+      list: data || [],
+      total: total
     });
 
   } catch (error) {
@@ -320,6 +370,7 @@ const updateAlumniProfile = async (req, res) => {
 
 const alumniProfilesController = {
   getAlumniProfiles,
+  getAlumniSearch,
   getAlumniProfilesById,
   getAlumniProfileById,
   createAlumniProfile,

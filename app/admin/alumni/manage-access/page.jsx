@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { TableHeader, Table, PageTool } from "@/components/TableBuilder";
 import SearchFilter from "admin/alumni/search/filter";
 import { Check, Eye, Trash2, CheckCircle2, ShieldCheck } from "lucide-react";
@@ -11,7 +11,6 @@ import axios from "axios";
 import { capitalizeName } from "@/utils/format";
 import { CenteredSkeleton, NameEmailSkeleton, Skeleton } from "@/components/ui/skeleton";
 
-
 export default function AlumniAccess() {
   const [showFilter, setShowFilter] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
@@ -20,7 +19,6 @@ export default function AlumniAccess() {
   const toggleFilter = () => { setShowFilter((prev) => !prev); };
   // console.log("Current tab from layout:", info);
   const [loading, setLoading] = useState(true);
-
   const [alumList, setAlumList] = useState([]);
   const [appliedFilters, updateFilters] = useState({
     yearFrom: "",
@@ -36,52 +34,85 @@ export default function AlumniAccess() {
     currPage: 1,            // Current active page
     lastPage: 10,           // Last Page => total/numToShow
     numToShow: 10,          // How many alum to show
-    total: 999              // How many alum in db
+    total: 0                // How many alum in db
   });
   const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
-    setSelectedIds([]);
-  }, [currTab]);
+  const stableFilters = useMemo(() => appliedFilters, [JSON.stringify(appliedFilters)]);
 
-
-  // FOR BACKEND PEEPS
   useEffect(() => {
-    console.log("State updated:", {
-      appliedFilters,
-      pagination,
-      searchQuery,
+    setPagination({
+      display: [1, 10],
+      currPage: 1,
+      lastPage: 10,
+      numToShow: 10,
+      total: 0
     });
 
+    // Reset filters
+    updateFilters({
+      yearFrom: "",
+      yearTo: "",
+      location: "",
+      field: "",
+      skills: [],
+      sortCategory: "",
+      sortOrder: "asc",
+    });
+
+    // Clear search query
+    setSearchQuery("");
+
+    // Optionally clear selected rows
+    setSelectedIds([]);
+
+    // You can also optionally scroll to top:
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [currTab]);
+
+  useEffect(() => {
     const fetchAlumniProfiles = async () => {
       setLoading(true);
       try {
         // For better search, fetch all or more profiles when searching
         // This allows for more sophisticated client-side filtering
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles`,
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+
+        const endpoints = {
+          Pending: "/v1/users/pending-alumni",
+          Approved: "/v1/users/approved-alumni",
+          Inactive: "/v1/users/inactive-alumni",
+        };
+
+        const route = `${baseUrl}${endpoints[currTab] || endpoints["Pending"]}`;
+
+        const response = await axios.get(route,
           {
             params: {
-              page: searchQuery ? 1 : pagination.currPage,
-              limit: searchQuery ? 50 : pagination.numToShow, // Fetch more when searching
+              page: pagination.currPage,
+              limit: pagination.numToShow,
+              search: searchQuery,
+              filters: stableFilters
             },
           }
         );
+
+        const totalResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-stats`);
+
+        const totals = {
+          Pending: totalResponse.data.stats.pending_alumni_count,
+          Approved: totalResponse.data.stats.approved_alumni_count,
+          Inactive: totalResponse.data.stats.inactive_alumni_count
+        };
 
         if (response.data.status === "OK") {
           const updatedAlumList = await Promise.all(
             response.data.list.map(async (alum) => {
               const alumData = {
                 id: alum.alum_id,
-                alumname: capitalizeName(`${alum.first_name} ${alum.last_name}`),
-                firstName: alum.first_name.toLowerCase(),
-                lastName: alum.last_name.toLowerCase(),
-                student_num: alum.student_num,
+                alumname: capitalizeName(`${alum.first_name} ${alum.middle_name} ${alum.last_name}`),
                 graduationYear: "N/A",
-                location: alum.location,
-                fieldOfWork:
-                  alum.primary_work_experience?.field || "No Position Title",
-                skills: alum.skills ? alum.skills.split(",") : [],
+                student_num: alum.student_num,
                 image:
                   "https://cdn-icons-png.flaticon.com/512/145/145974.png",
                 degreeProgram: "N/A",
@@ -126,43 +157,23 @@ export default function AlumniAccess() {
                 );
               }
 
-              try {
-                const idForDegree = alum.user_id || alum.alum_id;
-                if (idForDegree) {
-                  const degreeResponse = await axios.get(
-                    `${process.env.NEXT_PUBLIC_API_URL}/v1/degree-programs/alumni/${idForDegree}`
-                  );
-                  if (
-                    degreeResponse.data.status === "OK" &&
-                    Array.isArray(degreeResponse.data.degreePrograms) &&
-                    degreeResponse.data.degreePrograms.length > 0
-                  ) {
-                    const degreePrograms = degreeResponse.data.degreePrograms;
-                    // Sort and set graduation year
-                    const sortedPrograms = [...degreePrograms].sort(
-                      (a, b) =>
-                        new Date(b.year_graduated) -
-                        new Date(a.year_graduated)
-                    );
-                    alumData.graduationYear = new Date(
-                      sortedPrograms[0].year_graduated
-                    )
-                      .getFullYear()
-                      .toString();
-                    alumData.degreeProgram = sortedPrograms[0].name;
-                  }
-                }
-              } catch (degreeError) {
-                console.error(
-                  `Failed to fetch degree programs for alum ${alum.alum_id}:`,
-                  degreeError
-                );
-              }
-
               return alumData;
             })
           );
 
+          const totalCount = totals[currTab];
+          const listLength = updatedAlumList.length;
+          const lowerBound = listLength === 0 ? 0 : (pagination.currPage - 1) * pagination.numToShow + 1;
+          const upperBound = listLength === 0 ? 0 : lowerBound + listLength - 1;
+
+          // Set total and lastPage based on the fetched total count
+          setPagination((prev) => ({
+            ...prev,
+            display: [lowerBound, upperBound],
+            total: totalCount,
+            lastPage: Math.ceil(totalCount / prev.numToShow),
+          }));
+          // Store raw data
           setAlumList(updatedAlumList);
         } else {
           console.error("Unexpected response:", response.data);
@@ -176,7 +187,7 @@ export default function AlumniAccess() {
     };
 
     fetchAlumniProfiles();
-  }, [pagination.currPage, pagination.numToShow]);
+  }, [pagination.currPage, pagination.numToShow, currTab, searchQuery, stableFilters]);
 
   return (
     <div>
@@ -225,8 +236,6 @@ export default function AlumniAccess() {
   );
 }
 
-
-
 function getNotifyContent(action, selectedCount) {
   const plural = selectedCount > 1 ? "s" : "";
   let message = "";
@@ -260,7 +269,6 @@ function getNotifyContent(action, selectedCount) {
   return { notifyMessage: message, notifyType: type };
 }
 
-
 function BottomButtons({ selectedCount, currTab, setToast }) {
   const [modal, setModal] = useState({
     open: false,
@@ -290,7 +298,6 @@ function BottomButtons({ selectedCount, currTab, setToast }) {
       });
     }, 50);
   };
-
 
   const modals = {
     approve: {
@@ -378,7 +385,6 @@ function BottomButtons({ selectedCount, currTab, setToast }) {
   );
 }
 
-
 const skeletonRows = Array(10).fill({
   "Checkbox:label-hidden": <CenteredSkeleton className="w-6 h-6 ml-1" />,
   "Image:label-hidden": <CenteredSkeleton className="w-12 h-12 my-3" />,
@@ -439,8 +445,6 @@ function renderCheckboxes(id, selectedIds, setSelectedIds) {
   );
 }
 
-
-
 function renderAvatar(image, name) {
   return (
     <div className="flex justify-center">
@@ -467,7 +471,6 @@ function renderName(name, email) {
 function renderText(text) {
   return <div className="text-center text-astradarkgray font-s">{text}</div>;
 }
-
 
 function renderActions(id, name, currTab) {
   // Based muna sa currTab pero I think mas maganda kung sa mismong account/user kukunin yung active status*/
@@ -568,128 +571,3 @@ function renderActions(id, name, currTab) {
     </div>
   );
 }
-
-
-
-const mockdata = [
-  {
-    id: 1,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "Emma Johnson",
-    email: "emma.johnson@example.com",
-    graduationYear: 2015,
-    student_num: "2022-03814",
-    course: "BS Computer Science",
-    location: "New York, NY",
-    fieldOfWork: "Backend Development",
-    skills: ["Java", "Spring Boot", "REST APIs", "PostgreSQL"]
-  },
-  {
-    id: 2,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "Liam Smith",
-    email: "liam.smith@example.com",
-    graduationYear: 2018,
-    student_num: "2021-03814",
-    course: "BS Civil Engineering",
-    location: "San Francisco, CA",
-    fieldOfWork: "Machine Learning Engineering",
-    skills: ["Python", "Scikit-learn", "Pandas"]
-  },
-  {
-    id: 3,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "Olivia Brown",
-    email: "olivia.brown@example.com",
-    graduationYear: 2012,
-    student_num: "2020-03814",
-    course: "BS Education",
-    location: "Chicago, IL",
-    fieldOfWork: "Frontend Development",
-    skills: ["HTML", "CSS", "JavaScript", "Vue.js"]
-  },
-  {
-    id: 4,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "Noah Davis",
-    email: "noah.davis@example.com",
-    graduationYear: 2020,
-    student_num: "2022-30214",
-    course: "BS Computer Science",
-    location: "Austin, TX",
-    fieldOfWork: "DevOps Engineering",
-    skills: ["Docker", "Kubernetes", "AWS", "CI/CD", "Terraform"]
-  },
-  {
-    id: 5,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "Ava Wilson",
-    email: "ava.wilson@example.com",
-    graduationYear: 2017,
-    student_num: "2020-12314",
-    course: "BS Computer Science",
-    location: "Seattle, WA",
-    fieldOfWork: "Mobile App Development",
-    skills: ["Swift", "iOS", "Firebase"]
-  },
-  {
-    id: 6,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "William Martinez",
-    email: "william.martinez@example.com",
-    graduationYear: 2014,
-    student_num: "2021-41237",
-    course: "BS Chemical Engineering",
-    location: "Miami, FL",
-    fieldOfWork: "Full Stack Development",
-    skills: ["Node.js", "React", "MongoDB", "GraphQL"]
-  },
-  {
-    id: 7,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "Sophia Garcia",
-    email: "sophia.garcia@example.com",
-    graduationYear: 2016,
-    student_num: "2022-99632",
-    course: "BS Forestry",
-    location: "Denver, CO",
-    fieldOfWork: "Cloud Engineering",
-    skills: ["Azure", "Linux", "Networking", "Python"]
-  },
-  {
-    id: 8,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "James Anderson",
-    email: "james.anderson@example.com",
-    graduationYear: 2013,
-    student_num: "2017-26934",
-    course: "BS Computer Science",
-    location: "Boston, MA",
-    fieldOfWork: "Security Engineering",
-    skills: ["Penetration Testing", "OWASP", "Metasploit"]
-  },
-  {
-    id: 9,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "Isabella Thomas",
-    email: "isabella.thomas@example.com",
-    graduationYear: 2019,
-    student_num: "2015-04814",
-    course: "BS Industrial Engineering",
-    location: "Los Angeles, CA",
-    fieldOfWork: "AI Research",
-    skills: ["PyTorch", "Deep Learning", "NLP"]
-  },
-  {
-    id: 10,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "Benjamin Lee",
-    email: "benjamin.lee@example.com",
-    graduationYear: 2011,
-    student_num: "2013-03825",
-    course: "BS Information Technology",
-    location: "Atlanta, GA",
-    fieldOfWork: "Database Administration",
-    skills: ["SQL", "Oracle", "Database Tuning", "Shell Scripting", "PL/SQL"]
-  }
-];
