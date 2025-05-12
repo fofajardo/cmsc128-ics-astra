@@ -20,14 +20,6 @@ import {
 } from "@/components/ui/chart";
 import axios from "axios";
 import { capitalizeTitle } from "@/utils/format";
-// const chartData = [
-//   { donationTitle: "BSCS Scholarship", funds: 50000, fill: "var(--color-pieastra-primary-100)" },
-//   { donationTitle: "Abot-kaya Scholarship", funds: 39200, fill: "var(--color-pieastra-primary-80)" },
-//   { donationTitle: "PhySci Renovation", funds: 25200, fill: "var(--color-pieastra-primary-60)" },
-//   { donationTitle: "E-Jeepney Modernization", funds: 16800, fill: "var(--color-pieastra-primary-40)" },
-//   { donationTitle: "Additions of PC", funds: 12600, fill: "var(--color-pieastra-primary-20)" },
-//   { donationTitle: "Additions of Server", funds: 10000, fill: "var(--color-pieastra-primary-10)" },
-// ];
 
 const chartConfig = {
   funds: {
@@ -64,10 +56,10 @@ function FundDisplay({ color, title, funds }) {
     <div className="flex items-center justify-between max-w-full gap-6">
       <div className="flex items-center gap-2">
         <div
-          className="size-4 rounded-full"
+          className="size-4 rounded-full flex-shrink-0"
           style={{ backgroundColor: color }}
         ></div>
-        <span className="text-astrablack font-r line-clamp-2">{title}</span>
+        <span className="text-astrablack font-r line-clamp-1">{title}</span>
       </div>
       <span className="text-astraprimary font-rb text-right">
         ₱{Number(funds).toLocaleString()}
@@ -75,7 +67,6 @@ function FundDisplay({ color, title, funds }) {
     </div>
   );
 }
-
 
 export function Donut() {
   const router = useRouter();
@@ -92,23 +83,11 @@ export function Donut() {
         if (response.data.status == "OK") {
           const updatedProjectDonationSummary = await Promise.all(
             response.data.list.map(async (project) => {
-              const percentage = project.goal_amount > 0
-                ? project.total_donations / project.goal_amount
-                : 0;
-
-              let fill;
-              if (percentage >= 1) fill = "var(--color-pieastra-primary-100)";
-              else if (percentage >= 0.75) fill = "var(--color-pieastra-primary-80)";
-              else if (percentage >= 0.5) fill = "var(--color-pieastra-primary-60)";
-              else if (percentage >= 0.25) fill = "var(--color-pieastra-primary-40)";
-              else fill = "var(--color-pieastra-primary-20)";
-
+              console.log("here", response.data.list);
               const projectData = {
                 donationTitle: capitalizeTitle(project.title),
                 funds: project.total_donations,
-                fill: fill,
               };
-
               return projectData;
             })
           );
@@ -140,9 +119,25 @@ export function Donut() {
     fetchTotalRaised();
   }, []);
 
+  const colorSteps = [
+    "var(--color-pieastra-primary-100)",
+    "var(--color-pieastra-primary-80)",
+    "var(--color-pieastra-primary-70)",
+    "var(--color-pieastra-primary-60)",
+    "var(--color-pieastra-primary-50)",
+    "var(--color-pieastra-primary-30)",
+    "var(--color-pieastra-primary-20)",
+    "var(--color-pieastra-primary-10)",
+  ];
+
   const chartData = [...projectStatistics]
     .sort((a, b) => b.funds - a.funds)
-    .slice(0, 5);
+    .slice(0, 8)
+    .map((item, idx) => ({
+      ...item,
+      fill: colorSteps[idx] || colorSteps[colorSteps.length - 1],
+    }));
+
   const totalFunds = fundsRaised?.total_funds_raised ?? "Loading...";
 
   return (
@@ -162,7 +157,7 @@ export function Donut() {
         </div>
         <hr className="h-2 border-astrablack"></hr>
       </CardHeader>
-      <CardContent className="flex-1 pb-0">
+      <CardContent className="flex-1 pb-0 px-0">
         <ChartContainer
           config={chartConfig}
           className="mx-auto aspect-square max-h-[330px]"
@@ -170,7 +165,6 @@ export function Donut() {
           <PieChart>
             <ChartTooltip
               cursor={false}
-
               content={<ChartTooltipContent hideLabel showPeso={true} />}
             />
             <Pie
@@ -224,7 +218,9 @@ export function Donut() {
             {chartData.map((item, index) => (
               <div
                 key={index}
-                className="transition-all cursor-pointer duration-200 hover:scale-102 hover:shadow-md hover:bg-gray-50 rounded-lg px-2.5 py-1"
+                className="transition-all cursor-pointer duration-200 
+                  hover:scale-105 hover:shadow-lg hover:bg-pieastra-primary-10/40 hover:font-semibold 
+                  rounded-lg px-2.5 py-1 group"
               >
                 <FundDisplay
                   title={item.donationTitle}
