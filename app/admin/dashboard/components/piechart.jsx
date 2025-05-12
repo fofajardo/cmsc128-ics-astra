@@ -20,6 +20,13 @@ import {
 } from "@/components/ui/chart";
 import axios from "axios";
 import { capitalizeTitle } from "@/utils/format";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const chartConfig = {
   funds: {
@@ -68,10 +75,71 @@ function FundDisplay({ color, title, funds }) {
   );
 }
 
+function Pagination({ currentPage, totalPages, onPageChange }) {
+  const renderPageButton = (page) => (
+    <button
+      key={page}
+      onClick={() => onPageChange(page)}
+      className={`px-2 md:px-4 py-2 rounded-sm md:rounded-xl font-s ${currentPage === page ? "bg-astraprimary text-astrawhite" : "bg-transparent text-astradarkgray hover:bg-astratintedwhite"}`}
+    >
+      {page}
+    </button>
+  );
+
+  const renderDots = (key) => (
+    <span key={key} className="px-2 text-astradarkgray select-none">
+      ...
+    </span>
+  );
+
+  const getPageButtons = () => {
+    const pages = [];
+    pages.push(renderPageButton(1));
+
+    const start = Math.max(2, currentPage - 1);
+    const end = Math.min(totalPages - 1, currentPage + 1);
+
+    if (start > 2) pages.push(renderDots("start-dots"));
+    for (let i = start; i <= end; i++) pages.push(renderPageButton(i));
+    if (end < totalPages - 1) pages.push(renderDots("end-dots"));
+    if (totalPages > 1) pages.push(renderPageButton(totalPages));
+
+    return pages;
+  };
+
+  return (
+    totalPages > 1 && (
+      <div className="flex items-center justify-center gap-2 sm:gap-1 py-4 cursor-pointer bg-white rounded-b-xl">
+        <button
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className={`p-2 rounded-lg ${currentPage === 1 ? "text-astralightgray cursor-not-allowed" : "text-astraprimary hover:bg-astratintedwhite"}`}
+        >
+          <svg className="w-5 h-5 stroke-3" fill="none" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        {getPageButtons()}
+        <button
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className={`p-2 rounded-lg ${currentPage === totalPages ? "text-astralightgray cursor-not-allowed" : "text-astraprimary hover:bg-astratintedwhite"}`}
+        >
+          <svg className="w-5 h-5 stroke-3" fill="none" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+    )
+  );
+}
+
 export function Donut() {
   const router = useRouter();
   const [projectStatistics, setProjectStatistics] = React.useState([]);
   const [fundsRaised, setFundsRaised] = React.useState(0);
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [pageSize, setPageSize] = React.useState(6);
 
   React.useEffect(() => {
     const fetchProjectDonationSummary = async () => {
@@ -121,18 +189,24 @@ export function Donut() {
 
   const colorSteps = [
     "var(--color-pieastra-primary-100)",
+    "var(--color-pieastra-primary-90)",
     "var(--color-pieastra-primary-80)",
     "var(--color-pieastra-primary-70)",
     "var(--color-pieastra-primary-60)",
     "var(--color-pieastra-primary-50)",
+    "var(--color-pieastra-primary-40)",
     "var(--color-pieastra-primary-30)",
     "var(--color-pieastra-primary-20)",
     "var(--color-pieastra-primary-10)",
   ];
 
-  const chartData = [...projectStatistics]
+  // filter out donations with 0 funds
+  const filteredStatistics = projectStatistics.filter(item => item.funds > 0);
+
+  const totalPages = Math.ceil(filteredStatistics.length / pageSize);
+  const paginatedData = [...filteredStatistics]
     .sort((a, b) => b.funds - a.funds)
-    .slice(0, 8)
+    .slice((currentPage - 1) * pageSize, currentPage * pageSize)
     .map((item, idx) => ({
       ...item,
       fill: colorSteps[idx] || colorSteps[colorSteps.length - 1],
@@ -168,7 +242,7 @@ export function Donut() {
               content={<ChartTooltipContent hideLabel showPeso={true} />}
             />
             <Pie
-              data={chartData}
+              data={paginatedData}
               dataKey="funds"
               nameKey="donationTitle"
               innerRadius={80}
@@ -207,15 +281,43 @@ export function Donut() {
           </PieChart>
         </ChartContainer>
         <CardFooter className="flex-col gap-2 font-s">
-          {/* <div className="flex items-center gap-2 font-medium leading-none">
-            Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-          </div> */}
           <div className="leading-none text-muted-foreground">
-            Showing {chartData.length} out of {projectStatistics.length} Donation Drives
+            Showing <span className="font-bold">
+              {filteredStatistics.length === 0 ? 0 : ((currentPage - 1) * pageSize + 1)}
+            </span>
+            -
+            <span className="font-bold">{Math.min(currentPage * pageSize, filteredStatistics.length)}</span>
+            {" "}out of <span className="font-bold">{projectStatistics.length}</span> Donation Drives
+          </div>
+
+          {/* Page size selector */}
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-muted-foreground">Show</span>
+            <div className="min-w-[60px]">
+              <Select
+                value={pageSize.toString()}
+                onValueChange={value => {
+                  setPageSize(Number(value));
+                  setCurrentPage(1);
+                }}
+              >
+                <SelectTrigger className="w-fit">
+                  <SelectValue placeholder="Page size" />
+                </SelectTrigger>
+                <SelectContent className="min-w-fit">
+                  {[5, 6, 8, 10].map(size => (
+                    <SelectItem key={size} value={size.toString()}>
+                      {size}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <span className="text-muted-foreground">per page</span>
           </div>
 
           <div className="mt-4 flex flex-col space-y-1.5 min-w-full gap-2">
-            {chartData.map((item, index) => (
+            {paginatedData.map((item, index) => (
               <div
                 key={index}
                 className="transition-all cursor-pointer duration-200 
@@ -230,6 +332,12 @@ export function Donut() {
               </div>
             ))}
           </div>
+
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
         </CardFooter>
       </CardContent>
     </Card>
