@@ -33,6 +33,7 @@ export default function EventFormFields({
                 dateFormat="yyyy-MM-dd"
                 className="w-full border rounded-md p-2 pr-10 cursor-pointer"
                 placeholderText="Select date"
+                minDate={new Date()}
               />
               <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-astraprimary pointer-events-none" />
             </div>

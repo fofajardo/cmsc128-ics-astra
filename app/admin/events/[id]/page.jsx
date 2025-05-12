@@ -34,12 +34,13 @@ export default function EventAdminDetailPage() {
   const itemsPerPage = 5;
 
   const handleSave = (updatedEvent) => {
-    setEvent((prevEvent) => ({
-      ...prevEvent,
-      ...updatedEvent
-    }));
-    setShowEditModal(false);
-    setToastData({ type: "success", message: "Event updated successfully!" });
+    handleEdit(updatedEvent);
+    // setEvent((prevEvent) => ({
+    //   ...prevEvent,
+    //   ...updatedEvent
+    // }));
+    // setShowEditModal(false);
+    // setToastData({ type: "success", message: "Event updated successfully!" });
   };
 
   const handleDeleteContent = async (id) => {
@@ -381,8 +382,8 @@ export default function EventAdminDetailPage() {
         <div className="flex-1 flex flex-col">
           <HeaderEvent
             event={event}
-            onSave={handleSave}
-            onDelete={handleDelete}
+            // onSave={handleSave}
+            // onDelete={handleDelete}
             className="h-full"
           />
         </div>
@@ -425,8 +426,11 @@ export default function EventAdminDetailPage() {
       {showEditModal && (
         <EditEventModal
           event={event}
-          onClose={() => setShowEditModal(false)}
-          onSave={handleEdit}
+          onClose={() => {
+            setShowEditModal(false)}}
+          onSave={
+            handleEdit
+          }
         />
       )}
       {showDeleteModal && (

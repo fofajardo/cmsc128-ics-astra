@@ -300,7 +300,9 @@ const updateEvent = async (req, res) => {
       venue,
       external_link,
       access_link,
-      online
+      online,
+      slots,
+      status
     } = req.body;
 
 
@@ -310,7 +312,9 @@ const updateEvent = async (req, res) => {
       venue,
       external_link,
       access_link,
-      online
+      online,
+      slots,
+      status
     };
     Object.keys(updateData).forEach(key => {
       if (updateData[key] === undefined) {

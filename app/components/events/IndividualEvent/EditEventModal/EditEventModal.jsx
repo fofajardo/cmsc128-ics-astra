@@ -6,7 +6,7 @@ import FormActionButtons from "./FormActionButtons";
 
 export default function EditEventModal({ event, onClose, onSave }) {
   const [title, setTitle] = useState(event.title);
-  const [eventDetail, setEventDetail] = useState(event.eventDetail);
+  const [eventDetail, setEventDetail] = useState(event.description);
   const [date, setDate] = useState(event.date ? new Date(event.date) : null);
   const [location, setLocation] = useState(event.location || "");
   const [status, setStatus] = useState(event.status || "Open");
@@ -14,18 +14,27 @@ export default function EditEventModal({ event, onClose, onSave }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Create the updated event object
     const updatedEvent = {
-      ...event,
-      title,
-      eventDetail,
-      date: new Date(date).toISOString().slice(0, 10) || "",
-      location,
-      status,
-      image,
+      title: title,
+      date: date,
+      location: location,
+      status: status,
+      description: eventDetail
     };
-    if (onSave) {
-      onSave(updatedEvent);
-    }
+
+    // Pass the updated event to the parent's onSave function
+    onSave(updatedEvent);
+  };
+
+
+  const handleDateChange = (selDate) => {
+    if (!selDate) return;
+    const adjustedDate = new Date(selDate);
+    adjustedDate.setHours(0, 1, 0, 0);
+
+    setDate(selDate);
   };
 
   return (
@@ -43,7 +52,7 @@ export default function EditEventModal({ event, onClose, onSave }) {
             title={title}
             setTitle={setTitle}
             date={date}
-            setDate={setDate}
+            setDate={handleDateChange}
             location={location}
             setLocation={setLocation}
             status={status}

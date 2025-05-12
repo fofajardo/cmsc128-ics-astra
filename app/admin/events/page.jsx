@@ -99,33 +99,32 @@ export default function Events() {
 
   };
 
-  const getChangedFields = (current, defaults) => {
-    const changed = {};
-    for (const key in current) {
-      const currentValue = current[key];
-      const defaultValue = defaults[key];
+  function getChangedFields(currentData, defaultData) {
+    const updatedFields = {};
+    for (const key in currentData) {
+      const currentValue = currentData[key];
+      const defaultValue = defaultData[key];
 
-      const isArray = Array.isArray(currentValue);
-      const isString = typeof currentValue === "string";
-
-      let isDifferent;
-
-      if (isArray) {
-        isDifferent = JSON.stringify(currentValue) !== JSON.stringify(defaultValue);
-      } else if (isString) {
+      if (Array.isArray(currentValue)) {
+        if (JSON.stringify(currentValue) !== JSON.stringify(defaultValue)) {
+          updatedFields[key] = currentValue;
+        }
+      } else if (typeof currentValue === "string" && typeof defaultValue === "string") {
         const trimmed = currentValue.trim();
-        isDifferent = trimmed !== defaultValue.trim();
-        if (trimmed === "") continue;
-      } else {
-        isDifferent = currentValue !== defaultValue;
-      }
-
-      if (isDifferent) {
-        changed[key] = currentValue;
+        if (trimmed !== defaultValue.trim()) {
+          updatedFields[key] = trimmed;
+        }
+      } else if (typeof currentValue === "boolean") {
+        if (currentValue !== defaultValue) {
+          updatedFields[key] = currentValue;
+        }
+      } else if (currentValue !== defaultValue) {
+        updatedFields[key] = currentValue;
       }
     }
-    return changed;
-  };
+    return updatedFields;
+  }
+
 
   const fetchContents = async (events) => {
     const contentMap = {};
@@ -475,7 +474,9 @@ export default function Events() {
         venue: "",
         external_link: "",
         access_link: "",
-        online: false,
+        online: true,
+        slots: 0,
+        status: "Open"
       };
 
       const contentDefaults = {
@@ -484,13 +485,19 @@ export default function Events() {
         tags: [],
       };
 
+      console.log("computed online:", addFormData.event_type === "Online");
+      console.log("eventDefaults.online:", eventDefaults.online);
+
       console.log("inside handle edit");
+      console.log("addForm event type:", addFormData.event_type);
       const eventUpdateData = getChangedFields({
         event_date: addFormData.event_date,
         venue: addFormData.venue,
         external_link: addFormData.external_link,
         access_link: addFormData.access_link,
-        online: addFormData.event_type==="Online",
+        online: addFormData.event_type==="Online" ? true : false,
+        status: addFormData.status,
+        slots: addFormData.max_slots
       }, eventDefaults);
 
       const contentUpdateData = getChangedFields({
@@ -501,6 +508,7 @@ export default function Events() {
 
       console.log("event  to update:", eventUpdateData);
       console.log("content to update: ", contentUpdateData);
+
 
       let eventRes, contentRes, eventOnly = 0;
       if (Object.keys(eventUpdateData).length > 0) {

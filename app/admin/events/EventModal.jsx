@@ -94,8 +94,8 @@ export default function EventModal({
 
             >
               <option value="">Please Select</option>
-              <option>In-Person</option>
-              <option>Online</option>
+              <option value="In-Person">In-Person</option>
+              <option value="Online">Online</option>
             </select>
           </div>
 
@@ -126,6 +126,7 @@ export default function EventModal({
               onChange={handleChange}
               placeholder="Ex: 20"
               className="border rounded px-3 py-2 w-full"
+              min={0}
             />
           </div>
 
