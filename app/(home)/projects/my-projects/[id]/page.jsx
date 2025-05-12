@@ -77,24 +77,29 @@ export default function UserProjects() {
 
           setProjects(
             projectData.list.map(
-              project => ({
-                id: project.projectData.project_id,
-                title: project.projectData.title,
-                description: project.projectData.details,
-                image: photoMap[project.projectData.project_id] || "/projects/assets/Donation.jpg",
-                goal: project.projectData.goal_amount.toString(),
-                raised: project.projectData.total_donations.toString(),
-                donors: project.projectData.number_of_donors,
-                type: project.projectData.type,
-                createdAt: project.date_requested,
-                endDate: project.projectData.due_date,
-                project_status: project.projectData.project_status,
-                donationLink: project.projectData.donation_link,
-                requester: project.requesterData.full_name,
-                dateCompleted: project.projectData.date_complete,
-                status: project.status,
-                request_id: project.request_id,
-              })
+              project => {
+                console.log('Project status:', project.status);
+                console.log('REQUEST_STATUS_LABELS:', REQUEST_STATUS_LABELS);
+                console.log('REQUEST_STATUS_LABELS[REQUEST_STATUS.APPROVED]:', REQUEST_STATUS_LABELS[REQUEST_STATUS.APPROVED]);
+                return {
+                  id: project.projectData.project_id,
+                  title: project.projectData.title,
+                  description: project.projectData.details,
+                  image: photoMap[project.projectData.project_id] || "/projects/assets/Donation.jpg",
+                  goal: project.projectData.goal_amount.toString(),
+                  raised: project.projectData.total_donations.toString(),
+                  donors: project.projectData.number_of_donors,
+                  type: project.projectData.type,
+                  createdAt: project.date_requested,
+                  endDate: project.projectData.due_date,
+                  project_status: project.projectData.project_status,
+                  donationLink: project.projectData.donation_link,
+                  requester: project.requesterData.full_name,
+                  dateCompleted: project.projectData.date_complete,
+                  status: project.status,
+                  request_id: project.request_id,
+                };
+              }
             )
           );
         } else {
@@ -357,7 +362,7 @@ export default function UserProjects() {
 
                             {/* Action buttons */}
                             <div className="flex flex-wrap gap-3">
-                              {project.status === REQUEST_STATUS_LABELS[REQUEST_STATUS.APPROVED] && (
+                              {project.status === REQUEST_STATUS.APPROVED && (
                                 <button
                                   onClick={() => handleOpenEditModal(project)}
                                   className="flex items-center gap-1.5 bg-amber-100 text-amber-700 py-2 px-4 rounded-lg text-sm hover:bg-amber-200 transition-colors"
@@ -367,7 +372,7 @@ export default function UserProjects() {
                                 </button>
                               )}
 
-                              {project.status === REQUEST_STATUS_LABELS[REQUEST_STATUS.REJECTED] && (
+                              {project.status === REQUEST_STATUS.REJECTED && (
                                 <button
                                   onClick={() =>
                                     handleOpenRejectionDetailsModal(project)
