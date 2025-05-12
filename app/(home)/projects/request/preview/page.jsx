@@ -163,26 +163,26 @@ const RequestFundraiserPreview = () => {
   return (
     <div className="min-h-screen w-full flex flex-col bg-astrawhite">
       {/* Header */}
-      <div className="bg-astralightgray p-6 md:p-12">
-        <h1 className="text-4xl font-bold text-astrablack">
+      <div className="bg-astralightgray p-4 sm:p-6 md:p-8 lg:p-12">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-astrablack">
           Review Your Project
         </h1>
-        <p className="text-astradarkgray mt-2">
+        <p className="text-sm sm:text-base text-astradarkgray mt-2">
           Please review all details before submitting your project request.
         </p>
       </div>
 
       {/* Main content */}
-      <div className="flex-grow p-6 md:p-12">
+      <div className="flex-grow p-4 sm:p-6 md:p-8 lg:p-12">
         <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
           {/* Preview header that mimics how the project will look */}
-          <div className="bg-gradient-to-r from-astraprimary to-astrablue h-16"></div>
+          <div className="bg-gradient-to-r from-astraprimary to-astrablue h-12 sm:h-16"></div>
 
-          <div className="p-6 md:p-8">
-            <div className="grid md:grid-cols-2 gap-8">
+          <div className="p-4 sm:p-6 md:p-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
               {/* Left column - Photo preview and upload */}
               <div className="order-2 md:order-1">
-                <div className="w-full aspect-video bg-gray-100 rounded-lg overflow-hidden mb-6">
+                <div className="w-full aspect-video bg-gray-100 rounded-lg overflow-hidden mb-4 sm:mb-6">
                   <input
                     type="file"
                     accept="image/*"
@@ -202,12 +202,12 @@ const RequestFundraiserPreview = () => {
                           className="w-full h-full object-cover"
                         />
                         <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-200">
-                          <span className="text-white font-semibold">Change Photo</span>
+                          <span className="text-white font-semibold text-sm sm:text-base">Change Photo</span>
                         </div>
                       </div>
                     ) : (
                       <div
-                        className={`relative border-2 border-dashed rounded-lg p-8 text-center h-full flex items-center justify-center ${
+                        className={`relative border-2 border-dashed rounded-lg p-4 sm:p-6 md:p-8 text-center h-full flex items-center justify-center ${
                           isDragging ? 'border-astraprimary bg-astralightgray' : 'border-astraprimary'
                         } transition-colors duration-200`}
                         onDragOver={handleDragOver}
@@ -215,7 +215,7 @@ const RequestFundraiserPreview = () => {
                         onDrop={handleDrop}
                       >
                         <div className="flex flex-col items-center justify-center">
-                          <div className="w-16 h-16 mb-4">
+                          <div className="w-12 h-12 sm:w-16 sm:h-16 mb-3 sm:mb-4">
                             <svg
                               className="w-full h-full text-astraprimary"
                               fill="none"
@@ -231,13 +231,13 @@ const RequestFundraiserPreview = () => {
                               />
                             </svg>
                           </div>
-                          <p className="text-astraprimary font-semibold mb-2">
+                          <p className="text-astraprimary font-semibold mb-1 sm:mb-2 text-sm sm:text-base">
                             Drag and drop your photo here
                           </p>
-                          <p className="text-astraprimary text-sm">
+                          <p className="text-astraprimary text-xs sm:text-sm">
                             or click to browse files
                           </p>
-                          <p className="text-astraprimary text-xs mt-2">
+                          <p className="text-astraprimary text-xs mt-1 sm:mt-2">
                             Supported formats: JPG, PNG, GIF (max 5MB)
                           </p>
                         </div>
@@ -246,28 +246,28 @@ const RequestFundraiserPreview = () => {
                   </label>
                 </div>
                 {photoError && (
-                  <p className="text-red-500 text-xs md:text-sm text-center mb-4">{photoError}</p>
+                  <p className="text-red-500 text-xs sm:text-sm text-center mb-4">{photoError}</p>
                 )}
 
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   <div>
-                    <h2 className="text-lg font-semibold text-astrablack">Project Type</h2>
-                    <p className="text-astradarkgray">{formData.projectType}</p>
+                    <h2 className="text-base sm:text-lg font-semibold text-astrablack">Project Type</h2>
+                    <p className="text-sm sm:text-base text-astradarkgray">{formData.projectType}</p>
                   </div>
 
                   <div>
-                    <h2 className="text-lg font-semibold text-astrablack">Target Date</h2>
-                    <p className="text-astradarkgray">{formatDate(formData.targetDate)}</p>
+                    <h2 className="text-base sm:text-lg font-semibold text-astrablack">Target Date</h2>
+                    <p className="text-sm sm:text-base text-astradarkgray">{formatDate(formData.targetDate)}</p>
                   </div>
 
                   {formData.externalLink && (
                     <div>
-                      <h2 className="text-lg font-semibold text-astrablack">External Donation Link</h2>
+                      <h2 className="text-base sm:text-lg font-semibold text-astrablack">External Donation Link</h2>
                       <a
                         href={formData.externalLink}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-astraprimary hover:underline"
+                        className="text-sm sm:text-base text-astraprimary hover:underline break-all"
                       >
                         {formData.externalLink}
                       </a>
@@ -278,19 +278,19 @@ const RequestFundraiserPreview = () => {
 
               {/* Right column - Text details */}
               <div className="order-1 md:order-2">
-                <div className="mb-6">
-                  <h1 className="text-2xl md:text-3xl font-bold text-astrablack">{formData.title}</h1>
-                  <div className="mt-4 bg-blue-50 p-4 rounded-lg">
-                    <p className="text-xl font-semibold text-astraprimary">
-                      {formatAmount(formData.amount)} <span className="text-sm text-astradarkgray">project goal</span>
+                <div className="mb-4 sm:mb-6">
+                  <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-astrablack">{formData.title}</h1>
+                  <div className="mt-3 sm:mt-4 bg-blue-50 p-3 sm:p-4 rounded-lg">
+                    <p className="text-lg sm:text-xl font-semibold text-astraprimary">
+                      {formatAmount(formData.amount)} <span className="text-xs sm:text-sm text-astradarkgray">project goal</span>
                     </p>
                   </div>
                 </div>
 
                 <div>
-                  <h2 className="text-xl font-semibold text-astrablack mb-2">About this project</h2>
+                  <h2 className="text-lg sm:text-xl font-semibold text-astrablack mb-2">About this project</h2>
                   <div className="bg-white rounded-lg">
-                    <p className="text-astradarkgray whitespace-pre-line">{formData.description}</p>
+                    <p className="text-sm sm:text-base text-astradarkgray whitespace-pre-line">{formData.description}</p>
                   </div>
                 </div>
               </div>
@@ -300,23 +300,23 @@ const RequestFundraiserPreview = () => {
       </div>
 
       {/* Bottom navigation */}
-      <div className="flex justify-between items-center px-6 md:px-12 py-5 border-astralightgray border-t-1 bg-white">
+      <div className="flex justify-between items-center px-4 sm:px-6 md:px-12 py-4 sm:py-5 border-astralightgray border-t-1 bg-white">
         <BackButton />
         <button
           onClick={handleSubmit}
           disabled={isSubmitting}
-          className={`blue-button font-semibold transition cursor-pointer w-[200px] h-[55px] flex items-center justify-center ${isSubmitting ? "opacity-75" : ""}`}
+          className={`blue-button font-semibold transition cursor-pointer w-[150px] sm:w-[180px] md:w-[200px] h-[45px] sm:h-[50px] md:h-[55px] text-sm sm:text-base flex items-center justify-center ${isSubmitting ? "opacity-75" : ""}`}
         >
           {isSubmitting ? (
             <>
-              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <svg className="animate-spin -ml-1 mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              Submitting...
+              <span className="text-sm sm:text-base">Submitting...</span>
             </>
           ) : (
-            "Submit Request"
+            <span className="text-sm sm:text-base">Submit Request</span>
           )}
         </button>
       </div>
