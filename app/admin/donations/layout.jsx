@@ -7,6 +7,7 @@ import AdminTabs from "@/components/AdminTabs";
 import { Gift } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TabContext } from "@/components/TabContext";
+import Link from "next/link";
 
 export default function AdminDonationsLayout({ children }) {
   const router = useRouter();
@@ -65,7 +66,7 @@ export default function AdminDonationsLayout({ children }) {
         <img
           src="/blue-bg.png"
           alt="Background"
-          className="h-80 w-full object-cover"
+          className="h-100 w-full object-cover"
         />
         <div className="absolute inset-2 flex flex-col items-center justify-evenly text-astrawhite z-20">
           <div className="text-center pt-6">
@@ -101,6 +102,15 @@ export default function AdminDonationsLayout({ children }) {
                 onClick={() => {}}
               />
             </div>
+          </div>
+
+          <div className="flex flex-row gap-8">
+            {/* Manage projects button */}
+            <Link href="/admin/projects" passHref>
+              <button className="mt-2 border-2 border-astrawhite text-astrawhite hover:bg-astrawhite hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-[200px] h-[60px]">
+                Manage Projects
+              </button>
+            </Link>
           </div>
         </div>
       </div>

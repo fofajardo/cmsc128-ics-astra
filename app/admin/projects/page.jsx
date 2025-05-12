@@ -416,12 +416,21 @@ export default function ProjectsAdmin() {
             </div>
           </div>
 
-          {/* Create a project button */}
-          <Link href="/projects/request/goal" passHref>
-            <button className="mt-2 border-2 border-astrawhite text-astrawhite hover:bg-astrawhite hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-[200px] h-[60px]">
-              Create a Project
-            </button>
-          </Link>
+          <div className="flex flex-row gap-8">
+            {/* Create a project button */}
+            <Link href="/projects/request/goal" passHref>
+              <button className="mt-2 border-2 border-astrawhite text-astrawhite hover:bg-astrawhite hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-[200px] h-[60px]">
+                Create a Project
+              </button>
+            </Link>
+
+            {/* Manage donations button */}
+            <Link href="/admin/donations" passHref>
+              <button className="mt-2 border-2 border-astrawhite text-astrawhite hover:bg-astrawhite hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-[200px] h-[60px]">
+                Manage Donations
+              </button>
+            </Link>
+          </div>
         </div>
       </div>
 
