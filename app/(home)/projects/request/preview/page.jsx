@@ -12,6 +12,7 @@ const RequestFundraiserPreview = () => {
   const [photo, setPhoto] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [photoError, setPhotoError] = useState("");
+  const [isDragging, setIsDragging] = useState(false);
 
   // Format amount to currency
   const formatAmount = (amount) => {
@@ -37,6 +38,29 @@ const RequestFundraiserPreview = () => {
   // Handle photo upload
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
+    handleFile(file);
+  };
+
+  // Handle drag and drop
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files[0];
+    handleFile(file);
+  };
+
+  // Common file handling logic
+  const handleFile = (file) => {
     if (file) {
       // Check file type
       if (!file.type.startsWith('image/')) {
@@ -120,32 +144,69 @@ const RequestFundraiserPreview = () => {
               <div className="w-full">
                 <h3 className="font-l text-astrablack text-xl md:text-2xl mb-4">Project Photo</h3>
                 <div className="space-y-4">
-                  <div className="flex items-center space-x-4">
-                    <label className="flex-1">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handlePhotoChange}
-                        className="hidden"
-                        id="photo-upload"
-                      />
-                      <div className={`w-full p-3 border rounded-md text-sm md:text-base cursor-pointer text-center
-                        ${photoError ? 'border-red-500' : 'border-astradarkgray hover:border-astraprimary'}`}>
-                        {photo ? 'Change Photo' : 'Upload Photo'}
-                      </div>
+                  <div
+                    className={`relative border-2 border-dashed rounded-lg p-8 text-center ${
+                      isDragging ? 'border-astraprimary bg-astralightgray' : 'border-astraprimary'
+                    } transition-colors duration-200`}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                  >
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePhotoChange}
+                      className="hidden"
+                      id="photo-upload"
+                    />
+                    <label
+                      htmlFor="photo-upload"
+                      className="cursor-pointer flex flex-col items-center justify-center"
+                    >
+                      {photoPreview ? (
+                        <div className="relative w-full">
+                          <img
+                            src={photoPreview}
+                            alt="Project preview"
+                            className="max-w-full h-auto rounded-lg shadow-md mx-auto"
+                          />
+                          <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-200">
+                            <span className="text-white font-semibold">Change Photo</span>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="w-16 h-16 mb-4">
+                            <svg
+                              className="w-full h-full text-astraprimary"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                              />
+                            </svg>
+                          </div>
+                          <p className="text-astraprimary font-semibold mb-2">
+                            Drag and drop your photo here
+                          </p>
+                          <p className="text-astraprimary text-sm">
+                            or click to browse files
+                          </p>
+                          <p className="text-astraprimary text-xs mt-2">
+                            Supported formats: JPG, PNG, GIF (max 5MB)
+                          </p>
+                        </>
+                      )}
                     </label>
                   </div>
                   {photoError && (
-                    <p className="text-red-500 text-xs md:text-sm">{photoError}</p>
-                  )}
-                  {photoPreview && (
-                    <div className="mt-4">
-                      <img
-                        src={photoPreview}
-                        alt="Project preview"
-                        className="max-w-full h-auto rounded-lg shadow-md"
-                      />
-                    </div>
+                    <p className="text-red-500 text-xs md:text-sm text-center">{photoError}</p>
                   )}
                 </div>
               </div>
