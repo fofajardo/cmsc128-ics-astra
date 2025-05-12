@@ -27,6 +27,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+// temporary labels 
+const PROJECT_STATUS_LABELS = {
+  0: "Pending",
+  1: "Active",
+  2: "Finished",
+};
+const PROJECT_STATUS_COLORS = {
+  0: "bg-yellow-100 text-yellow-800",
+  1: "bg-blue-100 text-blue-800",
+  2: "bg-green-100 text-green-800",
+};
 
 const chartConfig = {
   funds: {
@@ -58,17 +69,27 @@ const chartConfig = {
   },
 };
 
-function FundDisplay({ color, title, funds }) {
+function FundDisplay({ color, title, funds, project_status, isDense }) {
+  const titleFont = isDense ? "font-s" : "font-r";
+  const fundsFont = isDense ? "font-sb" : "font-rb";
+
   return (
     <div className="flex items-center justify-between max-w-full gap-6">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2.5">
         <div
-          className="size-4 rounded-full flex-shrink-0"
+          className="w-5 min-h-8 rounded-lg flex-shrink-0"
           style={{ backgroundColor: color }}
         ></div>
-        <span className="text-astrablack font-r line-clamp-1">{title}</span>
+        <div className="flex flex-col">
+          <span className={`text-astrablack line-clamp-1 ${titleFont}`}>{title}</span>
+          <span
+            className={`px-1 py-0 rounded text-[11px] w-fit ${PROJECT_STATUS_COLORS[project_status] || "bg-gray-100 text-gray-700"}`}
+          >
+            {PROJECT_STATUS_LABELS[project_status] || "Unknown"}
+          </span>
+        </div>
       </div>
-      <span className="text-astraprimary font-rb text-right">
+      <span className={`text-astraprimary text-right ${fundsFont}`}>
         ₱{Number(funds).toLocaleString()}
       </span>
     </div>
@@ -151,10 +172,10 @@ export function Donut() {
         if (response.data.status == "OK") {
           const updatedProjectDonationSummary = await Promise.all(
             response.data.list.map(async (project) => {
-              console.log("here", response.data.list);
               const projectData = {
                 donationTitle: capitalizeTitle(project.title),
                 funds: project.total_donations,
+                project_status: project.project_status,
               };
               return projectData;
             })
@@ -215,9 +236,9 @@ export function Donut() {
   const totalFunds = fundsRaised?.total_funds_raised ?? "Loading...";
 
   return (
-    <Card className="flex flex-col h-full">
+    <Card className="flex flex-col h-full py-4 gap-0">
       <CardHeader className="items-center pb-0">
-        <div className="flex justify-between">
+        <div className="flex justify-between items-center">
           <div className="flex flex-col">
             <CardTitle>Highest Funded Categories</CardTitle>
             {/* <CardDescription>January - April 2025</CardDescription> */}
@@ -280,8 +301,8 @@ export function Donut() {
             </Pie>
           </PieChart>
         </ChartContainer>
-        <CardFooter className="flex-col gap-2 font-s">
-          <div className="leading-none text-muted-foreground">
+        <CardFooter className="flex-col gap-0 font-s">
+          <div className="leading-none text-muted-foreground pb-2">
             Showing <span className="font-bold">
               {filteredStatistics.length === 0 ? 0 : ((currentPage - 1) * pageSize + 1)}
             </span>
@@ -316,30 +337,32 @@ export function Donut() {
             <span className="text-muted-foreground">per page</span>
           </div>
 
-          <div className="mt-4 flex flex-col space-y-1.5 min-w-full gap-2">
+          <div className="mt-0 flex flex-col space-y-1.5 min-w-full gap-2">
             {paginatedData.map((item, index) => (
               <div
                 key={index}
                 className="transition-all cursor-pointer duration-200 
                   hover:scale-105 hover:shadow-lg hover:bg-pieastra-primary-10/40 hover:font-semibold 
-                  rounded-lg px-2.5 py-1 group"
+                  rounded-lg px-2.5 py-0.5 group"
               >
                 <FundDisplay
                   title={item.donationTitle}
                   funds={item.funds}
                   color={item.fill}
+                  project_status={item.project_status}
+                  isDense={paginatedData.length === 10}
                 />
               </div>
             ))}
           </div>
 
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
         </CardFooter>
       </CardContent>
+    <Pagination
+      currentPage={currentPage}
+      totalPages={totalPages}
+      onPageChange={setCurrentPage}
+    />
     </Card>
   );
 }
