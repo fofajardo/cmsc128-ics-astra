@@ -27,7 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-// temporary labels 
+// temporary labels
 const PROJECT_STATUS_LABELS = {
   0: "Pending",
   1: "Active",
@@ -341,8 +341,8 @@ export function Donut() {
             {paginatedData.map((item, index) => (
               <div
                 key={index}
-                className="transition-all cursor-pointer duration-200 
-                  hover:scale-105 hover:shadow-lg hover:bg-pieastra-primary-10/40 hover:font-semibold 
+                className="transition-all cursor-pointer duration-200
+                  hover:scale-105 hover:shadow-lg hover:bg-pieastra-primary-10/40 hover:font-semibold
                   rounded-lg px-2.5 py-0.5 group"
               >
                 <FundDisplay
@@ -358,11 +358,11 @@ export function Donut() {
 
         </CardFooter>
       </CardContent>
-    <Pagination
-      currentPage={currentPage}
-      totalPages={totalPages}
-      onPageChange={setCurrentPage}
-    />
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
     </Card>
   );
 }
