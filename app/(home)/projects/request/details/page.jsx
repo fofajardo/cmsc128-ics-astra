@@ -13,14 +13,17 @@ const RequestFundraiserDetails = () => {
   // Initialize states
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [externalLink, setExternalLink] = useState("");
   const [titleError, setTitleError] = useState("");
   const [descriptionError, setDescriptionError] = useState("");
+  const [externalLinkError, setExternalLinkError] = useState("");
 
   // Load saved form data on mount
   useEffect(() => {
     if (formData) {
       if (formData.title) setTitle(formData.title);
       if (formData.description) setDescription(formData.description);
+      if (formData.externalLink) setExternalLink(formData.externalLink);
     }
   }, [formData]);
 
@@ -54,8 +57,31 @@ const RequestFundraiserDetails = () => {
     }
   };
 
-  // Check if all fields are valid and filled
-  const isFormValid = title.trim() && description.trim() && !titleError && !descriptionError;
+  // Handle external link input change
+  const handleExternalLinkChange = (e) => {
+    const value = e.target.value;
+    setExternalLink(value);
+
+    if (value && !isValidUrl(value)) {
+      setExternalLinkError("Please enter a valid URL");
+    } else {
+      setExternalLinkError("");
+      updateFormData({ externalLink: value });
+    }
+  };
+
+  // URL validation function
+  const isValidUrl = (url) => {
+    try {
+      new URL(url);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
+
+  // Check if all required fields are valid and filled
+  const isFormValid = title.trim() && description.trim() && !titleError && !descriptionError && !externalLinkError;
 
   return (
     <div className="min-h-screen w-full flex flex-col md:flex-row">
@@ -130,6 +156,28 @@ const RequestFundraiserDetails = () => {
                     {description.length}/1000 characters
                   </p>
                 </div>
+              </div>
+
+              {/* External Link field */}
+              <div className="w-full">
+                <label className="block text-astrablack font-r mb-2 text-sm md:text-base">
+                  External Donation Link (Optional)
+                </label>
+                <input
+                  type="url"
+                  value={externalLink}
+                  onChange={handleExternalLinkChange}
+                  placeholder="https://example.com/donate"
+                  className={`w-full p-3 border rounded-md text-sm md:text-base ${
+                    externalLinkError ? "border-red-500" : "border-astradarkgray"
+                  } focus:outline-none focus:ring-2 focus:ring-astraprimary`}
+                />
+                {externalLinkError && (
+                  <p className="text-red-500 text-xs md:text-sm mt-1">{externalLinkError}</p>
+                )}
+                <p className="text-astradarkgray text-xs md:text-sm mt-1">
+                  Add a link where donors can directly donate to your project
+                </p>
               </div>
             </div>
           </div>
