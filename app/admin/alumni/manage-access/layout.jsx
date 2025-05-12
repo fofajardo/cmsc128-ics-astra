@@ -26,6 +26,7 @@ export default function AdminAlumniLayout({ children }) {
     approved: 0,
     inactive: 0,
   });
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
     const fetchAlumniStats = async () => {
@@ -47,7 +48,7 @@ export default function AdminAlumniLayout({ children }) {
     };
 
     fetchAlumniStats();
-  }, []);
+  }, [refreshTrigger]);
 
   const [currTab, setCurrTab] = useState("Pending");
 
@@ -103,7 +104,7 @@ export default function AdminAlumniLayout({ children }) {
         </div>
       </div>
       {/* pass the value of currTab and info to the children */}
-      <TabContext.Provider value={{ currTab, setCurrTab, info, setInfo }}>
+      <TabContext.Provider value={{ currTab, setCurrTab, info, setInfo, refreshTrigger, setRefreshTrigger }}>
         <AdminTabs tabs={tabs} currTab={currTab} handleTabChange={dynamicTabClick} />
         {children}
       </TabContext.Provider>
