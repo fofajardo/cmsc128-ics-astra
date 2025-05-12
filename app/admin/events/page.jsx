@@ -377,7 +377,7 @@ export default function Events() {
     try{
       let contentId;
 
-      let user_id = user?.state?.user.id;  //manually added; TODO: change after user auth implemented
+      let user_id = user?.state?.user.id;
       console.log("event_id: ",selectedContentId);
       if(!isValidDate(addFormData.event_date)){
         console.log("invalid date format");

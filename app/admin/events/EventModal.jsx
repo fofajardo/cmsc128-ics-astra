@@ -19,9 +19,17 @@ export default function EventModal({
   );
 
   const handleDateChange = (date) => {
-    setSelectedDate(date);
+    if (!date) return;
+    const adjustedDate = new Date(date);
+    adjustedDate.setHours(0, 1, 0, 0);
+
+    setSelectedDate(adjustedDate);
+
     handleChange({
-      target: { name: "event_date", value: date.toISOString().split("T")[0] },
+      target: {
+        name: "event_date",
+        value: adjustedDate.toISOString(),
+      },
     });
   };
 
