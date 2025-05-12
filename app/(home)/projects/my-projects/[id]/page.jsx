@@ -186,25 +186,25 @@ export default function UserProjects() {
       <div className="bg-gradient-to-r from-astraprimary to-astraprimary/90 pt-6 pb-24">
         <div className="max-w-6xl mx-auto px-6">
           <div className="flex flex-col gap-4">
-            <button
-              onClick={() => router.push("/projects")}
-              className="flex items-center gap-2 text-astrawhite bg-astrablack hover:bg-astradarkgray transition-colors w-fit px-4 py-2 rounded-lg"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              Back to Projects
-            </button>
-            <div>
-              <h1 className="text-3xl font-bold text-astrawhite mb-2">My Projects</h1>
+            <div className="text-center">
+              <h1 className="text-3xl font-bold text-astrawhite mb-2 mt-5">My Projects</h1>
               <p className="text-astrawhite/80">
                 Manage and track all your fundraising projects in one place
               </p>
             </div>
+            <button
+              onClick={() => router.push("/projects")}
+              className="flex items-center gap-2 text-astrawhite hover:text-astrablack transition-colors w-fit px-4 py-2 rounded-lg"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              Back to Projects
+            </button>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-6 -mt-12">
+      <div className="max-w-6xl mx-auto px-6 -mt-14">
         {/* Tabs */}
         <div className="bg-astrawhite rounded-t-xl shadow-md mb-6 overflow-hidden">
           <div className="flex border-b border-astragray/20">
