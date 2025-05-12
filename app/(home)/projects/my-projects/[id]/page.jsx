@@ -19,7 +19,6 @@ import {
 } from "lucide-react";
 import ToastNotification from "@/components/ToastNotification";
 import EditModal from "./EditModal";
-import RejectionModal from "./RejectionModal";
 import axios from "axios";
 import { formatCurrency, capitalizeName } from "@/utils/format";
 import { PROJECT_TYPE } from "@/constants/projectConsts";
@@ -31,7 +30,6 @@ export default function UserProjects() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("all");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isRejectionDetailsModalOpen, setIsRejectionDetailsModalOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
   const [toast, setToast] = useState(null);
   const [expandedProject, setExpandedProject] = useState(null);
@@ -148,11 +146,6 @@ export default function UserProjects() {
   const handleOpenEditModal = (project) => {
     setSelectedProject(project);
     setIsEditModalOpen(true);
-  };
-
-  const handleOpenRejectionDetailsModal = (project) => {
-    setSelectedProject(project);
-    setIsRejectionDetailsModalOpen(true);
   };
 
   const handleSubmitEditRequest = () => {
@@ -372,18 +365,6 @@ export default function UserProjects() {
                                 </button>
                               )}
 
-                              {project.status === REQUEST_STATUS.REJECTED && (
-                                <button
-                                  onClick={() =>
-                                    handleOpenRejectionDetailsModal(project)
-                                  }
-                                  className="flex items-center gap-1.5 bg-red-100 text-red-700 py-2 px-4 rounded-lg text-sm hover:bg-red-200 transition-colors"
-                                >
-                                  <AlertCircle className="w-4 h-4" />
-                                  View Rejection Details
-                                </button>
-                              )}
-
                               <button
                                 onClick={() => toggleExpandProject(project.id)}
                                 className="ml-auto flex items-center gap-1 text-astradarkgray hover:text-astraprimary transition-colors"
@@ -463,14 +444,6 @@ export default function UserProjects() {
           project={selectedProject}
           onClose={() => setIsEditModalOpen(false)}
           onSubmit={handleSubmitEditRequest}
-        />
-      )}
-
-      {/* Rejection Details Modal */}
-      {isRejectionDetailsModalOpen && selectedProject && (
-        <RejectionModal
-          project={selectedProject}
-          onClose={() => setIsRejectionDetailsModalOpen(false)}
         />
       )}
     </div>
