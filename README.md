@@ -4,7 +4,29 @@ ICS-ASTRA is a web application for managing and viewing alumni profiles for the 
 
 ## 🚀 Getting Started
 
-To run the project locally:
+Before you begin, make sure you have:
+
+- **Node.js** installed on your computer — [Download Node.js](https://nodejs.org/)
+- **pnpm** installed — [Install pnpm](https://pnpm.io/installation)
+
+### ✅ Install Node.js
+
+Download and install Node.js from the official website:  
+👉 [https://nodejs.org/](https://nodejs.org/)
+
+After installation, verify:
+
+```bash
+node -v
+npm -v
+```
+
+### ✅ Install pnpm
+
+Follow the instructions here:  
+👉 [https://pnpm.io/installation](https://pnpm.io/installation)
+
+## 🛠 Run the Project Locally
 
 1. **Install dependencies**
 
@@ -44,3 +66,5 @@ pnpm eslint ./api
 The `.env` file contains sensitive configuration and is only accessible to project collaborators.
 
 ---
+
+Made with ❤️ by the ICS-ASTRA team.
