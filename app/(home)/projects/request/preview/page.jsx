@@ -161,90 +161,60 @@ const RequestFundraiserPreview = () => {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col md:flex-row">
-      {/* Left side */}
-      <div className="w-full md:w-[35%] bg-astralightgray flex py-8 md:py-0">
-        <div className="flex flex-col items-start space-y-4 md:space-y-6 pl-6 md:pl-10 pt-20 md:pt-60 ml-4 md:ml-6">
-          <h2 className="text-3xl md:text-5xl text-astrablack text-left">
-            Preview your project
-          </h2>
-          <p className="font-r text-astrablack text-left tracking-wide text-sm md:text-base">
-            Review your project details before submitting
-          </p>
-        </div>
+    <div className="min-h-screen w-full flex flex-col bg-astrawhite">
+      {/* Header */}
+      <div className="bg-astralightgray p-6 md:p-12">
+        <h1 className="text-4xl font-bold text-astrablack">
+          Review Your Project
+        </h1>
+        <p className="text-astradarkgray mt-2">
+          Please review all details before submitting your project request.
+        </p>
       </div>
 
-      {/* Right side */}
-      <div className="w-full md:w-[65%] bg-astrawhite flex flex-col min-h-[50vh] md:min-h-screen">
-        {/* Centered content */}
-        <div className="flex-grow flex flex-col justify-center items-center px-4 md:px-0 py-8 md:py-0">
-          <div className="flex flex-col items-center space-y-6 w-full md:w-[70%] mb-8">
-            {/* Project Details */}
-            <div className="w-full space-y-6">
-              {/* Title */}
-              <div className="w-full">
-                <h3 className="font-l text-astrablack text-xl md:text-2xl mb-4">Project Details</h3>
-                <div className="bg-astralightgray p-4 rounded-lg">
-                  <p className="font-semibold text-astrablack">{formData.title}</p>
-                  <p className="text-astradarkgray mt-2 whitespace-pre-wrap">{formData.description}</p>
-                </div>
-              </div>
+      {/* Main content */}
+      <div className="flex-grow p-6 md:p-12">
+        <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
+          {/* Preview header that mimics how the project will look */}
+          <div className="bg-gradient-to-r from-astraprimary to-astrablue h-16"></div>
 
-              {/* Goal Details */}
-              <div className="w-full">
-                <h3 className="font-l text-astrablack text-xl md:text-2xl mb-4">Goal Details</h3>
-                <div className="bg-astralightgray p-4 rounded-lg space-y-2">
-                  <p><span className="font-semibold">Target Amount:</span> {formatAmount(formData.amount)}</p>
-                  <p><span className="font-semibold">Project Type:</span> {formData.projectType}</p>
-                  <p><span className="font-semibold">Target Date:</span> {formatDate(formData.targetDate)}</p>
-                  {formData.externalLink && (
-                    <p>
-                      <span className="font-semibold">External Donation Link:</span>{' '}
-                      <a href={formData.externalLink} target="_blank" rel="noopener noreferrer"
-                         className="text-astraprimary hover:underline">
-                        {formData.externalLink}
-                      </a>
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/* Photo Upload */}
-              <div className="w-full">
-                <h3 className="font-l text-astrablack text-xl md:text-2xl mb-4">Project Photo</h3>
-                <div className="space-y-4">
-                  <div
-                    className={`relative border-2 border-dashed rounded-lg p-8 text-center ${
-                      isDragging ? 'border-astraprimary bg-astralightgray' : 'border-astraprimary'
-                    } transition-colors duration-200`}
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
-                    onDrop={handleDrop}
+          <div className="p-6 md:p-8">
+            <div className="grid md:grid-cols-2 gap-8">
+              {/* Left column - Photo preview and upload */}
+              <div className="order-2 md:order-1">
+                <div className="w-full aspect-video bg-gray-100 rounded-lg overflow-hidden mb-6">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handlePhotoChange}
+                    className="hidden"
+                    id="photo-upload"
+                  />
+                  <label
+                    htmlFor="photo-upload"
+                    className="cursor-pointer block w-full h-full"
                   >
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handlePhotoChange}
-                      className="hidden"
-                      id="photo-upload"
-                    />
-                    <label
-                      htmlFor="photo-upload"
-                      className="cursor-pointer flex flex-col items-center justify-center"
-                    >
-                      {photoPreview ? (
-                        <div className="relative w-full">
-                          <img
-                            src={photoPreview}
-                            alt="Project preview"
-                            className="max-w-full h-auto rounded-lg shadow-md mx-auto"
-                          />
-                          <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-200">
-                            <span className="text-white font-semibold">Change Photo</span>
-                          </div>
+                    {photoPreview ? (
+                      <div className="relative w-full h-full">
+                        <img
+                          src={photoPreview}
+                          alt="Project Visual"
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-200">
+                          <span className="text-white font-semibold">Change Photo</span>
                         </div>
-                      ) : (
-                        <>
+                      </div>
+                    ) : (
+                      <div
+                        className={`relative border-2 border-dashed rounded-lg p-8 text-center h-full flex items-center justify-center ${
+                          isDragging ? 'border-astraprimary bg-astralightgray' : 'border-astraprimary'
+                        } transition-colors duration-200`}
+                        onDragOver={handleDragOver}
+                        onDragLeave={handleDragLeave}
+                        onDrop={handleDrop}
+                      >
+                        <div className="flex flex-col items-center justify-center">
                           <div className="w-16 h-16 mb-4">
                             <svg
                               className="w-full h-full text-astraprimary"
@@ -270,45 +240,88 @@ const RequestFundraiserPreview = () => {
                           <p className="text-astraprimary text-xs mt-2">
                             Supported formats: JPG, PNG, GIF (max 5MB)
                           </p>
-                        </>
-                      )}
-                    </label>
+                        </div>
+                      </div>
+                    )}
+                  </label>
+                </div>
+                {photoError && (
+                  <p className="text-red-500 text-xs md:text-sm text-center mb-4">{photoError}</p>
+                )}
+
+                <div className="space-y-4">
+                  <div>
+                    <h2 className="text-lg font-semibold text-astrablack">Project Type</h2>
+                    <p className="text-astradarkgray">{formData.projectType}</p>
                   </div>
-                  {photoError && (
-                    <p className="text-red-500 text-xs md:text-sm text-center">{photoError}</p>
+
+                  <div>
+                    <h2 className="text-lg font-semibold text-astrablack">Target Date</h2>
+                    <p className="text-astradarkgray">{formatDate(formData.targetDate)}</p>
+                  </div>
+
+                  {formData.externalLink && (
+                    <div>
+                      <h2 className="text-lg font-semibold text-astrablack">External Donation Link</h2>
+                      <a
+                        href={formData.externalLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-astraprimary hover:underline"
+                      >
+                        {formData.externalLink}
+                      </a>
+                    </div>
                   )}
+                </div>
+              </div>
+
+              {/* Right column - Text details */}
+              <div className="order-1 md:order-2">
+                <div className="mb-6">
+                  <h1 className="text-2xl md:text-3xl font-bold text-astrablack">{formData.title}</h1>
+                  <div className="mt-4 bg-blue-50 p-4 rounded-lg">
+                    <p className="text-xl font-semibold text-astraprimary">
+                      {formatAmount(formData.amount)} <span className="text-sm text-astradarkgray">project goal</span>
+                    </p>
+                  </div>
+                </div>
+
+                <div>
+                  <h2 className="text-xl font-semibold text-astrablack mb-2">About this project</h2>
+                  <div className="bg-white rounded-lg">
+                    <p className="text-astradarkgray whitespace-pre-line">{formData.description}</p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-
-        {/* Bottom navigation */}
-        <div className="flex justify-between px-4 md:px-12 py-4 md:py-5 border-astralightgray border-t-1">
-          <BackButton />
-          <button
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-            className={`blue-button font-semibold transition cursor-pointer w-[120px] md:w-[150px] h-[45px] md:h-[55px] text-sm md:text-base flex items-center justify-center ${
-              isSubmitting ? 'opacity-75' : ''
-            }`}
-          >
-            {isSubmitting ? (
-              <>
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Submitting...
-              </>
-            ) : (
-              'Submit'
-            )}
-          </button>
-        </div>
       </div>
 
-      {/* Toast Notification */}
+      {/* Bottom navigation */}
+      <div className="flex justify-between items-center px-6 md:px-12 py-5 border-astralightgray border-t-1 bg-white">
+        <BackButton />
+        <button
+          onClick={handleSubmit}
+          disabled={isSubmitting}
+          className={`blue-button font-semibold transition cursor-pointer w-[200px] h-[55px] flex items-center justify-center ${isSubmitting ? "opacity-75" : ""}`}
+        >
+          {isSubmitting ? (
+            <>
+              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Submitting...
+            </>
+          ) : (
+            "Submit Request"
+          )}
+        </button>
+      </div>
+
+      {/* Toast notification */}
       {showToast && (
         <ToastNotification
           type={showToast.type}
