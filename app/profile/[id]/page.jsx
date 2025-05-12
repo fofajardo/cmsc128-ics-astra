@@ -1,18 +1,18 @@
 "use client";
 import { useState, useEffect } from "react";
-import EditPersonal from "./EditPersonal/page";
-import EditTechnical from "./EditTechnical/page";
-import EditInterest from "./EditInterest/page";
-import EditExperience from "./EditExperience/page";
-import EditAffiliation from "./EditAffiliation/page";
-import AddAffiliation from "./AddAffiliation/page";
-import AddExperience from "./AddExperience/page";
 import { Info } from "lucide-react";
 import { PersonalInfo } from "@/components/profile/sections/PersonalInfo";
 import { TechnicalSkills } from "@/components/profile/sections/TechnicalSkills";
 import { FieldsOfInterest } from "@/components/profile/sections/FieldsOfInterest";
 import { Experience } from "@/components/profile/sections/Experience";
 import { Affiliations } from "@/components/profile/sections/Affiliations";
+import AddAffiliationModal from "@/components/profile/modals/AddAffiliationModal";
+import AddExperienceModal from "@/components/profile/modals/AddExperienceModal";
+import AffiliationModal from "@/components/profile/modals/AffiliationModal";
+import ExperienceModal from "@/components/profile/modals/ExperienceModal";
+import InterestsModal from "@/components/profile/modals/InterestsModal";
+import PersonalInfoModal from "@/components/profile/modals/PersonalInfoModal";
+import TechnicalSkillsModal from "@/components/profile/modals/TechnicalSkillsModal";
 
 export default function AlumniProfilePage() {
   const profileData = {
@@ -211,59 +211,50 @@ export default function AlumniProfilePage() {
 
       {/* Modal Forms */}
       {isShowPersonalForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="p-10 bg-white rounded-lg shadow-lg relative">
-            <EditPersonal profileData={profileData} hidePersonalForm={() => setIsShowPersonalForm(false)} />
-          </div>
-        </div>
+        <PersonalInfoModal
+          profileData={profileData}
+          onClose={() => setIsShowPersonalForm(false)}
+        />
       )}
 
       {isShowTechnicalForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="p-10 bg-white rounded-lg shadow-lg relative">
-            <EditTechnical technicalSkills={technicalSkills} hideTechnicalForm={() => setIsShowTechnicalForm(false)} />
-          </div>
-        </div>
+        <TechnicalSkillsModal
+          skills={technicalSkills}
+          onClose={() => setIsShowTechnicalForm(false)}
+        />
       )}
 
       {isShowInterestForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="p-10 bg-white rounded-lg shadow-lg relative">
-            <EditInterest fieldOfInterests={fieldOfInterests} hideInterestForm={() => setIsShowInterestForm(false)} />
-          </div>
-        </div>
+        <InterestsModal
+          interests={fieldOfInterests}
+          onClose={() => setIsShowInterestForm(false)}
+        />
       )}
 
       {isShowExperienceForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="p-10 bg-white rounded-lg shadow-lg relative">
-            <EditExperience experiences={experiences} hideExperienceForm={() => setIsShowExperienceForm(false)} />
-          </div>
-        </div>
-      )}
-
-      {isShowAffiliationForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="p-10 bg-white rounded-lg shadow-lg relative">
-            <EditAffiliation affiliations={affiliations} hideAffiliationForm={() => setIsShowAffiliationForm(false)} />
-          </div>
-        </div>
+        <ExperienceModal
+          experiences={experiences}
+          onClose={() => setIsShowExperienceForm(false)}
+        />
       )}
 
       {isShowAddExperienceForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="p-10 bg-white rounded-lg shadow-lg relative">
-            <AddExperience hideAddExperienceForm={() => setIsShowAddExperienceForm(false)} />
-          </div>
-        </div>
+        <AddExperienceModal
+          onClose={() => setIsShowAddExperienceForm(false)}
+        />
+      )}
+
+      {isShowAffiliationForm && (
+        <AffiliationModal
+          affiliations={affiliations}
+          onClose={() => setIsShowAffiliationForm(false)}
+        />
       )}
 
       {isShowAddAffiliationForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="p-10 bg-white rounded-lg shadow-lg relative">
-            <AddAffiliation hideAddAffiliationForm={() => setIsShowAddAffiliationForm(false)} />
-          </div>
-        </div>
+        <AddAffiliationModal
+          onClose={() => setIsShowAddAffiliationForm(false)}
+        />
       )}
     </div>
   );
