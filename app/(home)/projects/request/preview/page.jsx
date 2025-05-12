@@ -101,13 +101,16 @@ const RequestFundraiserPreview = () => {
         donation_link: formData.externalLink || "test_link",
         type: formData.projectType.toLowerCase(),
       };
-
+  
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/v1/projects`, data);
       const projectData = response.data;
-
+  
       if (projectData.status === "CREATED") {
         console.log("Created project:", projectData);
-        return true;
+        return {
+          status: "CREATED",
+          id: projectData.id // Return the content ID
+        };
       } else {
         console.error("Unexpected response:", projectData);
         return false;
@@ -118,7 +121,7 @@ const RequestFundraiserPreview = () => {
     }
   };
 
-  // Handle form submission
+  // Modified handleSubmit function with photo upload
   const handleSubmit = async () => {
     // Check if user is logged in
     if (!user?.state?.user) {
@@ -128,27 +131,58 @@ const RequestFundraiserPreview = () => {
       });
       return;
     }
-
+  
     setIsSubmitting(true);
-
+  
     try {
-      const success = await requestProject();
-
-      if (success) {
-        // Show success toast
-        setShowToast({
-          type: "success",
-          message: "Project request submitted successfully!"
-        });
-
-        // Clear form data and redirect after 2 seconds
-        setTimeout(() => {
-          clearFormData();
-          router.push("/projects");
-        }, 2000);
-      } else {
+      const projectResponse = await requestProject();
+      
+      if (!projectResponse || projectResponse.status !== "CREATED") {
         throw new Error("Failed to create project");
       }
+      
+      const contentId = projectResponse.id;
+      console.log("Project created with ID:", contentId);
+      
+      if (photo) {
+        try {
+          const formData = new FormData();
+          formData.append("File", photo);
+          formData.append("content_id", contentId);
+          formData.append("type", 5); // TODO: use appropriate ENUM; check photo_type.js once merged
+          
+          console.log("Uploading photo for project ID:", contentId);
+          
+          const photoResponse = await axios.post(
+            `${process.env.NEXT_PUBLIC_API_URL}/v1/photos`,
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data"
+              }
+            }
+          );
+          
+          if (photoResponse.data.status === "CREATED") {
+            console.log("Photo uploaded successfully:", photoResponse.data);
+          } else {
+            console.error("Unexpected photo upload response:", photoResponse.data);
+          }
+        } catch (photoError) {
+          console.error("Failed to upload project photo:", photoError);
+        }
+      }
+      
+      // Show success toast
+      setShowToast({
+        type: "success",
+        message: "Project request submitted successfully!"
+      });
+  
+      setTimeout(() => {
+        clearFormData();
+        router.push("/projects");
+      }, 2000);
     } catch (error) {
       console.error("Error submitting project:", error);
       setShowToast({
