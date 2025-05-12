@@ -60,7 +60,7 @@ export default function PersonalInfoModal({ profileData, onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div className="max-h-[90vh] overflow-y-auto bg-white rounded-lg shadow-lg w-full max-w-4xl">
-        <form className="space-y-4 p-8" onSubmit={handleSubmit} noValidate>
+        <form className="space-y-2 p-8" onSubmit={handleSubmit} noValidate>
           {/* Profile Picture */}
           <div className="flex justify-center w-full mb-6 relative">
             <div className="relative">
