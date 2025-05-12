@@ -33,8 +33,7 @@ export default function UserProjects() {
   const [selectedProject, setSelectedProject] = useState(null);
   const [toast, setToast] = useState(null);
   const [expandedProject, setExpandedProject] = useState(null);
-
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [projects, setProjects] = useState([]);
   const [projectPhotos, setProjectPhotos] = useState({});
 
@@ -355,16 +354,6 @@ export default function UserProjects() {
 
                             {/* Action buttons */}
                             <div className="flex flex-wrap gap-3">
-                              {project.status === REQUEST_STATUS.APPROVED && (
-                                <button
-                                  onClick={() => handleOpenEditModal(project)}
-                                  className="flex items-center gap-1.5 bg-amber-100 text-amber-700 py-2 px-4 rounded-lg text-sm hover:bg-amber-200 transition-colors"
-                                >
-                                  <Edit3 className="w-4 h-4" />
-                                  Request Edit
-                                </button>
-                              )}
-
                               <button
                                 onClick={() => toggleExpandProject(project.id)}
                                 className="ml-auto flex items-center gap-1 text-astradarkgray hover:text-astraprimary transition-colors"
