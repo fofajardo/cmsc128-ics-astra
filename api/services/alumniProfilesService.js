@@ -201,10 +201,28 @@ const insertAlumniProfile = async (supabase, alumniProfileData) => {
 };
 
 const updateAlumniProfileData = async (supabase, userId, updateData) => {
-  return await supabase
+  const { data: latestProfile, error: selectError } = await supabase
+    .from("alumni_profiles")
+    .select("id")
+    .eq("alum_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .single();
+
+  if (selectError || !latestProfile) {
+    throw new Error("Failed to fetch the latest alumni profile.");
+  }
+
+  const { error: updateError } = await supabase
     .from("alumni_profiles")
     .update(updateData)
-    .eq("alum_id", userId);
+    .eq("id", latestProfile.id);
+
+  if (updateError) {
+    throw new Error("Failed to update the alumni profile.");
+  }
+
+  return true;
 };
 
 const deleteAlumniProfileData = async (supabase, userId) => {

@@ -103,10 +103,14 @@ const getAlumniProfilesById = async function(aRequest, aResponse) {
 };
 
 const getAlumniProfileById = async (req, res) => {
+  console.log("HELLO!");
+
   try {
     const { userId } = req.params;
 
     const { data, error } = await alumniProfilesService.fetchAlumniProfileById(req.supabase, userId);
+
+    console.log("What happened?", data, error);
 
     if (error) {
       return res.status(httpStatus.NOT_FOUND).json({
@@ -162,17 +166,6 @@ const createAlumniProfile = async (req, res) => {
       });
     }
 
-    // Check if alumni profile already exists
-    const { data: alumniData } = await alumniProfilesService.fetchAlumniProfileById(req.supabase, userId);
-
-    if (alumniData) {
-      return res.status(httpStatus.CONFLICT).json({
-        status: "FAILED",
-        message: "Alumni profile already exists for this user"
-      });
-    }
-
-    // Validate required fields (excluding created_at)
     const requiredFields = [
       "alum_id",
       "birthdate",
@@ -180,16 +173,17 @@ const createAlumniProfile = async (req, res) => {
       "address",
       "gender",
       "student_num",
-      "skills",
       "honorifics",
       "citizenship",
       "sex",
       // "primary_work_experience_id",
       "civil_status",
       "first_name",
-      "middle_name",
+      // "middle_name",
       "last_name",
-      "is_profile_public"
+      "is_profile_public",
+      // "skills",
+      // "suffix"
     ];
 
     const missingFields = requiredFields.filter(field => req.body[field] === undefined || req.body[field] === null);
@@ -201,7 +195,7 @@ const createAlumniProfile = async (req, res) => {
       });
     }
 
-    // Destructure and append created_at
+    // Destructure and append created_at and approved
     const {
       alum_id,
       birthdate,
@@ -209,7 +203,6 @@ const createAlumniProfile = async (req, res) => {
       address,
       gender,
       student_num,
-      skills,
       honorifics,
       citizenship,
       sex,
@@ -218,20 +211,21 @@ const createAlumniProfile = async (req, res) => {
       first_name,
       middle_name,
       last_name,
+      is_profile_public,
+      skills,
       suffix,
-      is_profile_public
+      approved
     } = req.body;
 
     const created_at = new Date().toISOString();
 
-    const { data, error } = await alumniProfilesService.insertAlumniProfile(req.supabase, {
+    const { result, error } = await alumniProfilesService.insertAlumniProfile(req.supabase, {
       alum_id,
       birthdate,
       location,
       address,
       gender,
       student_num,
-      skills,
       honorifics,
       citizenship,
       sex,
@@ -240,9 +234,10 @@ const createAlumniProfile = async (req, res) => {
       first_name,
       middle_name,
       last_name,
-      suffix,
       is_profile_public,
-      created_at // Set internally
+      skills,
+      suffix,
+      approved
     });
 
     if (error) {
@@ -254,7 +249,7 @@ const createAlumniProfile = async (req, res) => {
 
     return res.status(httpStatus.CREATED).json({
       status: "CREATED",
-      message: "Alumni profile successfully created",
+      message: "Alumni profile successfully created and approved",
       id: userId
     });
 
@@ -307,7 +302,7 @@ const updateAlumniProfile = async (req, res) => {
     // Disallow edits to birthdate and student_num
     if (
       ("birthdate" in req.body && req.body.birthdate !== alumniData.birthdate) ||
-            ("student_num" in req.body && req.body.student_num !== alumniData.student_num)
+      ("student_num" in req.body && req.body.student_num !== alumniData.student_num)
     ) {
       return res.status(httpStatus.FORBIDDEN).json({
         status: "FORBIDDEN",
@@ -315,37 +310,40 @@ const updateAlumniProfile = async (req, res) => {
       });
     }
 
-    // Update only allowed fields
-    const {
-      location,
-      address,
-      gender,
-      skills,
-      honorifics,
-      citizenship,
-      civil_status,
-      is_profile_public
-    } = req.body;
+    // Define fields that can be updated
+    const allowedFields = [
+      "location",
+      "address",
+      "gender",
+      "skills",
+      "honorifics",
+      "citizenship",
+      "civil_status",
+      "is_profile_public",
+      "first_name",
+      "middle_name",
+      "last_name",
+      "suffix",
+      "sex",
+      "primary_work_experience_id",
+      "approved"
+    ];
 
-    const updateData = {
-      location,
-      address,
-      gender,
-      skills,
-      honorifics,
-      citizenship,
-      civil_status,
-      is_profile_public
-    };
-
-    // Remove undefined fields to avoid overwriting with nulls
-    Object.keys(updateData).forEach(key => {
-      if (updateData[key] === undefined) {
-        delete updateData[key];
+    const updateData = {};
+    allowedFields.forEach(field => {
+      if (Object.prototype.hasOwnProperty.call(req.body, field)) {
+        updateData[field] = req.body[field];
       }
     });
 
-    const { data, error } = await alumniProfilesService.updateAlumniProfileData(req.supabase, userId, updateData);
+    if (Object.keys(updateData).length === 0) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "No valid fields provided for update"
+      });
+    }
+
+    const { result, error } = await alumniProfilesService.updateAlumniProfileData(req.supabase, userId, updateData);
 
     if (error) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({

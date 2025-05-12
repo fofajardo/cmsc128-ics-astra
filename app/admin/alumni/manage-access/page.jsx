@@ -12,12 +12,11 @@ import { capitalizeName } from "@/utils/format";
 import { CenteredSkeleton, NameEmailSkeleton, Skeleton } from "@/components/ui/skeleton";
 
 export default function AlumniAccess() {
+  const { currTab, info, refreshTrigger, setRefreshTrigger } = useTab();
   const [showFilter, setShowFilter] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
-  const { currTab, info } = useTab();
   const [toast, setToast] = useState(null);
   const toggleFilter = () => { setShowFilter((prev) => !prev); };
-  // console.log("Current tab from layout:", info);
   const [loading, setLoading] = useState(true);
   const [alumList, setAlumList] = useState([]);
   const [appliedFilters, updateFilters] = useState({
@@ -37,7 +36,6 @@ export default function AlumniAccess() {
     total: 0                // How many alum in db
   });
   const [searchQuery, setSearchQuery] = useState("");
-
   const stableFilters = useMemo(() => appliedFilters, [JSON.stringify(appliedFilters)]);
 
   useEffect(() => {
@@ -187,7 +185,7 @@ export default function AlumniAccess() {
     };
 
     fetchAlumniProfiles();
-  }, [pagination.currPage, pagination.numToShow, currTab, searchQuery, stableFilters]);
+  }, [pagination.currPage, pagination.numToShow, currTab, searchQuery, stableFilters, refreshTrigger]);
 
   return (
     <div>
@@ -223,7 +221,7 @@ export default function AlumniAccess() {
             toggleFilter={toggleFilter}
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery} />
-          <Table cols={cols} data={loading ? skeletonRows : createRows(alumList, selectedIds, setSelectedIds, currTab)} />
+          <Table cols={cols} data={loading ? skeletonRows : createRows(alumList, selectedIds, setSelectedIds, currTab, setRefreshTrigger, setToast)} />
           <PageTool pagination={pagination} setPagination={setPagination} />
         </div>
         <div className="flex flex-row justify-between md:pl-4 lg:pl-8">
@@ -405,7 +403,7 @@ const cols = [
   { label: "Quick Actions", justify: "center", visible: "all" },
 ];
 
-function createRows(alumList, selectedIds, setSelectedIds, currTab) {
+function createRows(alumList, selectedIds, setSelectedIds, currTab, setRefreshTrigger, setToast) {
   return alumList.map((alum) => ({
     "Checkbox:label-hidden": renderCheckboxes(alum.id, selectedIds, setSelectedIds),
     "Image:label-hidden": renderAvatar(alum.image, alum.alumname),
@@ -413,7 +411,7 @@ function createRows(alumList, selectedIds, setSelectedIds, currTab) {
     "Graduation Year": renderText(alum.graduationYear),
     "Student ID": renderText(alum.student_num),
     "Course": renderText(alum.degreeProgram),
-    "Quick Actions": renderActions(alum.id, alum.alumname, currTab),
+    "Quick Actions": renderActions(alum.id, alum.alumname, currTab, setRefreshTrigger, setToast),
   }));
 }
 
@@ -472,8 +470,98 @@ function renderText(text) {
   return <div className="text-center text-astradarkgray font-s">{text}</div>;
 }
 
-function renderActions(id, name, currTab) {
-  // Based muna sa currTab pero I think mas maganda kung sa mismong account/user kukunin yung active status*/
+function renderActions(id, name, currTab, setRefreshTrigger, setToast) {
+  // Based muna sa currTab pero I think mas maganda kung sa mismong account/user kukunin yung active status
+  const handleApprove = async () => {
+    try {
+      console.log(`Approving ID: ${id}.`);
+
+      const getResponse = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/${id}`
+      );
+
+      const latestProfile = getResponse.data?.alumniProfile;
+
+      if (!latestProfile) {
+        setToast({ type: "error", message: `No existing profile found for ${name}.` });
+        return;
+      }
+
+      const {
+        id: _,
+        created_at: __,
+        approved: ___,
+        ...rest
+      } = latestProfile;
+
+      const newProfile = {
+        ...rest,
+        approved: true,
+        created_at: new Date().toISOString()
+      };
+
+      const postResponse = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/${id}`,
+        newProfile
+      );
+
+      if (postResponse.data.status === "CREATED") {
+        setToast({ type: "success", message: `${name} has been approved!` });
+        setRefreshTrigger(prev => prev + 1);
+      } else {
+        setToast({ type: "error", message: `Failed to approve ${name}. ${postResponse.data.message}` });
+      }
+    } catch (error) {
+      console.error(`Failed to approve ${name}:`, error);
+      setToast({ type: "error", message: `An error occurred while approving ${name}.` });
+    }
+  };
+
+  const handleRemoveAccess = async () => {
+    try {
+      const getResponse = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/${id}`
+      );
+
+      const latestProfile = getResponse.data?.alumniProfile;
+
+      if (!latestProfile) {
+        setToast({ type: "error", message: `No existing profile found for ${name}.` });
+        return;
+      }
+
+      const {
+        id: _,
+        created_at: __,
+        approved: ___,
+        ...rest
+      } = latestProfile;
+
+      const newProfile = {
+        ...rest,
+        approved: false,
+        created_at: new Date().toISOString()
+      };
+
+      console.log(newProfile);
+
+      const postResponse = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/${id}`,
+        newProfile
+      );
+
+      if (postResponse.data.status === "CREATED") {
+        setToast({ type: "success", message: `${name}'s access has been removed!` });
+        setRefreshTrigger(prev => prev + 1);
+      } else {
+        setToast({ type: "error", message: `Failed to remove ${name}'s access. ${postResponse.data.message}` });
+      }
+    } catch (error) {
+      console.error(`Failed to remove ${name}'s access:`, error);
+      setToast({ type: "error", message: `An error occurred while removing ${name}'s access.` });
+    }
+  };
+
   return (
     <div className="flex justify-center gap-3 md:pr-4 lg:pr-2">
       <div className="hidden md:block">
@@ -498,6 +586,7 @@ function renderActions(id, name, currTab) {
               color="green"
               notifyMessage={`${name} has been approved!`}
               notifyType="success"
+              onClick={handleApprove}
             />
           </div>
           <div className="block md:hidden">
@@ -506,6 +595,7 @@ function renderActions(id, name, currTab) {
               color="green"
               notifyMessage={`${name} has been approved!`}
               notifyType="success"
+              onClick={handleApprove}
             />
           </div>
           <div className="hidden md:block">
@@ -535,6 +625,7 @@ function renderActions(id, name, currTab) {
               color="red"
               notifyMessage={`${name} has been removed!`}
               notifyType="fail"
+              onClick={handleRemoveAccess}
             />
           </div>
           <div className="block md:hidden">
@@ -543,6 +634,7 @@ function renderActions(id, name, currTab) {
               color="red"
               notifyMessage={`${name} has been removed!`}
               notifyType="fail"
+              onClick={handleRemoveAccess}
             />
           </div>
         </>

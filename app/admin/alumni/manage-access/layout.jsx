@@ -26,6 +26,7 @@ export default function AdminAlumniLayout({ children }) {
     approved: 0,
     inactive: 0,
   });
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
     const fetchAlumniStats = async () => {
@@ -47,7 +48,7 @@ export default function AdminAlumniLayout({ children }) {
     };
 
     fetchAlumniStats();
-  }, []);
+  }, [refreshTrigger]);
 
   const [currTab, setCurrTab] = useState("Pending");
 
@@ -95,7 +96,6 @@ export default function AdminAlumniLayout({ children }) {
           </div>
           <div className="pt-6 pb-4 overflow-y-scroll w-full scrollbar-hide">
             <div className="flex flex-row gap-3 min-w-max px-4 justify-center">
-              <AdminStatCard delay={0.0} title='Registered' value={stats.approved + stats.pending} icon={<GraduationCap className='size-13 text-astrawhite/>' strokeWidth={1.5} />} route={"/admin/alumni/search"} />
               <AdminStatCard delay={0.1} title='Pending' value={stats.pending} icon={<UserRoundPlus className='size-13 text-astrawhite/>' strokeWidth={1.5} />} route={false} onClick={() => dynamicTabClick("Pending")} />
               <AdminStatCard delay={0.2} title='Approved' value={stats.approved} icon={<UserRoundCheck className='size-13 text-astrawhite/>' strokeWidth={1.5} />} route={false} onClick={() => dynamicTabClick("Approved")} />
               <AdminStatCard delay={0.3} title='Inactive' value={stats.inactive} icon={<UserRoundX className='size-13 text-astrawhite/>' strokeWidth={1.5} />} route={false} onClick={() => dynamicTabClick("Inactive")} />
@@ -104,10 +104,12 @@ export default function AdminAlumniLayout({ children }) {
         </div>
       </div>
       {/* pass the value of currTab and info to the children */}
-      <TabContext.Provider value={{ currTab, setCurrTab, info, setInfo }}>
+      <TabContext.Provider value={{ currTab, setCurrTab, info, setInfo, refreshTrigger, setRefreshTrigger }}>
         <AdminTabs tabs={tabs} currTab={currTab} handleTabChange={dynamicTabClick} />
         {children}
       </TabContext.Provider>
     </>
   );
+
+  // <AdminStatCard delay={0.0} title='Registered' value={stats.approved + stats.pending} icon={<GraduationCap className='size-13 text-astrawhite/>' strokeWidth={1.5} />} route={"/admin/alumni/search"} />
 }
