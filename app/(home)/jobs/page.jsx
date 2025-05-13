@@ -97,7 +97,9 @@ export default function JobsPage() {
         </div>
       }
 
-      {jobs.length === 0 || jobCards >= jobs.length ? (
+      {jobs.length === 0 ? (
+        <></>
+      ) : jobCards >= jobs.length ? (
         <div className="text-center my-10 text-gray-400 text-lg font-medium">
           All jobs loaded
         </div>
@@ -129,7 +131,9 @@ export default function JobsPage() {
           </div>
         </>
       }
-      {myJobs.length === 0 || myJobCards >= myJobs.length ? (
+      {myJobs.length === 0 ? (
+        <></>
+      ) : myJobCards >= myJobs.length ? (
         <div className="text-center my-10 text-gray-400 text-lg font-medium">
           All my jobs loaded
         </div>

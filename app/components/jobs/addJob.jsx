@@ -15,7 +15,7 @@ export default function JobForm({isEdit, close, refreshJobs}){
   const locationOptions =[{value: "0", label: "Onsite"},{value: "1", label: "Remote"}, {value: "2", label: "Hybrid"}];
   const statusOptions =[{value: "0", label: "Open"},{value: "1", label: "Closed"}];
   const [errors, setErrors] = useState({});
-
+  const [showSignInModal, setShowSignInModal] = useState(false);
   const [formData, setFormData] = useState({company_name: "", job_title: "", location: "", salary: "", apply_link: "", details: "", expires_at: "", job_requirements: "", hiring_manager: ""});
   const [employmentType, setEmploymentType] = useState(null);
   const [locationType, setLocationType] = useState(null);
@@ -40,6 +40,12 @@ export default function JobForm({isEdit, close, refreshJobs}){
   };
 
   const handleAdd = async () => {
+    if (!user?.state?.user) {
+      // Trigger modal or toast to prompt sign-in
+      setShowSignInModal(true); // You must define this state and modal somewhere in your component
+      return;
+    }
+
     const payload = {
       company_name: formData.company_name,
       job_title: formData.job_title,
@@ -52,20 +58,17 @@ export default function JobForm({isEdit, close, refreshJobs}){
       apply_link: formData.apply_link,
       details: formData.details,
       requirements: formData.job_requirements,
-      user_id: user?.state?.user.id,
+      user_id: user.state.user.id,
     };
-    console.log(formData.job_requirements);
-    console.log(payload.requirments);
+
     try {
       console.log("Sending payload:", payload);
-
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs`, payload);
 
       if (response.data.status === "CREATED") {
         await refreshJobs?.();
         close();
       }
-
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error("Axios error:", error.response?.data || error.message);
@@ -74,7 +77,6 @@ export default function JobForm({isEdit, close, refreshJobs}){
       }
     }
   };
-
 
   const selectStyle = {
     control: (state) =>
@@ -238,10 +240,26 @@ export default function JobForm({isEdit, close, refreshJobs}){
 
         <div className="flex justify-between my-4 px-8">
           <button onClick={handleClear} className="!cursor-pointer text-astraprimary border-1 border-astraprimary font-semibold w-35 py-2 rounded-lg text-base">Clear Details</button>
-          <button onClick={()=>{setPrompt(true);}} className="focus:border-astraprimary !cursor-pointer text-astrawhite border-1 border-astraprimary bg-astraprimary font-semibold w-35 py-2 rounded-lg text-base">Publish Post</button>
+        <button
+          onClick={() => {
+            if (!user?.state?.user) {
+              setShowSignInModal(true);
+            } else {
+              setPrompt(true);
+            }
+          }}
+          className="cursor-pointer text-astrawhite border border-astraprimary bg-astraprimary font-semibold w-35 py-2 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-astraprimary">Publish Post</button>
         </div>
-
       </div>
       {showPrompt ? <ConfirmationPrompt prompt={"Are you sure you want to post this job posting?"} close={()=>setPrompt(false)} handleConfirm={handleAdd}/> : <></>}
+      {showSignInModal && (
+        <div className="fixed inset-0 bg-astrablack/60 flex items-center justify-center z-100">
+          <div className="bg-astrawhite max-w-[600px] w-19/20 min-h-[100px] h-auto rounded-2xl p-7 pb-5">
+            <h2 className="text-xl font-semibold mb-4">Sign In Required</h2>
+            <p className="mb-6">Please sign in to add a job.</p>
+            <button onClick={() => {setShowSignInModal(false);}} className="px-4 py-2 bg-astraprimary text-white rounded hover:bg-opacity-90">OK</button>
+          </div>
+        </div>
+      )}
     </div>
   );}
