@@ -197,7 +197,7 @@ function Sidebar({
         </ul>
       </div>
       <div
-        className={`fixed inset-0 z-30 bg-astrablack/50 transition-opacity duration-200 ease-in-out md:hidden ${
+        className={`fixed inset-0 z-30 bg-astrablack/50 transition-opacity duration-200 ease-in-out ${
           isSidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
         onClick={toggleSidebar}
