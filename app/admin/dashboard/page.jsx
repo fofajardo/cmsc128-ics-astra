@@ -10,6 +10,17 @@ import RecentActivity from "./components/RecentActivity";
 import TransitionSlide from "@/components/transitions/TransitionSlide";
 import axios from "axios";
 import { capitalizeTitle } from "@/utils/format";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuIndicator,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  NavigationMenuViewport,
+} from "@/components/ui/navigation-menu";
+import { NavigationMenuDemo } from "./components/navigationmenu";
 
 export default function Dashboard() {
   const [activeAlumniStats, setActiveAlumniStats] = useState(null);
@@ -17,6 +28,8 @@ export default function Dashboard() {
   const [activeEventsStats, setActiveEventsStats] = useState(null);
   const [fundsRaisedStats, setFundsRaisedStats] = useState(null);
   const [projectDonationSummary, setProjectDonationSummary] = useState([]);
+  const [category, setCategory] = useState("demographics");
+  const [tab, setTab] = useState("age");
 
   useEffect(() => {
     const fetchStatistics = async () => {
@@ -31,7 +44,7 @@ export default function Dashboard() {
         setActiveEventsStats(eventsRes.data.stats);
         setFundsRaisedStats(fundsRes.data.stats);
 
-        if (donationSummaryRes.data.status == "OK"){
+        if (donationSummaryRes.data.status == "OK") {
           const updatedProjectDonationSummary = await Promise.all(
             donationSummaryRes.data.list.map(async (project) => {
               const projectData = {
@@ -45,8 +58,7 @@ export default function Dashboard() {
           setProjectDonationSummary(updatedProjectDonationSummary);
         } else {
           console.log("Unexpected response:", donationSummaryRes.data);
-        };
-
+        }
       } catch (error) {
         console.log("Failed to fetch statistics: ", error);
       }
@@ -59,6 +71,27 @@ export default function Dashboard() {
   const activeJobsCount = activeJobsStats?.active_jobs_count ?? "Loading...";
   const activeEventsCount = activeEventsStats?.active_events_count ?? "Loading...";
   const fundsRaisedAmount = fundsRaisedStats?.total_funds_raised ?? "Loading...";
+
+  function renderTabContent() {
+    if (tab === "donations") {
+      return (
+        <FundsDonut
+          fundsRaisedStats={fundsRaisedStats}
+          projectStatistics={projectDonationSummary}
+        />
+      );
+    }
+    return (
+      <div className="p-8 text-center text-muted-foreground">
+        <span className="text-lg font-semibold">
+          {tab.charAt(0).toUpperCase() + tab.slice(1).replace(/_/g, " ")}
+        </span>
+        <div className="mt-2 text-sm">
+          Placeholder content for {tab.charAt(0).toUpperCase() + tab.slice(1).replace(/_/g, " ")}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -88,12 +121,11 @@ export default function Dashboard() {
       <div className="flex gap-4 flex-col bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24">
         <div className="flex flex-col md:flex-row gap-4">
           <AlumAct_Events />
-          <FundsDonut fundsRaisedStats={fundsRaisedStats} projectStatistics={projectDonationSummary} />
+          <div className="flex flex-col gap-2 flex-1">
+            <NavigationMenuDemo tab={tab} setTab={setTab} />
+            {renderTabContent()}
+          </div>
         </div>
-        {/* <div className="flex flex-col lg:flex-row gap-4">
-          <ActivityBreakdown />
-          <Activity />
-        </div> */}
       </div>
     </>
   );
