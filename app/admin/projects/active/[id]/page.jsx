@@ -222,13 +222,17 @@ export default function ActiveProjectDetail({ params }) {
         status: STATUS.DECLINE,
         response: "Project was deleted by admin"
       });
+
       if (response.data.status === "UPDATED") {
-        console.log("Successfully updated project request with id:", id);
+        console.log("Successfully deleted project request with id:", id);
+        return true;
       } else {
         console.error("Unexpected response:", response);
+        return false;
       }
     } catch (error) {
-      console.error("Failed to approve project request:", error);
+      console.error("Failed to delete project request:", error);
+      return false;
     }
   };
 
@@ -239,18 +243,25 @@ export default function ActiveProjectDetail({ params }) {
 
   //demo purposes only, does nothing
   //connect to backend to delete
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     setShowDeleteModal(false);
 
-    softDeleteProject();
+    const success = await softDeleteProject();
 
-    setToast({
-      type: "success",
-      message: `${projectData.title} has been deleted!`,
-    });
-    setTimeout(() => {
-      router.push("/admin/projects");
-    }, 2000);
+    if (success) {
+      setToast({
+        type: "success",
+        message: `${projectData.title} has been deleted!`,
+      });
+      setTimeout(() => {
+        router.push("/admin/projects");
+      }, 2000);
+    } else {
+      setToast({
+        type: "fail",
+        message: "Failed to delete project. Please try again.",
+      });
+    }
   };
 
   const handleSendMessage = () => {
