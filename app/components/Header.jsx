@@ -26,6 +26,7 @@ import {LoadingSpinner} from "@/components/LoadingSpinner.jsx";
 import {feRoutes} from "../../common/routes.js";
 import {useRouter} from "next/navigation";
 import {NavMenuItemId} from "../../common/scopes.js";
+import { ShieldUser } from "lucide-react";
 
 const menuItemsMain = {
   [NavMenuItemId.HOME]: {
@@ -143,7 +144,7 @@ function Sidebar({
       >
         <ul className="p-6 space-y-4 text-gray-600 font-medium">
           {Object.entries(items).map(([key, navItem]) => {
-            if (navItem.hideIfGuest && context.state.isGuest) {
+            if ((navItem.hideIfGuest && context.state.isGuest) || navItem.parent) {
               return null;
             }
             return (
@@ -306,6 +307,14 @@ function HeaderAvatar({context}) {
           >
             <Settings size={16} className="mr-2"/>
             Settings
+          </Link>
+          <Link
+            href="/admin/dashboard"
+            className="flex items-center p-2 w-full text-astrablack hover:bg-astraprimary hover:text-white rounded-md text-sm"
+            onClick={handleMenuClose}
+          >
+            <ShieldUser size={16} className="mr-2"/>
+            Admin
           </Link>
           <Link href="/sign-out">
             <button
