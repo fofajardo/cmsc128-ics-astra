@@ -3,7 +3,7 @@
 import Select from "react-select";
 import { ListFilter } from "lucide-react";
 import { useState } from "react";
-import { jobTypeOptions, statusOptions, locationTypeOptions } from "../../(home)/jobs/dummy";
+import { jobTypeOptions, statusOptions, locationTypeOptions } from "@/components/jobs/mappings";
 
 export default function Filter() {
   const [formData, setFormData] = useState({job_type: "", status: "", location: "", location_type: "", min_salary: "", max_salary: "", recent: false});
