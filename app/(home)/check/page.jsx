@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import EditForm from "@/profile/[id]/EditPersonal/page";
+import PersonalInfoModal from "@/components/profile/modals/PersonalInfoModal";
 
 export default function InformationChanged() {
   const [showEditModal, setShowEditModal] = useState(false);
@@ -44,7 +44,7 @@ export default function InformationChanged() {
       {showEditModal && (
         <div className="fixed inset-0 bg-[var(--color-astratintedwhite)] bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full p-4">
-            <EditForm hidePersonalForm={() => setShowEditModal(false)} />
+            <PersonalInfoModal onClose={() => setShowEditModal(false)} />
           </div>
         </div>
       )}
