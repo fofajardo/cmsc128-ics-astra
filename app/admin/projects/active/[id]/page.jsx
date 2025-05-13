@@ -35,6 +35,9 @@ export default function ActiveProjectDetail({ params }) {
   const [showEditModal, setShowEditModal] = useState(false);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
+  const [imageLoading, setImageLoading] = useState(true);
+  const [imageError, setImageError] = useState(false);
+  const [imageSrc, setImageSrc] = useState("/projects/assets/Donation.png");
 
   const [projectData, setProjectData] = useState(null);
 
@@ -44,6 +47,24 @@ export default function ActiveProjectDetail({ params }) {
   const [projectPhoto, setProjectPhoto] = useState({});
 
   const STATUS = { DECLINE: 2 };
+
+  // Add constant for fallback image
+  const FALLBACK_IMAGE = "/projects/assets/Donation.png";
+
+  // Add timeout for image loading
+  useEffect(() => {
+    let timeoutId;
+    if (imageLoading) {
+      timeoutId = setTimeout(() => {
+        setImageLoading(false);
+        setImageError(true);
+        setImageSrc(FALLBACK_IMAGE);
+      }, 5000); // 5 second timeout
+    }
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [imageLoading]);
 
   // Initialize project data
   useEffect(() => {
@@ -79,7 +100,7 @@ export default function ActiveProjectDetail({ params }) {
             id: projectId,
             title: projectData.list.projectData.title,
             type: projectData.list.projectData.type,
-            image: null,
+            image: FALLBACK_IMAGE,
             urlLink: projectData.list.projectData.donation_link,
             description: projectData.list.projectData.details,
             longDescription: projectData.list.projectData.details,
@@ -109,10 +130,19 @@ export default function ActiveProjectDetail({ params }) {
             );
 
             if (photoResponse.data.status === "OK" && photoResponse.data.photo) {
-              setProjectPhoto(photoResponse.data.photo);
+              setImageLoading(true);
+              setImageError(false);
+              setImageSrc(photoResponse.data.photo);
+            } else {
+              setImageLoading(false);
+              setImageError(true);
+              setImageSrc(FALLBACK_IMAGE);
             }
           } catch (photoError) {
             console.log(`Failed to fetch photo for project_id ${projectId}:`, photoError);
+            setImageError(true);
+            setImageLoading(false);
+            setImageSrc(FALLBACK_IMAGE);
           }
         } else {
           console.error("Unexpected response:", projectData);
@@ -127,20 +157,14 @@ export default function ActiveProjectDetail({ params }) {
     fetchProjectRequest();
   }, [id]);
 
-  useEffect(() => {
-    if (projectData?.id) {
-      setProjectData(prevData => ({
-        ...prevData,
-        image: projectPhoto
-      }));
-    }
-  }, [projectPhoto]);
-
   // If project data is not loaded yet, show loading state
-  if (!projectData) {
+  if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-astradirtywhite">
-        Loading...
+      <div className="bg-astradirtywhite min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-astraprimary"></div>
+          <p className="text-astraprimary font-medium">Loading project details...</p>
+        </div>
       </div>
     );
   }
@@ -976,10 +1000,24 @@ export default function ActiveProjectDetail({ params }) {
 
       {/* Project image and title section */}
       <div className="relative h-64">
+        {imageLoading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-astralightgray/50 z-10">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-astraprimary"></div>
+          </div>
+        )}
         <img
-          src={projectData.image}
+          src={imageSrc}
           alt={projectData.title}
-          className="w-full h-full object-cover"
+          className={`w-full h-full object-cover transition-opacity duration-300 ${imageLoading ? 'opacity-0' : 'opacity-100'}`}
+          onLoad={() => {
+            setImageLoading(false);
+          }}
+          onError={(e) => {
+            console.error('Image failed to load:', e);
+            setImageError(true);
+            setImageSrc(FALLBACK_IMAGE);
+            setImageLoading(false);
+          }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
           <div className="p-6 text-astrawhite w-full">
