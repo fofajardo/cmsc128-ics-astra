@@ -49,6 +49,13 @@ export default function JobForm({isEdit, close, refreshJobs}){
     });
   };
 
+  const normalizeUrl = (url) => {
+    if (!url) return "";
+    return url.startsWith("http://") || url.startsWith("https://")
+      ? url
+      : `https://${url}`;
+  };
+
   const handleClear = () => {
     setFormData({company_name: "", job_title: "", location: "", salary: "", apply_link: "", details: "", expires_at: "", job_requirements: "", hiring_manager: ""});
     setEmploymentType(null);
@@ -83,7 +90,7 @@ export default function JobForm({isEdit, close, refreshJobs}){
       employment_type: 1,
       salary: Number(formData.salary.replace(/,/g, '')),
       expires_at: formData.expires_at,
-      apply_link: formData.apply_link,
+      apply_link: normalizeUrl(formData.apply_link),
       details: formData.details,
       requirements: formData.job_requirements,
       user_id: user.state.user.id,
@@ -240,6 +247,7 @@ export default function JobForm({isEdit, close, refreshJobs}){
               }
             </div>
             <input type="text" placeholder="Ex: https://hiring.com/apply" onChange={handleChange} value={formData.apply_link} name="apply_link" className='focus:border-astraprimary placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
+            {formData.apply_link && !formData.apply_link.match(/^https?:\/\/.+\..+/) && (<p className="text-sm text-astrared mt-1">Link must start with http:// or https://</p>)}
           </div>
 
           <div className=''>
