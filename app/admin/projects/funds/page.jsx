@@ -4,6 +4,8 @@ import { TableHeader, Table, PageTool } from "@/components/TableBuilder";
 import { Eye, BarChart2 } from "lucide-react";
 import ToastNotification from "@/components/ToastNotification";
 import {GoBackButton} from "@/components/Buttons";
+import axios from "axios";
+import { formatCurrency, capitalizeName } from "@/utils/format";
 
 export default function ProjectFunds() {
   const [showFilter, setShowFilter] = useState(false);
@@ -12,6 +14,50 @@ export default function ProjectFunds() {
   const [tempSelectedStatus, setTempSelectedStatus] = useState("All");
   const [selectedStatus, setSelectedStatus] = useState("All");
   const [totalFundsRaised, setTotalFundsRaised] = useState(0);
+
+  const [projectData, setProjectData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProjectRequest = async () => {
+      try {
+        setLoading(true);
+        const projectResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/projects`, {
+          params: {
+            page: -1
+          }
+        });
+        const projectData = projectResponse.data;
+        console.log(projectData);
+        if (projectData.status === "OK") {
+
+          setProjectData(
+            projectData.projects.map(
+              project => ({
+                id: project.project_id,
+                title: project.title,
+                type: capitalizeName(project.type),
+                goal: project.goal_amount.toString(),
+                raised: project.total_donations.toString(),
+                donors: project.number_of_donors.toString(),
+                project_status: project.project_status !== 2 ? "Active" : "Inactive",
+                request_status: "",
+              })
+            )
+          );
+
+        } else {
+          console.error("Unexpected response:", projectData);
+        }
+      } catch (error) {
+        console.error("Failed to fetch project:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjectRequest();
+  }, []);
 
   // Information for the table header
   const [info, setInfo] = useState({
@@ -49,10 +95,10 @@ export default function ProjectFunds() {
   };
 
   // Apply both search and status filters to the projects
-  const filteredProjects = projectFundsData
+  const filteredProjects = projectData
     .filter(project => {
       // Apply status filter
-      if (selectedStatus !== "All" && project.status !== selectedStatus) {
+      if (selectedStatus !== "All" && project.project_status !== selectedStatus) {
         return false;
       }
 
@@ -96,11 +142,6 @@ export default function ProjectFunds() {
 
     setTotalFundsRaised(total);
   }, [filteredProjects]);
-
-  // Format number as currency
-  const formatCurrency = (amount) => {
-    return "₱" + amount.toLocaleString();
-  };
 
   return (
     <div>
@@ -249,7 +290,7 @@ function createRows(projects, selectedIds, setSelectedIds, setToast) {
     "Type": renderType(project.type),
     "Goal": renderAmount(project.goal),
     "Raised": renderAmount(project.raised),
-    "Status": renderStatus(project.status),
+    "Status": renderStatus(project.project_status),
   }));
 }
 
@@ -273,7 +314,7 @@ function renderType(type) {
 }
 
 function renderAmount(amount) {
-  return <div className="text-center text-astradarkgray font-s">{amount}</div>;
+  return <div className="text-center text-astradarkgray font-s">{formatCurrency(amount)}</div>;
 }
 
 function renderStatus(status) {
@@ -287,97 +328,3 @@ function renderStatus(status) {
     </div>
   );
 }
-
-// Sample project funds data based on the projectsData from the original file
-const projectFundsData = [
-  {
-    id: 1,
-    title: "Computer Science Scholarship Fund",
-    type: "Scholarship",
-    goal: "₱500,000",
-    raised: "₱350,000",
-    donors: 45,
-    status: "Active",
-  },
-  {
-    id: 2,
-    title: "Programming Lab Equipment Drive",
-    type: "Fundraiser",
-    goal: "₱750,000",
-    raised: "₱420,000",
-    donors: 67,
-    status: "Active",
-  },
-  {
-    id: 3,
-    title: "ICS Building Renovation Fund",
-    type: "Fundraiser",
-    goal: "₱1,200,000",
-    raised: "₱185,000",
-    donors: 29,
-    status: "Active",
-  },
-  {
-    id: 6,
-    title: "Research Excellence Scholarship",
-    type: "Scholarship",
-    goal: "₱250,000",
-    raised: "₱175,000",
-    donors: 12,
-    status: "Inactive",
-  },
-  {
-    id: 7,
-    title: "CS Library Enhancement Fund",
-    type: "Fundraiser",
-    goal: "₱200,000",
-    raised: "₱76,000",
-    donors: 31,
-    status: "Active",
-  },
-  {
-    id: 8,
-    title: "Hackathon Sponsorship Fund",
-    type: "Fundraiser",
-    goal: "₱150,000",
-    raised: "₱84,000",
-    donors: 23,
-    status: "Active",
-  },
-  {
-    id: 10,
-    title: "CS Department 25th Anniversary Fund",
-    type: "Fundraiser",
-    goal: "₱500,000",
-    raised: "₱125,000",
-    donors: 87,
-    status: "Inactive",
-  },
-  {
-    id: 12,
-    title: "International Exchange Scholarship",
-    type: "Scholarship",
-    goal: "₱400,000",
-    raised: "₱320,000",
-    donors: 28,
-    status: "Active",
-  },
-  {
-    id: 13,
-    title: "IT Career Conference Fund",
-    type: "Fundraiser",
-    goal: "₱120,000",
-    raised: "₱35,000",
-    donors: 14,
-    status: "Active",
-  },
-  {
-    id: 14,
-    title: "Indigenous CS Education Fund",
-    type: "Scholarship",
-    goal: "₱275,000",
-    raised: "₱120,000",
-    donors: 19,
-    status: "Inactive",
-  },
-];

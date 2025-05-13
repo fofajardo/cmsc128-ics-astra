@@ -29,7 +29,7 @@ const getProjects = async (req, res) => {
     }
 
     const projectIds = projectData.map(project => project.project_id);
-    const contentFilter = { id: projectIds };
+    const contentFilter = { id: projectIds, page: -1 };
     const { data: contentData, error: contentError } = await contentsService.fetchContents(req.supabase, contentFilter);
 
     if (contentError) {
