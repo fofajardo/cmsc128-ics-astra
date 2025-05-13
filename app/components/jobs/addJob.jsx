@@ -251,7 +251,7 @@ export default function JobForm({isEdit, close, refreshJobs}){
 
           <div className=''>
             <div className='flex flex-row gap-2 items-center justify-between'>
-              <label className='text-black font-medium text-lg'>Contact Information</label>
+              <label className='text-black font-medium text-lg'>Contact Person</label>
               {errors.hiring_manager ?
                 <p className="text-sm text-astrared self-end">Required</p> : <></>
               }
