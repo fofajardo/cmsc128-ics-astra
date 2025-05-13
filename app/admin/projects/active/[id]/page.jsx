@@ -314,6 +314,37 @@ export default function ActiveProjectDetail({ params }) {
       }
     }
 
+    // Validate funding goal for numbers only
+    if (name === "goal") {
+      // Remove any non-digit characters
+      const numericValue = value.replace(/[^0-9]/g, "");
+
+      // Check if the input contains any non-numeric characters
+      if (value !== numericValue) {
+        setErrors((prev) => ({
+          ...prev,
+          [name]: "Please enter numbers only",
+        }));
+        return;
+      }
+
+      // Check if the number is too large
+      if (numericValue && parseInt(numericValue) > 1000000000) {
+        setErrors((prev) => ({
+          ...prev,
+          [name]: "Amount cannot exceed 1 billion Pesos",
+        }));
+        return;
+      }
+
+      // Update the form data with the cleaned numeric value
+      setEditFormData({
+        ...editFormData,
+        [name]: numericValue,
+      });
+      return;
+    }
+
     if (name.includes(".")) {
       const [parent, child] = name.split(".");
       setEditFormData({
@@ -361,9 +392,15 @@ export default function ActiveProjectDetail({ params }) {
       newErrors["description"] = "Please enter a description.";
     }
 
-    if (isNaN(editFormData.goal) || editFormData.goal <= 0) {
+    // Validate goal
+    if (!editFormData.goal || editFormData.goal === "") {
+      newErrors["goal"] = "Please enter a funding goal.";
+    } else if (isNaN(editFormData.goal) || parseInt(editFormData.goal) <= 0) {
       newErrors["goal"] = "Funding goal must be a positive number.";
+    } else if (parseInt(editFormData.goal) > 1000000000) {
+      newErrors["goal"] = "Amount cannot exceed 1 billion Pesos";
     }
+
     if (!Object.values(PROJECT_TYPE).includes(editFormData.type)) {
       newErrors["type"] = "Please select a valid project type.";
     }
@@ -381,7 +418,7 @@ export default function ActiveProjectDetail({ params }) {
       details: editFormData.description.trim(),
       type: editFormData.type,
       donation_link: editFormData.urlLink,
-      goal_amount: Number(editFormData.goal),
+      goal_amount: parseInt(editFormData.goal),
       due_date: editFormData.endDate,
     };
 
