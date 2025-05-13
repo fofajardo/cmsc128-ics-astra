@@ -22,6 +22,7 @@ export default function InactiveProjectDetail({ params }) {
   const [message, setMessage] = useState("");
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const MAX_MESSAGE_LENGTH = 500;
 
   const [projectData, setProjectData] = useState(null);
 
@@ -197,6 +198,13 @@ export default function InactiveProjectDetail({ params }) {
         type: "fail",
         message: "Failed to open Gmail. Please try again.",
       });
+    }
+  };
+
+  const handleMessageChange = (e) => {
+    const newMessage = e.target.value;
+    if (newMessage.length <= MAX_MESSAGE_LENGTH) {
+      setMessage(newMessage);
     }
   };
 
@@ -649,14 +657,15 @@ export default function InactiveProjectDetail({ params }) {
                     className="w-full border border-astragray/30 rounded-lg p-4 min-h-32 focus:ring-2 focus:ring-astraprimary/30 focus:border-astraprimary transition-all bg-white shadow-inner"
                     placeholder="Introduce yourself and explain why you're reaching out..."
                     value={message}
-                    onChange={(e) => setMessage(e.target.value)}
+                    onChange={handleMessageChange}
+                    maxLength={MAX_MESSAGE_LENGTH}
                   ></textarea>
                 </div>
 
                 <div className="flex justify-between mt-2 text-xs text-astragray">
                   <p>Be professional and clear about your intent</p>
-                  <p className={`${message.length > 500 ? "text-red-500 font-medium" : ""}`}>
-                    {message.length}/1000 characters
+                  <p className={`${message.length >= MAX_MESSAGE_LENGTH ? "text-red-500 font-medium" : ""}`}>
+                    {message.length}/{MAX_MESSAGE_LENGTH} characters
                   </p>
                 </div>
               </div>
