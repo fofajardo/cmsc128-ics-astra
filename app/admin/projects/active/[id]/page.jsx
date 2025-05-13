@@ -201,16 +201,11 @@ export default function ActiveProjectDetail({ params }) {
 
   //Open edit modal with current project data
   const handleEdit = () => {
-    const cleanedGoal = parseInt(projectData.goal.replace(/[^0-9]/g, ""), 10);
-    const cleanedRaised = parseInt(
-      projectData.raised.replace(/[^0-9]/g, ""),
-      10
-    );
-
+    // Simply use the goal value as is, since it's already a number from the API
     setEditFormData({
       ...projectData,
-      goal: cleanedGoal,
-      raised: cleanedRaised,
+      goal: Number(projectData.goal),
+      raised: Number(projectData.raised), // Keep raised as read-only
     });
     setErrors({});
     setShowEditModal(true);
@@ -326,21 +321,23 @@ export default function ActiveProjectDetail({ params }) {
       const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/projects/${encodeURI(projectData.id)}`, updateData);
       if (response.data.status === "UPDATED") {
         console.log("Successfully updated project with id:", id);
+        return true;
       } else {
         console.error("Unexpected response:", response);
+        return false;
       }
     } catch (error) {
       console.error("Failed to update project:", error);
+      return false;
     }
   };
 
-  const handleSaveChanges = () => {
+  const handleSaveChanges = async () => {
     const newErrors = {};
     const phonePattern = /^(\+63|0)?\d{9,10}$/;
 
     if (!editFormData.title) {
-      newErrors["title"] =
-        "Please enter a title.";
+      newErrors["title"] = "Please enter a title.";
     }
     if (isNaN(editFormData.goal) || editFormData.goal <= 0) {
       newErrors["goal"] = "Funding goal must be a positive number.";
@@ -357,37 +354,35 @@ export default function ActiveProjectDetail({ params }) {
       return;
     }
 
-    // console.log(
-    //   {
-    //     title: editFormData.title,
-    //     description: editFormData.description,
-    //     type: editFormData.type,
-    //     donation_link: editFormData.urlLink,
-    //     goal_amount: editFormData.goal,
-    //     due_date: editFormData.endDate,
-    //   }
-    // );
-
-    updateProject({
+    const updateData = {
       title: editFormData.title,
       details: editFormData.description,
       type: editFormData.type,
       donation_link: editFormData.urlLink,
-      goal_amount: editFormData.goal,
+      goal_amount: Number(editFormData.goal),
       due_date: editFormData.endDate,
-    });
+    };
 
-    setProjectData({
-      ...editFormData,
-      goal_amount: editFormData.goal.toString(),
-      raised: editFormData.raised.toString(),
-    });
+    const success = await updateProject(updateData);
 
-    setShowEditModal(false);
-    setToast({
-      type: "success",
-      message: "Project updated successfully!",
-    });
+    if (success) {
+      setProjectData({
+        ...editFormData,
+        goal: editFormData.goal.toString(),
+        raised: editFormData.raised.toString(),
+      });
+
+      setShowEditModal(false);
+      setToast({
+        type: "success",
+        message: "Project updated successfully!",
+      });
+    } else {
+      setToast({
+        type: "fail",
+        message: "Failed to update project. Please try again.",
+      });
+    }
   };
 
   return (
@@ -834,7 +829,7 @@ export default function ActiveProjectDetail({ params }) {
                       Funding Goal
                     </label>
                     <input
-                      type="number" // <<< NOW NUMBER!
+                      type="number"
                       name="goal"
                       className={`w-full border ${
                         errors.goal ? "border-red-500" : "border-astragray/30"
@@ -854,18 +849,10 @@ export default function ActiveProjectDetail({ params }) {
                     <input
                       type="number"
                       name="raised"
-                      className={`w-full border ${
-                        errors.raised ? "border-red-500" : "border-astragray/30"
-                      } rounded-lg p-3`}
+                      className="w-full border border-astragray/30 rounded-lg p-3 bg-gray-100"
                       value={editFormData.raised}
-                      onChange={handleInputChange}
-                      disabled
+                      readOnly
                     />
-                    {errors.raised && (
-                      <p className="text-red-500 text-sm mt-1">
-                        {errors.raised}
-                      </p>
-                    )}
                   </div>
                 </div>
               </div>
