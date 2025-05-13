@@ -416,10 +416,12 @@ export default function UserProjects() {
                                     </p>
                                   )}
                                   {project.status === REQUEST_STATUS.REJECTED && project.response && (
-                                    <p className="text-sm text-astradarkgray">
-                                      <span className="font-medium">Reason for Rejection:</span>{" "}
-                                      {project.response}
-                                    </p>
+                                    <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+                                      <p className="text-sm text-red-700">
+                                        <span className="font-medium">Reason for Rejection:</span>{" "}
+                                        {project.response}
+                                      </p>
+                                    </div>
                                   )}
                                 </div>
                               </div>
