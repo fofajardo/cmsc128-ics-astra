@@ -6,6 +6,8 @@ import { GraduationCap, UserRoundPlus, UserRoundCheck, UserRoundX } from "lucide
 import { TabContext } from "../../../components/TabContext";
 import { useRouter, usePathname } from "next/navigation";
 import axios from "axios";
+import {NavMenuItemId} from "../../../../common/scopes.js";
+import {ActiveNavItemMarker} from "@/components/Header.jsx";
 
 export default function AdminAlumniLayout({ children }) {
   const router = useRouter();
@@ -84,6 +86,7 @@ export default function AdminAlumniLayout({ children }) {
     <>
       {/* Header with background */}
       <div className="relative">
+        <ActiveNavItemMarker id={NavMenuItemId.ALUMNI_ACCESS}/>
         <img
           src="/blue-bg.png"
           alt="Background"

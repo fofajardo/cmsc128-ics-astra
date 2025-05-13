@@ -26,6 +26,7 @@ import {LoadingSpinner} from "@/components/LoadingSpinner.jsx";
 import {feRoutes} from "../../common/routes.js";
 import {useRouter} from "next/navigation";
 import {NavMenuItemId} from "../../common/scopes.js";
+import { ShieldUser } from "lucide-react";
 
 const menuItemsMain = {
   [NavMenuItemId.HOME]: {
@@ -45,12 +46,12 @@ const menuItemsMain = {
     path: "/projects"
   },
   [NavMenuItemId.ALUMNI_DIRECTORY]: {
-    label: "Search Alumni",
+    label: "Directory",
     path: "/search",
     hideIfGuest: true,
   },
   [NavMenuItemId.NEWS]: {
-    label: "What's Up?",
+    label: "News",
     path: "/whats-up"
   },
   [NavMenuItemId.JOBS]: {
@@ -128,11 +129,18 @@ function Sidebar({
 }) {
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen, toggleSidebar] = sidebarState;
+  const [submenuToOpen, setSubmenuToOpen] = useState(null);
 
   const handleNavigate = function (aItem) {
     router.push(aItem.path);
     setIsSidebarOpen(false);
   };
+
+  useEffect(() => {
+    if (submenuToOpen) {
+      context.actions.toggleNavSubmenu(submenuToOpen);
+    }
+  }, [submenuToOpen]);
 
   return (
     <>
@@ -143,9 +151,10 @@ function Sidebar({
       >
         <ul className="p-6 space-y-4 text-gray-600 font-medium">
           {Object.entries(items).map(([key, navItem]) => {
-            if (navItem.hideIfGuest && context.state.isGuest) {
+            if ((navItem.hideIfGuest && context.state.isGuest) || navItem.parent) {
               return null;
             }
+            let isNavOpen = context.state.activeNavSubmenus?.[key];
             return (
               <li key={"sidebar-" + key}>
                 <div
@@ -167,7 +176,7 @@ function Sidebar({
                   </div>
                   {navItem.children && (
                     <span>
-                      {context.state.activeNavSubmenus?.[key] ? (
+                      {isNavOpen ? (
                         <ChevronUp size={18}/>
                       ) : (
                         <ChevronDown size={18}/>
@@ -175,15 +184,19 @@ function Sidebar({
                     </span>
                   )}
                 </div>
-                {navItem.children && context.state.activeNavSubmenus?.[key] && (
-                  <ul className="ml-6 mt-2 space-y-3 border-l border-gray-300 pl-4">
+                {navItem.children && (
+                  <ul className={`ml-6 mt-2 space-y-3 border-l border-gray-300 pl-4 ${isNavOpen ? "" : "hidden"}`}>
                     {navItem.children.map(function (childNavItemId, i) {
                       const childNavItem = items[childNavItemId];
+                      let isChildActive = context.state.activeNavItem === childNavItemId;
+                      if (isChildActive && !isNavOpen && submenuToOpen !== key) {
+                        setSubmenuToOpen(key);
+                      }
                       return (
                         <li
                           key={i}
                           className={`flex items-center space-x-3 text-sm cursor-pointer transition-all pl-1 ${
-                            context.state.activeNavItem === childNavItem.id
+                            isChildActive
                               ? "text-astraprimary font-semibold"
                               : "text-gray-500 hover:text-blue-600 hover:scale-[1.02]"
                           }`}
@@ -292,7 +305,7 @@ function HeaderAvatar({context}) {
           className="absolute top-full mt-3 right-0 p-3 w-40 bg-white rounded-lg shadow-xl border border-astragray z-10 transition-all duration-200 ease-in-out"
         >
           <Link
-            href={`/admin/alumni/search/${context.state.user?.id}`}
+            href={`/profile/${context.state.user?.id}`}
             className="flex items-center p-2 w-full text-astrablack hover:bg-astraprimary hover:text-white rounded-md text-sm"
             onClick={handleMenuClose}
           >
@@ -306,6 +319,14 @@ function HeaderAvatar({context}) {
           >
             <Settings size={16} className="mr-2"/>
             Settings
+          </Link>
+          <Link
+            href="/admin/dashboard"
+            className="flex items-center p-2 w-full text-astrablack hover:bg-astraprimary hover:text-white rounded-md text-sm"
+            onClick={handleMenuClose}
+          >
+            <ShieldUser size={16} className="mr-2"/>
+            Admin
           </Link>
           <Link href="/sign-out">
             <button
@@ -339,7 +360,7 @@ export function Header({fromAdmin}) {
   return (
     <>
       <header
-        className={`fixed top-0 z-50 w-full h-20 flex items-center justify-between px-4 md:px-6 transition-all duration-300 ${
+        className={`sticky top-0 z-50 w-full h-20 flex items-center justify-between px-4 md:px-6 transition-all duration-300 ${
           isScrolled
             ? "bg-astrawhite/80 backdrop-blur-md shadow-lg"
             : "bg-white shadow-sm"

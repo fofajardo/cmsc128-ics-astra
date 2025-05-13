@@ -83,4 +83,6 @@ export function RouteGuard({component, isBlocking, mode, onChange}) {
   if (visible) {
     return component;
   }
+
+  return <div className="w-screen h-screen"></div>;
 }
