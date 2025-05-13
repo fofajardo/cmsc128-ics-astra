@@ -27,6 +27,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+
 // temporary labels
 const PROJECT_STATUS_LABELS = {
   0: "Pending",
@@ -161,6 +163,7 @@ export function Donut() {
   const [fundsRaised, setFundsRaised] = React.useState(0);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [pageSize, setPageSize] = React.useState(6);
+  const [showChart, setShowChart] = React.useState(false);
 
   React.useEffect(() => {
     const fetchProjectDonationSummary = async () => {
@@ -208,6 +211,7 @@ export function Donut() {
     fetchTotalRaised();
   }, []);
 
+  
   const colorSteps = [
     "var(--color-pieastra-primary-100)",
     "var(--color-pieastra-primary-90)",
@@ -220,9 +224,19 @@ export function Donut() {
     "var(--color-pieastra-primary-20)",
     "var(--color-pieastra-primary-10)",
   ];
-
+  
   // filter out donations with 0 funds
   const filteredStatistics = projectStatistics.filter(item => item.funds > 0);
+  React.useEffect(() => {
+    if (
+      filteredStatistics.length > 0 &&
+      fundsRaised !== null &&
+      fundsRaised !== undefined
+    ) {
+      const timer = setTimeout(() => setShowChart(true), 800); // 300ms delay
+      return () => clearTimeout(timer);
+    }
+  }, [filteredStatistics, fundsRaised]);
 
   const totalPages = Math.ceil(filteredStatistics.length / pageSize);
   const paginatedData = [...filteredStatistics]
@@ -253,54 +267,86 @@ export function Donut() {
         <hr className="h-2 border-astrablack"></hr>
       </CardHeader>
       <CardContent className="flex-1 pb-0 px-0">
-        <ChartContainer
-          config={chartConfig}
-          className="mx-auto aspect-square max-h-[330px]"
-        >
-          <PieChart>
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel showPeso={true} />}
-            />
-            <Pie
-              data={paginatedData}
-              dataKey="funds"
-              nameKey="donationTitle"
-              innerRadius={80}
-              strokeWidth={5}
-            >
-              <Label
-                content={({ viewBox }) => {
-                  if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                    return (
-                      <text
-                        x={viewBox.cx}
-                        y={viewBox.cy}
-                        textAnchor="middle"
-                        dominantBaseline="middle"
-                      >
-                        <tspan
+        {showChart ? (
+          <ChartContainer
+            config={chartConfig}
+            className="mx-auto aspect-square max-h-[330px]"
+          >
+            <PieChart>
+              <ChartTooltip
+                cursor={false}
+                content={<ChartTooltipContent hideLabel showPeso={true} />}
+              />
+              <Pie
+                data={paginatedData}
+                dataKey="funds"
+                nameKey="donationTitle"
+                innerRadius={80}
+                strokeWidth={5}
+              >
+                <Label
+                  content={({ viewBox }) => {
+                    if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                      return (
+                        <text
                           x={viewBox.cx}
                           y={viewBox.cy}
-                          className="fill-astradark font-lb bg-blue-red"
+                          textAnchor="middle"
+                          dominantBaseline="middle"
                         >
-                          ₱{totalFunds.toLocaleString()}
-                        </tspan>
-                        <tspan
-                          x={viewBox.cx}
-                          y={(viewBox.cy || 0) + 24}
-                          className="fill-muted-foreground"
-                        >
-                          Total Funds Raised
-                        </tspan>
-                      </text>
-                    );
-                  }
+                          <tspan
+                            x={viewBox.cx}
+                            y={viewBox.cy}
+                            className="fill-astradark font-lb bg-blue-red"
+                          >
+                            ₱{totalFunds.toLocaleString()}
+                          </tspan>
+                          <tspan
+                            x={viewBox.cx}
+                            y={(viewBox.cy || 0) + 24}
+                            className="fill-muted-foreground"
+                          >
+                            Total Funds Raised
+                          </tspan>
+                        </text>
+                      );
+                    }
+                  }}
+                />
+              </Pie>
+            </PieChart>
+          </ChartContainer>
+        ) : (
+          <div className="flex flex-col items-center justify-center h-[330px] gap-4">
+            <div className="relative w-[260px] h-[260px] flex items-center justify-center">
+              {/* Outer pulsing circle */}
+              <Skeleton className="rounded-full w-[260px] h-[260px]" />
+              {/* Inner "hole" */}
+              <div
+                className="absolute rounded-full bg-white"
+                style={{
+                  width: "160px",
+                  height: "160px",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
                 }}
               />
-            </Pie>
-          </PieChart>
-        </ChartContainer>
+              {/* Centered loading text */}
+              <span
+                className="absolute text-muted-foreground"
+                style={{
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  pointerEvents: "none",
+                }}
+              >
+                Loading chart...
+              </span>
+            </div>
+          </div>
+        )}
         <CardFooter className="flex-col gap-0 font-s">
           <div className="leading-none text-muted-foreground pb-2">
             Showing <span className="font-bold">
