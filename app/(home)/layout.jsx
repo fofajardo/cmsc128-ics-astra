@@ -4,9 +4,10 @@ import Footer from "../components/Footer";
 import { usePathname } from "next/navigation";
 import "../styles/globals.css";
 import "../styles/styles.css";
-import HeaderUser from "@/components/HeaderUser.jsx";
+import {Header} from "@/components/Header.jsx";
+import {RouteGuard} from "@/components/RouteGuard.jsx";
 
-export default function RootLayout({ children }) {
+function RootLayout({ children }) {
   const pathname = usePathname();
   const isRequestPage = pathname.startsWith("/projects/request");
 
@@ -15,10 +16,22 @@ export default function RootLayout({ children }) {
   }
 
   return (
-    <>
-      <HeaderUser />
+    <div className="relative min-h-screen max-w-screen overflow-x-hidden">
+      <div className="fixed top-0 left-0 w-full z-50">
+        <Header />
+      </div>
       <main>{children}</main>
       <Footer />
-    </>
+    </div>
   );
+}
+
+export default function LayoutWrapper({ children }) {
+  return <RouteGuard
+    component={
+      <RootLayout>
+        { children }
+      </RootLayout>
+    }
+  />;
 }
