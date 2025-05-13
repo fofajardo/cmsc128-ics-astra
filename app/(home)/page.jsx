@@ -39,7 +39,7 @@ export default function Page() {
   const controls = useAnimation();
   const generatedId = useId();
 
-    const textRevealVariants = { // Defined here, before the return
+    const textRevealVariants = {
      initial: { opacity: 0, y: 20 },
      animate: {
        opacity: 1,
@@ -50,7 +50,7 @@ export default function Page() {
      },
    };
 
-   const letterVariants = { // Defined here as well
+   const letterVariants = {
      initial: { opacity: 0, y: 20 },
      animate: { opacity: 1, y: 0 },
    };
@@ -75,21 +75,21 @@ export default function Page() {
 
   return (
     <main className="min-h-screen bg-astratintedwhite relative overflow-hidden">
-      {/* Background Image Overlay */}
+
       <div
         className="absolute inset-0 bg-cover bg-center will-change-transform z-0"
         style={{
           backgroundImage: "url(\"/about-bg.png\")",
           backgroundAttachment: "fixed",
           filter: "brightness(0.4)",
-          transform: "scale(1.2)", // Optional: for smoother parallax
+          transform: "scale(1.2)",
         }}
       ></div>
-      <div className="absolute inset-0 bg-astrablack/20 z-1"></div> {/* Optional: Darker overlay */}
+      <div className="absolute inset-0 bg-astrablack/20 z-1"></div>
 
       <RouteGuard />
 
-      {/* Sparkles Background */}
+
       <motion.div
         animate={controls}
         className="opacity-0 absolute inset-0 w-full h-full z-2 pointer-events-none"
@@ -133,7 +133,6 @@ export default function Page() {
                 },
               },
               particles: {
-                // ... (rest of your particles configuration)
                 bounce: {
                   horizontal: {
                     value: 1,
@@ -473,7 +472,7 @@ export default function Page() {
       </motion.div>
 
     <section className="relative h-[95vh] flex items-center justify-center overflow-hidden isolate z-10">
-        <div className="absolute inset-0 bg-astrablack/20 z-1"></div> {/* Optional: Darker overlay for section */}
+        <div className="absolute inset-0 bg-astrablack/20 z-1"></div>
 
 <motion.div
   initial={{ opacity: 0, scale: 0.8, y: 50 }}
@@ -497,7 +496,7 @@ export default function Page() {
       </section>
 
 <section className="relative h-[95vh] flex items-center overflow-hidden isolate z-10 gap-10">
-  <div className="absolute inset-0 bg-astrablack/20 z-1"></div> {/* Optional: Darker overlay for section */}
+  <div className="absolute inset-0 bg-astrablack/20 z-1"></div>
 
 <motion.div
   whileInView={{ opacity: 1, y: 0 }}
@@ -533,7 +532,6 @@ export default function Page() {
     viewport={{ once: true }}
     className="relative z-20 flex-shrink-0 w-80 md:w-96 lg:w-104 mr-8 md:mr-16 mt-10 md:mt-16"
   >
-    {/* Adjusted overlay for better rounded edges */}
     <div className="absolute rounded-full blur-xl opacity-30 bg-gradient-to-r from-purple-400 to-blue-500 w-full h-full -inset-1"></div>
 
     <Image
@@ -547,7 +545,7 @@ export default function Page() {
 </section>
 
 <section className="relative h-[95vh] flex flex-col items-center justify-center overflow-hidden isolate z-10">
-  <div className="absolute inset-0 bg-astrablack/20 "></div> {/* Optional: Darker overlay for section */}
+  <div className="absolute inset-0 bg-astrablack/20 "></div>
 
   <motion.div
     whileInView={{ opacity: 1, y: 0 }}
@@ -578,9 +576,7 @@ export default function Page() {
     </p>
   </motion.div>
 
-  {/* Wrapping the looping sections inside a flex container with column direction */}
   <div className="flex flex-col w-full items-center p-7">
-    {/* First looping image section (left) */}
     <motion.section
       whileInView={{ opacity: 1, y: 0 }}
     initial={{ opacity: 0, y: 50 }}
@@ -604,7 +600,6 @@ export default function Page() {
       </div>
     </motion.section>
 
-    {/* Second looping image section (right) */}
     <motion.section
       whileInView={{ opacity: 1, y: 0 }}
     initial={{ opacity: 0, y: 50 }}
@@ -634,7 +629,7 @@ export default function Page() {
   initial={{ opacity: 0, y: 20 }}
   transition={{ duration: 3}}
   viewport={{ once: true }}
-  className="flex justify-center mt-2 mb-5 relative z-20" // Added relative and z-index
+  className="flex justify-center mt-2 mb-5 relative z-20"
 >
   <Link href="/events" passHref>
     <button className="border-1 border-astraprimary text-astrawhite bg-transparent hover:bg-astrawhite/5 hover:text-astrawhite rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-[200px] h-[60px]">
@@ -691,7 +686,6 @@ export default function Page() {
 
 }
 
-//helper function for chevron down icon
 const ChevronDown = ({ className }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
