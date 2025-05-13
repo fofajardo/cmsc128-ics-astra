@@ -200,11 +200,6 @@ export default function InactiveProjectDetail({ params }) {
                 )}
                 {projectData?.type ? capitalizeName(projectData.type) : projectData?.type}
               </div>
-
-              <div className="ml-4 bg-astrawhite text-astradark px-3 py-1 rounded-lg text-sm font-s flex items-center gap-1">
-                <Calendar className="w-4 h-4" />
-                <span>{projectData?.project_status === PROJECT_STATUS.FINISHED ? `Date Ended: ${formatDate(projectData?.endDate)}` : `Date Deleted: ${formatDate(projectData?.dateReviewed)}`}</span>
-              </div>
             </div>
           </div>
         </div>
