@@ -164,6 +164,17 @@ const fetchAlumniIncomeRangeStats = async (supabase) => {
   return data;
 };
 
+const fetchProjectContributors = async (supabase) => {
+  const { data, error } = await supabase
+    .from("project_contributors")
+    .select("*");
+
+  if (error) {
+    throw error;
+  }
+  return data;
+};
+
 const statisticsService = {
   fetchAlumniStats,
   fetchActiveAlumniStats,
