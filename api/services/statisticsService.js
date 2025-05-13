@@ -190,6 +190,7 @@ const statisticsService = {
   fetchAlumniFieldStats,
   fetchAlumniHighestDegreeStats,
   fetchAlumniIncomeRangeStats,
+  fetchProjectContributors
 };
 
 export default statisticsService;
