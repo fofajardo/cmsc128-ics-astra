@@ -1,12 +1,14 @@
 "use client";
 import { useState, useEffect } from "react";
-import {TableHeader, Table, PageTool} from "@/components/TableBuilder";
+import { TableHeader, Table, PageTool } from "@/components/TableBuilder";
 import SearchFilter from "admin/alumni/search/filter";
-import { Check, Eye, Trash2, CheckCircle2, ShieldCheck} from "lucide-react";
+import { Check, Eye, Trash2, CheckCircle2, ShieldCheck } from "lucide-react";
 import { ActionButton } from "@/components/Buttons";
 import { useTab } from "../../../components/TabContext";
 import ConfirmModal from "@/components/ConfirmModal";
 import ToastNotification from "@/components/ToastNotification";
+import axios from "axios";
+import { capitalizeName } from "@/utils/format";
 
 
 export default function AlumniAccess() {
@@ -14,10 +16,10 @@ export default function AlumniAccess() {
   const [selectedIds, setSelectedIds] = useState([]);
   const { currTab, info } = useTab();
   const [toast, setToast] = useState(null);
-  const toggleFilter = () => {setShowFilter((prev) => !prev);};
+  const toggleFilter = () => { setShowFilter((prev) => !prev); };
   // console.log("Current tab from layout:", info);
 
-  const [alumList, updateAlumList] = useState(mockdata);
+  const [alumList, setAlumList] = useState(mockdata);
   const [appliedFilters, updateFilters] = useState({
     yearFrom: "",
     yearTo: "",
@@ -49,18 +51,110 @@ export default function AlumniAccess() {
       searchQuery,
     });
 
-  }, [appliedFilters, pagination, searchQuery]);
+    const fetchAlumniProfiles = async () => {
+      try {
+        // For better search, fetch all or more profiles when searching
+        // This allows for more sophisticated client-side filtering
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles`,
+          {
+            params: {
+              page: searchQuery ? 1 : pagination.currPage,
+              limit: searchQuery ? 50 : pagination.numToShow, // Fetch more when searching
+            },
+          }
+        );
 
+        if (response.data.status === "OK") {
+          const updatedAlumList = await Promise.all(
+            response.data.list.map(async (alum) => {
+              const alumData = {
+                id: alum.alum_id,
+                alumname: capitalizeName(`${alum.first_name} ${alum.last_name}`),
+                firstName: alum.first_name.toLowerCase(), // Store for searching
+                lastName: alum.last_name.toLowerCase(),   // Store for searching
+                email: alum.email,
+                student_num: alum.student_num,
+                graduationYear: "N/A",
+                location: alum.location,
+                fieldOfWork:
+                  alum.primary_work_experience?.field || "No Position Title",
+                skills: alum.skills ? alum.skills.split(",") : [],
+                image:
+                  "https://cdn-icons-png.flaticon.com/512/145/145974.png",
+              };
 
+              try {
+                const photoResponse = await axios.get(
+                  `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/alum/${alum.alum_id}`
+                );
+                if (
+                  photoResponse.data.status === "OK" &&
+                  photoResponse.data.photo
+                ) {
+                  alumData.image = photoResponse.data.photo;
+                }
+              } catch (photoError) {
+                console.log(
+                  `Failed to fetch photo for alum_id ${alum.alum_id}:`,
+                  photoError
+                );
+              }
+
+              try {
+                const idForDegree = alum.user_id || alum.alum_id;
+                if (idForDegree) {
+                  const degreeResponse = await axios.get(
+                    `${process.env.NEXT_PUBLIC_API_URL}/v1/degree-programs/alumni/${idForDegree}`
+                  );
+                  if (
+                    degreeResponse.data.status === "OK" &&
+                    degreeResponse.data.degreePrograms?.length > 0
+                  ) {
+                    const sortedPrograms = [
+                      ...degreeResponse.data.degreePrograms,
+                    ].sort(
+                      (a, b) =>
+                        new Date(b.year_graduated) -
+                        new Date(a.year_graduated)
+                    );
+                    alumData.graduationYear = new Date(
+                      sortedPrograms[0].year_graduated
+                    )
+                      .getFullYear()
+                      .toString();
+                  }
+                }
+              } catch (degreeError) {
+                console.error(
+                  `Failed to fetch degree programs for alum ${alum.alum_id}:`,
+                  degreeError
+                );
+              }
+
+              return alumData;
+            })
+          );
+
+          // Store raw data
+          setAlumList(updatedAlumList);
+        } else {
+          console.error("Unexpected response:", response.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch alumni:", error);
+      }
+    };
+
+    fetchAlumniProfiles();
+  }, [pagination.currPage, pagination.numToShow]);
 
   return (
     <div>
       {/* Filter Modal */}
       <div
         onClick={toggleFilter}
-        className={`fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs transition-all duration-100 ease-out ${
-          showFilter ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}
+        className={`fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs transition-all duration-100 ease-out ${showFilter ? "opacity-100" : "opacity-0 pointer-events-none"}`}
       >
         <div onClick={(e) => e.stopPropagation()}>
           <SearchFilter
@@ -88,14 +182,14 @@ export default function AlumniAccess() {
             setPagination={setPagination}
             toggleFilter={toggleFilter}
             searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}/>
+            setSearchQuery={setSearchQuery} />
           <Table cols={cols} data={createRows(alumList, selectedIds, setSelectedIds, currTab)} />
           <PageTool pagination={pagination} setPagination={setPagination} />
         </div>
         <div className="flex flex-row justify-between md:pl-4 lg:pl-8">
-          <ActionButton label="Reset Selection" color = "blue" onClick={() => setSelectedIds([])}/>
+          <ActionButton label="Reset Selection" color="blue" onClick={() => setSelectedIds([])} />
 
-          <BottomButtons selectedCount={selectedIds.length} currTab={currTab} setToast={setToast}/>
+          <BottomButtons selectedCount={selectedIds.length} currTab={currTab} setToast={setToast} />
         </div>
       </div>
     </div>
@@ -259,12 +353,12 @@ function BottomButtons({ selectedCount, currTab, setToast }) {
 
 
 const cols = [
-  { label: "Checkbox:label-hidden", justify: "center", visible: "all"},
+  { label: "Checkbox:label-hidden", justify: "center", visible: "all" },
   { label: "Image:label-hidden", justify: "center", visible: "all" },
   { label: "Name", justify: "start", visible: "all" },
   { label: "Graduation Year", justify: "center", visible: "lg" },
   { label: "Student ID", justify: "center", visible: "md" },
-  { label: "Course", justify: "center", visible: "md" },
+  // { label: "Course", justify: "center", visible: "md" },
   { label: "Quick Actions", justify: "center", visible: "all" },
 ];
 
@@ -275,7 +369,7 @@ function createRows(alumList, selectedIds, setSelectedIds, currTab) {
     Name: renderName(alum.alumname, alum.email),
     "Graduation Year": renderText(alum.graduationYear),
     "Student ID": renderText(alum.student_num),
-    "Course": renderText(alum.course),
+    // "Course": renderText(alum.course),
     "Quick Actions": renderActions(alum.id, alum.alumname, currTab),
   }));
 }
@@ -298,7 +392,7 @@ function renderCheckboxes(id, selectedIds, setSelectedIds) {
         className="peer hidden"
       />
       <div
-        className={`w-5 h-5 rounded border-2 
+        className={`w-5 h-5 rounded border-2
             ${isChecked ? "bg-astradark border-astradark shadow-md shadow-astradark/40" : "border-gray-400"}
             flex items-center justify-center transition-all duration-200 ease-in-out`}
       >
@@ -339,10 +433,8 @@ function renderText(text) {
 
 
 function renderActions(id, name, currTab) {
+  // Based muna sa currTab pero I think mas maganda kung sa mismong account/user kukunin yung active status*/
   return (
-
-  //Based muna sa currTab pero I think mas maganda kung sa mismong account/user kukunin yung active status
-
     <div className="flex justify-center gap-3 md:pr-4 lg:pr-2">
       <div className="hidden md:block">
         <ActionButton
@@ -353,7 +445,7 @@ function renderActions(id, name, currTab) {
       </div>
       <div className="block md:hidden">
         <ActionButton
-          label={<Eye size={20}/>}
+          label={<Eye size={20} />}
           color="gray"
           route={`/admin/alumni/manage-access/${id}`}
         />
@@ -370,7 +462,7 @@ function renderActions(id, name, currTab) {
           </div>
           <div className="block md:hidden">
             <ActionButton
-              label={<CheckCircle2 size={20}/>}
+              label={<CheckCircle2 size={20} />}
               color="green"
               notifyMessage={`${name} has been approved!`}
               notifyType="success"
@@ -386,7 +478,7 @@ function renderActions(id, name, currTab) {
           </div>
           <div className="block md:hidden">
             <ActionButton
-              label={<Trash2 size={20}/>}
+              label={<Trash2 size={20} />}
               color="red"
               notifyMessage={`${name} has been declined!`}
               notifyType="fail"
@@ -407,7 +499,7 @@ function renderActions(id, name, currTab) {
           </div>
           <div className="block md:hidden">
             <ActionButton
-              label={<Trash2 size={20}/>}
+              label={<Trash2 size={20} />}
               color="red"
               notifyMessage={`${name} has been removed!`}
               notifyType="fail"
@@ -428,7 +520,7 @@ function renderActions(id, name, currTab) {
           </div>
           <div className="block md:hidden">
             <ActionButton
-              label={<ShieldCheck size={20}/>}
+              label={<ShieldCheck size={20} />}
               color="blue"
               notifyMessage={`${name} has been reactivated!`}
               notifyType="success"

@@ -3,11 +3,8 @@ import { useState } from "react";
 export default function SearchFilter({onClose, onApply}) {
   const initialFilters = {
     orgName: "",
-    location: "",
-    jobType: "",
     fromDate: "",
     toDate: "",
-    status: "",
     sortCategory: "",
     sortOrder: "asc",
   };
@@ -53,53 +50,10 @@ export default function SearchFilter({onClose, onApply}) {
         />
       </div>
 
-      {/* Location */}
-      <div>
-        <div className="flex justify-between items-center mb-1">
-          <div className="text-black font-medium text-lg">Location</div>
-          <button
-            onClick={() => setFilters({ ...filters, location: "" })}
-            className="text-astraprimary font-sb text-sm"
-          >
-            Reset
-          </button>
-        </div>
-        <input
-          type="text"
-          placeholder="Ex. Laguna"
-          value={filters.location}
-          onChange={(e) => setFilters({ ...filters, location: e.target.value })}
-          className="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white font-r"
-        />
-      </div>
-
-      {/* Job Type */}
-      <div>
-        <div className="flex justify-between items-center mb-1">
-          <div className="text-black font-medium text-lg">Job Type</div>
-          <button
-            onClick={() => setFilters({ ...filters, jobType: "" })}
-            className="text-astraprimary font-sb text-sm"
-          >
-            Reset
-          </button>
-        </div>
-        <select
-          value={filters.jobType}
-          onChange={(e) => setFilters({ ...filters, jobType: e.target.value })}
-          className="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white font-r"
-        >
-          <option value="">Select Job Type</option>
-          <option value="full-time">Full-Time</option>
-          <option value="part-time">Part-Time</option>
-          <option value="temporary">Temporary</option>
-          <option value="freelance">Freelance</option>
-        </select>
-      </div>
       {/* Date Posted */}
       <div>
         <div className="flex justify-between items-center mb-1">
-          <div className="text-black font-medium text-lg">Date Posted</div>
+          <div className="text-black font-medium text-lg">Founded Date</div>
           <button
             onClick={() => setFilters({ ...filters, fromDate: "", yearDate: "" })}
             className="text-astraprimary font-sb text-sm"
@@ -144,9 +98,8 @@ export default function SearchFilter({onClose, onApply}) {
             className="flex-grow px-4 py-2.5 rounded-xl border border-gray-300 bg-white font-r"
           >
             <option value="">Select Category</option>
-            <option value="year">Organization Name</option>
-            <option value="location">Location</option>
-            <option value="date">Date Posted</option>
+            <option value="name">Organization Name</option>
+            <option value="founded_date">Founded Date</option>
           </select>
 
           <div className="flex ml-2">

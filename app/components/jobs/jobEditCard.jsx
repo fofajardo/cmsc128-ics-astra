@@ -1,5 +1,4 @@
 "use client";
-
 import { Clock, OctagonAlert } from "lucide-react";
 import Image from "next/image";
 import ConfirmationPrompt from "./edit/confirmation";
@@ -31,12 +30,16 @@ export default function JobEditCard({job}) {
   };
 
   const formatDate = (date) => {
-    return date.toLocaleDateString("en-US", {
+    const parsedDate = new Date(date);
+    if (isNaN(parsedDate)) return "Invalid date"; // fallback for bad values
+
+    return parsedDate.toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
       day: "numeric",
     });
   };
+
 
   const handleRenew = () => {
     // add renew logic here

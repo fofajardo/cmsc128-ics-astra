@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import * as React from "react";
 import { TrendingUp } from "lucide-react";
 import { Label, Pie, PieChart } from "recharts";
-
 import {
   Card,
   CardContent,
@@ -19,14 +18,16 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-const chartData = [
-  { donationTitle: "BSCS Scholarship", funds: 50000, fill: "var(--color-pieastra-primary-100)" },
-  { donationTitle: "Abot-kaya Scholarship", funds: 39200, fill: "var(--color-pieastra-primary-80)" },
-  { donationTitle: "PhySci Renovation", funds: 25200, fill: "var(--color-pieastra-primary-60)" },
-  { donationTitle: "E-Jeepney Modernization", funds: 16800, fill: "var(--color-pieastra-primary-40)" },
-  { donationTitle: "Additions of PC", funds: 12600, fill: "var(--color-pieastra-primary-20)" },
-  { donationTitle: "Additions of Server", funds: 10000, fill: "var(--color-pieastra-primary-10)" },
-];
+import axios from "axios";
+import { capitalizeTitle } from "@/utils/format";
+// const chartData = [
+//   { donationTitle: "BSCS Scholarship", funds: 50000, fill: "var(--color-pieastra-primary-100)" },
+//   { donationTitle: "Abot-kaya Scholarship", funds: 39200, fill: "var(--color-pieastra-primary-80)" },
+//   { donationTitle: "PhySci Renovation", funds: 25200, fill: "var(--color-pieastra-primary-60)" },
+//   { donationTitle: "E-Jeepney Modernization", funds: 16800, fill: "var(--color-pieastra-primary-40)" },
+//   { donationTitle: "Additions of PC", funds: 12600, fill: "var(--color-pieastra-primary-20)" },
+//   { donationTitle: "Additions of Server", funds: 10000, fill: "var(--color-pieastra-primary-10)" },
+// ];
 
 const chartConfig = {
   funds: {
@@ -78,9 +79,71 @@ function FundDisplay({ color, title, funds }) {
 
 export function Donut() {
   const router = useRouter();
-  const totalFunds = React.useMemo(() => {
-    return chartData.reduce((acc, curr) => acc + curr.funds, 0);
+  const [projectStatistics, setProjectStatistics] = React.useState([]);
+  const [fundsRaised, setFundsRaised] = React.useState(0);
+
+  React.useEffect(() => {
+    const fetchProjectDonationSummary = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/project-donation-summary`
+        );
+
+        if (response.data.status == "OK") {
+          const updatedProjectDonationSummary = await Promise.all(
+            response.data.list.map(async (project) => {
+              const percentage = project.goal_amount > 0
+                ? project.total_donations / project.goal_amount
+                : 0;
+
+              let fill;
+              if (percentage >= 1) fill = "var(--color-pieastra-primary-100)";
+              else if (percentage >= 0.75) fill = "var(--color-pieastra-primary-80)";
+              else if (percentage >= 0.5) fill = "var(--color-pieastra-primary-60)";
+              else if (percentage >= 0.25) fill = "var(--color-pieastra-primary-40)";
+              else fill = "var(--color-pieastra-primary-20)";
+
+              const projectData = {
+                donationTitle: capitalizeTitle(project.title),
+                funds: project.total_donations,
+                fill: fill,
+              };
+
+              return projectData;
+            })
+          );
+
+          setProjectStatistics(updatedProjectDonationSummary);
+        } else {
+          console.error("Unexpected response:", response.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch project-donation details:", error);
+      }
+    };
+
+    const fetchTotalRaised = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/funds-raised`
+        );
+
+        console.log(response.data.stats);
+
+        setFundsRaised(response.data.stats);
+      } catch (error) {
+        console.error("Failed to fetch project-donation details:", error);
+      }
+    };
+
+    fetchProjectDonationSummary();
+    fetchTotalRaised();
   }, []);
+
+  const chartData = [...projectStatistics]
+    .sort((a, b) => b.funds - a.funds)
+    .slice(0, 5);
+  const totalFunds = fundsRaised?.total_funds_raised ?? "Loading...";
 
   return (
     <Card className="flex flex-col h-full">
@@ -88,7 +151,7 @@ export function Donut() {
         <div className="flex justify-between">
           <div className="flex flex-col">
             <CardTitle>Highest Funded Categories</CardTitle>
-            <CardDescription>January - April 2025</CardDescription>
+            {/* <CardDescription>January - April 2025</CardDescription> */}
           </div>
           <a
             onClick={() => router.push("/admin/projects")}
@@ -108,7 +171,7 @@ export function Donut() {
             <ChartTooltip
               cursor={false}
 
-              content={<ChartTooltipContent hideLabel showPeso={true}/>}
+              content={<ChartTooltipContent hideLabel showPeso={true} />}
             />
             <Pie
               data={chartData}
@@ -150,11 +213,11 @@ export function Donut() {
           </PieChart>
         </ChartContainer>
         <CardFooter className="flex-col gap-2 font-s">
-          <div className="flex items-center gap-2 font-medium leading-none">
+          {/* <div className="flex items-center gap-2 font-medium leading-none">
             Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-          </div>
+          </div> */}
           <div className="leading-none text-muted-foreground">
-            Showing 6 out of 25 Donation Drives
+            Showing {chartData.length} out of {projectStatistics.length} Donation Drives
           </div>
 
           <div className="mt-4 flex flex-col space-y-1.5 min-w-full gap-2">

@@ -63,21 +63,22 @@ export default function Page() {
     setCurrentPage(1); // Reset page on search
   };
 
-  // Fetch alumni data from the API
   useEffect(() => {
     const fetchAlumniProfiles = async () => {
-      setLoading(true);
       try {
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles`,
           {
             params: {
-              page: currentPage,
-              limit: ITEMS_PER_PAGE,
-              search: searchTerm,
+              // Only paginate when not searching
+              page: searchTerm ? null : currentPage,
+              limit: searchTerm ? null : ITEMS_PER_PAGE,
+              search: searchTerm ? null : searchTerm, // We'll handle search on client side for better flexibility
             },
           }
         );
+
+        // Rest of your code remains the same...
 
         if (response.data.status === "OK") {
           const updatedAlumList = await Promise.all(
@@ -143,34 +144,8 @@ export default function Page() {
             })
           );
 
-          // Apply client-side filtering since the API doesn't support all our filters yet
-          const filteredList = updatedAlumList.filter(alum => {
-            // Filter by graduation year range if specified
-            const gradYear = alum.year_graduated !== "N/A"
-              ? parseInt(alum.year_graduated.substring(0, 4), 10)
-              : null;
-
-            const withinMinYear = !appliedFilters.minGradYear || !gradYear ||
-              gradYear >= parseInt(appliedFilters.minGradYear, 10);
-
-            const withinMaxYear = !appliedFilters.maxGradYear || !gradYear ||
-              gradYear <= parseInt(appliedFilters.maxGradYear, 10);
-
-            // Filter by location if specified
-            const matchesLocation = !appliedFilters.location ||
-              (alum.location && alum.location.toLowerCase().includes(appliedFilters.location.toLowerCase()));
-
-            // Filter by skills if specified
-            const skillsMatch = !appliedFilters.skills ||
-              alum.skills.some(skill =>
-                skill.toLowerCase().includes(appliedFilters.skills.toLowerCase())
-              );
-
-            return withinMinYear && withinMaxYear && matchesLocation && skillsMatch;
-          });
-
-          setAlumList(filteredList);
-          setTotalResults(filteredList.length);
+          // Store the complete list without filtering
+          setAlumList(updatedAlumList);
           setLoading(false);
         } else {
           console.error("Unexpected response:", response.data);
@@ -183,11 +158,60 @@ export default function Page() {
     };
 
     fetchAlumniProfiles();
-  }, [currentPage, searchTerm, appliedFilters]);
+  }, [currentPage, searchTerm]);
 
-  // Apply sorting
+  const filteredAlumList = useMemo(() => {
+    return alumList.filter(alum => {
+      const lowerSearchTerm = searchTerm.toLowerCase();
+      let searchMatch = true;
+
+      if (searchTerm) {
+        const fullName = `${alum.first_name} ${alum.last_name}`.toLowerCase();
+
+        // Only match if the search term appears as a consecutive substring
+        const partialFirstNameMatch = alum.first_name.toLowerCase().includes(lowerSearchTerm);
+        const partialLastNameMatch = alum.last_name.toLowerCase().includes(lowerSearchTerm);
+        const fullNameMatch = fullName.includes(lowerSearchTerm);
+
+        // Only use exact substring matches
+        searchMatch = partialFirstNameMatch || partialLastNameMatch || fullNameMatch;
+
+        // const containsAllChars = [...lowerSearchTerm].every(char =>
+        //   char === ' ' || fullName.includes(char)
+        // );
+
+        // Keep initials matching if needed, but make it exact
+        const initials = `${alum.first_name[0]}${alum.last_name[0]}`.toLowerCase();
+        const matchesInitials = initials === lowerSearchTerm;
+
+        searchMatch = searchMatch || matchesInitials;
+      }
+
+      const gradYear = alum.year_graduated !== "N/A"
+        ? parseInt(alum.year_graduated.substring(0, 4), 10)
+        : null;
+
+      const withinMinYear = !appliedFilters.minGradYear || !gradYear ||
+        gradYear >= parseInt(appliedFilters.minGradYear, 10);
+
+      const withinMaxYear = !appliedFilters.maxGradYear || !gradYear ||
+        gradYear <= parseInt(appliedFilters.maxGradYear, 10);
+
+      const matchesLocation = !appliedFilters.location ||
+        (alum.location && alum.location.toLowerCase().includes(appliedFilters.location.toLowerCase()));
+
+      const skillsMatch = !appliedFilters.skills ||
+        alum.skills.some(skill =>
+          skill.toLowerCase().includes(appliedFilters.skills.toLowerCase())
+        );
+
+      return searchMatch && withinMinYear && withinMaxYear && matchesLocation && skillsMatch;
+    });
+  }, [alumList, appliedFilters, searchTerm]);
+
+  // Apply sorting only (don't filter here)
   const sortedAlumList = useMemo(() => {
-    let sortedList = [...alumList];
+    let sortedList = [...filteredAlumList]; // Use filteredAlumList instead of alumList
     if (sortBy === "firstName") {
       sortedList.sort((a, b) => a.first_name.localeCompare(b.first_name));
     }
@@ -202,7 +226,7 @@ export default function Page() {
       });
     }
     return sortedList;
-  }, [alumList, sortBy]);
+  }, [filteredAlumList, sortBy]); // Change dependency from alumList to filteredAlumList
 
   const totalPages = useMemo(() => {
     return Math.ceil(sortedAlumList.length / ITEMS_PER_PAGE);

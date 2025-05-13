@@ -103,7 +103,7 @@ function HeaderAvatar({ user }) {
           className="absolute top-full mt-3 right-0 p-3 w-40 bg-white rounded-lg shadow-xl border border-astragray z-10 transition-all duration-200 ease-in-out"
         >
           <Link
-            href="/profile/alumni"
+            href={`/admin/alumni/search/${user.state.user?.id}`}
             className="flex items-center p-2 w-full text-astrablack hover:bg-astraprimary hover:text-white rounded-md text-sm"
             onClick={() => setIsMenuOpen(false)}
           >

@@ -1,45 +1,47 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import AdminTabs from "@/components/AdminTabs";
 import { differenceInDays, parseISO, compareDesc } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { capitalizeName } from "@/utils/format.jsx";
+import axios from "axios";
 
 
-const mockData = [
-  { id: 10, name: "Benjamin K. Lee", email: "benjamin.lee@example.com", date: "2025-04-25T18:00:00Z" },
-  { id: 9, name: "Isabella Rose Thomas", email: "isabella.thomas@example.com", date: "2025-04-25T09:30:00Z" },
-  { id: 8, name: "James Anderson", email: "james.anderson@example.com", date: "2025-04-23T08:45:00Z" },
-  { id: 7, name: "Sophia L. Garcia", email: "sophia.garcia@example.com", date: "2025-04-22T08:15:00Z" },
-  { id: 6, name: "William J. Martinez", email: "william.martinez@example.com", date: "2025-04-21T07:50:00Z" },
-  { id: 5, name: "Ava Wilson", email: "ava.wilson@example.com", date: "2025-04-20T07:00:00Z" },
-  { id: 4, name: "Noah Z. Davis", email: "noah.davis@example.com", date: "2025-04-19T06:30:00Z" },
-  { id: 3, name: "Olivia Mae Brown", email: "olivia.brown@example.com", date: "2025-04-18T06:00:00Z" },
-  { id: 2, name: "Liam A. Smith", email: "liam.smith@example.com", date: "2025-04-17T05:45:00Z" },
-  { id: 1, name: "Emma Johnson", email: "emma.johnson@example.com", date: "2025-04-16T05:30:00Z" },
-  { id: 18, name: "Riggs Mikael Tomas", email: "rttomas@example.com", date: "2025-03-12T05:30:00Z" },
+// const mockData = [
+//   { id: 10, name: "Benjamin K. Lee", email: "benjamin.lee@example.com", date: "2025-04-25T18:00:00Z" },
+//   { id: 9, name: "Isabella Rose Thomas", email: "isabella.thomas@example.com", date: "2025-04-25T09:30:00Z" },
+//   { id: 8, name: "James Anderson", email: "james.anderson@example.com", date: "2025-04-23T08:45:00Z" },
+//   { id: 7, name: "Sophia L. Garcia", email: "sophia.garcia@example.com", date: "2025-04-22T08:15:00Z" },
+//   { id: 6, name: "William J. Martinez", email: "william.martinez@example.com", date: "2025-04-21T07:50:00Z" },
+//   { id: 5, name: "Ava Wilson", email: "ava.wilson@example.com", date: "2025-04-20T07:00:00Z" },
+//   { id: 4, name: "Noah Z. Davis", email: "noah.davis@example.com", date: "2025-04-19T06:30:00Z" },
+//   { id: 3, name: "Olivia Mae Brown", email: "olivia.brown@example.com", date: "2025-04-18T06:00:00Z" },
+//   { id: 2, name: "Liam A. Smith", email: "liam.smith@example.com", date: "2025-04-17T05:45:00Z" },
+//   { id: 1, name: "Emma Johnson", email: "emma.johnson@example.com", date: "2025-04-16T05:30:00Z" },
+//   { id: 18, name: "Riggs Mikael Tomas", email: "rttomas@example.com", date: "2025-03-12T05:30:00Z" },
 
-  // Inactive users
-  { id: 11, name: "Lucas P. Bennett", email: "lucas.bennett@example.com", date: "2023-03-10T10:15:00Z" },
-  { id: 12, name: "Grace Hughes", email: "grace.hughes@example.com", date: "2022-12-01T09:40:00Z" },
-  { id: 13, name: "Ethan M. Kelly", email: "ethan.kelly@example.com", date: "2023-01-05T11:25:00Z" },
-  { id: 14, name: "Hannah R. Moore", email: "hannah.moore@example.com", date: "2022-03-30T14:10:00Z" },
-  { id: 15, name: "Jackson L. Foster", email: "jackson.foster@example.com", date: "2023-02-15T08:35:00Z" },
-  { id: 16, name: "Zoey F. Thomas", email: "zoey.thomas@example.com", date: "2023-01-10T07:20:00Z" },
-  { id: 17, name: "Nathan J. Ross", email: "nathan.ross@example.com", date: "2023-03-01T13:00:00Z" }
-];
+//   // Inactive users
+//   { id: 11, name: "Lucas P. Bennett", email: "lucas.bennett@example.com", date: "2023-03-10T10:15:00Z" },
+//   { id: 12, name: "Grace Hughes", email: "grace.hughes@example.com", date: "2022-12-01T09:40:00Z" },
+//   { id: 13, name: "Ethan M. Kelly", email: "ethan.kelly@example.com", date: "2023-01-05T11:25:00Z" },
+//   { id: 14, name: "Hannah R. Moore", email: "hannah.moore@example.com", date: "2022-03-30T14:10:00Z" },
+//   { id: 15, name: "Jackson L. Foster", email: "jackson.foster@example.com", date: "2023-02-15T08:35:00Z" },
+//   { id: 16, name: "Zoey F. Thomas", email: "zoey.thomas@example.com", date: "2023-01-10T07:20:00Z" },
+//   { id: 17, name: "Nathan J. Ross", email: "nathan.ross@example.com", date: "2023-03-01T13:00:00Z" }
+// ];
 
 const today = new Date();
 
-// recently registered: within 1 year
-const recentlyRegistered = mockData
-  .filter(item => differenceInDays(today, parseISO(item.date)) <= 365)
-  .sort((a, b) => compareDesc(parseISO(a.date), parseISO(b.date))); // most recent first
+// // recently registered: within 1 year
+// const recentlyRegistered = mockData
+//   .filter(item => differenceInDays(today, parseISO(item.date)) <= 365)
+//   .sort((a, b) => compareDesc(parseISO(a.date), parseISO(b.date))); // most recent first
 
-// inactive: more than 1 year
-const inactiveAccounts = mockData
-  .filter(item => differenceInDays(today, parseISO(item.date)) > 365)
-  .sort((a, b) => compareDesc(parseISO(a.date), parseISO(b.date))); // longest inactive first
+// // inactive: more than 1 year
+// const inactiveAccounts = mockData
+//   .filter(item => differenceInDays(today, parseISO(item.date)) > 365)
+//   .sort((a, b) => compareDesc(parseISO(a.date), parseISO(b.date))); // longest inactive first
 
 function getRelativeTime(dateString) {
   const now = new Date();
@@ -70,7 +72,9 @@ function AlumniItem({ alumni, router }) {
 
       </div>
       <div className="flex-1">
-        <p className="font-r">{alumni?.name}</p>
+        <p className="font-r"><span style={{ color: alumni?.name === null ? "red" : "inherit" }}>
+          {alumni?.name === null ? "No profile" : alumni?.name}
+        </span></p>
         <p className="font-s text-astradarkgray">{alumni?.email || ""}</p>
       </div>
       <div className="text-right">
@@ -94,9 +98,7 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
     <button
       key={page}
       onClick={() => onPageChange(page)}
-      className={`px-2 md:px-4 py-2 rounded-sm md:rounded-xl font-s ${
-        currentPage === page ? "bg-astraprimary text-astrawhite" : "bg-transparent text-astradarkgray hover:bg-astratintedwhite"
-      }`}
+      className={`px-2 md:px-4 py-2 rounded-sm md:rounded-xl font-s ${currentPage === page ? "bg-astraprimary text-astrawhite" : "bg-transparent text-astradarkgray hover:bg-astratintedwhite"}`}
     >
       {page}
     </button>
@@ -154,14 +156,103 @@ export default function ActivityOverview() {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const alumniPerPage = 5;
-  const totalRecentPages = Math.ceil(recentlyRegistered.length / alumniPerPage);
-  const totalInactivePages = Math.ceil(inactiveAccounts.length / alumniPerPage);
 
+  const [recentRegisters, setRecentRegisters] = useState([]);
+  const [inactiveAccounts, setInactiveAccounts] = useState([]);
 
-  const tabs = {
-    "Recent Registrations": 3,
+  const totalRecentPages = useMemo(
+    () => Math.ceil(recentRegisters.length / alumniPerPage),
+    [recentRegisters.length]
+  );
+
+  const totalInactivePages = useMemo(
+    () => Math.ceil(inactiveAccounts.length / alumniPerPage),
+    [inactiveAccounts.length]
+  );
+
+  const [tabs, setTabs] = useState({
+    "Recent Registrations": 0,
     "Inactive Accounts": 0,
-  };
+  });
+
+  useEffect(() => {
+    const fetchRecentRegisters = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/v1/users?recent=true&alumni=true`,
+        );
+
+        // console.log(response.data);
+
+        if (response.data.status === "OK") {
+          const updatedRecentRegisters = await Promise.all(
+            response.data.list.map(async (user) => {
+              const hasProfile = user.alumni_profiles !== null;
+
+              const userData = {
+                id: user.id,
+                name: hasProfile
+                  ? capitalizeName(`${user.alumni_profiles.first_name} ${user.alumni_profiles.last_name}`)
+                  : null,
+                email: "To be obtained",
+                date: user.created_at
+              };
+
+              return userData;
+            })
+          );
+
+          setRecentRegisters(updatedRecentRegisters);
+          setTabs(prev => ({
+            ...prev,
+            "Recent Registrations": updatedRecentRegisters.length
+          }));
+        } else {
+          console.error("Unexpected response:", response.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch alumni:", error);
+      }
+    };
+
+    const fetchInactiveAccounts = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/v1/users/inactive-alumni`,
+        );
+
+        console.log(response.data);
+
+        if (response.data.status === "OK") {
+          const updatedInactiveAccounts = await Promise.all(
+            response.data.list.map(async (user) => {
+              const userData = {
+                id: user.user_id,
+                name: capitalizeName(`${user.first_name} ${user.last_name}`),
+                email: "To be obtained",
+                date: user.profile_created_at
+              };
+
+              return userData;
+            })
+          );
+
+          setInactiveAccounts(updatedInactiveAccounts);
+          setTabs(prev => ({
+            ...prev,
+            "Inactive Accounts": updatedInactiveAccounts.length
+          }));
+        } else {
+          console.error("Unexpected response:", response.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch alumni:", error);
+      }
+    };
+
+    fetchRecentRegisters();
+    fetchInactiveAccounts();
+  }, []);
 
   const [currTab, setCurrTab] = useState("Recent Registrations");
 
@@ -172,8 +263,9 @@ export default function ActivityOverview() {
     setCurrTab(newTab);
   };
 
+
   const startIndex = (currentPage - 1) * alumniPerPage;
-  const recentContent = recentlyRegistered.slice(startIndex, startIndex + alumniPerPage);
+  const recentContent = recentRegisters.slice(startIndex, startIndex + alumniPerPage);
   const inactiveContent = inactiveAccounts.slice(startIndex, startIndex + alumniPerPage);
   const displayRecent = Array(alumniPerPage).fill(null).map((_, index) => recentContent[index] || null);
   const displayInactive = Array(alumniPerPage).fill(null).map((_, index) => inactiveContent[index] || null);
@@ -191,7 +283,7 @@ export default function ActivityOverview() {
           </a>
         </div>
         <div className="flex-1 px-4">
-          <AdminTabs tabs ={tabs} currTab={currTab} size={"font-rb"} handleTabChange={handleTabChange}/>
+          <AdminTabs tabs={tabs} currTab={currTab} size={"font-rb"} handleTabChange={handleTabChange} />
           {currTab === "Recent Registrations" && (
             <div>
               {displayRecent.map((alumni, index) => (

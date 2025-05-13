@@ -70,10 +70,10 @@ export default function AdminAlumniLayout({ children }) {
           </div>
           <div className="pt-6 pb-4 overflow-y-scroll w-full scrollbar-hide">
             <div className="flex flex-row gap-3 min-w-max px-4 justify-center">
-              <AdminStatCard delay={0.0} title='Registered' value = {255} icon={<GraduationCap className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={"/admin/alumni/search"}/>
-              <AdminStatCard delay={0.1} title='Pending' value = {59} icon={<UserRoundPlus className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={false} onClick={() => dynamicTabClick("Pending")}/>
-              <AdminStatCard delay={0.2} title='Approved' value = {179} icon={<UserRoundCheck className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={false} onClick={() => dynamicTabClick("Approved")}/>
-              <AdminStatCard delay={0.3} title='Inactive' value = {12} icon={<UserRoundX className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={false} onClick={() => dynamicTabClick("Inactive")}/>
+              <AdminStatCard delay={0.0} title='Registered' value = {16} icon={<GraduationCap className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={"/admin/alumni/search"}/>
+              <AdminStatCard delay={0.1} title='Pending' value = {10} icon={<UserRoundPlus className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={false} onClick={() => dynamicTabClick("Pending")}/>
+              <AdminStatCard delay={0.2} title='Approved' value = {6} icon={<UserRoundCheck className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={false} onClick={() => dynamicTabClick("Approved")}/>
+              <AdminStatCard delay={0.3} title='Inactive' value = {0} icon={<UserRoundX className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={false} onClick={() => dynamicTabClick("Inactive")}/>
             </div>
           </div>
         </div>

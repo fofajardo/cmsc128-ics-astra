@@ -253,6 +253,7 @@ const updateJob =  async (req, res) => {
       location,
       location_type,
       employment_type,
+      requirements,
       expires_at
     } = req.body;
 
@@ -293,7 +294,7 @@ const updateJob =  async (req, res) => {
     }
 
     // Prepare update data
-    const allowedUpdates = ["job_title", "hiring_manager", "company_name", "salary", "apply_link", "location", "location_type", "employment_type", "expires_at"];
+    const allowedUpdates = ["job_title", "hiring_manager", "company_name", "salary", "apply_link", "location", "location_type", "employment_type", "expires_at", "requirements"];
     const updateData = {};
 
     allowedUpdates.forEach(field => {

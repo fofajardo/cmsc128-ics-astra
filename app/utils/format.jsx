@@ -6,6 +6,13 @@ export function capitalizeName(name) {
     .join(" ");
 }
 
+export function capitalizeTitle(title) {
+  return title
+    .split(" ")
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
 export function formatDate(date, format) {
   if (date === null) {
     return "N/A";

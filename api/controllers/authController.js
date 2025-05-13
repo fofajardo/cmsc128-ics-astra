@@ -157,7 +157,7 @@ async function signInSbExternalCallback(aRequest, aResponse, aNext) {
 }
 
 async function signInRedirectFe(aRequest, aResponse) {
-  return aResponse.redirect(process.env.ICSA_FE_URL);
+  return aResponse.redirect(process.env.ICSA_FE_URL + "/");
 }
 
 async function signInGate(aRequest, aResponse, aNext) {

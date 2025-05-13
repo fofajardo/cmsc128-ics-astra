@@ -8,7 +8,7 @@ import axios from "axios";
 import { v4 as uuvidv4 } from "uuid";
 import { useSignedInUser } from "../UserContext";
 
-export default function JobForm({isEdit, close}){
+export default function JobForm({isEdit, close, refreshJobs}){
   const user = useSignedInUser();
   const [showPrompt, setPrompt] = useState(false);
   const employmentOptions =[{value: "0", label: "Part-Time"},{value: "1", label: "Full-time"}, {value: "2", label: "Temporary"}, {value: "3", label: "Freelance"}];
@@ -62,6 +62,7 @@ export default function JobForm({isEdit, close}){
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs`, payload);
 
       if (response.data.status === "CREATED") {
+        await refreshJobs?.();
         close();
       }
 
