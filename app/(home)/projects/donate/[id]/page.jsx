@@ -134,7 +134,7 @@ export default function DonatePage() {
   if (status === "success") return <DonationSuccess />;
 
   return (
-    <div className="min-h-screen bg-[#f4f7fe] text-astralightgray-800 px-4 py-20">
+    <div className="min-h-screen bg-[#f4f7fe] text-astralightgray-800 px-4 py-10">
       {showToast && (
         <ToastNotification
           type={showToast.type}
@@ -178,9 +178,6 @@ export default function DonatePage() {
               onChange={(e) => handleAmountChange(e.target.value)}
               className="flex-1 px-3 py-2 border border-astralightgray-300 rounded-md text-center font-semibold text-lg focus:outline-none"
             />
-            <button disabled={true} className="select-none cursor-default hover:none text-sm bg-[var(--color-astraprimary)] text-astrawhite px-4 py-2 rounded-md font-medium">
-              Cash Amount
-            </button>
           </div>
         </div>
 
