@@ -9,7 +9,7 @@ import AdminTabs from "@/components/AdminTabs";
 import ToastNotification from "@/components/ToastNotification";
 import ProjectCardPending from "@/components/ProjectCardPending";
 import ProjectCardActive from "@/components/ProjectCardActive";
-import { formatCurrency, capitalizeName } from "@/utils/format";
+import { formatCurrency, capitalizeName, formatDate } from "@/utils/format";
 import { REQUEST_STATUS } from "@/constants/requestConsts";
 import { PROJECT_STATUS, PROJECT_TYPE } from "@/constants/projectConsts";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
@@ -68,7 +68,7 @@ export default function ProjectsAdmin() {
 
         // extract project id's
         const projectIds = projectData.list.map(project => project.projectData.project_id);
-        console.log(projectIds);
+        // console.log(projectIds);
 
         // map for photos initialization
         const photoMap = {};
@@ -91,10 +91,33 @@ export default function ProjectsAdmin() {
         await Promise.all(photoPromises);
         setProjectPhotos(photoMap);
 
+        // Check due dates and update project status to finished if past due date
+        const originalProjects = projectData.list;
+
+        // Check each project and update status if necessary
+        const updatedProjects = originalProjects.map((project) => ({
+          ...project,
+          projectData: {
+            ...project.projectData,
+            project_status: checkProjectStatus(project),
+          }
+        }));
+
+        console.log(updatedProjects);
+
+        // Get the list of updated projects (those whose status has changed)
+        const changedProjects = getUpdatedProjects(originalProjects, updatedProjects);
+        console.log("Project past their due dates (updated project_status to finished): ", changedProjects);
+        if (changedProjects.length > 0) {
+          const projectIdsToUpdate = changedProjects.map(project => project.projectData.project_id);
+          console.log("Project IDs to update in DB", projectIdsToUpdate);
+          await updateProjectsStatus(projectIdsToUpdate); // Update status in backend
+        }
+
         setProjects(
-          projectData.list.map(
+          updatedProjects.map(
             project => ({
-              status: project.projectData.project_status === PROJECT_STATUS.FINISHED ? REQUEST_STATUS.REJECTED : project.status,
+              status: project.projectData.project_status === PROJECT_STATUS.FINISHED ? REQUEST_STATUS.REJECTED : project.status,  // set project as inactive if project status finished or request rejected
               request_id: project.request_id,
               id: project.projectData.project_id,
               image: photoMap[project.projectData.project_id] || "/projects/assets/Donation.jpg",
@@ -145,12 +168,48 @@ export default function ProjectsAdmin() {
     }
   };
 
+  // Function to check project status based on today's date
+  const checkProjectStatus = (project) => {
+    const today = new Date();
+    return new Date(project.projectData.due_date) < today
+      ? project.status === REQUEST_STATUS.APPROVED ? PROJECT_STATUS.FINISHED
+        : project.projectData.project_status : project.projectData.project_status;
+  };
+
+  // Function to compare the current project with the updated project
+  const getUpdatedProjects = (originalProjects, updatedProjects) => {
+    return updatedProjects.filter(updatedProject => {
+      const originalProject = originalProjects.find(project => project.projectData.project_id === updatedProject.projectData.project_id);
+      if (!originalProject) return false; // Skip if no original project is found
+
+      // Check if there's a difference (e.g., status, due_date, etc.)
+      return originalProject.projectData.project_status !== updatedProject.projectData.project_status;
+    });
+  };
+
+  // Function to update the project status in the backend
+  const updateProjectsStatus = async (projectIds) => {
+    try {
+      // Send the project IDs to the backend for updating status
+      const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/projects/status`, { projectIds: projectIds, project_status: PROJECT_STATUS.FINISHED });
+      const updateData = response.data;
+      if (updateData.status === "UPDATED") {
+        console.log("Successfully updated! ", updateData);
+      } else {
+        console.error("Unexpected response:", updateData);
+      }
+    } catch (error) {
+      console.error("Error updating projects:", error);
+    }
+  };
+
   useEffect(() => {
     fetchDonationsSummary();
     fetchProjectRequests();
   }, []);
 
   useEffect(() => {
+
     setFilteredProjects(projects);
   }, [projects]);
 
@@ -236,16 +295,23 @@ export default function ProjectsAdmin() {
     );
   };
 
-  const handleApprove = (id, title) => (e) => {
+  const handleApprove = (id, title, endDate) => (e) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log(id);
-    console.log(title);
-    updateProjectRequest(REQUEST_STATUS.APPROVED, id);
-    setToast({
-      type: "success",
-      message: `${title} has been approved!`
-    });
+    if (new Date(endDate) < new Date()) {
+      setToast({
+        type: "fail",
+        message: `${title} is already past its due date (${formatDate(endDate, "short-month")})`
+      });
+    } else {
+      console.log(id);
+      console.log(title);
+      // updateProjectRequest(REQUEST_STATUS.APPROVED, id);
+      setToast({
+        type: "success",
+        message: `${title} has been approved!`
+      });
+    }
   };
 
   const handleDecline = (id, title) => (e) => {
@@ -472,7 +538,7 @@ export default function ProjectsAdmin() {
                       requester={project.requester}
                       goal={project.goal}
                       description={project.description}
-                      onApprove={handleApprove(project.request_id, project.title)}
+                      onApprove={handleApprove(project.request_id, project.title, project.endDate)}
                       onTriggerDeclineModal={handleDecline(project.request_id, project.title)}
                     />
                   ))}
