@@ -137,7 +137,7 @@ const createJob = async (req, res) => {
     if (details.length > 3000) {
       return res.status(httpStatus.BAD_REQUEST).json({
         status: "FAILED",
-        message: `Exceeded job description maximum character count`
+        message: "Exceeded job description maximum character count"
       });
     }
 
@@ -145,7 +145,7 @@ const createJob = async (req, res) => {
     if (requirements.length > 1500) {
       return res.status(httpStatus.BAD_REQUEST).json({
         status: "FAILED",
-        message: `Exceeded job requirements maximum character count`
+        message: "Exceeded job requirements maximum character count"
       });
     }
 
@@ -270,6 +270,7 @@ const updateJob =  async (req, res) => {
       location_type,
       employment_type,
       requirements,
+      details,
       expires_at
     } = req.body;
 
@@ -331,7 +332,7 @@ const updateJob =  async (req, res) => {
     if (details.length > 3000) {
       return res.status(httpStatus.BAD_REQUEST).json({
         status: "FAILED",
-        message: `Exceeded job description maximum character count`
+        message: "Exceeded job description maximum character count"
       });
     }
 
@@ -339,7 +340,7 @@ const updateJob =  async (req, res) => {
     if (requirements.length > 1500) {
       return res.status(httpStatus.BAD_REQUEST).json({
         status: "FAILED",
-        message: `Exceeded job requirements maximum character count`
+        message: "Exceeded job requirements maximum character count"
       });
     }
 
