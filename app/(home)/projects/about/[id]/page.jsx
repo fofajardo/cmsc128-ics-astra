@@ -188,12 +188,12 @@ export default function ProjectDetails({ params }) {
       // Open Gmail in a new tab
       window.open(gmailUrl, '_blank');
 
-      setToast({
-        type: "success",
+        setToast({
+          type: "success",
         message: "Opening Gmail...",
-      });
-      setIsContactModalOpen(false);
-      setMessage("");
+        });
+        setIsContactModalOpen(false);
+        setMessage("");
     } catch (error) {
       console.error("Failed to open Gmail:", error);
       setToast({

@@ -362,9 +362,9 @@ export default function ProjectsAdmin() {
         <img
           src="/blue-bg.png"
           alt="Background"
-          className="h-100 w-full object-cover"
+          className="h-[500px] w-full object-cover"
         />
-        <div className="absolute inset-2 flex flex-col items-center justify-evenly text-astrawhite z-20">
+        <div className="absolute inset-2 flex flex-col items-center justify-between text-astrawhite z-20 min-h-[500px]">
           <div className="text-center pt-6">
             <h1 className="font-h1">Projects</h1>
             <p className="font-s mt-2">Fueling futures, making a difference.</p>
@@ -416,17 +416,17 @@ export default function ProjectsAdmin() {
             </div>
           </div>
 
-          <div className="flex flex-row gap-8">
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 px-4 w-full max-w-2xl pb-12 items-center justify-center">
             {/* Create a project button */}
-            <Link href="/projects/request/goal" passHref>
-              <button className="mt-2 border-2 border-astrawhite text-astrawhite hover:bg-astrawhite hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-[200px] h-[60px]">
+            <Link href="/projects/request/goal" passHref className="w-full sm:w-auto">
+              <button className="mt-2 border-2 border-astrawhite text-astrawhite hover:bg-astrawhite hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-full sm:w-[200px] h-[60px]">
                 Create a Project
               </button>
             </Link>
 
             {/* Manage donations button */}
-            <Link href="/admin/donations" passHref>
-              <button className="mt-2 border-2 border-astrawhite text-astrawhite hover:bg-astrawhite hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-[200px] h-[60px]">
+            <Link href="/admin/donations" passHref className="w-full sm:w-auto">
+              <button className="mt-2 border-2 border-astrawhite text-astrawhite hover:bg-astrawhite hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-full sm:w-[200px] h-[60px]">
                 Manage Donations
               </button>
             </Link>
