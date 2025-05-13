@@ -9,12 +9,14 @@ import axios from "axios";
 import { formatCurrency, formatDate, capitalizeName } from "@/utils/format";
 import { PROJECT_STATUS, PROJECT_TYPE } from "@/constants/projectConsts";
 import { feRoutes } from "../../../../../common/routes";
+import { useSignedInUser } from "@/components/UserContext.jsx";
 
 //for admin/projects/inactive/[id]
 export default function InactiveProjectDetail({ params }) {
   //fix the params.id error by unwrapping with use()
   const id = use(params).id;
   const router = useRouter();
+  const userContext = useSignedInUser();
   const [toast, setToast] = useState(null);
   const [showContactModal, setShowContactModal] = useState(false);
   const [message, setMessage] = useState("");
@@ -170,33 +172,32 @@ export default function InactiveProjectDetail({ params }) {
     setIsShareModalOpen(true);
   };
 
-  //Open edit modal with current project data
-  // const handleEdit = () => {
-  //   const cleanedGoal = parseInt(projectData.goal.replace(/[^0-9]/g, ""), 10);
-  //   const cleanedRaised = parseInt(
-  //     projectData.raised.replace(/[^0-9]/g, ""),
-  //     10
-  //   );
-  //
-  //   setEditFormData({
-  //     ...projectData,
-  //     goal: cleanedGoal,
-  //     raised: cleanedRaised,
-  //   });
-  //   setErrors({});
-  //   setShowEditModal(true);
-  // };
-
   //handle send message button click
-  //placeholder
   const handleSendMessage = () => {
-    // In a real app, you would send this message to the backend
-    setToast({
-      type: "success",
-      message: "Message sent successfully!"
-    });
-    setShowContactModal(false);
-    setMessage("");
+    try {
+      // Create email subject and body
+      const subject = `Inquiry about ${projectData.title}`;
+      const emailBody = `Hello ${projectData.requester.name},\n\n${message}\n\nBest regards,\n${userContext?.state?.user?.name || userContext?.state?.user?.email || 'Anonymous'}`;
+
+      // Create Gmail URL with pre-filled information
+      const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(projectData.requester.email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
+
+      // Open Gmail in a new tab
+      window.open(gmailUrl, '_blank');
+
+      setToast({
+        type: "success",
+        message: "Opening Gmail...",
+      });
+      setShowContactModal(false);
+      setMessage("");
+    } catch (error) {
+      console.error("Failed to open Gmail:", error);
+      setToast({
+        type: "fail",
+        message: "Failed to open Gmail. Please try again.",
+      });
+    }
   };
 
   if (loading) {
