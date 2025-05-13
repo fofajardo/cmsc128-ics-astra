@@ -327,6 +327,10 @@ export function Header({fromAdmin}) {
   }, []);
 
   let items = fromAdmin ? menuItemsAdmin : menuItemsMain;
+  if (context.state.isGuest && !fromAdmin) {
+    delete items[NavMenuItemId.JOBS];
+    delete items[NavMenuItemId.ALUMNI_DIRECTORY];
+  }
 
   return (
     <>
