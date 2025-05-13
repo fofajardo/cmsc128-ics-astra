@@ -3,7 +3,8 @@
 import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { Calendar, X } from "lucide-react"; // import X icon
+import { Calendar, X } from "lucide-react"; // import X
+import ImageUploadSection from "@/components/events/IndividualEvent/EditEventModal/ImageUploadSection";
 
 export default function EventModal({
   isEdit,
@@ -202,6 +203,10 @@ export default function EventModal({
               className="border rounded px-3 py-2 w-full h-28"
               required={!isEdit}
             />
+          </div>
+
+          <div>
+            <ImageUploadSection image={image} setImage={setImage} />
           </div>
 
           {/* Buttons */}
