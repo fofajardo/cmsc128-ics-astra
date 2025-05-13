@@ -1,18 +1,85 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TableHeader, Table, PageTool } from "@/components/TableBuilder";
 import { ActionButton } from "@/components/Buttons";
 import ToastNotification from "@/components/ToastNotification";
 // Removed lucide icon imports
 import Link from "next/link";
 import {GoBackButton} from "@/components/Buttons";
+import axios from "axios";
+import { formatCurrency, formatDate } from "@/utils/format";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
+/*
+Contributors shown are unique by both name and project.
+If a contributor donated multiple times to the same project,
+they will appear only once, with the total amount summed under the Donation column.
+*/
 export default function Contributors() {
   const [showFilter, setShowFilter] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
   const [toast, setToast] = useState(null);
   const [tempSelectedProject, setTempSelectedProject] = useState("All");
   const [selectedProject, setSelectedProject] = useState("All");
+  const [loading, setLoading] = useState(true);
+  const [contributors, setContributors] = useState([]);
+
+  function combineContributorsByNameAndProject(contributors) {
+    const grouped = {};
+
+    contributors.forEach(contributor => {
+      const key = `${contributor.name}-${contributor.project}`;
+
+      if (!grouped[key]) {
+        grouped[key] = {
+          ...contributor,
+          donation: Number(contributor.donation) || 0
+        };
+      } else {
+        grouped[key].donation += Number(contributor.donation) || 0;
+      }
+    });
+
+    return Object.values(grouped);
+  }
+
+
+  useEffect(() => {
+    const fetchContributors = async () => {
+      try {
+        setLoading(true);
+        const contributorResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/project-contributors`);
+        const contributorData = contributorResponse.data;
+        console.log(contributorData);
+        if (contributorData.status === "OK") {
+
+          const uniqueProjectContributors = combineContributorsByNameAndProject(contributorData.list);
+
+          setContributors(
+            uniqueProjectContributors.map(
+              (contributor, index) => ({
+                id: index + 1,
+                name: contributor.name,
+                email: contributor.email,
+                project: contributor.project,
+                amount: contributor.donation,
+                date: contributor.donation_date
+              })
+            )
+          );
+
+        } else {
+          console.error("Unexpected response:", contributorData);
+        }
+      } catch (error) {
+        console.error("Failed to fetch contributors:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchContributors();
+  }, []);
 
   // Information for the table header
   const [info, setInfo] = useState({
@@ -50,7 +117,7 @@ export default function Contributors() {
   };
 
   // Filter contributors by search query and project
-  const filteredContributors = contributorsData
+  const filteredContributors = contributors
     .filter(contributor => {
       // First filter by project if not "All"
       if (selectedProject !== "All" && contributor.project !== selectedProject) {
@@ -68,8 +135,8 @@ export default function Contributors() {
         contributor.name.toLowerCase().includes(query) ||
         contributor.email.toLowerCase().includes(query) ||
         contributor.project.toLowerCase().includes(query) ||
-        contributor.amount.toLowerCase().includes(query) ||
-        contributor.date.toLowerCase().includes(query)
+        String(contributor.amount).includes(query) ||
+        new Date(contributor.date).toLocaleDateString("en-US").includes(query)
       );
     });
 
@@ -125,7 +192,7 @@ export default function Contributors() {
                   onChange={(e) => setTempSelectedProject(e.target.value)}
                 >
                   <option value="All">All Projects</option>
-                  {Array.from(new Set(contributorsData.map(c => c.project))).map(project => (
+                  {Array.from(new Set(contributors.map(c => c.project))).map(project => (
                     <option key={project} value={project}>{project}</option>
                   ))}
                 </select>
@@ -188,8 +255,15 @@ export default function Contributors() {
             setSearchQuery={handleSearch}
             searchQuery={searchQuery}
           />
-          {currentContributors.length > 0 ? (
-            <Table cols={cols} data={createRows(currentContributors, selectedIds, setSelectedIds, setToast)} />
+          {loading ? (
+            <div className="bg-astrawhite p-6 rounded-b-xl flex items-center justify-center">
+              <LoadingSpinner className="h-10 w-10" />
+            </div>
+          ) : currentContributors.length > 0 ? (
+            <Table
+              cols={cols}
+              data={createRows(currentContributors, selectedIds, setSelectedIds, setToast)}
+            />
           ) : (
             <div className="py-8 text-center text-astradarkgray">
               No contributors found matching your search criteria.
@@ -225,7 +299,7 @@ function createRows(contributors, selectedIds, setSelectedIds, setToast) {
     "Email": renderText(contributor.email),
     "Project": renderText(contributor.project),
     "Donation": renderAmount(contributor.amount),
-    "Date": renderText(contributor.date),
+    "Date": renderDate(contributor.date),
   }));
 }
 
@@ -241,211 +315,9 @@ function renderText(text) {
 }
 
 function renderAmount(amount) {
-  return <div className="text-center text-astragreen font-s font-semibold">{amount}</div>;
+  return <div className="text-center text-astragreen font-s font-semibold">{formatCurrency(amount)}</div>;
 }
 
-// Action rendering function removed
-
-// Sample contributor data
-const contributorsData = [
-  {
-    id: 1,
-    name: "Juan Dela Cruz",
-    email: "juan.delacruz@example.com",
-    project: "Computer Science Scholarship Fund",
-    amount: "₱25,000",
-    date: "2025-01-15"
-  },
-  {
-    id: 2,
-    name: "Maria Santos",
-    email: "maria.santos@example.com",
-    project: "Programming Lab Equipment Drive",
-    amount: "₱15,000",
-    date: "2025-01-18"
-  },
-  {
-    id: 3,
-    name: "Roberto Lim",
-    email: "roberto.lim@example.com",
-    project: "ICS Building Renovation Fund",
-    amount: "₱50,000",
-    date: "2025-01-20"
-  },
-  {
-    id: 4,
-    name: "Ana Reyes",
-    email: "ana.reyes@example.com",
-    project: "CS Library Enhancement Fund",
-    amount: "₱10,000",
-    date: "2025-01-22"
-  },
-  {
-    id: 5,
-    name: "Carlos Gonzales",
-    email: "carlos.gonzales@example.com",
-    project: "Computer Science Scholarship Fund",
-    amount: "₱30,000",
-    date: "2025-01-25"
-  },
-  {
-    id: 6,
-    name: "Sofia Mendoza",
-    email: "sofia.mendoza@example.com",
-    project: "Hackathon Sponsorship Fund",
-    amount: "₱5,000",
-    date: "2025-01-27"
-  },
-  {
-    id: 7,
-    name: "Miguel Tan",
-    email: "miguel.tan@example.com",
-    project: "International Exchange Scholarship",
-    amount: "₱20,000",
-    date: "2025-01-30"
-  },
-  {
-    id: 8,
-    name: "Elena Garcia",
-    email: "elena.garcia@example.com",
-    project: "IT Career Conference Fund",
-    amount: "₱8,000",
-    date: "2025-02-01"
-  },
-  {
-    id: 9,
-    name: "Pedro Aquino",
-    email: "pedro.aquino@example.com",
-    project: "Alumni Network Infrastructure Fund",
-    amount: "₱12,000",
-    date: "2025-02-03"
-  },
-  {
-    id: 10,
-    name: "Lucia Diaz",
-    email: "lucia.diaz@example.com",
-    project: "Computer Science Scholarship Fund",
-    amount: "₱18,000",
-    date: "2025-02-05"
-  },
-  {
-    id: 11,
-    name: "Antonio Castro",
-    email: "antonio.castro@example.com",
-    project: "Programming Lab Equipment Drive",
-    amount: "₱22,000",
-    date: "2025-02-07"
-  },
-  {
-    id: 12,
-    name: "Isabella Santiago",
-    email: "isabella.santiago@example.com",
-    project: "ICS Building Renovation Fund",
-    amount: "₱35,000",
-    date: "2025-02-10"
-  },
-  {
-    id: 13,
-    name: "Gabriel Ramos",
-    email: "gabriel.ramos@example.com",
-    project: "CS Library Enhancement Fund",
-    amount: "₱7,500",
-    date: "2025-02-12"
-  },
-  {
-    id: 14,
-    name: "Camila Bautista",
-    email: "camila.bautista@example.com",
-    project: "Hackathon Sponsorship Fund",
-    amount: "₱10,000",
-    date: "2025-02-15"
-  },
-  {
-    id: 15,
-    name: "Alejandro Torres",
-    email: "alejandro.torres@example.com",
-    project: "International Exchange Scholarship",
-    amount: "₱15,000",
-    date: "2025-02-18"
-  },
-  {
-    id: 16,
-    name: "Valentina Cruz",
-    email: "valentina.cruz@example.com",
-    project: "IT Career Conference Fund",
-    amount: "₱9,000",
-    date: "2025-02-20"
-  },
-  {
-    id: 17,
-    name: "Samuel Pascual",
-    email: "samuel.pascual@example.com",
-    project: "Alumni Network Infrastructure Fund",
-    amount: "₱11,000",
-    date: "2025-02-22"
-  },
-  {
-    id: 18,
-    name: "Olivia Fernandez",
-    email: "olivia.fernandez@example.com",
-    project: "Computer Science Scholarship Fund",
-    amount: "₱20,000",
-    date: "2025-02-25"
-  },
-  {
-    id: 19,
-    name: "David Marquez",
-    email: "david.marquez@example.com",
-    project: "Programming Lab Equipment Drive",
-    amount: "₱18,000",
-    date: "2025-02-28"
-  },
-  {
-    id: 20,
-    name: "Sophia Reyes",
-    email: "sophia.reyes@example.com",
-    project: "ICS Building Renovation Fund",
-    amount: "₱25,000",
-    date: "2025-03-02"
-  },
-  {
-    id: 21,
-    name: "Mateo Luna",
-    email: "mateo.luna@example.com",
-    project: "CS Library Enhancement Fund",
-    amount: "₱8,500",
-    date: "2025-03-05"
-  },
-  {
-    id: 22,
-    name: "Victoria Gomez",
-    email: "victoria.gomez@example.com",
-    project: "Hackathon Sponsorship Fund",
-    amount: "₱6,000",
-    date: "2025-03-08"
-  },
-  {
-    id: 23,
-    name: "Javier Flores",
-    email: "javier.flores@example.com",
-    project: "International Exchange Scholarship",
-    amount: "₱17,000",
-    date: "2025-03-10"
-  },
-  {
-    id: 24,
-    name: "Aurora Santos",
-    email: "aurora.santos@example.com",
-    project: "Computer Science Scholarship Fund",
-    amount: "₱15,000",
-    date: "2025-03-12"
-  },
-  {
-    id: 25,
-    name: "Benjamin Rivera",
-    email: "benjamin.rivera@example.com",
-    project: "Alumni Network Infrastructure Fund",
-    amount: "₱10,000",
-    date: "2025-03-15"
-  }
-];
+function renderDate(date) {
+  return <div className="text-center text-astradarkgray font-s">{formatDate(date)}</div>;
+}
