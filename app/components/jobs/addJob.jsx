@@ -53,7 +53,7 @@ export default function JobForm({isEdit, close, refreshJobs}){
       location_type: locationType?.value,
       hiring_manager: formData.company_name,
       employment_type: 1,
-      salary: formData.salary,
+      salary: Number(formData.salary.replace(/,/g, '')),
       expires_at: formData.expires_at,
       apply_link: formData.apply_link,
       details: formData.details,
@@ -159,7 +159,7 @@ export default function JobForm({isEdit, close, refreshJobs}){
                 <p className="text-sm text-astrared self-end">Required</p> : <></>
               }
             </div>
-            <input type="text" placeholder="Ex: ₱40,000 - ₱50,000" onChange={handleChange} value={formData.salary} name="salary" className='focus:border-astraprimary placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
+            <input type="text" placeholder="Ex: 40,000" onChange={handleChange} value={formData.salary} name="salary" className='focus:border-astraprimary placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
           </div>
 
           <div>
