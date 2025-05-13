@@ -1,9 +1,9 @@
 export const RouteGuardMode = Object.freeze({
   AUTO: "auto",
-  RA: "authenticated",
-  RU: "unauthenticated",
-  AUTH_SIGN_UP: "auth-sign-up",
-  ADMIN: "admin",
+  AUTHENTICATED: "auth",
+  AUTHENTICATED_ADMIN: "auth-admin",
+  AUTHENTICATED_SIGN_UP: "auth-sign-up",
+  UNAUTHENTICATED: "unauthenticated",
 });
 
 const RoleName = Object.freeze({

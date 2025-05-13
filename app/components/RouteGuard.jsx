@@ -1,22 +1,28 @@
 "use client";
 
 import {useSignedInUser} from "@/components/UserContext.jsx";
-import {useContext, useLayoutEffect} from "react";
-import {redirect, useRouter} from "next/navigation";
+import {useLayoutEffect, useState} from "react";
+import {redirect} from "next/navigation";
 import {feRoutes} from "../../common/routes.js";
 import {RouteGuardMode} from "../../common/scopes.js";
 
-export function RouteGuard({mode, onChange}) {
-  const requireAdmin = mode === RouteGuardMode.ADMIN;
-  const requireAuthenticated = mode === RouteGuardMode.RA || requireAdmin;
-  const requireUnauthenticated = mode === RouteGuardMode.RU;
+const RouteGuardStatus = Object.freeze({
+  WAITING: 0,
+  NO_REDIRECT: -1,
+});
+
+export function RouteGuard({component, isBlocking, mode, onChange}) {
+  const [visible, setVisible] = useState(isBlocking === undefined ? false : !isBlocking);
+  const requireAdmin = mode === RouteGuardMode.AUTHENTICATED_ADMIN;
+  const requireAuthenticated = mode === RouteGuardMode.AUTHENTICATED || requireAdmin;
+  const requireUnauthenticated = mode === RouteGuardMode.UNAUTHENTICATED;
 
   const userContext = useSignedInUser();
 
   const handleRedirect = function() {
     if (!userContext.state.initialized) {
       userContext.actions.setRouteInitialized(false);
-      return -1;
+      return RouteGuardStatus.WAITING;
     }
 
     if (requireAuthenticated && requireUnauthenticated) {
@@ -24,7 +30,7 @@ export function RouteGuard({mode, onChange}) {
     }
 
     // Block alumnus if they don't have a profile yet.
-    if (mode !== RouteGuardMode.AUTH_SIGN_UP) {
+    if (mode !== RouteGuardMode.AUTHENTICATED_SIGN_UP) {
       if (userContext.state.isAlumnus && !userContext.state.profile) {
         return feRoutes.auth.signUp();
       }
@@ -61,21 +67,20 @@ export function RouteGuard({mode, onChange}) {
 
     userContext.actions.setRouteInitialized(true);
 
-    return -1;
+    return RouteGuardStatus.NO_REDIRECT;
   };
 
   useLayoutEffect(() => {
     const result = handleRedirect();
-    if (result !== -1) {
-      redirect(result);
+    if (result === RouteGuardStatus.WAITING) {
+      return;
+    } else if (result !== RouteGuardStatus.NO_REDIRECT) {
+      return redirect(result);
     }
+    setVisible(true);
   }, [userContext.state]);
-}
 
-export function RouteGuardAuthenticated() {
-  return <RouteGuard mode={RouteGuardMode.RA} />;
-}
-
-export function RouteGuardUnauthenticated() {
-  return <RouteGuard mode={RouteGuardMode.RU} />;
+  if (visible) {
+    return component;
+  }
 }
