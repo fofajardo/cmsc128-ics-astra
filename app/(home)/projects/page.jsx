@@ -132,6 +132,13 @@ export default function ProjectsPage() {
       .includes(searchTerm.toLowerCase());
     const matchesStatus = selectedStatus === "All" || project.project_status === selectedStatus;
     return matchesType && matchesSearch && matchesStatus;
+  }).sort((a, b) => {
+    if (sortOrder === "Recent") {
+      return new Date(b.endDate) - new Date(a.endDate);
+    } else if (sortOrder === "Oldest") {
+      return new Date(a.endDate) - new Date(b.endDate);
+    }
+    return 0;
   });
 
   const visibleCompletedProjects = finishedProjects.slice(
@@ -316,8 +323,8 @@ export default function ProjectsPage() {
                 </button>
                 {showSortDropdown && (
                   <div className="absolute mt-2 bg-white border border-gray-300 rounded shadow-md z-10 w-48">
-                    <button onClick={() => { setSortOrder("Recent"); setShowSortDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">Most Recent</button>
-                    <button onClick={() => { setSortOrder("Oldest"); setShowSortDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">Oldest</button>
+                    <button onClick={() => { setSortOrder("Recent"); setShowSortDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">Descending Due Date</button>
+                    <button onClick={() => { setSortOrder("Oldest"); setShowSortDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">Ascending Due Date</button>
                   </div>
                 )}
               </div>
@@ -612,10 +619,10 @@ export default function ProjectsPage() {
       <section className="bg-astralightgray pt-20 pb-30">
         <div className="max-w-7xl mx-auto px-4 relative">
           <h2 className="font-h2 text-astrablack mb-3">
-            Finished Fundraisers
+            Inactive Projects
           </h2>
           <p className="text-astrablack font-r mb-10">
-            See the fundraisers and scholarships we&apos;ve brought to life together.
+            See the projects we&apos;ve brought to life together.
           </p>
 
           <div className="relative">

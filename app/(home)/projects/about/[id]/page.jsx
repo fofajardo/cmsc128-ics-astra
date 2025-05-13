@@ -54,6 +54,10 @@ export default function ProjectDetails({ params }) {
     Math.round((raisedValue / goalValue) * 100),
     100
   );
+  const handleDonateClick = (e) => {
+    e.stopPropagation(); // prevents the outer link from triggering
+    router.push(`/projects/donate/${requestId}`);
+  };
 
   // Add timeout for image loading
   useEffect(() => {
@@ -413,15 +417,6 @@ export default function ProjectDetails({ params }) {
                 <Share2 className="w-5 h-5" />
                 Share
               </button>
-              {projectData?.status !== 2 && !loading && userContext.state.user && (
-                <button
-                  onClick={() => router.push(`/projects/donate/${projectData?.id}?title=${encodeURIComponent(projectData?.title)}`)}
-                  className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-astraprimary text-white rounded-lg hover:bg-astraprimary/90 transition-colors font-medium"
-                >
-                  <HeartHandshake className="w-5 h-5" />
-                  Donate
-                </button>
-              )}
             </div>
           </div>
 
