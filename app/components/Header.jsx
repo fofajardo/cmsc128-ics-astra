@@ -25,19 +25,7 @@ import {useSignedInUser} from "@/components/UserContext.jsx";
 import {LoadingSpinner} from "@/components/LoadingSpinner.jsx";
 import {feRoutes} from "../../common/routes.js";
 import {useRouter} from "next/navigation";
-
-export const NavMenuItemId = Object.freeze({
-  HOME: "home",
-  ABOUT: "about",
-  EVENTS: "events",
-  PROJECTS: "projects",
-  ALUMNI_DIRECTORY: "alumni-directory",
-  NEWS: "news",
-  JOBS: "jobs",
-  ALUMNI: "alumni",
-  ALUMNI_ACCESS: "alumni-access",
-  ORGANIZATIONS: "organizations"
-});
+import {NavMenuItemId} from "../../common/scopes.js";
 
 const menuItemsMain = {
   [NavMenuItemId.HOME]: {

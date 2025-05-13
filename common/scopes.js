@@ -123,6 +123,19 @@ const EmploymentStatus = Object.freeze({
   },
 });
 
+export const NavMenuItemId = Object.freeze({
+  HOME: "home",
+  ABOUT: "about",
+  EVENTS: "events",
+  PROJECTS: "projects",
+  ALUMNI_DIRECTORY: "alumni-directory",
+  NEWS: "news",
+  JOBS: "jobs",
+  ALUMNI: "alumni",
+  ALUMNI_ACCESS: "alumni-access",
+  ORGANIZATIONS: "organizations"
+});
+
 export {
   RoleName,
   Subjects,
