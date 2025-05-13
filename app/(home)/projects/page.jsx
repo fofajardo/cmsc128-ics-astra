@@ -610,10 +610,10 @@ export default function ProjectsPage() {
       <section className="bg-astralightgray pt-20 pb-30">
         <div className="max-w-7xl mx-auto px-4 relative">
           <h2 className="font-h2 text-astrablack mb-3">
-            Finished Fundraisers
+            Inactive Projects
           </h2>
           <p className="text-astrablack font-r mb-10">
-            See the fundraisers and scholarships we&apos;ve brought to life together.
+            See the projects we&apos;ve brought to life together.
           </p>
 
           <div className="relative">
