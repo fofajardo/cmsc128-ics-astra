@@ -1,12 +1,14 @@
 "use client";
 
-import {X} from "lucide-react";
 import Select from "react-select";
 import { useState } from "react";
 import ConfirmationPrompt from "./edit/confirmation";
 import axios from "axios";
 import { v4 as uuvidv4 } from "uuid";
 import { useSignedInUser } from "../UserContext";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { Calendar, X, Upload, Image as ImageIcon, Trash2  } from "lucide-react";
 
 export default function JobForm({isEdit, close, refreshJobs}){
   const user = useSignedInUser();
@@ -15,11 +17,43 @@ export default function JobForm({isEdit, close, refreshJobs}){
   const locationOptions =[{value: "0", label: "Onsite"},{value: "1", label: "Remote"}, {value: "2", label: "Hybrid"}];
   const statusOptions =[{value: "0", label: "Open"},{value: "1", label: "Closed"}];
   const [errors, setErrors] = useState({});
-
   const [formData, setFormData] = useState({company_name: "", job_title: "", location: "", salary: "", apply_link: "", details: "", expires_at: "", job_requirements: "", hiring_manager: ""});
   const [employmentType, setEmploymentType] = useState(null);
   const [locationType, setLocationType] = useState(null);
   const [status, setStatus] = useState(null);
+  const [showInvalidDateModal, setShowInvalidDateModal] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(formData.event_date ? new Date(formData.event_date) : null);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleDateChange = (date) => {
+    if (!date) return;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    date.setHours(0, 0, 0, 0);
+
+    if (date < today) {
+      setShowInvalidDateModal(true);
+      return;
+    }
+
+    setSelectedDate(date);
+
+    handleChange({
+      target: {
+        name: "expires_at",
+        value: date.toISOString().split("T")[0],
+      },
+    });
+  };
+
+  const normalizeUrl = (url) => {
+    if (!url) return "";
+    return url.startsWith("http://") || url.startsWith("https://")
+      ? url
+      : `https://${url}`;
+  };
 
   const handleClear = () => {
     setFormData({company_name: "", job_title: "", location: "", salary: "", apply_link: "", details: "", expires_at: "", job_requirements: "", hiring_manager: ""});
@@ -27,12 +61,14 @@ export default function JobForm({isEdit, close, refreshJobs}){
     setLocationType(null);
     setStatus(null);
     setErrors({});
+    setSelectedDate(null);
   };
 
   const handleChange = (e) => {
-    e.preventDefault();
-    const {name, value} = e.target;
-    // console.log({name, value});
+    if (e?.preventDefault) e.preventDefault();
+
+    const { name, value } = e.target;
+
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -47,31 +83,32 @@ export default function JobForm({isEdit, close, refreshJobs}){
       location_type: locationType?.value,
       hiring_manager: formData.company_name,
       employment_type: 1,
-      salary: formData.salary,
+      salary: Number(formData.salary.replace(/,/g, "")),
       expires_at: formData.expires_at,
-      apply_link: formData.apply_link,
+      apply_link: normalizeUrl(formData.apply_link),
       details: formData.details,
       requirements: formData.job_requirements,
-      user_id: user?.state?.user.id,
+      user_id: user.state.user.id,
     };
-    console.log(formData.job_requirements);
-    console.log(payload.requirments);
-    try {
-      console.log("Sending payload:", payload);
 
+    try {
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs`, payload);
 
       if (response.data.status === "CREATED") {
         await refreshJobs?.();
         close();
       }
-
     } catch (error) {
+      let message = "An unexpected error occurred. Please try again.";
       if (axios.isAxiosError(error)) {
-        console.error("Axios error:", error.response?.data || error.message);
+        message = error.response?.data?.message || error.message;
+        console.error("Axios error:", message);
       } else {
         console.error("Unexpected error:", error);
       }
+
+      setErrorMessage(message);
+      setShowErrorModal(true);
     }
   };
 
@@ -157,7 +194,7 @@ export default function JobForm({isEdit, close, refreshJobs}){
                 <p className="text-sm text-astrared self-end">Required</p> : <></>
               }
             </div>
-            <input type="text" placeholder="Ex: ₱40,000 - ₱50,000" onChange={handleChange} value={formData.salary} name="salary" className='focus:border-astraprimary placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
+            <input type="text" placeholder="Ex: 40,000" onChange={handleChange} value={formData.salary} name="salary" className='focus:border-astraprimary placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
           </div>
 
           <div>
@@ -171,15 +208,19 @@ export default function JobForm({isEdit, close, refreshJobs}){
               styles={selectBaseStyle}/>
           </div>
 
-          <div className=''>
-            <div className='flex flex-row gap-2 items-center justify-between'>
-              <label className='text-black font-medium text-lg'>Deadline of Applications</label>
-              {errors.expires_at ?
-                <p className="text-sm text-astrared self-end">Required</p> : <></>
-              }
+          <div>
+            <label className="block font-medium mb-1">Deadline of Applications</label>
+            <div className="flex items-center border rounded px-3 py-2 w-full gap-2">
+              <Calendar className="text-astraprimary w-5 h-5" />
+              <DatePicker
+                selected={selectedDate}
+                onChange={handleDateChange}
+                dateFormat="yyyy-MM-dd"
+                placeholderText="Select date"
+                className="w-full outline-none cursor-pointer"
+                required={!isEdit}
+              />
             </div>
-            <input  type="date" placeholder="YYYY/MM/DD" onChange={handleChange} className='focus:border-astraprimary !cursor-pointer placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'
-              name={"expires_at"} style={{ colorScheme: "light", accentColor: "#0E6CF3" }}></input>
           </div>
 
           <div>
@@ -201,6 +242,7 @@ export default function JobForm({isEdit, close, refreshJobs}){
               }
             </div>
             <input type="text" placeholder="Ex: https://hiring.com/apply" onChange={handleChange} value={formData.apply_link} name="apply_link" className='focus:border-astraprimary placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'></input>
+            {formData.apply_link && !formData.apply_link.match(/^https?:\/\/.+\..+/) && (<p className="text-sm text-astrared mt-1">Link must start with http:// or https://</p>)}
           </div>
 
           <div className=''>
@@ -238,10 +280,35 @@ export default function JobForm({isEdit, close, refreshJobs}){
 
         <div className="flex justify-between my-4 px-8">
           <button onClick={handleClear} className="!cursor-pointer text-astraprimary border-1 border-astraprimary font-semibold w-35 py-2 rounded-lg text-base">Clear Details</button>
-          <button onClick={()=>{setPrompt(true);}} className="focus:border-astraprimary !cursor-pointer text-astrawhite border-1 border-astraprimary bg-astraprimary font-semibold w-35 py-2 rounded-lg text-base">Publish Post</button>
+          <button
+            onClick={() => {
+              setPrompt(true);
+            }}
+            className="cursor-pointer text-astrawhite border border-astraprimary bg-astraprimary font-semibold w-35 py-2 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-astraprimary">Publish Post</button>
         </div>
-
       </div>
       {showPrompt ? <ConfirmationPrompt prompt={"Are you sure you want to post this job posting?"} close={()=>setPrompt(false)} handleConfirm={handleAdd}/> : <></>}
+      {showInvalidDateModal && (
+        <div className="fixed inset-0 bg-astrablack/60 flex items-center justify-center z-100">
+          <div className="bg-astrawhite max-w-[600px] w-19/20 min-h-[100px] h-auto rounded-2xl p-7 pb-5">
+            <h2 className="text-xl font-semibold mb-4">Invalid Deadline</h2>
+            <p className="mb-6">The deadline must be today or a future date.</p>
+            <button onClick={() => setShowInvalidDateModal(false)} className="px-4 py-2 bg-astraprimary text-white rounded hover:bg-opacity-90">
+              Confirm
+            </button>
+          </div>
+        </div>
+      )}
+      {showErrorModal && (
+        <div className="fixed inset-0 bg-astrablack/60 flex items-center justify-center z-100">
+          <div className="bg-astrawhite max-w-[600px] w-19/20 min-h-[100px] h-auto rounded-2xl p-7 pb-5">
+            <h2 className="text-xl font-semibold mb-4">Error Posting Job</h2>
+            <p className="mb-6 text-gray-700">Please check job fields</p>
+            <button onClick={() => setShowErrorModal(false)} className="px-4 py-2 bg-astraprimary text-white rounded hover:bg-opacity-90">
+              Confirm
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );}

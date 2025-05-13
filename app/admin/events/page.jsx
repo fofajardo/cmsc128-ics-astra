@@ -71,6 +71,7 @@ export default function Events() {
     access_link: "",
     description: "",
     tags : [],
+    imageFile: null,
   });
 
   const defaultFormData = {
@@ -441,6 +442,30 @@ export default function Events() {
             `${process.env.NEXT_PUBLIC_API_URL}/v1/events`,
             eventToAdd
           );
+
+          // If we have an image file, upload it
+          if (addFormData.imageFile) {
+            const formData = new FormData();
+            formData.append("File", addFormData.imageFile);
+            formData.append("content_id", contentId);
+            formData.append("type", 3); // Type 3 is for event_pic as defined in the API
+
+            // Upload the image
+            const photoResponse = await axios.post(
+              `${process.env.NEXT_PUBLIC_API_URL}/v1/photos`,
+              formData,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                },
+              }
+            );
+
+            if (photoResponse.data.status === "CREATED") {
+              console.log("Event photo uploaded successfully");
+            }
+          }
+
           if (eventResponse.data.status === "CREATED") {
             setToast({ type: "success", message: "Event published successfully!" });
             toggleAddModal();

@@ -1,10 +1,11 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AdminStatCard from "@/components/AdminStatCard";
 import AdminTabs from "@/components/AdminTabs";
-import {GraduationCap, UserRoundPlus, UserRoundCheck, UserRoundX } from "lucide-react";
+import { GraduationCap, UserRoundPlus, UserRoundCheck, UserRoundX } from "lucide-react";
 import { TabContext } from "../../../components/TabContext";
 import { useRouter, usePathname } from "next/navigation";
+import axios from "axios";
 
 export default function AdminAlumniLayout({ children }) {
   const router = useRouter();
@@ -14,11 +15,40 @@ export default function AdminAlumniLayout({ children }) {
     search: "Search for an alumni",
   });
 
-  const tabs = {
-    "Pending": 3,
+  const [tabs, setTabs] = useState({
+    "Pending": 0,
     "Approved": 0,
-    "Inactive": 2,
-  };
+    "Inactive": 0,
+  });
+
+  const [stats, setStats] = useState({
+    pending: 0,
+    approved: 0,
+    inactive: 0,
+  });
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  useEffect(() => {
+    const fetchAlumniStats = async () => {
+      try {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-stats`);
+        setTabs({
+          "Pending": response.data.stats.pending_alumni_count,
+          "Approved": response.data.stats.approved_alumni_count,
+          "Inactive": response.data.stats.inactive_alumni_count,
+        });
+        setStats({
+          pending: response.data.stats.pending_alumni_count,
+          approved: response.data.stats.approved_alumni_count,
+          inactive: response.data.stats.inactive_alumni_count,
+        });
+      } catch (error) {
+        console.error("Failed to fetch alumni stats:", error);
+      }
+    };
+
+    fetchAlumniStats();
+  }, [refreshTrigger]);
 
   const [currTab, setCurrTab] = useState("Pending");
 
@@ -29,10 +59,6 @@ export default function AdminAlumniLayout({ children }) {
       ...prev,
       title: `${newTab} Accounts`,
     }));
-
-    // Reset Filters and Pagination
-    // Then refetch alumList
-
   };
 
   // main tab switcher for the list page
@@ -45,11 +71,11 @@ export default function AdminAlumniLayout({ children }) {
     router.push("/admin/alumni/manage-access");
   };
 
-  //if from profile page, go back and set tab
+  // if from profile page, go back and set tab
   const dynamicTabClick = (tabName) => {
-    if (pathname === "/admin/alumni/manage-access"){
+    if (pathname === "/admin/alumni/manage-access") {
       handleTabChange(tabName);
-    }else {
+    } else {
       handleGoToTab(tabName);
     }
   };
@@ -70,19 +96,20 @@ export default function AdminAlumniLayout({ children }) {
           </div>
           <div className="pt-6 pb-4 overflow-y-scroll w-full scrollbar-hide">
             <div className="flex flex-row gap-3 min-w-max px-4 justify-center">
-              <AdminStatCard delay={0.0} title='Registered' value = {16} icon={<GraduationCap className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={"/admin/alumni/search"}/>
-              <AdminStatCard delay={0.1} title='Pending' value = {10} icon={<UserRoundPlus className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={false} onClick={() => dynamicTabClick("Pending")}/>
-              <AdminStatCard delay={0.2} title='Approved' value = {6} icon={<UserRoundCheck className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={false} onClick={() => dynamicTabClick("Approved")}/>
-              <AdminStatCard delay={0.3} title='Inactive' value = {0} icon={<UserRoundX className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={false} onClick={() => dynamicTabClick("Inactive")}/>
+              <AdminStatCard delay={0.1} title='Pending' value={stats.pending} icon={<UserRoundPlus className='size-13 text-astrawhite/>' strokeWidth={1.5} />} route={false} onClick={() => dynamicTabClick("Pending")} />
+              <AdminStatCard delay={0.2} title='Approved' value={stats.approved} icon={<UserRoundCheck className='size-13 text-astrawhite/>' strokeWidth={1.5} />} route={false} onClick={() => dynamicTabClick("Approved")} />
+              <AdminStatCard delay={0.3} title='Inactive' value={stats.inactive} icon={<UserRoundX className='size-13 text-astrawhite/>' strokeWidth={1.5} />} route={false} onClick={() => dynamicTabClick("Inactive")} />
             </div>
           </div>
         </div>
       </div>
       {/* pass the value of currTab and info to the children */}
-      <TabContext.Provider value={{ currTab, setCurrTab, info, setInfo }}>
-        <AdminTabs tabs ={tabs} currTab={currTab} handleTabChange={dynamicTabClick}/>
+      <TabContext.Provider value={{ currTab, setCurrTab, info, setInfo, refreshTrigger, setRefreshTrigger }}>
+        <AdminTabs tabs={tabs} currTab={currTab} handleTabChange={dynamicTabClick} />
         {children}
       </TabContext.Provider>
     </>
   );
+
+  // <AdminStatCard delay={0.0} title='Registered' value={stats.approved + stats.pending} icon={<GraduationCap className='size-13 text-astrawhite/>' strokeWidth={1.5} />} route={"/admin/alumni/search"} />
 }
