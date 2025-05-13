@@ -1,5 +1,6 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { TabContext } from "@/components/TabContext";
 import { TableHeader, PageTool } from "@/components/TableBuilder";
 import { Filter, Plus, Trash2, Edit2 } from "lucide-react";
 import { useTab } from "@/components/TabContext";
@@ -11,6 +12,7 @@ import axios from "axios";
 export default function CommunicationPage() {
   const router = useRouter();
   const { currTab } = useTab();
+  const { setDashboard } = useContext(TabContext);
   const [toast, setToast] = useState(null);
   const [showFilter, setShowFilter] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -61,6 +63,10 @@ export default function CommunicationPage() {
   useEffect(() => {
     const total = filteredAnnouncements.length;
     const lastPage = Math.ceil(total / pagination.numToShow) || 1; // Ensure minimum 1 page
+    setDashboard((prev) => ({
+      ...prev,
+      announcements: total,
+    }));
 
     // Calculate the current range
     const startIndex = (pagination.currPage - 1) * pagination.numToShow;

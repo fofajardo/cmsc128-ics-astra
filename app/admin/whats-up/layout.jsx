@@ -13,6 +13,11 @@ export default function AdminAlumniLayout({ children }) {
     title: "Announcements",
     search: "Search for announcements",
   });
+  const [dashboard, setDashboard] = useState({
+    announcements: 0,
+    newsletters: 0,
+    events: 0,
+  });
 
   const tabs = {
     "Announcements": 0,
@@ -70,9 +75,9 @@ export default function AdminAlumniLayout({ children }) {
           </div>
           <div className="pt-6 pb-4 overflow-y-scroll w-full scrollbar-hide">
             <div className="flex flex-row gap-3 min-w-max px-4 justify-center">
-              <AdminStatCard title='Announcements' value = {255} icon={<Megaphone className='size-13 text-astrawhite/>' strokeWidth={1.5} />} route = {false} onClick={() => dynamicTabClick("Announcements")}/>
-              <AdminStatCard title='Newsletters' value = {59} icon={<Newspaper className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={false} onClick={() => dynamicTabClick("Newsletters")}/>
-              <AdminStatCard title='Active Events' value = {179} icon={<CalendarDays className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={"/admin/events"}/>
+              <AdminStatCard title='Announcements' value = {dashboard.announcements} icon={<Megaphone className='size-13 text-astrawhite/>' strokeWidth={1.5} />} route = {false} onClick={() => dynamicTabClick("Announcements")}/>
+              <AdminStatCard title='Newsletters' value = {dashboard.newsletters} icon={<Newspaper className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={false} onClick={() => dynamicTabClick("Newsletters")}/>
+              <AdminStatCard title='Active Events' value = {dashboard.events} icon={<CalendarDays className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={"/admin/events"}/>
             </div>
           </div>
         </div>
