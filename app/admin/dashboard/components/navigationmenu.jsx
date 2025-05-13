@@ -60,7 +60,7 @@ export function NavigationMenuDemo({
             )}
           </NavigationMenuTrigger>
           <NavigationMenuContent>
-            <ul className="grid grid-cols-2 gap-1 p-4 w-80">
+            <ul className="grid grid-cols-2 gap-2 p-4 w-90 md:w-max">
               {tabOptions.demographics.map(opt => (
                 <li key={opt.value}>
                   <button
@@ -92,7 +92,7 @@ export function NavigationMenuDemo({
             )}
           </NavigationMenuTrigger>
           <NavigationMenuContent>
-            <ul className="grid grid-cols-2 gap-1 p-4 w-80">
+            <ul className="grid grid-cols-2 gap-2 p-4 w-90 md:w-max">
               {tabOptions.career.map(opt => (
                 <li key={opt.value}>
                   <button
@@ -124,7 +124,7 @@ export function NavigationMenuDemo({
             )}
           </NavigationMenuTrigger>
           <NavigationMenuContent>
-            <ul className="grid grid-cols-2 gap-1 p-4 w-80">
+            <ul className="grid grid-cols-0 gap-1 p-4 w-90 md:w-max">
               {tabOptions.status.map(opt => (
                 <li key={opt.value}>
                   <button
