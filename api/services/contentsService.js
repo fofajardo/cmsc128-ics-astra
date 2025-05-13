@@ -1,15 +1,21 @@
 import { applyFilter } from "../utils/applyFilter.js";
 
-const fetchContents = async (supabase) => {
-  return await supabase
+const fetchContents = async (supabase, filters = {}) => {
+  let query = supabase
     .from("contents")
-    .select();
+    .select("*");
 
+  // Apply filters if any
+  query = applyFilter(query, filters, {
+    ilike: ["title", "details"],
+    range: {},
+    sortBy: "created_at",
+    defaultOrder: "desc",
+    specialKeys: []
+  });
+
+  return await query;
 };
-
-
-
-
 
 const fetchContentById = async (supabase, contentId) => {
   return await supabase
