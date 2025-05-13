@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { TrendingUp } from "lucide-react"
-import { Pie, PieChart } from "recharts"
+import { TrendingUp } from "lucide-react";
+import { Pie, PieChart } from "recharts";
 
 import {
   Card,
@@ -10,12 +10,12 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart"
+} from "@/components/ui/chart";
 
 export default function PieChartComponent({
   data,
@@ -79,5 +79,5 @@ export default function PieChartComponent({
         )}
       </CardFooter>
     </Card>
-  )
+  );
 }

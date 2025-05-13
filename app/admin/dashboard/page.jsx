@@ -35,7 +35,7 @@ export default function Dashboard() {
         const fundsRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/funds-raised`);
         // fetching of graph data
         const donationSummaryRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/project-donation-summary`);
-        const alumniAgeRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-age-stats`); 
+        const alumniAgeRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-age-stats`);
         const alumniSexRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-sex-stats`);
         const alumniCivilRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-civil-status-stats`);
         setActiveAlumniStats(alumniRes.data.stats);
@@ -54,7 +54,7 @@ export default function Dashboard() {
         } else {
           console.log("Unexpected response:", alumniSexRes.data);
         }
-        
+
         if (alumniCivilRes.data.status == "OK") {
           console.log("Alumni Civil Stats: ", alumniCivilRes.data.stats);
           setAlumniCivilStats(alumniCivilRes.data.stats);
@@ -97,101 +97,101 @@ export default function Dashboard() {
 
   function renderTabContent() {
     switch (tab) {
-      case "donations":
-        return (
-          <FundsDonut
-            fundsRaisedStats={fundsRaisedStats}
-            projectStatistics={projectDonationSummary}
-          />
-        );
+    case "donations":
+      return (
+        <FundsDonut
+          fundsRaisedStats={fundsRaisedStats}
+          projectStatistics={projectDonationSummary}
+        />
+      );
 
-      case "age":
-        return (
-          <BarChartComponent
-            data={alumniAgeStats.filter(item => item.age > 0)}
-            config={{ count: { label: "Alumni Count", color: "var(--color-astraprimary)" } }}
-            title="Alumni Age Distribution"
-            description="Active alumni by age"
-            xKey="age"
-            barKey="count"
-            barLabel="Alumni Count"
-            barColor="var(--color-astraprimary)"
-          />
-        );
+    case "age":
+      return (
+        <BarChartComponent
+          data={alumniAgeStats.filter(item => item.age > 0)}
+          config={{ count: { label: "Alumni Count", color: "var(--color-astraprimary)" } }}
+          title="Alumni Age Distribution"
+          description="Active alumni by age"
+          xKey="age"
+          barKey="count"
+          barLabel="Alumni Count"
+          barColor="var(--color-astraprimary)"
+        />
+      );
 
-      case "sex": {
-        const colorConfig = {
-          Female: "#FF69B4",
-          Male: "var(--color-astraprimary)",
+    case "sex": {
+      const colorConfig = {
+        Female: "#FF69B4",
+        Male: "var(--color-astraprimary)",
+      };
+
+      const pieSexStats = alumniSexStats.map(item => {
+        const name = item.sex.charAt(0).toUpperCase() + item.sex.slice(1);
+        return {
+          name,
+          value: item.count,
+          fill: colorConfig[name] || "var(--color-astralight)",
         };
+      });
 
-        const pieSexStats = alumniSexStats.map(item => {
-          const name = item.sex.charAt(0).toUpperCase() + item.sex.slice(1);
-          return {
-            name,
-            value: item.count,
-            fill: colorConfig[name] || "var(--color-astralight)",
-          };
-        });
+      return (
+        <ReusablePieChart
+          data={pieSexStats}
+          config={{
+            Female: { label: "Female", color: "#60a5fa" },
+            Male: { label: "Male", color: "var(--color-astraprimary)" },
+          }}
+          title="Alumni Sex Distribution"
+          description="Active alumni by sex"
+          dataKey="value"
+          nameKey="name"
+          maxHeight={300}
+        />
+      );
+    }
 
-        return (
-          <ReusablePieChart
-            data={pieSexStats}
-            config={{
-              Female: { label: "Female", color: "#60a5fa" },
-              Male: { label: "Male", color: "var(--color-astraprimary)" },
-            }}
-            title="Alumni Sex Distribution"
-            description="Active alumni by sex"
-            dataKey="value"
-            nameKey="name"
-            maxHeight={300}
-          />
-        );
-      }
+    case "civil": {
+      const colorConfig = {
+        Married: "var(--color-astralight)",
+        Single: "var(--color-astradark)",
+      };
 
-      case "civil": {
-        const colorConfig = {
-          Married: "var(--color-astralight)",
-          Single: "var(--color-astradark)",
+      const pieCivilStats = alumniCivilStats.map(item => {
+        const name = item.civil_status.charAt(0).toUpperCase() + item.civil_status.slice(1);
+        return {
+          name,
+          value: item.count,
+          fill: colorConfig[name] || "#a3a3a3", // fallback gray
         };
+      });
 
-        const pieCivilStats = alumniCivilStats.map(item => {
-          const name = item.civil_status.charAt(0).toUpperCase() + item.civil_status.slice(1);
-          return {
-            name,
-            value: item.count,
-            fill: colorConfig[name] || "#a3a3a3", // fallback gray
-          };
-        });
+      return (
+        <ReusablePieChart
+          data={pieCivilStats}
+          config={{
+            Married: { label: "Married"},
+            Single: { label: "Single"},
+          }}
+          title="Alumni Civil Status Distribution"
+          description="Active alumni by civil status"
+          dataKey="value"
+          nameKey="name"
+          maxHeight={300}
+        />
+      );
+    }
 
-        return (
-          <ReusablePieChart
-            data={pieCivilStats}
-            config={{
-              Married: { label: "Married"},
-              Single: { label: "Single"},
-            }}
-            title="Alumni Civil Status Distribution"
-            description="Active alumni by civil status"
-            dataKey="value"
-            nameKey="name"
-            maxHeight={300}
-          />
-        );
-      }
-
-      default:
-        return (
-          <div className="p-8 text-center text-muted-foreground">
-            <span className="text-lg font-semibold">
-              {tab.charAt(0).toUpperCase() + tab.slice(1).replace(/_/g, " ")}
-            </span>
-            <div className="mt-2 text-sm">
-              Placeholder content for {tab.charAt(0).toUpperCase() + tab.slice(1).replace(/_/g, " ")}
-            </div>
+    default:
+      return (
+        <div className="p-8 text-center text-muted-foreground">
+          <span className="text-lg font-semibold">
+            {tab.charAt(0).toUpperCase() + tab.slice(1).replace(/_/g, " ")}
+          </span>
+          <div className="mt-2 text-sm">
+            Placeholder content for {tab.charAt(0).toUpperCase() + tab.slice(1).replace(/_/g, " ")}
           </div>
-        );
+        </div>
+      );
     }
   }
 
