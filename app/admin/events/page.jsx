@@ -207,6 +207,8 @@ export default function Events() {
 
       if (eventData.status === "OK") {
         const events = eventData.list;
+        console.log("eventData: ", eventData);
+        console.log("events in FetchEvents: ", events);
 
         // Fetch photos, contents, and interests concurrently
         const [contents, interests, stats] = await Promise.all([
@@ -264,27 +266,67 @@ export default function Events() {
   // FOR BACKEND PEEPS
   useEffect(() => {
     fetchEvents();
-  }, [pagination.currPage, pagination.numToShow]);
+  }, []);
+//pagination.currPage, pagination.numToShow
+  // useEffect(() => {
+  //   const total = eventList.length; // Use actual length instead of pagination.total
+  //   const lastPage = Math.max(1, Math.ceil(total / pagination.numToShow));
+  //   setPagination((prev) => ({
+  //     ...prev,
+  //     currPage: Math.min(prev.currPage, lastPage),
+  //     lastPage,
+  //     total: total, // Set the actual total
+  //     display: [
+  //       (Math.min(prev.currPage, lastPage) - 1) * pagination.numToShow + 1,
+  //       Math.min(total, Math.min(prev.currPage, lastPage) * prev.numToShow),
+  //     ],
+  //   }));
+  // }, [eventList.length, pagination.numToShow]); // Add eventList.length as dependency
+
+  // const currentPageData = useMemo(() => {
+  //   const startIndex = (pagination.currPage - 1) * pagination.numToShow;
+  //   const endIndex = startIndex + pagination.numToShow;
+  //   return eventList.slice(startIndex, endIndex);
+  // }, [eventList, pagination.currPage, pagination.numToShow]);
+
+  // useEffect(() => {
+  //   if (eventList && Array.isArray(eventList)) {
+  //     setFilteredEvents(eventList);
+  //   }
+  // }, [eventList]);
 
   useEffect(() => {
-    const total = pagination.total;
+    if (!Array.isArray(eventList)) return;
+
+    const filtered = eventList.filter(event =>
+      event?.event_name?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    setFilteredEvents(filtered);
+    setPagination((prev) => ({ ...prev, currPage: 1 }));
+  }, [searchQuery, eventList]);
+
+  useEffect(() => {
+    const total = filteredEvents.length;
     const lastPage = Math.max(1, Math.ceil(total / pagination.numToShow));
+
     setPagination((prev) => ({
       ...prev,
       currPage: Math.min(prev.currPage, lastPage),
       lastPage,
-      total : total,
+      total: total,
       display: [
-        (Math.min(prev.currPage, lastPage) - 1) * pagination.numToShow + 1,
-        Math.min(total, Math.min(prev.currPage, lastPage) * prev.numToShow),
+        total === 0 ? 0 : (prev.currPage - 1) * pagination.numToShow + 1,
+        Math.min(prev.currPage * pagination.numToShow, total),
       ],
     }));
-  }, [pagination.numToShow]);
+  }, [filteredEvents.length, pagination.numToShow]);
+
 
   const currentPageData = useMemo(() => {
     const startIndex = (pagination.currPage - 1) * pagination.numToShow;
     const endIndex = startIndex + pagination.numToShow;
-    return eventList.slice(startIndex, endIndex);
+    return filteredEvents.slice(startIndex, endIndex);
   }, [filteredEvents, pagination.currPage, pagination.numToShow]);
 
   useEffect(() => {
@@ -292,45 +334,6 @@ export default function Events() {
       setFilteredEvents(eventList);
     }
   }, [eventList]);
-
-  // useEffect(() => {
-  //   if (!Array.isArray(eventList)) return;
-
-  //   const filtered = eventList.filter(event =>
-  //     event?.event_name?.toLowerCase().includes(searchQuery.toLowerCase())
-  //   );
-
-  //   setFilteredEvents(filtered);
-  //   setPagination((prev) => ({ ...prev, currPage: 1 }));
-  // }, [searchQuery, eventList]);
-
-  // useEffect(() => {
-  //   const total = pagination.total;
-  //   const lastPage = Math.max(1, Math.ceil(total / pagination.numToShow));
-
-  //   setPagination((prev) => ({
-  //     ...prev,
-  //     currPage: Math.min(prev.currPage, lastPage),
-  //     lastPage,
-  //     display: [
-  //       total === 0 ? 0 : (prev.currPage - 1) * pagination.numToShow + 1,
-  //       Math.min(prev.currPage * pagination.numToShow, total),
-  //     ],
-  //   }));
-  // }, [filteredEvents,pagination.numToShow]);
-
-
-  // const currentPageData = useMemo(() => {
-  //   const startIndex = (pagination.currPage - 1) * pagination.numToShow;
-  //   const endIndex = startIndex + pagination.numToShow;
-  //   return filteredEvents.slice(startIndex, endIndex);
-  // }, [filteredEvents, pagination.currPage, pagination.numToShow]);
-
-  // useEffect(() => {
-  //   if (eventList && Array.isArray(eventList)) {
-  //     setFilteredEvents(eventList);
-  //   }
-  // }, [eventList]);
 
   const toggleAddModal = () => {
     setShowAddModal((prev) => !prev);

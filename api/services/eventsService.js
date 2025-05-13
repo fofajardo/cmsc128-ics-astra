@@ -1,31 +1,34 @@
 import { applyFilter } from "../utils/applyFilter.js";
 
-const fetchEvents = async (supabase, filters) => {
+const fetchEvents = async (supabase) => {
   let query = supabase
     .from("events")
     .select("*", {count:"exact"});
 
-  query = applyFilter(query, filters, {
-    ilike: ["venue"],
-    range: {
-      event_date: [filters.event_date_from, filters.event_date_to]
-    },
-    sortBy: "event_date",
-    defaultOrder: "desc",
-    specialKeys: [
-      "event_date_from",
-      "event_date_to",
-      "limit",
-      "page"
-    ]
-  });
+  // query = applyFilter(query, filters, {
+  //   ilike: ["venue"],
+  //   range: {
+  //     event_date: [filters.event_date_from, filters.event_date_to]
+  //   },
+  //   sortBy: "event_date",
+  //   defaultOrder: "desc",
+  //   specialKeys: [
+  //     "event_date_from",
+  //     "event_date_to",
+  //     "limit",
+  //     "page"
+  //   ]
+  // });
 
-  const limit = parseInt(filters.limit) || 10;
-  const page = parseInt(filters.page) || 1;
-  const from = (page - 1) * limit;
-  const to = from + limit - 1;
+  // const hasPagination = filters.limit || filters.page;
 
-  query = query.range(from, to);
+  // if (hasPagination) {
+  //   const limit = parseInt(filters.limit);
+  //   const page = parseInt(filters.page);
+  //   const from = (page - 1) * limit;
+  //   const to = from + limit - 1;
+  //   query = query.range(from, to);
+  // }
 
   return await query;
 };

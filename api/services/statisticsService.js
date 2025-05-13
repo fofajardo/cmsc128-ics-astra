@@ -131,11 +131,24 @@ const fetchAlumniOrgAffiliationStats = async (supabase) => {
   return data;
 };
 
+const fetchEventsSummary = async (supabase) => {
+  const { data, error } = await supabase
+    .from("all_events_stats")
+    .select("*");
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+};
+
 const statisticsService = {
   fetchAlumniStats,
   fetchActiveAlumniStats,
   fetchActiveJobsStats,
   fetchActiveEventsStats,
+  fetchEventsSummary,
   fetchFundsRaisedStats,
   fetchUpcomingEvents,
   fetchProjectDonationSummary,

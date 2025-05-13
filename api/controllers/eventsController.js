@@ -17,7 +17,7 @@ const getEvents = async (req, res) => {
       });
     }
 
-    const { data, count, error } = await eventsService.fetchEvents(req.supabase, filters);
+    const { data, count, error } = await eventsService.fetchEvents(req.supabase);
 
     if (error) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -29,7 +29,8 @@ const getEvents = async (req, res) => {
     return res.status(httpStatus.OK).json({
       status: "OK",
       list: data || [],
-      total: count || 0
+      total: count || 0,
+      request: filters
     });
 
   } catch (error) {

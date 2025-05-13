@@ -278,10 +278,6 @@ export default function EventModal({
             />
           </div>
 
-          <div>
-            <ImageUploadSection image={image} setImage={setImage} />
-          </div>
-
           {/* Buttons */}
           <div className="flex justify-between mt-6 col-span-2">
             <button
