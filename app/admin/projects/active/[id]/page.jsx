@@ -23,11 +23,13 @@ import axios from "axios";
 import { formatCurrency, formatDate, capitalizeName } from "@/utils/format";
 import { PROJECT_TYPE } from "@/constants/projectConsts";
 import { feRoutes } from "../../../../../common/routes";
+import { useSignedInUser } from "@/components/UserContext.jsx";
 
 //for admin/projects/active/[id]
 export default function ActiveProjectDetail({ params }) {
   const id = use(params).id;
   const router = useRouter();
+  const userContext = useSignedInUser();
   const [toast, setToast] = useState(null);
   const [errors, setErrors] = useState({});
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -50,6 +52,8 @@ export default function ActiveProjectDetail({ params }) {
 
   // Add constant for fallback image
   const FALLBACK_IMAGE = "/projects/assets/Donation.png";
+
+  const MAX_MESSAGE_LENGTH = 500;
 
   // Add timeout for image loading
   useEffect(() => {
@@ -249,15 +253,38 @@ export default function ActiveProjectDetail({ params }) {
     }, 2000);
   };
 
-  //demo purposes only, does nothing
-  //only shows the modal, need to connect to backend
   const handleSendMessage = () => {
-    setToast({
-      type: "success",
-      message: "Message sent successfully!",
-    });
-    setShowContactModal(false);
-    setMessage("");
+    try {
+      // Create email subject and body
+      const subject = `Inquiry about ${projectData.title}`;
+      const emailBody = `Hello ${projectData.requester.name},\n\n${message}\n\nBest regards,\n${userContext?.state?.user?.name || userContext?.state?.user?.email || 'Anonymous'}`;
+
+      // Create Gmail URL with pre-filled information
+      const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(projectData.requester.email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
+
+      // Open Gmail in a new tab
+      window.open(gmailUrl, '_blank');
+
+      setToast({
+        type: "success",
+        message: "Opening Gmail...",
+      });
+      setShowContactModal(false);
+      setMessage("");
+    } catch (error) {
+      console.error("Failed to open Gmail:", error);
+      setToast({
+        type: "fail",
+        message: "Failed to open Gmail. Please try again.",
+      });
+    }
+  };
+
+  const handleMessageChange = (e) => {
+    const newMessage = e.target.value;
+    if (newMessage.length <= MAX_MESSAGE_LENGTH) {
+      setMessage(newMessage);
+    }
   };
 
   const handleInputChange = (e) => {
@@ -600,14 +627,15 @@ export default function ActiveProjectDetail({ params }) {
                     className="w-full border border-astragray/30 rounded-lg p-4 min-h-32 focus:ring-2 focus:ring-astraprimary/30 focus:border-astraprimary transition-all bg-white shadow-inner"
                     placeholder="Introduce yourself and explain why you're reaching out..."
                     value={message}
-                    onChange={(e) => setMessage(e.target.value)}
+                    onChange={handleMessageChange}
+                    maxLength={MAX_MESSAGE_LENGTH}
                   ></textarea>
                 </div>
 
                 <div className="flex justify-between mt-2 text-xs text-astragray">
                   <p>Be professional and clear about your intent</p>
-                  <p className={`${message.length > 500 ? "text-red-500 font-medium" : ""}`}>
-                    {message.length}/1000 characters
+                  <p className={`${message.length >= MAX_MESSAGE_LENGTH ? "text-red-500 font-medium" : ""}`}>
+                    {message.length}/{MAX_MESSAGE_LENGTH} characters
                   </p>
                 </div>
               </div>
