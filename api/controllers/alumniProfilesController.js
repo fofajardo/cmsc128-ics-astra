@@ -103,8 +103,6 @@ const getAlumniProfilesById = async function(aRequest, aResponse) {
 };
 
 const getAlumniProfileById = async (req, res) => {
-  console.log("HELLO!");
-
   try {
     const { userId } = req.params;
 
@@ -217,8 +215,6 @@ const createAlumniProfile = async (req, res) => {
       approved
     } = req.body;
 
-    const created_at = new Date().toISOString();
-
     const { result, error } = await alumniProfilesService.insertAlumniProfile(req.supabase, {
       alum_id,
       birthdate,
@@ -251,6 +247,126 @@ const createAlumniProfile = async (req, res) => {
       status: "CREATED",
       message: "Alumni profile successfully created and approved",
       id: userId
+    });
+
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message || error
+    });
+  }
+};
+
+const approveAlumniProfiles = async (req, res) => {
+  if (req.you.cannot(Actions.CREATE, Subjects.ALUMNI_PROFILE)) {
+    return res.status(httpStatus.FORBIDDEN).json({
+      status: "FORBIDDEN",
+      message: "You are not allowed to access this resource."
+    });
+  }
+
+  try {
+    const alumIds = req.body;
+
+    if (!Array.isArray(alumIds)) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "Request body must be a non-empty array of alumni profile IDs"
+      });
+    }
+
+    const { success, error } = await alumniProfilesService.approveAlumniProfiles(req.supabase, alumIds);
+
+    if (error || !success) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: "FAILED",
+        message: "Alumni profiles not approved"
+      });
+    }
+
+    return res.status(httpStatus.CREATED).json({
+      status: "CREATED",
+      message: "Alumni profiles approved successfully",
+    });
+
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message || error
+    });
+  }
+};
+
+const removeAlumniProfiles = async (req, res) => {
+  if (req.you.cannot(Actions.CREATE, Subjects.ALUMNI_PROFILE)) {
+    return res.status(httpStatus.FORBIDDEN).json({
+      status: "FORBIDDEN",
+      message: "You are not allowed to access this resource."
+    });
+  }
+
+  try {
+    const alumIds = req.body;
+
+    if (!Array.isArray(alumIds)) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "Request body must be a non-empty array of alumni profile IDs"
+      });
+    }
+
+    const { success, error } = await alumniProfilesService.removeAlumniProfiles(req.supabase, alumIds);
+
+    if (error || !success) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: "FAILED",
+        message: "Alumni profiles not removed"
+      });
+    }
+
+    return res.status(httpStatus.CREATED).json({
+      status: "CREATED",
+      message: "Alumni profiles approved successfully",
+    });
+
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message || error
+    });
+  }
+};
+
+const reactivateAlumniProfiles = async (req, res) => {
+  if (req.you.cannot(Actions.CREATE, Subjects.ALUMNI_PROFILE)) {
+    return res.status(httpStatus.FORBIDDEN).json({
+      status: "FORBIDDEN",
+      message: "You are not allowed to access this resource."
+    });
+  }
+
+  try {
+    const alumIds = req.body;
+
+    if (!Array.isArray(alumIds)) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "Request body must be a non-empty array of alumni profile IDs"
+      });
+    }
+
+    const { success, error } = await alumniProfilesService.reactivateAlumniProfiles(req.supabase, alumIds);
+
+    if (error || !success) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: "FAILED",
+        message: "Alumni profiles not reactivated"
+      });
+    }
+
+    return res.status(httpStatus.CREATED).json({
+      status: "CREATED",
+      message: "Alumni profiles reactivated successfully",
     });
 
   } catch (error) {
@@ -372,6 +488,9 @@ const alumniProfilesController = {
   getAlumniProfilesById,
   getAlumniProfileById,
   createAlumniProfile,
+  approveAlumniProfiles,
+  removeAlumniProfiles,
+  reactivateAlumniProfiles,
   updateAlumniProfile
 };
 

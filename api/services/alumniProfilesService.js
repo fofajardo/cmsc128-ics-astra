@@ -200,6 +200,214 @@ const insertAlumniProfile = async (supabase, alumniProfileData) => {
     .insert(alumniProfileData);
 };
 
+const approveAlumniProfiles = async (supabase, alumIds) => {
+  const updatedProfiles = [];
+
+  if (alumIds.length === 0) {
+    // Fetch all unapproved profiles
+    const { data: allUnapproved, error: fetchError } = await supabase
+      .from("alumni_profiles")
+      .select("*")
+      .eq("approved", false);
+
+    if (fetchError) {
+      throw new Error(`Error fetching unapproved profiles: ${fetchError.message}`);
+    }
+
+    // Group by alum_id and select latest (by created_at)
+    const latestMap = {};
+
+    for (const profile of allUnapproved) {
+      const existing = latestMap[profile.alum_id];
+
+      if (!existing || new Date(profile.created_at) > new Date(existing.created_at)) {
+        latestMap[profile.alum_id] = profile;
+      }
+    }
+
+    for (const profile of Object.values(latestMap)) {
+      const { id, created_at, ...newProfile } = profile;
+      newProfile.approved = true;
+      updatedProfiles.push(newProfile);
+    }
+
+  } else {
+    // Specific approval
+    for (const alumId of alumIds) {
+      const { data: profiles, error: fetchError } = await supabase
+        .from("alumni_profiles")
+        .select("*")
+        .eq("alum_id", alumId)
+        .order("created_at", { ascending: false })
+        .limit(1);
+
+      if (fetchError) {
+        throw new Error(`Error fetching profile for alum_id ${alumId}: ${fetchError.message}`);
+      }
+
+      const latestProfile = profiles[0];
+
+      if (!latestProfile) {
+        throw new Error(`No profile found for alum_id ${alumId}`);
+      }
+
+      const { id, created_at, ...newProfile } = latestProfile;
+      newProfile.approved = true;
+      updatedProfiles.push(newProfile);
+    }
+  }
+
+  const { data: insertResult, error: insertError } = await supabase
+    .from("alumni_profiles")
+    .insert(updatedProfiles);
+
+  if (insertError) {
+    throw new Error(`Error inserting approved profiles: ${insertError.message}`);
+  }
+
+  return {
+    success: true
+  };
+};
+
+const removeAlumniProfiles = async (supabase, alumIds) => {
+  const updatedProfiles = [];
+
+  if (alumIds.length === 0) {
+    // Fetch all unapproved profiles
+    const { data: allUnapproved, error: fetchError } = await supabase
+      .from("alumni_profiles")
+      .select("*")
+      .eq("approved", true);
+
+    if (fetchError) {
+      throw new Error(`Error fetching unapproved profiles: ${fetchError.message}`);
+    }
+
+    // Group by alum_id and select latest (by created_at)
+    const latestMap = {};
+
+    for (const profile of allUnapproved) {
+      const existing = latestMap[profile.alum_id];
+
+      if (!existing || new Date(profile.created_at) > new Date(existing.created_at)) {
+        latestMap[profile.alum_id] = profile;
+      }
+    }
+
+    for (const profile of Object.values(latestMap)) {
+      const { id, created_at, ...newProfile } = profile;
+      newProfile.approved = false;
+      updatedProfiles.push(newProfile);
+    }
+
+  } else {
+    // Specific approval
+    for (const alumId of alumIds) {
+      const { data: profiles, error: fetchError } = await supabase
+        .from("alumni_profiles")
+        .select("*")
+        .eq("alum_id", alumId)
+        .order("created_at", { ascending: false })
+        .limit(1);
+
+      if (fetchError) {
+        throw new Error(`Error fetching profile for alum_id ${alumId}: ${fetchError.message}`);
+      }
+
+      const latestProfile = profiles[0];
+
+      if (!latestProfile) {
+        throw new Error(`No profile found for alum_id ${alumId}`);
+      }
+
+      const { id, created_at, ...newProfile } = latestProfile;
+      newProfile.approved = false;
+      updatedProfiles.push(newProfile);
+    }
+  }
+
+  const { data: insertResult, error: insertError } = await supabase
+    .from("alumni_profiles")
+    .insert(updatedProfiles);
+
+  if (insertError) {
+    throw new Error(`Error inserting approved profiles: ${insertError.message}`);
+  }
+
+  return {
+    success: true
+  };
+};
+
+const reactivateAlumniProfiles = async (supabase, alumIds) => {
+  const updatedProfiles = [];
+
+  if (alumIds.length === 0) {
+    // Fetch all unapproved profiles
+    const { data: allUnapproved, error: fetchError } = await supabase
+      .from("alumni_profiles")
+      .select("*")
+      .eq("approved", true);
+
+    if (fetchError) {
+      throw new Error(`Error fetching unapproved profiles: ${fetchError.message}`);
+    }
+
+    // Group by alum_id and select latest (by created_at)
+    const latestMap = {};
+
+    for (const profile of allUnapproved) {
+      const existing = latestMap[profile.alum_id];
+
+      if (!existing || new Date(profile.created_at) > new Date(existing.created_at)) {
+        latestMap[profile.alum_id] = profile;
+      }
+    }
+
+    for (const profile of Object.values(latestMap)) {
+      const { id, created_at, ...newProfile } = profile;
+      updatedProfiles.push(newProfile);
+    }
+
+  } else {
+    // Specific approval
+    for (const alumId of alumIds) {
+      const { data: profiles, error: fetchError } = await supabase
+        .from("alumni_profiles")
+        .select("*")
+        .eq("alum_id", alumId)
+        .order("created_at", { ascending: false })
+        .limit(1);
+
+      if (fetchError) {
+        throw new Error(`Error fetching profile for alum_id ${alumId}: ${fetchError.message}`);
+      }
+
+      const latestProfile = profiles[0];
+
+      if (!latestProfile) {
+        throw new Error(`No profile found for alum_id ${alumId}`);
+      }
+
+      const { id, created_at, ...newProfile } = latestProfile;
+      updatedProfiles.push(newProfile);
+    }
+  }
+
+  const { data: insertResult, error: insertError } = await supabase
+    .from("alumni_profiles")
+    .insert(updatedProfiles);
+
+  if (insertError) {
+    throw new Error(`Error inserting approved profiles: ${insertError.message}`);
+  }
+
+  return {
+    success: true
+  };
+};
+
 const updateAlumniProfileData = async (supabase, userId, updateData) => {
   const { data: latestProfile, error: selectError } = await supabase
     .from("alumni_profiles")
@@ -238,6 +446,9 @@ const alumniService = {
   fetchAlumniProfileById,
   fetchAlumniProfilesByFilter,
   insertAlumniProfile,
+  approveAlumniProfiles,
+  removeAlumniProfiles,
+  reactivateAlumniProfiles,
   updateAlumniProfileData,
   deleteAlumniProfileData
 };
