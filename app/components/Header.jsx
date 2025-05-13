@@ -280,7 +280,6 @@ function HeaderAvatar({context}) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  console.log(context.state.authUser);
   return (
     <div className="relative flex items-center">
       <Image
