@@ -371,6 +371,8 @@ export default function ActiveProjectDetail({ params }) {
     if (success) {
       setProjectData({
         ...editFormData,
+        description: editFormData.description,
+        longDescription: editFormData.description,
         goal: editFormData.goal.toString(),
         raised: editFormData.raised.toString(),
       });
