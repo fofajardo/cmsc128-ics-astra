@@ -302,6 +302,18 @@ export default function ActiveProjectDetail({ params }) {
     // Clear error for the field user is editing
     setErrors((prev) => ({ ...prev, [name]: "" }));
 
+    // Validate title and description for whitespace
+    if (name === "title" || name === "description") {
+      const trimmedValue = value.trim();
+      if (trimmedValue === "") {
+        setErrors((prev) => ({
+          ...prev,
+          [name]: `${name === "title" ? "Title" : "Description"} cannot be empty or contain only whitespace`,
+        }));
+        return;
+      }
+    }
+
     if (name.includes(".")) {
       const [parent, child] = name.split(".");
       setEditFormData({
@@ -339,9 +351,16 @@ export default function ActiveProjectDetail({ params }) {
     const newErrors = {};
     const phonePattern = /^(\+63|0)?\d{9,10}$/;
 
-    if (!editFormData.title) {
+    // Validate title
+    if (!editFormData.title || editFormData.title.trim() === "") {
       newErrors["title"] = "Please enter a title.";
     }
+
+    // Validate description
+    if (!editFormData.description || editFormData.description.trim() === "") {
+      newErrors["description"] = "Please enter a description.";
+    }
+
     if (isNaN(editFormData.goal) || editFormData.goal <= 0) {
       newErrors["goal"] = "Funding goal must be a positive number.";
     }
@@ -358,8 +377,8 @@ export default function ActiveProjectDetail({ params }) {
     }
 
     const updateData = {
-      title: editFormData.title,
-      details: editFormData.description,
+      title: editFormData.title.trim(),
+      details: editFormData.description.trim(),
       type: editFormData.type,
       donation_link: editFormData.urlLink,
       goal_amount: Number(editFormData.goal),
@@ -371,8 +390,8 @@ export default function ActiveProjectDetail({ params }) {
     if (success) {
       setProjectData({
         ...editFormData,
-        description: editFormData.description,
-        longDescription: editFormData.description,
+        description: editFormData.description.trim(),
+        longDescription: editFormData.description.trim(),
         goal: editFormData.goal.toString(),
         raised: editFormData.raised.toString(),
       });
@@ -801,10 +820,15 @@ export default function ActiveProjectDetail({ params }) {
                   </label>
                   <textarea
                     name="description"
-                    className="w-full border border-astragray/30 rounded-lg p-3 min-h-[100px]"
+                    className={`w-full border ${
+                      errors.description ? "border-red-500" : "border-astragray/30"
+                    } rounded-lg p-3 min-h-[100px]`}
                     value={editFormData.description}
                     onChange={handleInputChange}
                   />
+                  {errors.description && (
+                    <p className="text-red-500 text-sm mt-1">{errors.description}</p>
+                  )}
                 </div>
 
                 <div>
