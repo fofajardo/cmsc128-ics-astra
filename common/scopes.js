@@ -1,9 +1,9 @@
 export const RouteGuardMode = Object.freeze({
   AUTO: "auto",
-  RA: "authenticated",
-  RU: "unauthenticated",
-  AUTH_SIGN_UP: "auth-sign-up",
-  ADMIN: "admin",
+  AUTHENTICATED: "auth",
+  AUTHENTICATED_ADMIN: "auth-admin",
+  AUTHENTICATED_SIGN_UP: "auth-sign-up",
+  UNAUTHENTICATED: "unauthenticated",
 });
 
 const RoleName = Object.freeze({
@@ -63,6 +63,51 @@ const Actions = Object.freeze({
   MANAGE: "manage",
 });
 
+const EmploymentStatus = Object.freeze({
+  UNEMPLOYED: 0,
+  EMPLOYED: 1,
+  SELF_EMPLOYED: 2,
+  isDefined: function(aValue) {
+    if (typeof aValue === "string" || aValue instanceof String) {
+      const value = aValue.toLowerCase().trim();
+      switch (value) {
+      case EmploymentStatus.UNEMPLOYED:
+      case EmploymentStatus.EMPLOYED:
+      case EmploymentStatus.SELF_EMPLOYED:
+        return true;
+      default:
+        break;
+      }
+    }
+    return false;
+  },
+  parse: function(aValue) {
+    if (!this.isDefined(aValue)) {
+      return null;
+    }
+    return parseInt(aValue);
+  },
+});
+
+export const NavMenuItemId = Object.freeze({
+  HOME: "home",
+  ABOUT: "about",
+  EVENTS: "events",
+  PROJECTS: "projects",
+  ALUMNI_DIRECTORY: "alumni-directory",
+  NEWS: "news",
+  JOBS: "jobs",
+  ALUMNI: "alumni",
+  ALUMNI_ACCESS: "alumni-access",
+  ORGANIZATIONS: "organizations"
+});
+
+export {
+  RoleName,
+  Subjects,
+  Actions,
+  EmploymentStatus,
+};
 const PhotoType = Object.freeze({
   PROFILE_PIC: 0,
   PROOF_OF_PAYMENT: 1,
@@ -128,5 +173,6 @@ export {
   Subjects,
   Actions,
   PhotoType,
+  EmploymentStatus,
   EventStatus
 };

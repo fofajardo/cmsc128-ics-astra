@@ -46,18 +46,22 @@ const TRACE_FORBIDDEN = false;
 const TRACE_ALL = false;
 
 export function ResponseHelper(aRequest, aResponse, aNext) {
+  // Dump entire response body to console if we're logging info.
+  const passedFilter = FILTER.length === 0 ||
+    FILTER.some(keyword => aRequest.originalUrl?.includes(keyword));
+  if (LOG && passedFilter) {
+    console.log("");
+    console.log(`${aRequest.method} ${aRequest.originalUrl}`);
+    console.log(new Date());
+  }
+
   aResponse.sendOne = function(aStatusCode, aStatusText, aData) {
     const body = {
       status: aStatusText,
       ...aData
     };
-    // Dump entire response body to console if we're logging info.
-    const passedFilter = FILTER.length === 0 ||
-            FILTER.some(keyword => aRequest.originalUrl?.includes(keyword));
     if (LOG && passedFilter) {
-      console.log("");
-      console.log(`${aRequest.method} (${aStatusCode}) ${aRequest.originalUrl}`);
-      console.log(new Date());
+      console.log(`<${aStatusCode}>`);
       console.log(inspect(body, false, null, true));
     }
     let traceReason = null;

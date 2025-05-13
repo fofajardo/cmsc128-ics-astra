@@ -6,7 +6,9 @@ import { TabContext } from "@/components/TabContext";
 import { useRouter, usePathname } from "next/navigation";
 import { School2 } from "lucide-react";
 import { Building } from "lucide-react";
-import axios from "axios"; // Make sure axios is installed
+import axios from "axios";
+import {NavMenuItemId} from "../../../common/scopes.js";
+import {ActiveNavItemMarker} from "@/components/Header.jsx"; // Make sure axios is installed
 
 export default function AdminAlumniLayout({ children }) {
   const router = useRouter();
@@ -55,11 +57,12 @@ export default function AdminAlumniLayout({ children }) {
   return (
     <>
       {/* Header with background */}
+      <ActiveNavItemMarker id={NavMenuItemId.ORGANIZATIONS}/>
       <div className="relative">
         <img
           src="/blue-bg.png"
           alt="Background"
-          className="h-80 w-full object-cover"
+          className="h-80 w-full object-cEVENTSover"
         />
         <div className="absolute inset-2 flex flex-col items-center justify-evenly text-astrawhite z-20">
           <div className="text-center pt-6">

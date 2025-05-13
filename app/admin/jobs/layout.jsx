@@ -7,6 +7,8 @@ import AdminTabs from "@/components/AdminTabs";
 import { BriefcaseBusiness } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TabContext } from "@/components/TabContext";
+import {NavMenuItemId} from "../../../common/scopes.js";
+import {ActiveNavItemMarker} from "@/components/Header.jsx";
 
 export default function AdminJobsLayout({ children }) {
   const router = useRouter();
@@ -60,6 +62,7 @@ export default function AdminJobsLayout({ children }) {
   return (
     <>
       {/* Header with background */}
+      <ActiveNavItemMarker id={NavMenuItemId.JOBS}/>
       <div className="relative">
         <img
           src="/blue-bg.png"

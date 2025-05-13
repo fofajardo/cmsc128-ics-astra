@@ -177,6 +177,71 @@ const getAlumniOrgAffiliationStats = async (req, res) => {
   }
 };
 
+const getAlumniFieldStats = async (req, res) => {
+  try {
+    const stats = await statisticsService.fetchAlumniFieldStats(req.supabase);
+
+    res.status(httpStatus.OK).json({
+      status: "OK",
+      stats: stats
+    });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
+
+const getAlumniHighestDegreeStats = async (req, res) => {
+  try {
+    const stats = await statisticsService.fetchAlumniHighestDegreeStats(req.supabase);
+
+    res.status(httpStatus.OK).json({
+      status: "OK",
+      stats: stats
+    });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
+
+const getAlumniIncomeRangeStats = async (req, res) => {
+  try {
+    const stats = await statisticsService.fetchAlumniIncomeRangeStats(req.supabase);
+
+    res.status(httpStatus.OK).json({
+      status: "OK",
+      stats: stats
+    });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
+
+const getProjectContributors = async (req, res) => {
+  try {
+    const projectContributors = await statisticsService.fetchProjectContributors(req.supabase);
+
+    res.status(httpStatus.OK).json({
+      status: "OK",
+      list: projectContributors
+    });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
+
+
 const getEventsSummary = async (req, res) => {
   try {
     const eventsSummary = await statisticsService.fetchEventsSummary(req.supabase);
@@ -205,7 +270,11 @@ const statisticsController = {
   getAlumniSexStats,
   getAlumniAgeStats,
   getAlumniCivilStatusStats,
-  getAlumniOrgAffiliationStats
+  getAlumniOrgAffiliationStats,
+  getAlumniFieldStats,
+  getAlumniHighestDegreeStats,
+  getAlumniIncomeRangeStats,
+  getProjectContributors,
 };
 
 export default statisticsController;
