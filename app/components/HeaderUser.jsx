@@ -26,7 +26,8 @@ function HeaderMenu({ toggleSidebar, isSidebarOpen }) {
 function HeaderLogo() {
   return (
     <Link href="/" className="flex items-center space-x-3 cursor-pointer">
-      <Image src={logo} alt="Logo" width={50} height={50} className="rounded-full" />
+      <Image src={logo} alt="Logo" width={40} height={40} className="rounded-full sm:w-[50px] sm:h-[50px]" />
+      <span className="text-astrablack font-bold text-sm sm:text-lg">ICS-Astra</span>
     </Link>
   );
 }

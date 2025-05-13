@@ -335,9 +335,9 @@ export default function AboutPage() {
           </p>
         </motion.div>
 
-        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 animate-bounce">
+        {/* <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 animate-bounce">
           <ChevronDown className="h-8 w-8 text-white/70" />
-        </div>
+        </div> */}
       </section>
 
       {/* Mission section */}
