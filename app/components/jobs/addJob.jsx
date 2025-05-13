@@ -89,7 +89,7 @@ export default function JobForm({isEdit, close, refreshJobs}){
       location_type: locationType?.value,
       hiring_manager: formData.company_name,
       employment_type: 1,
-      salary: Number(formData.salary.replace(/,/g, '')),
+      salary: Number(formData.salary.replace(/,/g, "")),
       expires_at: formData.expires_at,
       apply_link: normalizeUrl(formData.apply_link),
       details: formData.details,
@@ -286,15 +286,15 @@ export default function JobForm({isEdit, close, refreshJobs}){
 
         <div className="flex justify-between my-4 px-8">
           <button onClick={handleClear} className="!cursor-pointer text-astraprimary border-1 border-astraprimary font-semibold w-35 py-2 rounded-lg text-base">Clear Details</button>
-        <button
-          onClick={() => {
-            if (!user?.state?.user) {
-              setShowSignInModal(true);
-            } else {
-              setPrompt(true);
-            }
-          }}
-          className="cursor-pointer text-astrawhite border border-astraprimary bg-astraprimary font-semibold w-35 py-2 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-astraprimary">Publish Post</button>
+          <button
+            onClick={() => {
+              if (!user?.state?.user) {
+                setShowSignInModal(true);
+              } else {
+                setPrompt(true);
+              }
+            }}
+            className="cursor-pointer text-astrawhite border border-astraprimary bg-astraprimary font-semibold w-35 py-2 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-astraprimary">Publish Post</button>
         </div>
       </div>
       {showPrompt ? <ConfirmationPrompt prompt={"Are you sure you want to post this job posting?"} close={()=>setPrompt(false)} handleConfirm={handleAdd}/> : <></>}
