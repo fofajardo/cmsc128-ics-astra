@@ -22,7 +22,7 @@ export default function JobsPage() {
 
   const handleSeeMore = (cards, addCards) => {
     addCards(cards + CARDS_PER_CLICK);
-  }
+  };
 
   const fetchJobs = async () => {
     try {
@@ -79,7 +79,7 @@ export default function JobsPage() {
 
   const sort = (filtered, asc) => {
     return filtered.sort((a, b) => (new Date(b.created_at) - new Date(a.created_at)) * (asc ? 1 : -1));
-  }
+  };
 
   const handleApplyFilter = (filters) => {
     const {job_type = "",
@@ -92,7 +92,7 @@ export default function JobsPage() {
     } = filters;
 
     const lowerLocation = location.toLowerCase();
-    const dateToday = new Date()
+    const dateToday = new Date();
 
     var filtered = jobs.filter(job => {
       const matchesJobType = job_type === job.employment_type || job_type === "";
@@ -162,8 +162,8 @@ export default function JobsPage() {
           All jobs loaded
         </div> :
         <button onClick={()=>handleSeeMore(jobCards, setJobCards)} className="my-10 hover:scale-none hover:text-astrawhite border-1 border-astraprimary text-lg rounded-lg relative flex h-[50px] w-33 items-center justify-center overflow-hidden bg-astrawhite text-astraprimary transition-all before:absolute before:h-0 before:w-0 before:rounded-full before:bg-astraprimary before:text-astraprimary before:duration-500 before:ease-out hover:before:h-56 hover:before:w-56">
-        <span className="relative z-10">See More</span>
-      </button>}
+          <span className="relative z-10">See More</span>
+        </button>}
 
       {myJobs.length == 0 ? <></>
         :
@@ -185,12 +185,12 @@ export default function JobsPage() {
 
 
           {myJobs.length === 0 ? <></> :  myJobs.length <= myJobCards ?
-          <div className="text-center my-10 text-gray-400 text-lg font-medium">
-            All my jobs loaded
-          </div> :
-          <button onClick={()=>handleSeeMore(myJobCards, setMyJobCards)} className="my-10 hover:scale-none hover:text-astrawhite border-1 border-astraprimary text-lg rounded-lg relative flex h-[50px] w-33 items-center justify-center overflow-hidden bg-astrawhite text-astraprimary transition-all before:absolute before:h-0 before:w-0 before:rounded-full before:bg-astraprimary before:text-astraprimary before:duration-500 before:ease-out hover:before:h-56 hover:before:w-56">
-            <span className="relative z-10">See More</span>
-          </button>}
+            <div className="text-center my-10 text-gray-400 text-lg font-medium">
+              All my jobs loaded
+            </div> :
+            <button onClick={()=>handleSeeMore(myJobCards, setMyJobCards)} className="my-10 hover:scale-none hover:text-astrawhite border-1 border-astraprimary text-lg rounded-lg relative flex h-[50px] w-33 items-center justify-center overflow-hidden bg-astrawhite text-astraprimary transition-all before:absolute before:h-0 before:w-0 before:rounded-full before:bg-astraprimary before:text-astraprimary before:duration-500 before:ease-out hover:before:h-56 hover:before:w-56">
+              <span className="relative z-10">See More</span>
+            </button>}
         </>
       }
     </div>

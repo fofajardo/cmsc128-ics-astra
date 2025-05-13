@@ -270,7 +270,6 @@ const updateJob =  async (req, res) => {
       location_type,
       employment_type,
       requirements,
-      details,
       expires_at
     } = req.body;
 
@@ -328,20 +327,14 @@ const updateJob =  async (req, res) => {
       });
     }
 
-    // check description character count
-    if (details.length > 3000) {
-      return res.status(httpStatus.BAD_REQUEST).json({
-        status: "FAILED",
-        message: "Exceeded job description maximum character count"
-      });
-    }
-
     // validate requirements character count
-    if (requirements.length > 1500) {
-      return res.status(httpStatus.BAD_REQUEST).json({
-        status: "FAILED",
-        message: "Exceeded job requirements maximum character count"
-      });
+    if (requirements){
+      if (requirements.length > 1500) {
+        return res.status(httpStatus.BAD_REQUEST).json({
+          status: "FAILED",
+          message: "Exceeded job requirements maximum character count"
+        });
+      }
     }
 
     const { error: updateError } = await jobsService.updateJobData(req.supabase, jobId, updateData);

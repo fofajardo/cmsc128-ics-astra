@@ -8,7 +8,7 @@ import { jobTypeOptions, statusOptions, locationTypeOptions } from "@/components
 export default function Filter({ onApply }) {
   const [formData, setFormData] = useState({job_type: "", status: "", location: "", location_type: "", min_salary: "", max_salary: "", recent: true});
   const [select, setSelect] = useState({job_type: null, status: null, location_type: null});
-  const isMounted = useRef(false)
+  const isMounted = useRef(false);
 
   const handleChange = (e) => {
     e.preventDefault();
@@ -28,7 +28,7 @@ export default function Filter({ onApply }) {
 
   const handleSelectChange = (selected, { name }) => {
     selected.value === "" ? setSelect({...select, [name]: null})
-    : setSelect({...select, [name]: selected});
+      : setSelect({...select, [name]: selected});
     setFormData({...formData, [name]: selected.value});
     // console.log(formData)
 
