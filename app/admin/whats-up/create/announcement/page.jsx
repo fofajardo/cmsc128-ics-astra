@@ -27,7 +27,6 @@ export default function CreateAnnouncement() {
     }
   };
 
-  console.log(user?.state?.user?.id)
   const handleSubmit = async () => {
     try {
       const payload = {
