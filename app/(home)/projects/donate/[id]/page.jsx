@@ -1,39 +1,248 @@
-import DonateDetailClient from "./donatedetailclient";
-export async function generateMetadata({ params }) {
-  const { id } = await params;
+"use client";
 
-  if (!id || id.length !== 36) {
-    return {
-      title: "Invalid Event - ICS-ASTRA",
-      description: "This event link may be broken or the ID is incorrect.",
-    };
-  }
+import { useState } from "react";
+import { useParams,useSearchParams } from "next/navigation";
+import Throbber from "../../../../components/projects/Throbber";
+import DonationSuccess from "../../../../components/projects/DonationSuccess";
+import BackButton from "@/components/events/IndividualEvent/BackButton";
+import ToastNotification from "@/components/ToastNotification";
+import axios from "axios";
+import { v4 as uuidv4 } from "uuid";
+import { DONATION_MODE_OF_PAYMENT } from "@/constants/donationConsts";
+import { useSignedInUser } from "@/components/UserContext";
 
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/v1/requests/projects/${id}`, {
-      cache: "no-store",
-    });
+export default function DonatePage() {
+  const { id } = useParams();
+  const searchParams = useSearchParams();
+  const title = searchParams.get("title");
+  const [amount, setAmount] = useState(1000);
+  const [paymentMethod, setPaymentMethod] = useState("bank");
+  const [receipt, setReceipt] = useState(null);
+  const [status, setStatus] = useState("idle");
+  const [showToast, setShowToast] = useState(null);
 
-    const data = await res.json();
+  // Credit/debit fields
+  const [cardNumber, setCardNumber] = useState("");
+  const [expiry, setExpiry] = useState("");
+  const [cvv, setCvv] = useState("");
+  const [cardName, setCardName] = useState("");
 
-    if (data.status === "OK" && data.list?.projectData?.title) {
-      return {
-        title: `${data.list.projectData.title} - ICS-ASTRA`,
-        description:
-          data.list.projectData.details?.slice(0, 150) || "Explore this project under ICS-ASTRA.",
+  const user = useSignedInUser();
+
+  const createDonation = async () => {
+    try {
+      const generatedRefNum = "REF" + uuidv4();
+
+      const data = {
+        user_id: user?.state?.user?.id,
+        project_id: id,
+        donation_date: new Date().toISOString(),
+        reference_num: generatedRefNum,
+        mode_of_payment: DONATION_MODE_OF_PAYMENT.BANK_TRANSFER,
+        amount: amount,
+        is_anonymous: false,  // TODO: Add is_anonymous field
+        comment: null,  // TODO: Add comment field
       };
+
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations`, data);
+      const donationData = response.data;
+      if (donationData.status === "CREATED") {
+        console.log("Created donation:", donationData);
+      } else {
+        console.error("Unexpected response:", donationData);
+      }
+    } catch (error) {
+      console.log("Failed to create donation:", error);
     }
-  } catch (error) {
-    console.error("Metadata fetch failed:", error);
-  }
-
-  return {
-    title: "Project Not Found - ICS-ASTRA",
-    description: "The requested project could not be found.",
   };
-}
 
+  const handleAmountChange = (newAmount) => {
+    setAmount(Number(newAmount));
+  };
 
-export default function DonateDetailPage() {
-  return <DonateDetailClient />;
+  const handleDonate = () => {
+    if (paymentMethod === "paypal") {
+      window.location.href = "https://www.paypal.com/signin";
+      return;
+    }
+
+    if (paymentMethod === "credit") {
+      if (!cardNumber || !expiry || !cvv || !cardName) {
+        setShowToast({ type: "error", message: "Please complete all credit/debit card fields." });
+        return;
+      }
+    }
+
+    if (paymentMethod === "bank" && !receipt) {
+      setShowToast({ type: "error", message: "Please upload a receipt before donating." });
+      return;
+    }
+
+    createDonation();
+
+    setStatus("loading");
+    setTimeout(() => setStatus("success"), 2000);
+  };
+
+  if (status === "loading") return <Throbber />;
+  if (status === "success") return <DonationSuccess />;
+
+  return (
+    <div className="min-h-screen bg-[#f4f7fe] text-astralightgray-800 px-4 py-20">
+      {showToast && (
+        <ToastNotification
+          type={showToast.type}
+          message={showToast.message}
+          onClose={() => setShowToast(null)}
+        />
+      )}
+
+      <div className="max-w-xl mx-auto mb-4">
+        <BackButton />
+      </div>
+
+      <div className="max-w-xl mx-auto bg-astrawhite shadow-md rounded-lg px-6 py-8">
+        <h1 className="text-xl font-semibold mb-2">Your Donation</h1>
+        <p className="text-sm text-astralightgray-500 mb-6">Donating to: <strong>{title || "Donation Drive"}</strong></p>
+
+        {/* Amount Section */}
+        <div className="border-b border-astralightgray-200 pb-6 mb-6">
+          <h3 className="text-sm font-medium mb-4">Enter Amount</h3>
+          <div className="grid grid-cols-4 gap-2 mb-4">
+            {[1000, 2500, 5000, 10000].map((preset) => (
+              <button
+                key={preset}
+                onClick={() => handleAmountChange(preset)}
+                className={`text-sm py-2 rounded-md border font-medium transition ${
+                  amount === preset
+                    ? "bg-[var(--color-astraprimary)] text-astrawhite border-[var(--color-astraprimary)]"
+                    : "bg-astrawhite text-astralightgray-700 border-astralightgray-300 hover:bg-[var(--color-astraprimary)] hover:text-astrawhite"
+                }`}
+              >
+                ₱{preset}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-base font-medium text-astralightgray-500">PHP</span>
+            <input
+              type="number"
+              value={amount}
+              onChange={(e) => handleAmountChange(e.target.value)}
+              className="flex-1 px-3 py-2 border border-astralightgray-300 rounded-md text-center font-semibold text-lg focus:outline-none"
+            />
+            <button className="text-sm bg-[var(--color-astraprimary)] text-astrawhite px-4 py-2 rounded-md font-medium hover:bg-opacity-90 transition">
+              Cash Amount
+            </button>
+          </div>
+        </div>
+
+        {/* Payment Method Section */}
+        <div className="border-b border-astralightgray-200 pb-6 mb-6">
+          <h3 className="text-sm font-medium mb-4">Select Payment Method</h3>
+          <div className="flex flex-col gap-4">
+            {/* PayPal */}
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="payment"
+                value="paypal"
+                checked={paymentMethod === "paypal"}
+                onChange={(e) => setPaymentMethod(e.target.value)}
+                disabled
+              />
+              <img src="/icons/paypal.svg" alt="PayPal" className="w-16 h-auto" />
+            </label>
+
+            {/* Credit/Debit */}
+            <label className="flex items-center gap-2 cursor-pointer text-sm">
+              <input
+                type="radio"
+                name="payment"
+                value="credit"
+                checked={paymentMethod === "credit"}
+                onChange={(e) => setPaymentMethod(e.target.value)}
+                disabled
+              />
+              Credit/Debit Card
+            </label>
+
+            {paymentMethod === "credit" && (
+              <div className="pl-6 space-y-2">
+                <input
+                  type="text"
+                  placeholder="Card Number"
+                  value={cardNumber}
+                  onChange={(e) => setCardNumber(e.target.value)}
+                  className="w-full border border-astralightgray-300 rounded-md p-2 text-sm focus:outline-none"
+                />
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Expiry Date (MM/YY)"
+                    value={expiry}
+                    onChange={(e) => setExpiry(e.target.value)}
+                    className="flex-1 border border-astralightgray-300 rounded-md p-2 text-sm focus:outline-none"
+                  />
+                  <input
+                    type="text"
+                    placeholder="CVV"
+                    value={cvv}
+                    onChange={(e) => setCvv(e.target.value)}
+                    className="w-20 border border-astralightgray-300 rounded-md p-2 text-sm focus:outline-none"
+                  />
+                </div>
+                <input
+                  type="text"
+                  placeholder="Cardholder Name"
+                  value={cardName}
+                  onChange={(e) => setCardName(e.target.value)}
+                  className="w-full border border-astralightgray-300 rounded-md p-2 text-sm focus:outline-none"
+                />
+              </div>
+            )}
+
+            {/* Bank Transfer */}
+            <label className="flex items-center gap-2 cursor-pointer text-sm">
+              <input
+                type="radio"
+                name="payment"
+                value="bank"
+                checked={paymentMethod === "bank"}
+                onChange={(e) => setPaymentMethod(e.target.value)}
+              />
+              Bank Transfer
+            </label>
+
+            {paymentMethod === "bank" && (
+              <div className="pl-6">
+                <input
+                  type="file"
+                  accept="image/*,application/pdf"
+                  onChange={(e) => setReceipt(e.target.files[0])}
+                  className="w-full text-sm text-astradarkgray file:py-2 file:px-4 file:rounded-md file:border file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100"
+                />
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Summary + Donate Button */}
+        <div className="flex justify-between items-center mb-6">
+          <p className="text-sm font-medium">Your Donation</p>
+          <p className="text-2xl font-bold">
+            ₱{amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+          </p>
+        </div>
+
+        <button
+          onClick={handleDonate}
+          className="w-full bg-[var(--color-astraprimary)] hover:bg-opacity-90 text-astrawhite py-3 rounded-md text-sm font-semibold transition"
+        >
+          Donate now
+        </button>
+      </div>
+    </div>
+  );
 }
