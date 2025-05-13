@@ -84,8 +84,8 @@ export default function LoginPage() {
     <div className="min-h-screen flex bg-[var(--color-astratintedwhite)]">
       <RouteGuardUnauthenticated />
       {/* Left Side */}
-      <div className="w-full md:w-1/2 relative flex items-center justify-center px-4 md:px-8">
-        <div className="w-full max-w-md">
+      <div className="w-full md:w-1/2 relative flex justify-center px-4 md:px-8">
+        <div className="w-full max-w-md py-8">
           <AuthBackToHomeLink />
           {/* Logo and Back to Home inside form flex */}
           <div className="flex flex-col items-center mb-4">
