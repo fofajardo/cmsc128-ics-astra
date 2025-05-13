@@ -36,6 +36,7 @@ export default function UserProjects() {
   const [loading, setLoading] = useState(true);
   const [projects, setProjects] = useState([]);
   const [projectPhotos, setProjectPhotos] = useState({});
+  const [showMobileTabs, setShowMobileTabs] = useState(false);
 
   useEffect(() => {
     const fetchUserProjects = async () => {
@@ -207,7 +208,8 @@ export default function UserProjects() {
       <div className="max-w-6xl mx-auto px-6 -mt-14">
         {/* Tabs */}
         <div className="bg-astrawhite rounded-t-xl shadow-md mb-6 overflow-hidden">
-          <div className="flex border-b border-astragray/20">
+          {/* Desktop Tabs */}
+          <div className="hidden md:flex border-b border-astragray/20">
             <button
               onClick={() => handleTabChange("all")}
               className={`flex-1 py-4 px-6 text-center font-medium transition-colors ${
@@ -248,6 +250,82 @@ export default function UserProjects() {
             >
               Rejected
             </button>
+          </div>
+
+          {/* Mobile Tabs */}
+          <div className="md:hidden">
+            <div className="relative">
+              <button
+                onClick={() => setShowMobileTabs(!showMobileTabs)}
+                className={`w-full py-4 px-6 flex items-center justify-between bg-astrawhite border-b ${
+                  showMobileTabs ? 'border-astragray/20' : 'border-astraprimary'
+                }`}
+              >
+                <span className="font-medium text-astrablack">
+                  {activeTab === "all" ? "All Projects" :
+                   activeTab === REQUEST_STATUS_LABELS[REQUEST_STATUS.SENT] ? "Pending" :
+                   capitalizeName(activeTab)}
+                </span>
+                <ChevronDown className={`w-5 h-5 transition-transform ${showMobileTabs ? 'rotate-180' : ''}`} />
+              </button>
+
+              {showMobileTabs && (
+                <div className="absolute w-full bg-astrawhite border-b border-astragray/20 shadow-lg z-10">
+                  <button
+                    onClick={() => {
+                      handleTabChange("all");
+                      setShowMobileTabs(false);
+                    }}
+                    className={`w-full py-3 px-6 text-left font-medium transition-colors ${
+                      activeTab === "all"
+                        ? "text-astraprimary border-b-2 border-astraprimary"
+                        : "text-astradarkgray hover:bg-astralightgray/30"
+                    }`}
+                  >
+                    All Projects
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleTabChange(REQUEST_STATUS_LABELS[REQUEST_STATUS.APPROVED]);
+                      setShowMobileTabs(false);
+                    }}
+                    className={`w-full py-3 px-6 text-left font-medium transition-colors ${
+                      activeTab === REQUEST_STATUS_LABELS[REQUEST_STATUS.APPROVED]
+                        ? "text-astraprimary border-b-2 border-astraprimary"
+                        : "text-astradarkgray hover:bg-astralightgray/30"
+                    }`}
+                  >
+                    Approved
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleTabChange(REQUEST_STATUS_LABELS[REQUEST_STATUS.SENT]);
+                      setShowMobileTabs(false);
+                    }}
+                    className={`w-full py-3 px-6 text-left font-medium transition-colors ${
+                      activeTab === REQUEST_STATUS_LABELS[REQUEST_STATUS.SENT]
+                        ? "text-astraprimary border-b-2 border-astraprimary"
+                        : "text-astradarkgray hover:bg-astralightgray/30"
+                    }`}
+                  >
+                    Pending
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleTabChange(REQUEST_STATUS_LABELS[REQUEST_STATUS.REJECTED]);
+                      setShowMobileTabs(false);
+                    }}
+                    className={`w-full py-3 px-6 text-left font-medium transition-colors ${
+                      activeTab === REQUEST_STATUS_LABELS[REQUEST_STATUS.REJECTED]
+                        ? "text-astraprimary border-b-2 border-astraprimary"
+                        : "text-astradarkgray hover:bg-astralightgray/30"
+                    }`}
+                  >
+                    Rejected
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="p-6">
