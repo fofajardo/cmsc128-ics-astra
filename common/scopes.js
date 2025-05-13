@@ -107,7 +107,7 @@ const EmploymentStatus = Object.freeze({
       switch (value) {
       case EmploymentStatus.UNEMPLOYED:
       case EmploymentStatus.EMPLOYED:
-      case EmploymentStatus.SELF-EMPLOYED:
+      case EmploymentStatus.SELF_EMPLOYED:
         return true;
       default:
         break;
@@ -121,7 +121,7 @@ const EmploymentStatus = Object.freeze({
     }
     return parseInt(aValue);
   },
-})
+});
 
 export {
   RoleName,
