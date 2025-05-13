@@ -29,6 +29,39 @@ const getContents = async (req, res) => {
   }
 };
 
+const getAnnouncements = async (req, res) => {
+  try {
+    const filters = req.query;
+
+    const { data, error } = await contentsService.fetchContents(req.supabase);
+
+    if (error) {
+      console.log(error);
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error.message
+      });
+    }
+
+    // Filter data to only include items with 'announcement' tag
+    const announcements = data ? data.filter(item =>
+      item.tags && Array.isArray(item.tags) && item.tags.includes('announcement')
+    ) : [];
+
+    return res.status(httpStatus.OK).json({
+      status: "OK",
+      list: announcements || [],
+    });
+
+  } catch (error) {
+    console.log(error);
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
+
 const getContentById = async (req, res) => {
   try {
     const { contentId } = req.params;
@@ -292,6 +325,7 @@ const deleteContent = async (req, res) => {
 };
 
 const contentsController = {
+  getAnnouncements,
   getContents,
   getContentById,
   createContent,

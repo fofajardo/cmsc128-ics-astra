@@ -34,7 +34,7 @@ export default function CommunicationPage() {
   useEffect(() => {
     const fetchContents = async () => {
       try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents`);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/announcements`);
         if (response.data.status === "OK") {
           const list = response.data.list || response.data.data?.list || [];
           setAnnouncements(list);
