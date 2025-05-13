@@ -129,11 +129,18 @@ function Sidebar({
 }) {
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen, toggleSidebar] = sidebarState;
+  const [submenuToOpen, setSubmenuToOpen] = useState(null);
 
   const handleNavigate = function (aItem) {
     router.push(aItem.path);
     setIsSidebarOpen(false);
   };
+
+  useEffect(() => {
+    if (submenuToOpen) {
+      context.actions.toggleNavSubmenu(submenuToOpen);
+    }
+  }, [submenuToOpen]);
 
   return (
     <>
@@ -147,6 +154,7 @@ function Sidebar({
             if ((navItem.hideIfGuest && context.state.isGuest) || navItem.parent) {
               return null;
             }
+            let isNavOpen = context.state.activeNavSubmenus?.[key];
             return (
               <li key={"sidebar-" + key}>
                 <div
@@ -168,7 +176,7 @@ function Sidebar({
                   </div>
                   {navItem.children && (
                     <span>
-                      {context.state.activeNavSubmenus?.[key] ? (
+                      {isNavOpen ? (
                         <ChevronUp size={18}/>
                       ) : (
                         <ChevronDown size={18}/>
@@ -176,15 +184,19 @@ function Sidebar({
                     </span>
                   )}
                 </div>
-                {navItem.children && context.state.activeNavSubmenus?.[key] && (
-                  <ul className="ml-6 mt-2 space-y-3 border-l border-gray-300 pl-4">
+                {navItem.children && (
+                  <ul className={`ml-6 mt-2 space-y-3 border-l border-gray-300 pl-4 ${isNavOpen ? "" : "hidden"}`}>
                     {navItem.children.map(function (childNavItemId, i) {
                       const childNavItem = items[childNavItemId];
+                      let isChildActive = context.state.activeNavItem === childNavItemId;
+                      if (isChildActive && !isNavOpen && submenuToOpen !== key) {
+                        setSubmenuToOpen(key);
+                      }
                       return (
                         <li
                           key={i}
                           className={`flex items-center space-x-3 text-sm cursor-pointer transition-all pl-1 ${
-                            context.state.activeNavItem === childNavItem.id
+                            isChildActive
                               ? "text-astraprimary font-semibold"
                               : "text-gray-500 hover:text-blue-600 hover:scale-[1.02]"
                           }`}
