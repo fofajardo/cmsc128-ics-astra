@@ -62,6 +62,7 @@ export default function JobForm({isEdit, close, refreshJobs}){
     setLocationType(null);
     setStatus(null);
     setErrors({});
+    setSelectedDate(null);
   };
 
   const handleChange = (e) => {
