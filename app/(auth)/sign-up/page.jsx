@@ -12,8 +12,9 @@ import SignUpStep5 from "@/(auth)/sign-up/SignUpStep5.jsx";
 import {useSignedInUser} from "@/components/UserContext.jsx";
 import {LoadingSpinner} from "@/components/LoadingSpinner.jsx";
 import {RouteGuard} from "@/components/RouteGuard.jsx";
-import {RouteGuardMode} from "../../../common/scopes.js";
 import SignUpStep6 from "@/(auth)/sign-up/SignUpStep6.jsx";
+import {RouteGuardMode} from "../../../common/scopes.js";
+import {redirect} from "next/navigation";
 
 function buildPage(aPageState) {
   const [page, setPage] = aPageState;
@@ -44,10 +45,14 @@ function buildPage(aPageState) {
 }
 
 export default function SignupPage() {
-  const userContext = useSignedInUser();
   const [page, setPage] = useState(0);
+  const userContext = useSignedInUser();
 
-  const handleRouteGuardChange = function(userContext) {
+  useLayoutEffect(() => {
+    if (!userContext.state.initialized) {
+      return;
+    }
+
     if (userContext.state.isGuest) {
       setPage(1);
     } else if (userContext.state.profile === null) {
@@ -58,13 +63,12 @@ export default function SignupPage() {
       setPage(5);
     } else {
       // This user has already completed the sign up process.
-      return feRoutes.main.home();
+      redirect(feRoutes.main.home());
     }
-  };
+  }, [userContext.state]);
 
   return (
     <div className="min-h-screen flex bg-[var(--color-astratintedwhite)]">
-      <RouteGuard mode={RouteGuardMode.AUTH_SIGN_UP} onChange={handleRouteGuardChange} />
       {/* Left Side */}
       <div className="w-full md:w-1/2 relative flex justify-center px-4 md:px-8 max-h-screen overflow-auto">
         <div className="w-full max-w-md py-8">

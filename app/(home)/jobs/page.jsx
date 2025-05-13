@@ -14,10 +14,10 @@ import { useSignedInUser } from "@/components/UserContext";
 export default function JobsPage() {
   const user = useSignedInUser();
   const [jobs, setJobs] = useState([]);
-  const [filteredJobs, setFilteredJobs] = useState([]);
   const [myJobs, setMyJobs] = useState([]);
-  const [jobCards, setJobCards] = useState(6); // limit / no. of cards to show
-  const [myJobCards, setMyJobCards] = useState(6); // limit / no. of cards owned to show
+  const [filteredJobs, setFilteredJobs] = useState([]);
+  const [jobCards, setJobCards] = useState(6);
+  const [myJobCards, setMyJobCards] = useState(6);
   const CARDS_PER_CLICK = 6;
 
   const fetchJobs = async () => {
@@ -41,14 +41,9 @@ export default function JobsPage() {
                   ? res.data
                   : res.data.list || [];
 
-                const hasUserContent = contents.some(
-                  (content) => content.user_id === userId
-                );
+                const hasUserContent = contents.some((content) => content.user_id === userId);
 
-                return {
-                  ...job,
-                  hasUserContent,
-                };
+                return {...job, hasUserContent};
               } catch (err) {
                 console.error(`Error fetching content for job ${job.job_id}`, err);
                 return { ...job, hasUserContent: false };
@@ -102,9 +97,20 @@ export default function JobsPage() {
         </div>
       }
 
-      {jobs.length == 0 ? <></> : <button onClick={()=>setJobCards((prev)=>prev + CARDS_PER_CLICK)} className="my-10 hover:scale-none hover:text-astrawhite border-1 border-astraprimary text-lg rounded-lg relative flex h-[50px] w-33 items-center justify-center overflow-hidden bg-astrawhite text-astraprimary transition-all before:absolute before:h-0 before:w-0 before:rounded-full before:bg-astraprimary before:text-astraprimary before:duration-500 before:ease-out hover:before:h-56 hover:before:w-56">
-        <span className="relative z-10">See More</span>
-      </button>}
+      {jobs.length === 0 ? (
+        <></>
+      ) : jobCards >= jobs.length ? (
+        <div className="text-center my-10 text-gray-400 text-lg font-medium">
+          All jobs loaded
+        </div>
+      ) : (
+        <button
+          onClick={() => setJobCards(prev => prev + CARDS_PER_CLICK)}
+          className="my-10 hover:scale-none hover:text-astrawhite border-1 border-astraprimary text-lg rounded-lg relative flex h-[50px] w-33 items-center justify-center overflow-hidden bg-astrawhite text-astraprimary transition-all before:absolute before:h-0 before:w-0 before:rounded-full before:bg-astraprimary before:text-astraprimary before:duration-500 before:ease-out hover:before:h-56 hover:before:w-56"
+        >
+          <span className="relative z-10">See More</span>
+        </button>
+      )}
 
       {myJobs.length == 0 ? <></>
         :
@@ -123,12 +129,21 @@ export default function JobsPage() {
                 <JobEditCard key={job.job_id} job={job}/>
               );})}
           </div>
-
-
-          <button onClick={()=>setMyJobCards((prev) => prev + CARDS_PER_CLICK)} className="my-10 hover:scale-none hover:text-astrawhite border-1 border-astraprimary text-lg rounded-lg relative flex h-[50px] w-33 items-center justify-center overflow-hidden bg-astrawhite text-astraprimary transition-all before:absolute before:h-0 before:w-0 before:rounded-full before:bg-astraprimary before:text-astraprimary before:duration-500 before:ease-out hover:before:h-56 hover:before:w-56">
-            <span className="relative z-10">See More</span>
-          </button>
         </>
       }
+      {myJobs.length === 0 ? (
+        <></>
+      ) : myJobCards >= myJobs.length ? (
+        <div className="text-center my-10 text-gray-400 text-lg font-medium">
+          All my jobs loaded
+        </div>
+      ) : (
+        <button
+          onClick={() => setMyJobCards(prev => prev + CARDS_PER_CLICK)}
+          className="my-10 hover:scale-none hover:text-astrawhite border-1 border-astraprimary text-lg rounded-lg relative flex h-[50px] w-33 items-center justify-center overflow-hidden bg-astrawhite text-astraprimary transition-all before:absolute before:h-0 before:w-0 before:rounded-full before:bg-astraprimary before:text-astraprimary before:duration-500 before:ease-out hover:before:h-56 hover:before:w-56"
+        >
+          <span className="relative z-10">See More</span>
+        </button>
+      )}
     </div>
   );}

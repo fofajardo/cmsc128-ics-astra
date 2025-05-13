@@ -362,7 +362,7 @@ const getDegreeProofPhotoByAlumId = async (req, res) => {
     const { data: signedUrlData, error: signedUrlError } = await req.supabase
       .storage
       .from("user-photos-bucket")
-      .createSignedUrl(data.image_key, 60 * 60); // URL valid for 1 hour
+      .createSignedUrl(data, 60 * 60); // URL valid for 1 hour
 
     if (signedUrlError) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -400,7 +400,7 @@ const getJsonOfDegreeProofPhotoByAlumId = async (req, res) => {
 
     return res.status(httpStatus.OK).json({
       status: "OK",
-      ...data,
+      data,
     });
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({

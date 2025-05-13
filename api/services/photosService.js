@@ -64,11 +64,10 @@ const fetchPhotoIdbyAlum = async (supabase, alum_id) => {
 
 const fetchDegreeProofPhoto = async (supabase, alum_id) => {
   return await supabase
-    .from("photos")
-    .select("image_key")
-    .eq("user_id", alum_id)
-    .eq("type", PhotoType.PROOF_OF_GRADUATION) // Assuming type 100 is for degree proof
-    .single();
+    .rpc("photos_fetch_latest_image_key", {
+      "user_id": alum_id,
+      "type": PhotoType.PROOF_OF_GRADUATION
+    });
 };
 
 const fetchProjectPhotos = async (supabase, project_id) => {
@@ -104,6 +103,23 @@ const fetchPhotosByContentId = async (supabase, contentId) => {
     .eq("content_id", contentId);
 };
 
+const getAvatarUrl = async (supabase, id) => {
+  let { data: keyData, error: keyError } = await supabase
+    .from("photos")
+    .select("image_key")
+    .eq("user_id", id)
+    .eq("type", PhotoType.PROFILE_PIC)
+    .single();
+  if (keyError) {
+    return { data: keyData, error: keyError };
+  }
+
+  return await supabase
+    .storage
+    .from("user-photos-bucket")
+    .createSignedUrl(keyData.image_key, 60 * 60);
+};
+
 const photosService = {
   fetchAllPhotos,
   fetchPhotoById,
@@ -118,6 +134,7 @@ const photosService = {
   fetchJobPhotos,
   fetchPhotoTypesByContentIds,
   fetchPhotosByContentId,
+  getAvatarUrl,
 };
 
 export default photosService;

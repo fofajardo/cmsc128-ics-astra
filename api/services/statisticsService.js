@@ -87,6 +87,94 @@ const fetchProjectDonationSummary = async (supabase) => {
   return data;
 };
 
+const fetchAlumniSexStats = async (supabase) => {
+  const { data, error } = await supabase
+    .from("alumni_sex")
+    .select("*");
+
+  if (error) {
+    throw error;
+  }
+  return data;
+};
+
+const fetchAlumniAgeStats = async (supabase) => {
+  const { data, error } = await supabase
+    .from("alumni_age")
+    .select("*");
+
+  if (error) {
+    throw error;
+  }
+  return data;
+};
+
+const fetchAlumniCivilStatusStats = async (supabase) => {
+  const { data, error } = await supabase
+    .from("alumni_civil_status")
+    .select("*");
+
+  if (error) {
+    throw error;
+  }
+  return data;
+};
+
+const fetchAlumniOrgAffiliationStats = async (supabase) => {
+  const { data, error } = await supabase
+    .from("alumni_org_affiliation")
+    .select("*");
+
+  if (error) {
+    throw error;
+  }
+  return data;
+};
+
+const fetchAlumniFieldStats = async (supabase) => {
+  const { data, error } = await supabase
+    .from("alumni_field")
+    .select("*");
+
+  if (error) {
+    throw error;
+  }
+  return data;
+};
+
+const fetchAlumniHighestDegreeStats = async (supabase) => {
+  const { data, error } = await supabase
+    .from("alumni_deg_program")
+    .select("*");
+
+  if (error) {
+    throw error;
+  }
+  return data;
+};
+
+const fetchAlumniIncomeRangeStats = async (supabase) => {
+  const { data, error } = await supabase
+    .from("alumni_income_range")
+    .select("*");
+
+  if (error) {
+    throw error;
+  }
+  return data;
+};
+
+const fetchProjectContributors = async (supabase) => {
+  const { data, error } = await supabase
+    .from("project_contributors")
+    .select("*");
+
+  if (error) {
+    throw error;
+  }
+  return data;
+};
+
 const statisticsService = {
   fetchAlumniStats,
   fetchActiveAlumniStats,
@@ -94,7 +182,14 @@ const statisticsService = {
   fetchActiveEventsStats,
   fetchFundsRaisedStats,
   fetchUpcomingEvents,
-  fetchProjectDonationSummary
+  fetchProjectDonationSummary,
+  fetchAlumniSexStats,
+  fetchAlumniAgeStats,
+  fetchAlumniCivilStatusStats,
+  fetchAlumniOrgAffiliationStats,
+  fetchAlumniFieldStats,
+  fetchAlumniHighestDegreeStats,
+  fetchAlumniIncomeRangeStats,
 };
 
 export default statisticsService;
