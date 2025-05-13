@@ -292,7 +292,7 @@ function HeaderAvatar({context}) {
           className="absolute top-full mt-3 right-0 p-3 w-40 bg-white rounded-lg shadow-xl border border-astragray z-10 transition-all duration-200 ease-in-out"
         >
           <Link
-            href={`/admin/alumni/search/${context.state.user?.id}`}
+            href={`/profile/${context.state.user?.id}`}
             className="flex items-center p-2 w-full text-astrablack hover:bg-astraprimary hover:text-white rounded-md text-sm"
             onClick={handleMenuClose}
           >
