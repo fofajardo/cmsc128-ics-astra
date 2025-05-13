@@ -23,9 +23,9 @@ export default function JobForm({isEdit, close, refreshJobs}){
   const [locationType, setLocationType] = useState(null);
   const [status, setStatus] = useState(null);
   const [showInvalidDateModal, setShowInvalidDateModal] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(
-    formData.event_date ? new Date(formData.event_date) : null
-  );
+  const [selectedDate, setSelectedDate] = useState(formData.event_date ? new Date(formData.event_date) : null);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleDateChange = (date) => {
     if (!date) return;
@@ -90,7 +90,6 @@ export default function JobForm({isEdit, close, refreshJobs}){
     };
 
     try {
-      console.log("Sending payload:", payload);
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs`, payload);
 
       if (response.data.status === "CREATED") {
@@ -98,13 +97,19 @@ export default function JobForm({isEdit, close, refreshJobs}){
         close();
       }
     } catch (error) {
+      let message = "An unexpected error occurred. Please try again.";
       if (axios.isAxiosError(error)) {
-        console.error("Axios error:", error.response?.data || error.message);
+        message = error.response?.data?.message || error.message;
+        console.error("Axios error:", message);
       } else {
         console.error("Unexpected error:", error);
       }
+
+      setErrorMessage(message);
+      setShowErrorModal(true);
     }
   };
+
 
   const selectStyle = {
     control: (state) =>
@@ -299,6 +304,17 @@ export default function JobForm({isEdit, close, refreshJobs}){
             <h2 className="text-xl font-semibold mb-4">Invalid Deadline</h2>
             <p className="mb-6">The deadline must be today or a future date.</p>
             <button onClick={() => setShowInvalidDateModal(false)} className="px-4 py-2 bg-astraprimary text-white rounded hover:bg-opacity-90">
+              Confirm
+            </button>
+          </div>
+        </div>
+      )}
+      {showErrorModal && (
+        <div className="fixed inset-0 bg-astrablack/60 flex items-center justify-center z-100">
+          <div className="bg-astrawhite max-w-[600px] w-19/20 min-h-[100px] h-auto rounded-2xl p-7 pb-5">
+            <h2 className="text-xl font-semibold mb-4">Error Posting Job</h2>
+            <p className="mb-6 text-gray-700">Please check job fields</p>
+            <button onClick={() => setShowErrorModal(false)} className="px-4 py-2 bg-astraprimary text-white rounded hover:bg-opacity-90">
               Confirm
             </button>
           </div>
