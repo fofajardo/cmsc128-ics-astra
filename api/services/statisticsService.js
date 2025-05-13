@@ -131,6 +131,39 @@ const fetchAlumniOrgAffiliationStats = async (supabase) => {
   return data;
 };
 
+const fetchAlumniFieldStats = async (supabase) => {
+  const { data, error } = await supabase
+    .from("alumni_field")
+    .select("*");
+
+  if (error) {
+    throw error;
+  }
+  return data;
+};
+
+const fetchAlumniHighestDegreeStats = async (supabase) => {
+  const { data, error } = await supabase
+    .from("alumni_deg_program")
+    .select("*");
+
+  if (error) {
+    throw error;
+  }
+  return data;
+};
+
+const fetchAlumniIncomeRangeStats = async (supabase) => {
+  const { data, error } = await supabase
+    .from("alumni_income_range")
+    .select("*");
+
+  if (error) {
+    throw error;
+  }
+  return data;
+};
+
 const statisticsService = {
   fetchAlumniStats,
   fetchActiveAlumniStats,
@@ -143,6 +176,9 @@ const statisticsService = {
   fetchAlumniAgeStats,
   fetchAlumniCivilStatusStats,
   fetchAlumniOrgAffiliationStats,
+  fetchAlumniFieldStats,
+  fetchAlumniHighestDegreeStats,
+  fetchAlumniIncomeRangeStats,
 };
 
 export default statisticsService;
