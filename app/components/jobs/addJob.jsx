@@ -1,12 +1,14 @@
 "use client";
 
-import {X} from "lucide-react";
 import Select from "react-select";
 import { useState } from "react";
 import ConfirmationPrompt from "./edit/confirmation";
 import axios from "axios";
 import { v4 as uuvidv4 } from "uuid";
 import { useSignedInUser } from "../UserContext";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { Calendar, X, Upload, Image as ImageIcon, Trash2  } from "lucide-react";
 
 export default function JobForm({isEdit, close, refreshJobs}){
   const user = useSignedInUser();
@@ -20,6 +22,32 @@ export default function JobForm({isEdit, close, refreshJobs}){
   const [employmentType, setEmploymentType] = useState(null);
   const [locationType, setLocationType] = useState(null);
   const [status, setStatus] = useState(null);
+  const [showInvalidDateModal, setShowInvalidDateModal] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(
+    formData.event_date ? new Date(formData.event_date) : null
+  );
+
+  const handleDateChange = (date) => {
+    if (!date) return;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    date.setHours(0, 0, 0, 0);
+
+    if (date < today) {
+      setShowInvalidDateModal(true);
+      return;
+    }
+
+    setSelectedDate(date);
+
+    handleChange({
+      target: {
+        name: "expires_at",
+        value: date.toISOString().split("T")[0],
+      },
+    });
+  };
 
   const handleClear = () => {
     setFormData({company_name: "", job_title: "", location: "", salary: "", apply_link: "", details: "", expires_at: "", job_requirements: "", hiring_manager: ""});
@@ -30,9 +58,10 @@ export default function JobForm({isEdit, close, refreshJobs}){
   };
 
   const handleChange = (e) => {
-    e.preventDefault();
-    const {name, value} = e.target;
-    // console.log({name, value});
+    if (e?.preventDefault) e.preventDefault();
+
+    const { name, value } = e.target;
+
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -41,8 +70,7 @@ export default function JobForm({isEdit, close, refreshJobs}){
 
   const handleAdd = async () => {
     if (!user?.state?.user) {
-      // Trigger modal or toast to prompt sign-in
-      setShowSignInModal(true); // You must define this state and modal somewhere in your component
+      setShowSignInModal(true);
       return;
     }
 
@@ -173,15 +201,19 @@ export default function JobForm({isEdit, close, refreshJobs}){
               styles={selectBaseStyle}/>
           </div>
 
-          <div className=''>
-            <div className='flex flex-row gap-2 items-center justify-between'>
-              <label className='text-black font-medium text-lg'>Deadline of Applications</label>
-              {errors.expires_at ?
-                <p className="text-sm text-astrared self-end">Required</p> : <></>
-              }
+          <div>
+            <label className="block font-medium mb-1">Deadline of Applications</label>
+            <div className="flex items-center border rounded px-3 py-2 w-full gap-2">
+              <Calendar className="text-astraprimary w-5 h-5" />
+              <DatePicker
+                selected={selectedDate}
+                onChange={handleDateChange}
+                dateFormat="yyyy-MM-dd"
+                placeholderText="Select date"
+                className="w-full outline-none cursor-pointer"
+                required={!isEdit}
+              />
             </div>
-            <input  type="date" placeholder="YYYY/MM/DD" onChange={handleChange} className='focus:border-astraprimary !cursor-pointer placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm'
-              name={"expires_at"} style={{ colorScheme: "light", accentColor: "#0E6CF3" }}></input>
           </div>
 
           <div>
@@ -257,7 +289,18 @@ export default function JobForm({isEdit, close, refreshJobs}){
           <div className="bg-astrawhite max-w-[600px] w-19/20 min-h-[100px] h-auto rounded-2xl p-7 pb-5">
             <h2 className="text-xl font-semibold mb-4">Sign In Required</h2>
             <p className="mb-6">Please sign in to add a job.</p>
-            <button onClick={() => {setShowSignInModal(false);}} className="px-4 py-2 bg-astraprimary text-white rounded hover:bg-opacity-90">OK</button>
+            <button onClick={() => {setShowSignInModal(false);}} className="px-4 py-2 bg-astraprimary text-white rounded hover:bg-opacity-90">Confirm</button>
+          </div>
+        </div>
+      )}
+      {showInvalidDateModal && (
+        <div className="fixed inset-0 bg-astrablack/60 flex items-center justify-center z-100">
+          <div className="bg-astrawhite max-w-[600px] w-19/20 min-h-[100px] h-auto rounded-2xl p-7 pb-5">
+            <h2 className="text-xl font-semibold mb-4">Invalid Deadline</h2>
+            <p className="mb-6">The deadline must be today or a future date.</p>
+            <button onClick={() => setShowInvalidDateModal(false)} className="px-4 py-2 bg-astraprimary text-white rounded hover:bg-opacity-90">
+              Confirm
+            </button>
           </div>
         </div>
       )}
