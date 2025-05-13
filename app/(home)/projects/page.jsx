@@ -131,6 +131,16 @@ export default function ProjectsPage() {
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
     const matchesStatus = selectedStatus === "All" || project.project_status === selectedStatus;
+
+    // Check if project is past due date
+    const isPastDueDate = new Date(project.endDate) < new Date();
+    const isActive = !isPastDueDate && project.project_status !== PROJECT_STATUS.FINISHED;
+
+    // If project is past due date and not already marked as finished, it should be considered inactive
+    if (isPastDueDate && project.project_status !== PROJECT_STATUS.FINISHED) {
+      project.project_status = PROJECT_STATUS.FINISHED;
+    }
+
     return matchesType && matchesSearch && matchesStatus;
   }).sort((a, b) => {
     if (sortOrder === "Recent") {
