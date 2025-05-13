@@ -16,7 +16,22 @@ const getDonations = async (req, res) => {
   }
 
   try {
-    const filters = req.query;
+    const { requester_id = null, ...filters } = req.query;
+
+    let isAdmin = false;
+
+    if (requester_id) {
+      const { data: requesterData, requesterError } = await usersService.fetchUserById(req.supabase, requester_id);
+
+      if (requesterError || !requesterData) {
+        // console.log(requesterError.message);
+        isAdmin = false;
+      } else {
+        if (requesterData.role === "admin") isAdmin = true;
+        console.log("Admin perms");
+      }
+    }
+
     const completeFilters = {
       ...filters,
       page: -1, // Get all donations
@@ -59,7 +74,7 @@ const getDonations = async (req, res) => {
       return {
         ...donation,
         project_title: content ? content.title : "Deleted Project",
-        donor: donation.is_anonymous ? "Anonymous" : full_name,
+        donor: donation.is_anonymous ? (isAdmin ? full_name : "Anonymous") : full_name,
       };
     });
 
