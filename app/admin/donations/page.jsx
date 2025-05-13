@@ -147,6 +147,7 @@ export default function Donations() {
       modeOfPayment = "",
       fromAmount = "",
       toAmount = "",
+      verificationStatus = "",
       // sortCategory = "", // TODO sorting
       // sortOrder = "asc",
     } = filters;
@@ -172,6 +173,9 @@ export default function Donations() {
       const matchesModeOfPayment = parsedModeOfPayment === null  || donationModeOfPayment === parsedModeOfPayment;
       const matchesFromAmount = isNaN(parsedFromAmount) || donationAmount >= parsedFromAmount;
       const matchesToAmount = isNaN(parsedToAmount) || donationAmount <= parsedToAmount;
+      const matchesVerificationStatus = !verificationStatus ||
+        (verificationStatus === "verified" && donation.is_verified) ||
+        (verificationStatus === "unverified" && !donation.is_verified);
 
       console.log(`${donationModeOfPayment} === ${parsedModeOfPayment}`);
 
@@ -182,7 +186,8 @@ export default function Donations() {
         matchesToDate &&
         matchesModeOfPayment &&
         matchesFromAmount &&
-        matchesToAmount
+        matchesToAmount &&
+        matchesVerificationStatus
       );
     });
 
