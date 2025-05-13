@@ -64,11 +64,10 @@ const fetchPhotoIdbyAlum = async (supabase, alum_id) => {
 
 const fetchDegreeProofPhoto = async (supabase, alum_id) => {
   return await supabase
-    .from("photos")
-    .select("image_key")
-    .eq("user_id", alum_id)
-    .eq("type", PhotoType.PROOF_OF_GRADUATION) // Assuming type 100 is for degree proof
-    .single();
+    .rpc("photos_fetch_latest_image_key", {
+      "user_id": alum_id,
+      "type": PhotoType.PROOF_OF_GRADUATION
+    });
 };
 
 const fetchProjectPhotos = async (supabase, project_id) => {
