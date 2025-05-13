@@ -46,7 +46,8 @@ const menuItemsMain = {
   },
   [NavMenuItemId.ALUMNI_DIRECTORY]: {
     label: "Search Alumni",
-    path: "/search"
+    path: "/search",
+    hideIfGuest: true,
   },
   [NavMenuItemId.NEWS]: {
     label: "What's Up?",
@@ -54,7 +55,8 @@ const menuItemsMain = {
   },
   [NavMenuItemId.JOBS]: {
     label: "Jobs",
-    path: "/jobs"
+    path: "/jobs",
+    hideIfGuest: true,
   }
 };
 
@@ -141,6 +143,9 @@ function Sidebar({
       >
         <ul className="p-6 space-y-4 text-gray-600 font-medium">
           {Object.entries(items).map(([key, navItem]) => {
+            if (navItem.hideIfGuest && context.state.isGuest) {
+              return null;
+            }
             return (
               <li key={"sidebar-" + key}>
                 <div
@@ -210,6 +215,9 @@ function HeaderNavigation({items, context}) {
   return (
     <div className="hidden lg:flex gap-4 md:gap-8 font-sb relative items-center justify-center flex-1">
       {Object.entries(items).map(([key, value]) => {
+        if (value.hideIfGuest && context.state.isGuest) {
+          return null;
+        }
         return (
           <Link
             key={"nav-" + key}
@@ -327,10 +335,6 @@ export function Header({fromAdmin}) {
   }, []);
 
   let items = fromAdmin ? menuItemsAdmin : menuItemsMain;
-  if (context.state.isGuest && !fromAdmin) {
-    delete items[NavMenuItemId.JOBS];
-    delete items[NavMenuItemId.ALUMNI_DIRECTORY];
-  }
 
   return (
     <>
