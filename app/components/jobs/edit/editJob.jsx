@@ -33,7 +33,8 @@ export default function JobForm({isEdit, close, job, content}){
 
   const handleChange = (e) => {
     e.preventDefault();
-    const {name, value} = e.target;
+
+    var {name, value} = e.target;
 
     // trim texts as needed
     if (name === "job_requirements" && value.length > 1500) value = value.slice(0, 1500);
