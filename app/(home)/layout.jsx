@@ -16,10 +16,8 @@ function RootLayout({ children }) {
   }
 
   return (
-    <div className="relative min-h-screen max-w-screen overflow-x-hidden">
-      <div className="fixed top-0 left-0 w-full z-50">
-        <Header />
-      </div>
+    <div className="relative min-h-screen max-w-screen">
+      <Header />
       <main>{children}</main>
       <Footer />
     </div>

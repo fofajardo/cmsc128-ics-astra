@@ -339,7 +339,7 @@ export function Header({fromAdmin}) {
   return (
     <>
       <header
-        className={`fixed top-0 z-50 w-full h-20 flex items-center justify-between px-4 md:px-6 transition-all duration-300 ${
+        className={`sticky top-0 z-50 w-full h-20 flex items-center justify-between px-4 md:px-6 transition-all duration-300 ${
           isScrolled
             ? "bg-astrawhite/80 backdrop-blur-md shadow-lg"
             : "bg-white shadow-sm"
