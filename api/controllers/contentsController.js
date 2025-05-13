@@ -5,7 +5,7 @@ const getContents = async (req, res) => {
   try {
     const filters = req.query;
 
-    const { data, error } = await contentsService.fetchContents(req.supabase);
+    const { data, count, error } = await contentsService.fetchContents(req.supabase, filters);
 
     if (error) {
       console.log(error);
@@ -18,6 +18,9 @@ const getContents = async (req, res) => {
     return res.status(httpStatus.OK).json({
       status: "OK",
       list: data || [],
+      total: count || 0,
+      page: parseInt(filters.page) || 1,
+      limit: parseInt(filters.limit) || 10
     });
 
   } catch (error) {
