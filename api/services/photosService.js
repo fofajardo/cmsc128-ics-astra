@@ -104,6 +104,23 @@ const fetchPhotosByContentId = async (supabase, contentId) => {
     .eq("content_id", contentId);
 };
 
+const getAvatarUrl = async (supabase, id) => {
+  let { data: keyData, error: keyError } = await supabase
+    .from("photos")
+    .select("image_key")
+    .eq("user_id", id)
+    .eq("type", PhotoType.PROFILE_PIC)
+    .single();
+  if (keyError) {
+    return { data: keyData, error: keyError };
+  }
+
+  return await supabase
+    .storage
+    .from("user-photos-bucket")
+    .createSignedUrl(keyData.image_key, 60 * 60);
+};
+
 const photosService = {
   fetchAllPhotos,
   fetchPhotoById,
@@ -118,6 +135,7 @@ const photosService = {
   fetchJobPhotos,
   fetchPhotoTypesByContentIds,
   fetchPhotosByContentId,
+  getAvatarUrl,
 };
 
 export default photosService;
