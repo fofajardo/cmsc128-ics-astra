@@ -225,6 +225,23 @@ const getAlumniIncomeRangeStats = async (req, res) => {
   }
 };
 
+const getProjectContributors = async (req, res) => {
+  try {
+    const projectContributors = await statisticsService.fetchProjectContributors(req.supabase);
+
+    res.status(httpStatus.OK).json({
+      status: "OK",
+      list: projectContributors
+    });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
+
+
 const statisticsController = {
   getAlumniStats,
   getActiveAlumniStats,
@@ -240,6 +257,7 @@ const statisticsController = {
   getAlumniFieldStats,
   getAlumniHighestDegreeStats,
   getAlumniIncomeRangeStats,
+  getProjectContributors,
 };
 
 export default statisticsController;
