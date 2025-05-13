@@ -18,7 +18,6 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import axios from "axios";
 import { capitalizeTitle } from "@/utils/format";
 import {
   Select,
@@ -27,7 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
+import { NameEmailSkeleton, Skeleton } from "@/components/ui/skeleton";
 
 // temporary labels
 const PROJECT_STATUS_LABELS = {
@@ -157,61 +156,11 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
   );
 }
 
-export function Donut() {
+export function Donut({ fundsRaised, projectStatistics }) {
   const router = useRouter();
-  const [projectStatistics, setProjectStatistics] = React.useState([]);
-  const [fundsRaised, setFundsRaised] = React.useState(0);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [pageSize, setPageSize] = React.useState(6);
   const [showChart, setShowChart] = React.useState(false);
-
-  React.useEffect(() => {
-    const fetchProjectDonationSummary = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/project-donation-summary`
-        );
-
-        if (response.data.status == "OK") {
-          const updatedProjectDonationSummary = await Promise.all(
-            response.data.list.map(async (project) => {
-              const projectData = {
-                donationTitle: capitalizeTitle(project.title),
-                funds: project.total_donations,
-                project_status: project.project_status,
-              };
-              return projectData;
-            })
-          );
-
-          setProjectStatistics(updatedProjectDonationSummary);
-        } else {
-          console.error("Unexpected response:", response.data);
-        }
-      } catch (error) {
-        console.error("Failed to fetch project-donation details:", error);
-      }
-    };
-
-    const fetchTotalRaised = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/funds-raised`
-        );
-
-        console.log(response.data.stats);
-
-        setFundsRaised(response.data.stats);
-      } catch (error) {
-        console.error("Failed to fetch project-donation details:", error);
-      }
-    };
-
-    fetchProjectDonationSummary();
-    fetchTotalRaised();
-  }, []);
-
-  
   const colorSteps = [
     "var(--color-pieastra-primary-100)",
     "var(--color-pieastra-primary-90)",
@@ -224,16 +173,16 @@ export function Donut() {
     "var(--color-pieastra-primary-20)",
     "var(--color-pieastra-primary-10)",
   ];
-  
+
   // filter out donations with 0 funds
-  const filteredStatistics = projectStatistics.filter(item => item.funds > 0);
+  const filteredStatistics = projectStatistics?.filter(item => item.funds > 0) ?? [];
   React.useEffect(() => {
     if (
       filteredStatistics.length > 0 &&
       fundsRaised !== null &&
       fundsRaised !== undefined
     ) {
-      const timer = setTimeout(() => setShowChart(true), 800); // 300ms delay
+      const timer = setTimeout(() => setShowChart(true), 700);
       return () => clearTimeout(timer);
     }
   }, [filteredStatistics, fundsRaised]);
@@ -255,7 +204,6 @@ export function Donut() {
         <div className="flex justify-between items-center">
           <div className="flex flex-col">
             <CardTitle>Highest Funded Categories</CardTitle>
-            {/* <CardDescription>January - April 2025</CardDescription> */}
           </div>
           <a
             onClick={() => router.push("/admin/projects")}
@@ -354,7 +302,7 @@ export function Donut() {
             </span>
             -
             <span className="font-bold">{Math.min(currentPage * pageSize, filteredStatistics.length)}</span>
-            {" "}out of <span className="font-bold">{projectStatistics.length}</span> Donation Drives
+            {" "}out of <span className="font-bold">{projectStatistics?.length ?? 0}</span> Donation Drives
           </div>
 
           {/* Page size selector */}
@@ -384,24 +332,36 @@ export function Donut() {
           </div>
 
           <div className="mt-0 flex flex-col space-y-1.5 min-w-full gap-2">
-            {paginatedData.map((item, index) => (
-              <div
-                key={index}
-                className="transition-all cursor-pointer duration-200
-                  hover:scale-105 hover:shadow-lg hover:bg-pieastra-primary-10/40 hover:font-semibold
-                  rounded-lg px-2.5 py-0.5 group"
-              >
-                <FundDisplay
-                  title={item.donationTitle}
-                  funds={item.funds}
-                  color={item.fill}
-                  project_status={item.project_status}
-                  isDense={paginatedData.length === 10}
-                />
-              </div>
-            ))}
+            {showChart
+              ? paginatedData.map((item, index) => (
+                  <div
+                    key={index}
+                    className="transition-all cursor-pointer duration-200
+                      hover:scale-105 hover:shadow-lg hover:bg-pieastra-primary-10/40 hover:font-semibold
+                      rounded-lg px-2.5 py-0.5 group"
+                  >
+                    <FundDisplay
+                      title={item.donationTitle}
+                      funds={item.funds}
+                      color={item.fill}
+                      project_status={item.project_status}
+                      isDense={paginatedData.length === 10}
+                    />
+                  </div>
+                ))
+              : Array.from({ length: pageSize }).map((_, idx) => (
+                  <div
+                    key={idx}
+                    className="rounded-lg px-2.5 pb-1.5 flex flex-row items-center justify-between"
+                  >
+                    <div className="flex flex-row gap-2">
+                      <Skeleton className={"rounded-lg w-5 min-h-8 flex-shrink-0"}/>
+                      <NameEmailSkeleton/>
+                    </div>
+                    <Skeleton className="h-8 w-24" />
+                  </div>
+                ))}
           </div>
-
         </CardFooter>
       </CardContent>
       <Pagination

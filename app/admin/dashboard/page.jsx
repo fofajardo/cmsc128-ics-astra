@@ -9,12 +9,14 @@ import ActivityOverview from "./components/ActivityOverview";
 import RecentActivity from "./components/RecentActivity";
 import TransitionSlide from "@/components/transitions/TransitionSlide";
 import axios from "axios";
+import { capitalizeTitle } from "@/utils/format";
 
 export default function Dashboard() {
   const [activeAlumniStats, setActiveAlumniStats] = useState(null);
   const [activeJobsStats, setActiveJobsStats] = useState(null);
   const [activeEventsStats, setActiveEventsStats] = useState(null);
   const [fundsRaisedStats, setFundsRaisedStats] = useState(null);
+  const [projectDonationSummary, setProjectDonationSummary] = useState([]);
 
   useEffect(() => {
     const fetchStatistics = async () => {
@@ -23,12 +25,30 @@ export default function Dashboard() {
         const jobsRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/active-jobs`);
         const eventsRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/active-events`);
         const fundsRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/funds-raised`);
+        const donationSummaryRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/project-donation-summary`);
         setActiveAlumniStats(alumniRes.data.stats);
         setActiveJobsStats(jobsRes.data.stats);
         setActiveEventsStats(eventsRes.data.stats);
         setFundsRaisedStats(fundsRes.data.stats);
+
+        if (donationSummaryRes.data.status == "OK"){
+          const updatedProjectDonationSummary = await Promise.all(
+            donationSummaryRes.data.list.map(async (project) => {
+              const projectData = {
+                donationTitle: capitalizeTitle(project.title),
+                funds: project.total_donations,
+                project_status: project.project_status,
+              };
+              return projectData;
+            })
+          );
+          setProjectDonationSummary(updatedProjectDonationSummary);
+        } else {
+          console.log("Unexpected response:", donationSummaryRes.data);
+        };
+
       } catch (error) {
-        console.log("Failed to fetch active alumni stats: ", error);
+        console.log("Failed to fetch statistics: ", error);
       }
     };
 
@@ -68,7 +88,7 @@ export default function Dashboard() {
       <div className="flex gap-4 flex-col bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24">
         <div className="flex flex-col md:flex-row gap-4">
           <AlumAct_Events />
-          <FundsDonut />
+          <FundsDonut fundsRaisedStats={fundsRaisedStats} projectStatistics={projectDonationSummary} />
         </div>
         {/* <div className="flex flex-col lg:flex-row gap-4">
           <ActivityBreakdown />
@@ -102,10 +122,12 @@ function AlumAct_Events() {
   </div>;
 }
 
-function FundsDonut() {
-  return <TransitionSlide className="flex-1 h-auto w-auto md:row-start-1 md:row-span-8 md:col-start-3">
-    <div className="size-full">
-      <Donut />
-    </div>
-  </TransitionSlide>;
+function FundsDonut({ fundsRaisedStats, projectStatistics }) {
+  return (
+    <TransitionSlide className="flex-1 h-auto w-auto md:row-start-1 md:row-span-8 md:col-start-3">
+      <div className="size-full">
+        <Donut fundsRaised={fundsRaisedStats} projectStatistics={projectStatistics} />
+      </div>
+    </TransitionSlide>
+  );
 }
