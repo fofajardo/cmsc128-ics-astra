@@ -794,10 +794,9 @@ export default function ActiveProjectDetail({ params }) {
                   <label className="block text-astradarkgray font-sb mb-2">
                     Description
                   </label>
-                  <input
-                    type="text"
+                  <textarea
                     name="description"
-                    className="w-full border border-astragray/30 rounded-lg p-3"
+                    className="w-full border border-astragray/30 rounded-lg p-3 min-h-[100px]"
                     value={editFormData.description}
                     onChange={handleInputChange}
                   />
@@ -810,10 +809,15 @@ export default function ActiveProjectDetail({ params }) {
                   <input
                     type="text"
                     name="urlLink"
-                    className="w-full border border-astragray/30 rounded-lg p-3"
+                    className={`w-full border ${
+                      errors.urlLink ? "border-red-500" : "border-astragray/30"
+                    } rounded-lg p-3`}
                     value={editFormData.urlLink}
                     onChange={handleInputChange}
-                  ></input>
+                  />
+                  {errors.urlLink && (
+                    <p className="text-red-500 text-sm mt-1">{errors.urlLink}</p>
+                  )}
                 </div>
               </div>
 
@@ -849,7 +853,7 @@ export default function ActiveProjectDetail({ params }) {
                     <input
                       type="number"
                       name="raised"
-                      className="w-full border border-astragray/30 rounded-lg p-3 bg-gray-100"
+                      className="w-full border border-astragray/30 rounded-lg p-3 bg-gray-100 cursor-not-allowed"
                       value={editFormData.raised}
                       readOnly
                     />
@@ -864,19 +868,6 @@ export default function ActiveProjectDetail({ params }) {
                 </h4>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* <div>
-                    <label className="block text-astradarkgray font-sb mb-2">
-                      Start Date
-                    </label>
-                    <input
-                      type="date"
-                      name="startDate"
-                      className="w-full border border-astragray/30 rounded-lg p-3"
-                      value={editFormData.startDate}
-                      onChange={handleInputChange}
-                    />
-                  </div> */}
-
                   <div>
                     <label className="block text-astradarkgray font-sb mb-2">
                       Due Date
@@ -897,41 +888,6 @@ export default function ActiveProjectDetail({ params }) {
                 </div>
               </div>
 
-              {/* Scholarship/Fundraiser Specific Fields */}
-              {/* <div className="space-y-4 md:col-span-2">
-                {editFormData.type === "Scholarship" && (
-                  <>
-                    <h4 className="font-sb text-lg border-b border-astralightgray pb-2">
-                      Scholarship Details
-                    </h4>
-
-                    <div>
-                      <label className="block text-astradarkgray font-sb mb-2">
-                        Eligibility Criteria
-                      </label>
-                      <textarea
-                        name="eligibilityCriteria"
-                        className="w-full border border-astragray/30 rounded-lg p-3 min-h-24"
-                        value={editFormData.eligibilityCriteria}
-                        onChange={handleInputChange}
-                      ></textarea>
-                    </div>
-                  </>
-                )}
-
-                <div>
-                  <label className="block text-astradarkgray font-sb mb-2">
-                    Fund Distribution
-                  </label>
-                  <textarea
-                    name="fundDistribution"
-                    className="w-full border border-astragray/30 rounded-lg p-3 min-h-24"
-                    value={editFormData.fundDistribution}
-                    onChange={handleInputChange}
-                  ></textarea>
-                </div>
-              </div> */}
-
               {/* Project Requester Information */}
               <div className="space-y-4 md:col-span-2">
                 <h4 className="font-sb text-lg border-b border-astralightgray pb-2">
@@ -946,10 +902,9 @@ export default function ActiveProjectDetail({ params }) {
                     <input
                       type="text"
                       name="requester.name"
-                      className="w-full border border-astragray/30 rounded-lg p-3"
+                      className="w-full border border-astragray/30 rounded-lg p-3 bg-gray-100 cursor-not-allowed"
                       value={editFormData.requester.name}
-                      onChange={handleInputChange}
-                      disabled
+                      readOnly
                     />
                   </div>
 
@@ -960,10 +915,9 @@ export default function ActiveProjectDetail({ params }) {
                     <input
                       type="text"
                       name="requester.position"
-                      className="w-full border border-astragray/30 rounded-lg p-3"
+                      className="w-full border border-astragray/30 rounded-lg p-3 bg-gray-100 cursor-not-allowed"
                       value={editFormData.requester.position}
-                      onChange={handleInputChange}
-                      disabled
+                      readOnly
                     />
                   </div>
 
@@ -974,47 +928,24 @@ export default function ActiveProjectDetail({ params }) {
                     <input
                       type="email"
                       name="requester.email"
-                      className="w-full border border-astragray/30 rounded-lg p-3"
+                      className="w-full border border-astragray/30 rounded-lg p-3 bg-gray-100 cursor-not-allowed"
                       value={editFormData.requester.email}
-                      onChange={handleInputChange}
-                      disabled
+                      readOnly
                     />
                   </div>
-
-                  {/* <div>
-                    <label className="block text-astradarkgray font-sb mb-2">
-                      Phone
-                    </label>
-                    <input
-                      type="text"
-                      name="requester.phone"
-                      className={`w-full border ${
-                        errors["requester.phone"]
-                          ? "border-red-500"
-                          : "border-astragray/30"
-                      } rounded-lg p-3`}
-                      value={editFormData.requester.phone}
-                      onChange={handleInputChange}
-                    />
-                    {errors["requester.phone"] && (
-                      <p className="text-red-500 text-sm mt-1">
-                        {errors["requester.phone"]}
-                      </p>
-                    )}
-                  </div> */}
                 </div>
               </div>
             </div>
 
             <div className="flex justify-end gap-4 mt-8">
               <button
-                className="px-6 py-3 bg-astralightgray border border-astragray/30 rounded-lg font-sb"
+                className="px-6 py-3 bg-astralightgray border border-astragray/30 rounded-lg font-sb hover:bg-gray-200 transition-colors"
                 onClick={() => setShowEditModal(false)}
               >
                 Cancel
               </button>
               <button
-                className="px-6 py-3 bg-astraprimary text-astrawhite rounded-lg font-sb"
+                className="px-6 py-3 bg-astraprimary text-astrawhite rounded-lg font-sb hover:bg-astraprimary/90 transition-colors"
                 onClick={handleSaveChanges}
               >
                 Save Changes
