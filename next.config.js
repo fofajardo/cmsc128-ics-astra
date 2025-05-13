@@ -15,13 +15,9 @@ const nextConfig = {
   images: {
     domains: [
       'lgehxciwuxmrtcnanuxp.supabase.co',
-<<<<<<< HEAD
-      'skpodmqiwawjombgvneh.supabase.co'
-=======
       'skpodmqiwawjombgvneh.supabase.co',
       'lh3.googleusercontent.com',
       'cdn-icons-png.flaticon.com'
->>>>>>> 1f08d2f13346571e2d43b0a56453ddf419064fde
     ],
   },
 };
