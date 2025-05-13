@@ -13,7 +13,10 @@ const nextConfig = {
     ];
   },
   images: {
-    domains: ['lgehxciwuxmrtcnanuxp.supabase.co'],
+    domains: [
+      'lgehxciwuxmrtcnanuxp.supabase.co',
+      'skpodmqiwawjombgvneh.supabase.co'
+    ],
   },
 };
 
