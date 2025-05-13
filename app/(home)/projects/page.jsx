@@ -8,6 +8,7 @@ import { Icon } from "@iconify/react";
 import { Filter, User } from "lucide-react";
 import axios from "axios";
 import { PROJECT_STATUS, PROJECT_STATUS_LABELS, PROJECT_TYPE } from "@/constants/projectConsts.js";
+import { REQUEST_STATUS } from "@/constants/requestConsts";
 import { capitalizeName } from "@/utils/format.jsx";
 import { useSignedInUser } from "@/components/UserContext.jsx";
 import { LoadingSpinner } from "@/components/LoadingSpinner.jsx";
@@ -37,13 +38,15 @@ export default function ProjectsPage() {
     const fetchApprovedProjects = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/projects/approved`);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/requests/projects`, {
+          params: { status: REQUEST_STATUS.APPROVED }
+        });
         const projectData = response.data;
         if (projectData.status === "OK") {
           console.log("Fetched projects:", projectData);
 
           // extract project id's
-          const projectIds = projectData.projects.map(project => project.projectData.project_id);
+          const projectIds = projectData.list.map(project => project.projectData.project_id);
 
           // map for photos initialization
           const photoMap = {};
@@ -67,7 +70,7 @@ export default function ProjectsPage() {
           setProjectPhotos(photoMap);
 
           setProjects(
-            projectData.projects.map(
+            projectData.list.map(
               project => ({
                 id: project.projectData.project_id,
                 title: project.projectData.title,
