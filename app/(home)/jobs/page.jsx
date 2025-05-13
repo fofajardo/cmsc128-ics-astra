@@ -142,7 +142,7 @@ export default function JobsPage() {
       <SearchBar onSearch={(query) => {
         const lower = query.toLowerCase();
         const filtered = jobs.filter(job =>
-          (job.job_title || "").toLowerCase().includes(lower));
+          (job.job_title || "").toLowerCase().includes(lower) || (job.company_name || "").toLowerCase().includes(lower));
         setFilteredJobs(filtered);}}/>
 
       <Filter onApply={handleApplyFilter}/>
