@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Sign In - ICS-ASTRA",
+  title: "Sign In",
   description: "Access your ICS-ASTRA account securely.",
 };
 
