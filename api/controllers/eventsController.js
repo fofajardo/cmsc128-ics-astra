@@ -166,13 +166,14 @@ const createEvent = async (req, res) => {
       "external_link",
       "access_link",
       "online",
-      ""
+      "status",
+      "slots"
     ];
     const missingFields = requiredFields.filter(field => !(field in req.body));
     if (missingFields.length > 0) {
       return res.status(httpStatus.BAD_REQUEST).json({
         status: "FAILED",
-        message: `Missing required fields: ${missingFields.join(", ")}`
+        message: `Missing required fields: ${missingFields}`
       });
     }
 

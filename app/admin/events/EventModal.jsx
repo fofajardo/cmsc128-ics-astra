@@ -4,6 +4,8 @@ import { useState, useRef } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Calendar, X, Upload, Image as ImageIcon, Trash2  } from "lucide-react"; // import X icon
+import { validate } from "uuid";
+import ToastNotification from "@/components/ToastNotification";
 
 export default function EventModal({
   isEdit,
@@ -14,6 +16,7 @@ export default function EventModal({
   toggleModal,
   reset
 }) {
+  const [toast, setToast] = useState(null);
   const [selectedDate, setSelectedDate] = useState(
     formData.event_date ? new Date(formData.event_date) : null
   );
@@ -65,6 +68,22 @@ export default function EventModal({
     });
   };
 
+  const validator = () => {
+    const { title, description, venue } = formData;
+
+    if (
+      title.trim() &&
+      description.trim() &&
+      venue.trim()
+    ) {
+      return true;
+    }
+
+    setToast({ type: "error", message: "Invalid input, fill empty field/s" });
+    return false;
+  };
+
+
   return (
     <div
       onClick={toggleModal}
@@ -94,7 +113,7 @@ export default function EventModal({
               if (isEdit) {
                 handleSubmit(id);
               } else {
-                handleSubmit(e);
+                if (validator()) handleSubmit(e);
               }
             }
           }
@@ -295,6 +314,13 @@ export default function EventModal({
               {isEdit ? "Update Event" : "Publish Post"}
             </button>
           </div>
+          {toast && (
+            <ToastNotification
+              type={toast.type}
+              message={toast.message}
+              onClose={() => setToast(null)}
+            />
+          )}
         </form>
       </div>
     </div>

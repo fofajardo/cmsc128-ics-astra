@@ -102,12 +102,6 @@ export const NavMenuItemId = Object.freeze({
   ORGANIZATIONS: "organizations"
 });
 
-export {
-  RoleName,
-  Subjects,
-  Actions,
-  EmploymentStatus,
-};
 const PhotoType = Object.freeze({
   PROFILE_PIC: 0,
   PROOF_OF_PAYMENT: 1,
