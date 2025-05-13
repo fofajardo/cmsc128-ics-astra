@@ -113,6 +113,70 @@ const getProjectDonationSummary = async (req, res) => {
   }
 };
 
+const getAlumniSexStats = async (req, res) => {
+  try {
+    const stats = await statisticsService.fetchAlumniSexStats(req.supabase);
+
+    res.status(httpStatus.OK).json({
+      status: "OK",
+      stats: stats
+    });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
+
+const getAlumniAgeStats = async (req, res) => {
+  try {
+    const stats = await statisticsService.fetchAlumniAgeStats(req.supabase);
+
+    res.status(httpStatus.OK).json({
+      status: "OK",
+      stats: stats
+    });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
+
+const getAlumniCivilStatusStats = async (req, res) => {
+  try {
+    const stats = await statisticsService.fetchAlumniCivilStatusStats(req.supabase);
+
+    res.status(httpStatus.OK).json({
+      status: "OK",
+      stats: stats
+    });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
+
+const getAlumniOrgAffiliationStats = async (req, res) => {
+  try {
+    const stats = await statisticsService.fetchAlumniOrgAffiliationStats(req.supabase);
+
+    res.status(httpStatus.OK).json({
+      status: "OK",
+      stats: stats
+    });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
+
 const statisticsController = {
   getAlumniStats,
   getActiveAlumniStats,
@@ -120,7 +184,11 @@ const statisticsController = {
   getActiveEventsStats,
   getFundsRaisedStats,
   getUpcomingEvents,
-  getProjectDonationSummary
+  getProjectDonationSummary,
+  getAlumniSexStats,
+  getAlumniAgeStats,
+  getAlumniCivilStatusStats,
+  getAlumniOrgAffiliationStats
 };
 
 export default statisticsController;
