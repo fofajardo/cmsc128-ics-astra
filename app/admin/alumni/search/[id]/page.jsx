@@ -26,6 +26,7 @@ export default function AlumniSearchProfile({ params }) {
   const [organizationAffiliations, setOrganizationAffiliations] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
   const [graduationYear, setGraduationYear] = useState(null);
+  const [course, setCourse] = useState(null);
 
   const [missing, setMissing] = useState(false);
 
@@ -53,6 +54,7 @@ export default function AlumniSearchProfile({ params }) {
                   return new Date(b.year_graduated) - new Date(a.year_graduated);
                 });
                 setGraduationYear(new Date(sortedPrograms[0].year_graduated).getFullYear().toString());
+                setCourse(sortedPrograms[0].name);
               }
             }).catch((error) => {
               console.log("No degree Year Found:", error);
@@ -81,23 +83,30 @@ export default function AlumniSearchProfile({ params }) {
     const localWorkExperience = workExperienceRes?.data?.work_experiences;
     const localOrganizationAffiliations = organizationAffiliationsRes?.data?.affiliated_organizations;
 
-
     setUser(localUser);
     setProfile(localProfile);
     setWorkExperience(localWorkExperience);
     setOrganizationAffiliations(localOrganizationAffiliations);
 
-    if (localUser == null || localProfile == null || localWorkExperience == null || localOrganizationAffiliations == null) {
+    if (localUser == null || localProfile == null) {
       return;
     }
 
     localProfile.birthdate = formatDate(localProfile.birthdate, "long");
     localProfile.graduation_date = formatDate(localProfile.graduation_date, "month-year");
 
+    if (localWorkExperience == null) {
+      return;
+    }
+
     localWorkExperience.forEach((experience) => {
       experience.year_started = formatDate(experience.year_started, "month-year");
       experience.year_ended = experience.year_ended ? formatDate(experience.year_ended, "month-year") : "Present";
     });
+
+    if (localOrganizationAffiliations == null) {
+      return;
+    }
   }, [userRes, profileRes, workExperienceRes]);
 
   if (missing) {
@@ -105,7 +114,7 @@ export default function AlumniSearchProfile({ params }) {
   }
 
   if (!user || !profile) {
-    return <div>Loading...</div>;
+    return <div className="text-center mt-20">{"Loading..."}</div>;
   }
 
   // Format the date to a more readable format
@@ -203,7 +212,7 @@ export default function AlumniSearchProfile({ params }) {
             </div>
 
             <div>
-              <p className="font-rb">Single</p>
+              <p className="font-rb">{profile.civil_status}</p>
               <p className="text-astradarkgray">Civil Status</p>
             </div>
             <div>
@@ -211,7 +220,7 @@ export default function AlumniSearchProfile({ params }) {
               <p className="text-astradarkgray">Citizenship</p>
             </div>
             <div>
-              <p className="font-rb">BS Computer Science</p>
+              <p className="font-rb">{course}</p>
               <p className="text-astradarkgray">Degree Program</p>
             </div>
           </div>

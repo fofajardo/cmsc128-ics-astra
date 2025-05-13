@@ -8,6 +8,7 @@ import { useSignedInUser } from "@/components/UserContext.jsx";
 import httpStatus from "http-status-codes";
 import {useRef} from "react";
 import {GraduationProofSchema} from "../../../common/validationSchemas.js";
+import {PhotoType} from "../../../common/photo_types.js";
 
 export default function SignUpStep5({ onSetPage }) {
   const user = useSignedInUser();
@@ -21,7 +22,7 @@ export default function SignUpStep5({ onSetPage }) {
       const formData = new FormData();
       formData.append("File", values.proof_file);
       formData.append("user_id", user.state.user?.id);
-      formData.append("type", 100);
+      formData.append("type", PhotoType.PROOF_OF_GRADUATION);
 
       const response = await axios.post(clientRoutes.photos.base(), formData, {
         headers: {

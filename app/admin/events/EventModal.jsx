@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { Calendar, X } from "lucide-react"; // import X icon
+import { Calendar, X, Upload, Image as ImageIcon, Trash2  } from "lucide-react"; // import X icon
 
 export default function EventModal({
   isEdit,
@@ -17,6 +17,12 @@ export default function EventModal({
     formData.event_date ? new Date(formData.event_date) : null
   );
 
+  const [imagePreview, setImagePreview] = useState(formData.image || "");
+  const [imageFile, setImageFile] = useState(null);
+  const [fileName, setFileName] = useState("");
+  const fileInputRef = useRef(null);
+
+
   const handleDateChange = (date) => {
     setSelectedDate(date);
     handleChange({
@@ -24,6 +30,31 @@ export default function EventModal({
     });
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      setFileName(file.name);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+        // Update the formData with the image file
+        handleChange({
+          target: { name: "imageFile", value: file },
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleImageRemove = () => {
+    setImagePreview("");
+    setFileName("");
+    setImageFile(null);
+    handleChange({
+      target: { name: "imageFile", value: null },
+    });
+  };
 
   return (
     <div
@@ -152,6 +183,49 @@ export default function EventModal({
               <option>Open</option>
               <option>Closed</option>
             </select>
+          </div>
+
+          {/* Event Image Upload - Added this section */}
+          <div className="col-span-2 mb-2">
+            <label className="block font-medium mb-1">Event Image</label>
+            <div className="border-2 border-dashed border-astraprimary rounded-xl w-full h-48 flex items-center justify-center relative hover:bg-blue-50 transition cursor-pointer overflow-hidden">
+              {imagePreview ? (
+                <img
+                  src={imagePreview}
+                  alt="Event preview"
+                  className="w-full h-full object-cover rounded-xl"
+                />
+              ) : (
+                <div className="flex flex-col items-center justify-center text-astraprimary text-sm">
+                  <Upload className="w-8 h-8 mb-1" />
+                  <p>Browse files to upload</p>
+                </div>
+              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
+              />
+            </div>
+
+            <div className="mt-2 bg-astrawhite border border-blue-200 rounded-md px-3 py-2 flex items-center justify-between text-sm text-blue-800">
+              <div className="flex items-center gap-2">
+                <ImageIcon className="w-4 h-4" />
+                <span>{fileName || "No selected file"}</span>
+              </div>
+              {imagePreview && (
+                <button
+                  type="button"
+                  onClick={handleImageRemove}
+                  className="text-astradark hover:text-astrared"
+                  title="Remove file"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Link */}

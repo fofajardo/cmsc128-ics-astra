@@ -128,8 +128,9 @@ export function SearchComponent({ placeholder, setSearchQuery, searchQuery }) {
         onChange={(e) => {
           const val = e.target.value;
           setInputValue(val);
-          setSearchQuery(val);
+          // setSearchQuery(val);
         }}
+        onKeyDown={handleKeyDown}
       />
     </div>
   );
