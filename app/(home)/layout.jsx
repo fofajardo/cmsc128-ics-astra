@@ -4,7 +4,7 @@ import Footer from "../components/Footer";
 import { usePathname } from "next/navigation";
 import "../styles/globals.css";
 import "../styles/styles.css";
-import HeaderUser from "@/components/HeaderUser.jsx";
+import {Header} from "@/components/Header.jsx";
 
 export default function RootLayout({ children }) {
   const pathname = usePathname();
@@ -15,10 +15,10 @@ export default function RootLayout({ children }) {
   }
 
   return (
-    <>
-      <HeaderUser />
+    <div className="relative min-h-screen max-w-screen">
+      <Header />
       <main>{children}</main>
       <Footer />
-    </>
+    </div>
   );
 }

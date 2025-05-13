@@ -7,6 +7,11 @@ import {GoBackButton} from "@/components/Buttons";
 import axios from "axios";
 import { formatCurrency, capitalizeName } from "@/utils/format";
 
+/*
+Projects are considered active if they satisfy the ff:
+project_status is awaiting budget (0) or ongoing (1)
+request_status is approved
+*/
 export default function ProjectFunds() {
   const [showFilter, setShowFilter] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
@@ -41,7 +46,7 @@ export default function ProjectFunds() {
                 raised: project.total_donations.toString(),
                 donors: project.number_of_donors.toString(),
                 project_status: project.project_status !== 2 ? "Active" : "Inactive",
-                request_status: "",
+                request_status: project.project_request_status === "approved" ? "Active" : "Inactive"
               })
             )
           );
@@ -98,7 +103,7 @@ export default function ProjectFunds() {
   const filteredProjects = projectData
     .filter(project => {
       // Apply status filter
-      if (selectedStatus !== "All" && project.project_status !== selectedStatus) {
+      if (selectedStatus !== "All" && project.project_status !== selectedStatus && project.request_status !== selectedStatus) {
         return false;
       }
 
@@ -290,7 +295,7 @@ function createRows(projects, selectedIds, setSelectedIds, setToast) {
     "Type": renderType(project.type),
     "Goal": renderAmount(project.goal),
     "Raised": renderAmount(project.raised),
-    "Status": renderStatus(project.project_status),
+    "Status": renderStatus(project.project_status, project.request_status),
   }));
 }
 
@@ -317,13 +322,13 @@ function renderAmount(amount) {
   return <div className="text-center text-astradarkgray font-s">{formatCurrency(amount)}</div>;
 }
 
-function renderStatus(status) {
+function renderStatus(project_status, request_status) {
   return (
     <div className="text-center">
       <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-        status === "Active" ? "bg-astralightgreen text-astragreen" : "bg-astralightgray text-astradarkgray"
+        project_status === "Active" && request_status === "Active" ? "bg-astralightgreen text-astragreen" : "bg-astralightgray text-astradarkgray"
       }`}>
-        {status}
+        {project_status === "Active" && request_status === "Active" ? "Active" : "Inactive"}
       </span>
     </div>
   );

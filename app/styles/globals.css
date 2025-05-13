@@ -20,11 +20,15 @@
   --color-astratintedwhite: #EFF2FA;
 
   --color-pieastra-primary-100: #0E6CF3;
-  --color-pieastra-primary-80: #3F8EFF;
-  --color-pieastra-primary-60: #74ADFF;
-  --color-pieastra-primary-40: #9BC4FF;
-  --color-pieastra-primary-20: #BAD7FF;
-  --color-pieastra-primary-10: #D4E6FF;
+  --color-pieastra-primary-90:  #277DF5;
+  --color-pieastra-primary-80:  #3F8EFF;
+  --color-pieastra-primary-70:  #5A9EFF;
+  --color-pieastra-primary-60:  #74ADFF;
+  --color-pieastra-primary-50:  #87B9FF;
+  --color-pieastra-primary-40:  #9BC4FF;
+  --color-pieastra-primary-30:  #B0D0FF;
+  --color-pieastra-primary-20:  #BAD7FF;
+  --color-pieastra-primary-10:  #D4E6FF;
 
   --color-astragreen: #02BB8F;
   --color-astrared: #E8403C;

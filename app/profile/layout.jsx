@@ -1,11 +1,11 @@
 import "../styles/globals.css";
 import "../styles/styles.css";
-import HeaderUser from "../components/HeaderUser.jsx";
+import {Header} from "../components/Header.jsx";
 
 export default function RootLayout({ children }) {
   return (
     <>
-      <HeaderUser />
+      <Header />
       <main>{children}</main>
     </>
   );

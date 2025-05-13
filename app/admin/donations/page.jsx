@@ -12,6 +12,7 @@ import ConfirmationPrompt from "@/components/jobs/edit/confirmation";
 import { formatDate } from "@/utils/format";
 import { DONATION_MODE_OF_PAYMENT, DONATION_MODE_OF_PAYMENT_LABELS } from "@/constants/donationConsts";
 import { useSignedInUser } from "@/components/UserContext";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 export default function Donations() {
   const user = useSignedInUser();
@@ -23,7 +24,7 @@ export default function Donations() {
   const [selectedIds, setSelectedIds] = useState([]);
   const { currTab, info } = useTab();
   const [toast, setToast] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const [donations, setDonations] = useState([]);
   const [filteredDonations, setFilteredDonations] = useState([]);
@@ -49,7 +50,7 @@ export default function Donations() {
   const fetchDonations = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations`);
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations?requester_id=${encodeURIComponent(user_id)}`);
       console.log(response.data);
       if (response.data.status === "OK") {
         setDonations(response.data.donations || []);
@@ -65,8 +66,10 @@ export default function Donations() {
   };
 
   useEffect(() => {
-    fetchDonations();
-  }, []);
+    if (user.state.user?.id) {
+      fetchDonations();
+    }
+  }, [user]);
 
   useEffect(() => {
     const sortedDonations = donations.sort((a, b) => {
@@ -238,7 +241,12 @@ export default function Donations() {
       <div className="bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24 flex flex-col">
         <div className='flex flex-col py-4 px-1 md:px-4 lg:px-8'>
           <TableHeader info={info} pagination={pagination} setPagination={setPagination} toggleFilter={toggleFilter} setSearchQuery={handleSearch} searchQuery={searchQuery} />
-          <Table cols={cols} data={createRows(selectedIds, setSelectedIds, currTab, paginatedDonations, setPrompt, setDonationToApprove)} />
+          {loading ? (
+            <div className="bg-astrawhite p-6 rounded-b-xl flex items-center justify-center">
+              <LoadingSpinner className="h-10 w-10" />
+            </div>
+          ) :
+            <Table cols={cols} data={createRows(selectedIds, setSelectedIds, currTab, paginatedDonations, setPrompt, setDonationToApprove)} />}
           <PageTool pagination={pagination} setPagination={setPagination} />
         </div>
         <div className="flex flex-row justify-between md:pl-4 lg:pl-8">
