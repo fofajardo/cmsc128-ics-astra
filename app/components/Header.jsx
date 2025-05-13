@@ -45,12 +45,12 @@ const menuItemsMain = {
     path: "/projects"
   },
   [NavMenuItemId.ALUMNI_DIRECTORY]: {
-    label: "Search Alumni",
+    label: "Directory",
     path: "/search",
     hideIfGuest: true,
   },
   [NavMenuItemId.NEWS]: {
-    label: "What's Up?",
+    label: "News",
     path: "/whats-up"
   },
   [NavMenuItemId.JOBS]: {
