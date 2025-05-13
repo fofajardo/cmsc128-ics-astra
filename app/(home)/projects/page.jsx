@@ -206,7 +206,7 @@ export default function ProjectsPage() {
           </h1>
 
           {/* Request a fundraiser button */}
-          { user?.state?.user && <Link href="/projects/request/goal" passHref>
+          {user?.state?.user && <Link href="/projects/request/goal" passHref>
             <button className="mt-12 border-2 border-astrawhite text-astrawhite hover:bg-astrawhite hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-[200px] h-[60px]">
               Request a Project
             </button>
@@ -369,7 +369,7 @@ export default function ProjectsPage() {
                         type={project.type}
                         requestId={project.request_id}
                         donationLink={project.donationLink}
-                        showDonate={project.project_status !== PROJECT_STATUS.FINISHED ? true : false}
+                        showDonate={user?.state?.user && project.project_status !== PROJECT_STATUS.FINISHED ? true : false}
                       />
                     </div>
                   ))}
