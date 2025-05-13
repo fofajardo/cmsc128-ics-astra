@@ -327,7 +327,7 @@ export default function ProjectDetails({ params }) {
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-astrawhite p-6 rounded-xl shadow border border-gray-200">
             <h2 className="text-2xl font-semibold mb-4">
-              {projectData?.description}
+              Project Description
             </h2>
             <p className="text-sm leading-relaxed text-astrablack">
               {projectData?.longDescription}
