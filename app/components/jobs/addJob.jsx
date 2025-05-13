@@ -282,7 +282,7 @@ export default function JobForm({isEdit, close, refreshJobs}){
           <button onClick={handleClear} className="!cursor-pointer text-astraprimary border-1 border-astraprimary font-semibold w-35 py-2 rounded-lg text-base">Clear Details</button>
           <button
             onClick={() => {
-                setPrompt(true);
+              setPrompt(true);
             }}
             className="cursor-pointer text-astrawhite border border-astraprimary bg-astraprimary font-semibold w-35 py-2 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-astraprimary">Publish Post</button>
         </div>
