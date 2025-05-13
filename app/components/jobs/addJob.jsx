@@ -17,7 +17,6 @@ export default function JobForm({isEdit, close, refreshJobs}){
   const locationOptions =[{value: "0", label: "Onsite"},{value: "1", label: "Remote"}, {value: "2", label: "Hybrid"}];
   const statusOptions =[{value: "0", label: "Open"},{value: "1", label: "Closed"}];
   const [errors, setErrors] = useState({});
-  const [showSignInModal, setShowSignInModal] = useState(false);
   const [formData, setFormData] = useState({company_name: "", job_title: "", location: "", salary: "", apply_link: "", details: "", expires_at: "", job_requirements: "", hiring_manager: ""});
   const [employmentType, setEmploymentType] = useState(null);
   const [locationType, setLocationType] = useState(null);
@@ -77,11 +76,6 @@ export default function JobForm({isEdit, close, refreshJobs}){
   };
 
   const handleAdd = async () => {
-    if (!user?.state?.user) {
-      setShowSignInModal(true);
-      return;
-    }
-
     const payload = {
       company_name: formData.company_name,
       job_title: formData.job_title,
@@ -288,25 +282,12 @@ export default function JobForm({isEdit, close, refreshJobs}){
           <button onClick={handleClear} className="!cursor-pointer text-astraprimary border-1 border-astraprimary font-semibold w-35 py-2 rounded-lg text-base">Clear Details</button>
           <button
             onClick={() => {
-              if (!user?.state?.user) {
-                setShowSignInModal(true);
-              } else {
                 setPrompt(true);
-              }
             }}
             className="cursor-pointer text-astrawhite border border-astraprimary bg-astraprimary font-semibold w-35 py-2 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-astraprimary">Publish Post</button>
         </div>
       </div>
       {showPrompt ? <ConfirmationPrompt prompt={"Are you sure you want to post this job posting?"} close={()=>setPrompt(false)} handleConfirm={handleAdd}/> : <></>}
-      {showSignInModal && (
-        <div className="fixed inset-0 bg-astrablack/60 flex items-center justify-center z-100">
-          <div className="bg-astrawhite max-w-[600px] w-19/20 min-h-[100px] h-auto rounded-2xl p-7 pb-5">
-            <h2 className="text-xl font-semibold mb-4">Sign In Required</h2>
-            <p className="mb-6">Please sign in to add a job.</p>
-            <button onClick={() => {setShowSignInModal(false);}} className="px-4 py-2 bg-astraprimary text-white rounded hover:bg-opacity-90">Confirm</button>
-          </div>
-        </div>
-      )}
       {showInvalidDateModal && (
         <div className="fixed inset-0 bg-astrablack/60 flex items-center justify-center z-100">
           <div className="bg-astrawhite max-w-[600px] w-19/20 min-h-[100px] h-auto rounded-2xl p-7 pb-5">
