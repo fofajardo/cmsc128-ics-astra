@@ -132,6 +132,13 @@ export default function ProjectsPage() {
       .includes(searchTerm.toLowerCase());
     const matchesStatus = selectedStatus === "All" || project.project_status === selectedStatus;
     return matchesType && matchesSearch && matchesStatus;
+  }).sort((a, b) => {
+    if (sortOrder === "Recent") {
+      return new Date(b.endDate) - new Date(a.endDate);
+    } else if (sortOrder === "Oldest") {
+      return new Date(a.endDate) - new Date(b.endDate);
+    }
+    return 0;
   });
 
   const visibleCompletedProjects = finishedProjects.slice(
@@ -316,8 +323,8 @@ export default function ProjectsPage() {
                 </button>
                 {showSortDropdown && (
                   <div className="absolute mt-2 bg-white border border-gray-300 rounded shadow-md z-10 w-48">
-                    <button onClick={() => { setSortOrder("Recent"); setShowSortDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">Most Recent</button>
-                    <button onClick={() => { setSortOrder("Oldest"); setShowSortDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">Oldest</button>
+                    <button onClick={() => { setSortOrder("Recent"); setShowSortDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">Descending Due Date</button>
+                    <button onClick={() => { setSortOrder("Oldest"); setShowSortDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">Ascending Due Date</button>
                   </div>
                 )}
               </div>
