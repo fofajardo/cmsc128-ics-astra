@@ -73,7 +73,7 @@ export default function ProjectCardPending({
           <p className="text-astradarkgray font-s mt-1">
             <span className="font-sb">Goal:</span> {formatCurrency(goal)}
           </p>
-          <p className="text-astradarkgray font-s mt-2 line-clamp-2">{description}</p>
+          <p className="text-astradarkgray font-s mt-2 line-clamp-1">{description}</p>
 
           {/* Action Buttons */}
           <div className="flex flex-col gap-3 mt-4">

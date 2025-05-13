@@ -47,6 +47,7 @@ export default function UserProjects() {
         const projectData = response.data;
         if (projectData.status === "OK") {
           console.log("Fetched projects:", projectData);
+          console.log("First project response:", projectData.list[0]?.response);
 
           // extract project id's
           const projectIds = projectData.list.map(project => project.projectData.project_id);
@@ -72,33 +73,35 @@ export default function UserProjects() {
           await Promise.all(photoPromises);
           setProjectPhotos(photoMap);
 
-          setProjects(
-            projectData.list.map(
-              project => {
-                console.log('Project status:', project.status);
-                console.log('REQUEST_STATUS_LABELS:', REQUEST_STATUS_LABELS);
-                console.log('REQUEST_STATUS_LABELS[REQUEST_STATUS.APPROVED]:', REQUEST_STATUS_LABELS[REQUEST_STATUS.APPROVED]);
-                return {
-                  id: project.projectData.project_id,
-                  title: project.projectData.title,
-                  description: project.projectData.details,
-                  image: photoMap[project.projectData.project_id] || "/projects/assets/Donation.jpg",
-                  goal: project.projectData.goal_amount.toString(),
-                  raised: project.projectData.total_donations.toString(),
-                  donors: project.projectData.number_of_donors,
-                  type: project.projectData.type,
-                  createdAt: project.date_requested,
-                  endDate: project.projectData.due_date,
-                  project_status: project.projectData.project_status,
-                  donationLink: project.projectData.donation_link,
-                  requester: project.requesterData.full_name,
-                  dateCompleted: project.projectData.date_complete,
-                  status: project.status,
-                  request_id: project.request_id,
-                };
-              }
-            )
+          const mappedProjects = projectData.list.map(
+            project => {
+              console.log('Project status:', project.status);
+              console.log('Project response:', project.response);
+              console.log('REQUEST_STATUS_LABELS:', REQUEST_STATUS_LABELS);
+              console.log('REQUEST_STATUS_LABELS[REQUEST_STATUS.APPROVED]:', REQUEST_STATUS_LABELS[REQUEST_STATUS.APPROVED]);
+              return {
+                id: project.projectData.project_id,
+                title: project.projectData.title,
+                description: project.projectData.details,
+                image: photoMap[project.projectData.project_id] || "/projects/assets/Donation.jpg",
+                goal: project.projectData.goal_amount.toString(),
+                raised: project.projectData.total_donations.toString(),
+                donors: project.projectData.number_of_donors,
+                type: project.projectData.type,
+                createdAt: project.date_requested,
+                endDate: project.projectData.due_date,
+                project_status: project.projectData.project_status,
+                donationLink: project.projectData.donation_link,
+                requester: project.requesterData.full_name,
+                dateCompleted: project.projectData.date_complete,
+                status: project.status,
+                request_id: project.request_id,
+                response: project.response,
+              };
+            }
           );
+          console.log('Mapped projects:', mappedProjects);
+          setProjects(mappedProjects);
         } else {
           console.error("Unexpected response:", projectData);
         }
@@ -410,6 +413,12 @@ export default function UserProjects() {
                                     <p className="text-sm text-astradarkgray">
                                       <span className="font-medium">Donors:</span>{" "}
                                       {project.donors}
+                                    </p>
+                                  )}
+                                  {project.status === REQUEST_STATUS.REJECTED && project.response && (
+                                    <p className="text-sm text-astradarkgray">
+                                      <span className="font-medium">Reason for Rejection:</span>{" "}
+                                      {project.response}
                                     </p>
                                   )}
                                 </div>
