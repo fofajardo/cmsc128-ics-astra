@@ -67,7 +67,11 @@ export default function JobForm({isEdit, close, refreshJobs}){
   const handleChange = (e) => {
     if (e?.preventDefault) e.preventDefault();
 
-    const { name, value } = e.target;
+    var { name, value } = e.target;
+
+    // trim text as needed
+    if (name === "job_requirements" && value.length > 1500) value = value.slice(0, 1500);
+    if (name === "details" && value.length > 3000) value = value.slice(0, 3000);
 
     setFormData((prevData) => ({
       ...prevData,
@@ -262,7 +266,7 @@ export default function JobForm({isEdit, close, refreshJobs}){
                 <p className="text-sm text-astrared self-end">Required</p> : <></>
               }
             </div>
-            <textarea  type="text" placeholder="Provide a concise overview of the role, including job requirements, key responsibilities, and objectives. You may also include your company’s representative email for additional inquiries."
+            <textarea  type="text" placeholder="Provide a concise overview of the role, including key responsibilities, and objectives. You may also include your company’s representative email for additional inquiries. (3,000 characters maximum)"
               onChange={handleChange} name={"details"} value={formData.details} className='focus:border-astraprimary placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm resize-none h-[110px]'></textarea>
           </div>
 
@@ -273,7 +277,7 @@ export default function JobForm({isEdit, close, refreshJobs}){
                 <p className="text-sm text-astrared self-end">Required</p> : <></>
               }
             </div>
-            <textarea  type="text" placeholder="Provide the requirements that are needed for the role. You may include skills (technical/non-technical), certifications, and experiences that you are looking for in an applicant."
+            <textarea  type="text" placeholder="Provide the requirements that are needed for the role. You may include skills (technical/non-technical), certifications, and experiences that you are looking for in an applicant. (1,500 characters maximum)"
               onChange={handleChange} name={"job_requirements"} value={formData.job_requirements} className='focus:border-astraprimary placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm resize-none h-[110px]'></textarea>
           </div>
         </form>

@@ -34,7 +34,11 @@ export default function JobForm({isEdit, close, job, content}){
   const handleChange = (e) => {
     e.preventDefault();
     const {name, value} = e.target;
-    console.log(name + " " + value);
+
+    // trim texts as needed
+    if (name === "job_requirements" && value.length > 1500) value = value.slice(0, 1500);
+    if (name === "details" && value.length > 3000) value = value.slice(0, 3000);
+
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -342,7 +346,7 @@ export default function JobForm({isEdit, close, job, content}){
               )}
             </div>
             <textarea
-              placeholder="Provide a concise overview of the role..."
+              placeholder="Provide a concise overview of the role... (3,000 characters maximum)"
               onChange={handleChange}
               name="description"
               value={formData.description}
@@ -359,7 +363,7 @@ export default function JobForm({isEdit, close, job, content}){
               )}
             </div>
             <textarea
-              placeholder="Provide the requirements needed for the role..."
+              placeholder="Provide the requirements needed for the role... (1,500 characters maximum)"
               onChange={handleChange}
               name="requirements"
               value={formData.requirements}
