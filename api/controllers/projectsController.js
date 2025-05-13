@@ -557,6 +557,100 @@ const updateProject = async (req, res) => {
   }
 };
 
+const updateMultipleProjectStatus = async (req, res) => {
+  if (req.you.cannot(Actions.MANAGE, Subjects.PROJECT)) {
+    return res.status(httpStatus.FORBIDDEN).json({
+      status: "FORBIDDEN",
+      message: "You are not allowed to access this resource."
+    });
+  }
+
+  try {
+    const { projectIds } = req.body;
+
+    // Check if each projectId in the array is valid
+    for (let projectId of projectIds) {
+      if (!isValidUUID(projectId)) {
+        return res.status(httpStatus.BAD_REQUEST).json({
+          status: "FAILED",
+          message: `Invalid projectId format: ${projectId}`
+        });
+      }
+    }
+
+    // Check if project exists
+    const { data: projectData, error: projectError } = await projectsService.fetchProjects(req.supabase, { project_id: projectIds, page: -1 });
+
+    if (projectError || !projectData) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: "FAILED",
+        message: "Project not found"
+      });
+    }
+
+    // Check if content exists
+    const { data: contentData, error: contentError} = await contentsService.fetchContentByFilter(req.supabase, { id: projectIds, page: -1 });
+
+    if (contentError || !contentData) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: "FAILED",
+        message: "Content not found"
+      });
+    }
+
+    // Filter for valid projectIds that have both project and content data
+    const validProjectIds = projectIds.filter(id =>
+      projectData.some(project => project.project_id === id) &&
+      contentData.some(content => content.id === id)
+    );
+
+    // If no valid IDs found
+    if (validProjectIds.length === 0) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: "FAILED",
+        message: "No matching projects with corresponding content found"
+      });
+    }
+
+    // Update only allowed fields
+    const {
+      // title,
+      // details,
+      // type,
+      // donation_link,
+      // goal_amount,
+      project_status,
+      // due_date,
+      // date_completed,
+    } = req.body;
+
+    const projectUpdateData = {
+      project_status,
+    };
+
+    const { error: updateProjectError } = await projectsService.updateProjectsStatus(req.supabase, validProjectIds, projectUpdateData);
+
+    if (updateProjectError) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: updateProjectError.message
+      });
+    }
+
+    return res.status(httpStatus.OK).json({
+      status: "UPDATED",
+      message: "Projects successfully updated",
+      ids: projectIds
+    });
+
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message || error
+    });
+  }
+};
+
 const deleteProject = async (req, res) => {
   if (req.you.cannot(Actions.MANAGE, Subjects.PROJECT)) {
     return res.status(httpStatus.FORBIDDEN).json({
@@ -612,6 +706,7 @@ const projectsController = {
   getProjectById,
   createProject,
   updateProject,
+  updateMultipleProjectStatus,
   deleteProject
 };
 
