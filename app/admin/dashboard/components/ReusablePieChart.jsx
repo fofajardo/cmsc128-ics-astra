@@ -15,9 +15,11 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  ChartLegendContent,
+  ChartLegend,
 } from "@/components/ui/chart";
 
-export default function PieChartComponent({
+export default function ReusablePieChart({
   data,
   config,
   title = "Pie Chart",
@@ -36,30 +38,18 @@ export default function PieChartComponent({
       <CardContent className="flex-1 pb-0">
         <ChartContainer
           config={config}
-          className={`mx-auto aspect-square max-h-[${maxHeight}px] px-0`}
+          className={`mx-auto aspect-square max-h-[${maxHeight}px] pb-0 [&_.recharts-pie-label-text]:fill-foreground`}
         >
           <PieChart>
-            <ChartTooltip
-              content={<ChartTooltipContent nameKey={dataKey} hideLabel />}
-            />
+            <ChartTooltip content={<ChartTooltipContent hideLabel />} />
             <Pie
               data={data}
               dataKey={dataKey}
+              label
               nameKey={nameKey}
-              labelLine={false}
-              label={({ payload, ...props }) => (
-                <text
-                  cx={props.cx}
-                  cy={props.cy}
-                  x={props.x}
-                  y={props.y}
-                  textAnchor={props.textAnchor}
-                  dominantBaseline={props.dominantBaseline}
-                  fill="hsla(var(--foreground))"
-                >
-                  {payload[dataKey]}
-                </text>
-              )}
+            />
+            <ChartLegend
+              content={props => <ChartLegendContent {...props} nameKey={nameKey} />}
             />
           </PieChart>
         </ChartContainer>
