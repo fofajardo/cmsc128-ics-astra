@@ -125,6 +125,47 @@ const EmploymentStatus = Object.freeze({
   },
 });
 
+const JobsStatus = Object.freeze({
+  OPEN_INDEFINITE: 0,
+  OPEN_UNTIL_EXPIRED: 1,
+  ON_HOLD: 2,
+  CLOSED: 3,
+  isDefined: function(aValue) {
+    if (typeof aValue === "string" || aValue instanceof String) {
+      const value = aValue.toLowerCase().trim();
+      switch (value) {
+      case JobsStatus.OPEN_INDEFINITE:
+      case JobsStatus.OPEN_UNTIL_EXPIRED:
+      case JobsStatus.ON_HOLD:
+      case JobsStatus.CLOSED:
+        return true;
+      default:
+        break;
+      }
+    }
+    return false;
+  },
+  isDefined: function(aValue) {
+    if (typeof aValue === "string" || aValue instanceof String) {
+      const value = aValue.toLowerCase().trim();
+      switch (value) {
+      case JobsStatus.OPEN:
+      case JobsStatus.CLOSED:
+        return true;
+      default:
+        break;
+      }
+    }
+    return false;
+  },
+  parse: function(aValue) {
+    if (!this.isDefined(aValue)) {
+      return null;
+    }
+    return parseInt(aValue);
+  },
+});
+
 export const NavMenuItemId = Object.freeze({
   HOME: "home",
   ABOUT: "about",
@@ -142,5 +183,7 @@ export {
   RoleName,
   Subjects,
   Actions,
+  PhotoType,
   EmploymentStatus,
+  JobsStatus,
 };
