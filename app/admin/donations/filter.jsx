@@ -64,6 +64,17 @@ export default function SearchFilter({ onClose, onApply }) {
     });
     setFromDate(null);
     setToDate(null);
+    onApply({
+      donor: "",
+      projectTitle: "",
+      fromDate: "",
+      toDate: "",
+      modeOfPayment: "",
+      fromAmount: "",
+      toAmount: "",
+      verificationStatus: "",
+    });
+    onClose();
   };
 
   return (
@@ -259,13 +270,13 @@ export default function SearchFilter({ onClose, onApply }) {
       <div className="flex justify-end space-x-4 mt-6">
         <button
           onClick={handleReset}
-          className="px-4 py-2 text-gray-600 hover:text-gray-800"
+          className="px-4 py-2 text-astraprimary border-2 border-astraprimary rounded-md hover:bg-astraprimary/10 font-medium transition-colors"
         >
-          Reset
+          Reset All
         </button>
         <button
           onClick={handleApply}
-          className="px-4 py-2 bg-astraprimary text-white rounded-md hover:bg-astraprimary/90"
+          className="px-6 py-2 bg-astraprimary text-white rounded-md hover:bg-astraprimary/90 font-medium"
         >
           Apply Filters
         </button>
