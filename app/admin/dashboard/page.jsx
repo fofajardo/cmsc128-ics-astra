@@ -159,6 +159,9 @@ export default function Dashboard() {
       const colorConfig = {
         Married: "var(--color-astralight)",
         Single: "var(--color-astradark)",
+        Divorced: "var(--color-pieastra-primary-80)",
+        Separated: "var(--color-pieastra-primary-50)",
+        Widowed: "var(--color-pieastra-primary-30)",
       };
 
       const pieCivilStats = alumniCivilStats.map(item => {
@@ -176,6 +179,9 @@ export default function Dashboard() {
           config={{
             Married: { label: "Married"},
             Single: { label: "Single"},
+            Divorced: { label: "Divorced"},
+            Separated: { label: "Separated"},
+            Widowed: { label: "Widowed"},
           }}
           title="Alumni Civil Status Distribution"
           description="Active alumni by civil status"
