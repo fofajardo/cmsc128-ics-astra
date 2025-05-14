@@ -23,62 +23,60 @@ export default function Dashboard() {
   const [alumniAgeStats, setAlumniAgeStats] = useState([]);
   const [alumniSexStats, setAlumniSexStats] = useState([]);
   const [alumniCivilStats, setAlumniCivilStats] = useState([]);
+  const [alumniOrgStats, setAlumniOrgStats] = useState([]);
   const [category, setCategory] = useState("demographics");
   const [tab, setTab] = useState("donations");
 
   useEffect(() => {
     const fetchStatistics = async () => {
-      try {
-        const alumniRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-stats`);
-        const jobsRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/active-jobs`);
-        const eventsRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/active-events`);
-        const fundsRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/funds-raised`);
-        // fetching of graph data
-        const donationSummaryRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/project-donation-summary`);
-        const alumniAgeRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-age-stats`);
-        const alumniSexRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-sex-stats`);
-        const alumniCivilRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-civil-status-stats`);
-        setActiveAlumniStats(alumniRes.data.stats);
-        setActiveJobsStats(jobsRes.data.stats);
-        setActiveEventsStats(eventsRes.data.stats);
-        setFundsRaisedStats(fundsRes.data.stats);
+      const urls = [
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-stats`),
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/active-jobs`),
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/active-events`),
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/funds-raised`),
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/project-donation-summary`),
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-age-stats`),
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-sex-stats`),
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-civil-status-stats`),
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-org-affiliation-stats`),
+      ];
 
-        if (alumniAgeRes.data.status == "OK") {
-          setAlumniAgeStats(alumniAgeRes.data.stats);
-        } else {
-          console.log("Unexpected response:", alumniAgeRes.data);
-        }
+      const [
+        alumniRes,
+        jobsRes,
+        eventsRes,
+        fundsRes,
+        donationSummaryRes,
+        alumniAgeRes,
+        alumniSexRes,
+        alumniCivilRes,
+        alumniOrgRes,
+      ] = await Promise.allSettled(urls);
 
-        if (alumniSexRes.data.status == "OK") {
-          setAlumniSexStats(alumniSexRes.data.stats);
-        } else {
-          console.log("Unexpected response:", alumniSexRes.data);
-        }
+      if (alumniRes.status === "fulfilled") setActiveAlumniStats(alumniRes.value.data.stats);
+      if (jobsRes.status === "fulfilled") setActiveJobsStats(jobsRes.value.data.stats);
+      if (eventsRes.status === "fulfilled") setActiveEventsStats(eventsRes.value.data.stats);
+      if (fundsRes.status === "fulfilled") setFundsRaisedStats(fundsRes.value.data.stats);
 
-        if (alumniCivilRes.data.status == "OK") {
-          console.log("Alumni Civil Stats: ", alumniCivilRes.data.stats);
-          setAlumniCivilStats(alumniCivilRes.data.stats);
-        } else {
-          console.log("Unexpected response:", alumniCivilRes.data);
-        }
-
-        if (donationSummaryRes.data.status == "OK") {
-          const updatedProjectDonationSummary = await Promise.all(
-            donationSummaryRes.data.list.map(async (project) => {
-              const projectData = {
-                donationTitle: capitalizeTitle(project.title),
-                funds: project.total_donations,
-                project_status: project.project_status,
-              };
-              return projectData;
-            })
-          );
-          setProjectDonationSummary(updatedProjectDonationSummary);
-        } else {
-          console.log("Unexpected response:", donationSummaryRes.data);
-        }
-      } catch (error) {
-        console.log("Failed to fetch statistics: ", error);
+      if (alumniAgeRes.status === "fulfilled" && alumniAgeRes.value.data.status === "OK") {
+        setAlumniAgeStats(alumniAgeRes.value.data.stats);
+      }
+      if (alumniSexRes.status === "fulfilled" && alumniSexRes.value.data.status === "OK") {
+        setAlumniSexStats(alumniSexRes.value.data.stats);
+      }
+      if (alumniCivilRes.status === "fulfilled" && alumniCivilRes.value.data.status === "OK") {
+        setAlumniCivilStats(alumniCivilRes.value.data.stats);
+      }
+      if (alumniOrgRes.status === "fulfilled" && alumniOrgRes.value.data.status === "OK") {
+        setAlumniOrgStats(alumniOrgRes.value.data.stats);
+      }
+      if (donationSummaryRes.status === "fulfilled" && donationSummaryRes.value.data.status === "OK") {
+        const updatedProjectDonationSummary = donationSummaryRes.value.data.list.map((project) => ({
+          donationTitle: capitalizeTitle(project.title),
+          funds: project.total_donations,
+          project_status: project.project_status,
+        }));
+        setProjectDonationSummary(updatedProjectDonationSummary);
       }
     };
 
