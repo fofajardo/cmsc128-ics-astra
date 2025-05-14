@@ -95,7 +95,7 @@ export default function ViewDonationIdAdminPage() {
           <div className="space-y-4">
             <div>
               <h2 className="text-lg font-medium text-gray-700">Donor Information</h2>
-              <p className="text-gray-600">{user?.email || "Loading donor name..."}</p>
+              <p className="text-gray-600">{user?.email || "Loading donor email..."}</p>
             </div>
 
             <div>
