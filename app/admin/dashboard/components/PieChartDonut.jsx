@@ -182,7 +182,7 @@ export function Donut({ fundsRaised, projectStatistics }) {
       fundsRaised !== null &&
       fundsRaised !== undefined
     ) {
-      const timer = setTimeout(() => setShowChart(true), 700);
+      const timer = setTimeout(() => setShowChart(true), 850);
       return () => clearTimeout(timer);
     }
   }, [filteredStatistics, fundsRaised]);
@@ -203,7 +203,10 @@ export function Donut({ fundsRaised, projectStatistics }) {
       <CardHeader className="items-center pb-0">
         <div className="flex justify-between items-center">
           <div className="flex flex-col">
-            <CardTitle>Highest Funded Categories</CardTitle>
+            <CardTitle>Projects by Funds Raised</CardTitle>
+            <CardDescription>
+              See which projects have raised the most funds.
+            </CardDescription>
           </div>
           <a
             onClick={() => router.push("/admin/projects")}
