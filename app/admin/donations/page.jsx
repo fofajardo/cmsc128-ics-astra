@@ -5,7 +5,7 @@ import { useTab } from "../../components/TabContext";
 import SearchFilter from "./filter";
 import { ActionButton } from "@/components/Buttons";
 import ToastNotification from "@/components/ToastNotification";
-import { Check, Eye } from "lucide-react";
+import { Check, Eye, X } from "lucide-react";
 import axios from "axios";
 import { TabContext } from "../../components/TabContext";
 import ConfirmationPrompt from "@/components/jobs/edit/confirmation";
@@ -19,6 +19,7 @@ export default function Donations() {
   const user_id = user.state.user?.id;
   const [showPrompt, setPrompt] = useState(false);
   const [donationToApprove, setDonationToApprove] = useState(null);
+  const [donationToDecline, setDonationToDecline] = useState(null);
   const {setDonationCounts} = useContext(TabContext);
   const [showFilter, setShowFilter] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
@@ -198,26 +199,46 @@ export default function Donations() {
 
   const handleApprove = async () => {
     if (!donationToApprove?.id) {
-      console.error("No donation selected for deletion.");
+      console.error("No donation selected for approval.");
       return;
     }
 
     try {
       const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations/${donationToApprove.id}`, { is_verified: true, verified_by_user_id: user_id });
-      // console.log(response.data);
       if (response.data.status === "UPDATED") {
-        console.log("Successfully deleted");
+        console.log("Successfully approved");
         fetchDonations();
         setToast({ type: "success", message: "Donation successfully approved." });
         setPrompt(false);
         setDonationToApprove(null);
       } else {
-        console.error("Failed to delete job.");
+        console.error("Failed to approve donation.");
       }
     } catch (error) {
-      console.error("Error deleting job:", error);
+      console.error("Error approving donation:", error);
+    }
+  };
+//method for declining a donation, pa-check nalang
+  const handleDecline = async () => {
+    if (!donationToDecline?.id) {
+      console.error("No donation selected for decline.");
+      return;
     }
 
+    try {
+      const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations/${donationToDecline.id}`, { is_verified: false, verified_by_user_id: user_id });
+      if (response.data.status === "UPDATED") {
+        console.log("Successfully declined");
+        fetchDonations();
+        setToast({ type: "success", message: "Donation successfully declined." });
+        setPrompt(false);
+        setDonationToDecline(null);
+      } else {
+        console.error("Failed to decline donation.");
+      }
+    } catch (error) {
+      console.error("Error declining donation:", error);
+    }
   };
 
   return (
@@ -251,7 +272,7 @@ export default function Donations() {
               <LoadingSpinner className="h-10 w-10" />
             </div>
           ) :
-            <Table cols={cols} data={createRows(selectedIds, setSelectedIds, currTab, paginatedDonations, setPrompt, setDonationToApprove)} />}
+            <Table cols={cols} data={createRows(selectedIds, setSelectedIds, currTab, paginatedDonations, setPrompt, setDonationToApprove, setDonationToDecline)} />}
           <PageTool pagination={pagination} setPagination={setPagination} />
         </div>
         <div className="flex flex-row justify-between md:pl-4 lg:pl-8">
@@ -285,7 +306,7 @@ const cols = [
   { label: "Quick Actions", justify: "center", visible: "all" },
 ];
 
-function createRows(selectedIds, setSelectedIds, currTab, filteredDonations, setPrompt, setDonationtoApprove) {
+function createRows(selectedIds, setSelectedIds, currTab, filteredDonations, setPrompt, setDonationToApprove, setDonationToDecline) {
   return filteredDonations.map((donation) => ({
     "Donor": renderDonor(donation.donor),
     "Project Title": renderText(donation.project_title),
@@ -298,7 +319,7 @@ function createRows(selectedIds, setSelectedIds, currTab, filteredDonations, set
     "Verification Status": renderVerificationStatus(donation.is_verified),
     // "Verifier": renderText(donation.verified_by_user_id),
     // "Updated At": renderUpdatedAt(donation.updated_at),
-    "Quick Actions": renderActions(donation.id, donation.donor, donation.is_verified, currTab, setPrompt, setDonationtoApprove),
+    "Quick Actions": renderActions(donation.id, donation.donor, donation.is_verified, currTab, setPrompt, setDonationToApprove, setDonationToDecline),
   }));
 }
 
@@ -336,11 +357,17 @@ function renderVerificationStatus(bool) {
   return <div className={`text-center ${text === "Unverified" ? "text-astrared" : "text-astragreen"} font-s`}>{text}</div>;
 }
 
-function renderActions(id, name, isVerified, currTab, setPrompt, setDonationToApprove) {
+function renderActions(id, name, isVerified, currTab, setPrompt, setDonationToApprove, setDonationToDecline) {
   const confirmApprove = () => {
     setDonationToApprove({id});
     setPrompt(true);
   };
+
+  const confirmDecline = () => {
+    setDonationToDecline({id});
+    setPrompt(true);
+  };
+
   return (
     <div className="flex justify-center gap-3 md:pr-4 lg:pr-2">
       <div className="hidden md:block">
@@ -364,8 +391,8 @@ function renderActions(id, name, isVerified, currTab, setPrompt, setDonationToAp
               label="Approve"
               color="green"
               onClick={confirmApprove}
-              notifyMessage={`${name} has been deleted!`}
-              notifyType="fail"
+              notifyMessage={`${name} has been approved!`}
+              notifyType="success"
             />
           </div>
           <div className="block md:hidden">
@@ -373,7 +400,25 @@ function renderActions(id, name, isVerified, currTab, setPrompt, setDonationToAp
               label={<Check size={20}/>}
               color="green"
               onClick={confirmApprove}
-              notifyMessage={`${name} has been deleted!`}
+              notifyMessage={`${name} has been approved!`}
+              notifyType="success"
+            />
+          </div>
+          <div className="hidden md:block">
+            <ActionButton
+              label="Decline"
+              color="red"
+              onClick={confirmDecline}
+              notifyMessage={`${name} has been declined!`}
+              notifyType="fail"
+            />
+          </div>
+          <div className="block md:hidden">
+            <ActionButton
+              label={<X size={20}/>}
+              color="red"
+              onClick={confirmDecline}
+              notifyMessage={`${name} has been declined!`}
               notifyType="fail"
             />
           </div>
