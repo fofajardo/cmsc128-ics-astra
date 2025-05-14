@@ -2,12 +2,13 @@
 
 import Select from "react-select";
 import { ListFilter } from "lucide-react";
-import { useState } from "react";
-import { jobTypeOptions, statusOptions, locationTypeOptions } from "../../(home)/jobs/dummy";
+import { useEffect, useState, useRef } from "react";
+import { jobTypeOptions, statusOptions, locationTypeOptions } from "@/components/jobs/mappings";
 
-export default function Filter() {
-  const [formData, setFormData] = useState({job_type: "", status: "", location: "", location_type: "", min_salary: "", max_salary: "", recent: false});
+export default function Filter({ onApply }) {
+  const [formData, setFormData] = useState({job_type: "", status: "", location: "", location_type: "", min_salary: "", max_salary: "", recent: true});
   const [select, setSelect] = useState({job_type: null, status: null, location_type: null});
+  const isMounted = useRef(false);
 
   const handleChange = (e) => {
     e.preventDefault();
@@ -21,12 +22,18 @@ export default function Filter() {
     // put filtering logic here
   };
 
+  useEffect(() => {
+    isMounted.current ? onApply(formData) : isMounted.current = true;
+  }, [formData]);
+
   const handleSelectChange = (selected, { name }) => {
-    setSelect({...select, [name]: selected});
+    selected.value === "" ? setSelect({...select, [name]: null})
+      : setSelect({...select, [name]: selected});
     setFormData({...formData, [name]: selected.value});
     // console.log(formData)
 
     // put filtering logic here as well
+    // onApply(formData)
   };
 
   const queryFilter = (e) => {

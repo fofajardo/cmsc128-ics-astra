@@ -6,7 +6,7 @@ import JobForm from "../../../components/jobs/edit/editJob";
 import ConfirmationPrompt from "./confirmation";
 import axios from "axios";
 
-export default function BigJobCardwEdit({ job = {}, content = {} }) {
+export default function BigJobCardwEdit({ job = {}, content = {}, onUpdate }) {
   const [showPrompt, setPrompt] = useState(false);
   const [showForm, setForm] = useState(false);
   const { id } = useParams();
@@ -40,7 +40,7 @@ export default function BigJobCardwEdit({ job = {}, content = {} }) {
       </div>
 
       <p className="mt-5 text-black text-justify whitespace-pre-wrap">{`${content.details}`}</p>
-      {showForm ? <JobForm close={() => setForm(false)} job={job} content={content} /> : <></>}
+      {showForm ? <JobForm close={() => setForm(false)} job={job} content={content} handleUpdate={onUpdate} /> : <></>}
       {showPrompt ? <ConfirmationPrompt prompt={"Are you sure you want to delete this job posting?"} close={()=>setPrompt(false)} object={id} handleConfirm={handleDelete}/> : <></>}
     </div>
   );}
