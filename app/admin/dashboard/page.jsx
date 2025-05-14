@@ -29,54 +29,61 @@ export default function Dashboard() {
 
   useEffect(() => {
     const fetchStatistics = async () => {
-      const urls = [
-        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-stats`),
-        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/active-jobs`),
-        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/active-events`),
-        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/funds-raised`),
-        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/project-donation-summary`),
-        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-age-stats`),
-        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-sex-stats`),
-        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-civil-status-stats`),
-        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-org-affiliation-stats`),
-      ];
-
-      const [
-        alumniRes,
-        jobsRes,
-        eventsRes,
-        fundsRes,
-        donationSummaryRes,
-        alumniAgeRes,
-        alumniSexRes,
-        alumniCivilRes,
-        alumniOrgRes,
-      ] = await Promise.allSettled(urls);
-
-      if (alumniRes.status === "fulfilled") setActiveAlumniStats(alumniRes.value.data.stats);
-      if (jobsRes.status === "fulfilled") setActiveJobsStats(jobsRes.value.data.stats);
-      if (eventsRes.status === "fulfilled") setActiveEventsStats(eventsRes.value.data.stats);
-      if (fundsRes.status === "fulfilled") setFundsRaisedStats(fundsRes.value.data.stats);
-
-      if (alumniAgeRes.status === "fulfilled" && alumniAgeRes.value.data.status === "OK") {
-        setAlumniAgeStats(alumniAgeRes.value.data.stats);
+      try{
+        const urls = [
+          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-stats`),
+          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/active-jobs`),
+          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/active-events`),
+          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/funds-raised`),
+          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/project-donation-summary`),
+          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-age-stats`),
+          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-sex-stats`),
+          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-civil-status-stats`),
+          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-org-affiliation-stats`),
+        ];
+  
+        const [
+          alumniRes,
+          jobsRes,
+          eventsRes,
+          fundsRes,
+          donationSummaryRes,
+          alumniAgeRes,
+          alumniSexRes,
+          alumniCivilRes,
+          alumniOrgRes,
+        ] = await Promise.allSettled(urls);
+  
+        if (alumniRes.status === "fulfilled") setActiveAlumniStats(alumniRes.value.data.stats);
+        if (jobsRes.status === "fulfilled") setActiveJobsStats(jobsRes.value.data.stats);
+        if (eventsRes.status === "fulfilled") setActiveEventsStats(eventsRes.value.data.stats);
+        if (fundsRes.status === "fulfilled") setFundsRaisedStats(fundsRes.value.data.stats);
+  
+        if (alumniAgeRes.status === "fulfilled" && alumniAgeRes.value.data.status === "OK") {
+          setAlumniAgeStats(alumniAgeRes.value.data.stats);
+        }
+        if (alumniSexRes.status === "fulfilled" && alumniSexRes.value.data.status === "OK") {
+          setAlumniSexStats(alumniSexRes.value.data.stats);
+        }
+        if (alumniCivilRes.status === "fulfilled" && alumniCivilRes.value.data.status === "OK") {
+          setAlumniCivilStats(alumniCivilRes.value.data.stats);
+        }
+        if (alumniOrgRes.status === "fulfilled" && alumniOrgRes.value.data.status === "OK") {
+          setAlumniOrgStats(alumniOrgRes.value.data.stats);
+        }
+        if (donationSummaryRes.status === "fulfilled" && donationSummaryRes.value.data.status === "OK") {
+          const updatedProjectDonationSummary = await Promise.all(
+            donationSummaryRes.value.data.list.map(async (project) => ({
+              donationTitle: capitalizeTitle(project.title),
+              funds: project.total_donations,
+              project_status: project.project_status,
+            }))
+          );
+          setProjectDonationSummary(updatedProjectDonationSummary);
+        }
       }
-      if (alumniSexRes.status === "fulfilled" && alumniSexRes.value.data.status === "OK") {
-        setAlumniSexStats(alumniSexRes.value.data.stats);
-      }
-      if (alumniCivilRes.status === "fulfilled" && alumniCivilRes.value.data.status === "OK") {
-        setAlumniCivilStats(alumniCivilRes.value.data.stats);
-      }
-      if (alumniOrgRes.status === "fulfilled" && alumniOrgRes.value.data.status === "OK") {
-        setAlumniOrgStats(alumniOrgRes.value.data.stats);
-      }
-      if (donationSummaryRes.status === "fulfilled" && donationSummaryRes.value.data.status === "OK") {
-        const updatedProjectDonationSummary = donationSummaryRes.value.data.list.map((project) => ({
-          donationTitle: capitalizeTitle(project.title),
-          funds: project.total_donations,
-          project_status: project.project_status,
-        }));
-        setProjectDonationSummary(updatedProjectDonationSummary);
+      catch (error) {
+        console.log("Error fetching statistics:", error);
       }
     };
 
