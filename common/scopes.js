@@ -71,6 +71,7 @@ const PhotoType = Object.freeze({
   JOB_PIC: 4,
   PROJECT_PIC: 5,
   POSTS_PIC: 6,
+  RECEIPTS_PIC: 7,
   isDefined: function(aValue) {
     if (typeof aValue === "string" || aValue instanceof String) {
       const value = aValue.toLowerCase().trim();
@@ -82,6 +83,7 @@ const PhotoType = Object.freeze({
       case PhotoType.JOB_PIC:
       case PhotoType.PROJECT_PIC:
       case PhotoType.POSTS_PIC:
+      case PhotoType.RECEIPTS_PIC:
         return true;
       default:
         break;
