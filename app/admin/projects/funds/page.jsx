@@ -22,35 +22,30 @@ export default function ProjectFunds() {
 
   const [projectData, setProjectData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [donationsSummary, setDonationsSummary] = useState({ total_raised: 0 });
 
   useEffect(() => {
     const fetchProjectRequest = async () => {
       try {
         setLoading(true);
-        const projectResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/projects`, {
-          params: {
-            page: -1
-          }
-        });
+        const projectResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/requests/projects`);
         const projectData = projectResponse.data;
         console.log(projectData);
         if (projectData.status === "OK") {
-
           setProjectData(
-            projectData.projects.map(
+            projectData.list.map(
               project => ({
-                id: project.project_id,
-                title: project.title,
-                type: capitalizeName(project.type),
-                goal: project.goal_amount.toString(),
-                raised: project.total_donations.toString(),
-                donors: project.number_of_donors.toString(),
-                project_status: project.project_status !== 2 ? "Active" : "Inactive",
-                request_status: project.project_request_status === "approved" ? "Active" : "Inactive"
+                id: project.projectData.project_id,
+                title: project.projectData.title,
+                type: capitalizeName(project.projectData.type),
+                goal: project.projectData.goal_amount.toString(),
+                raised: project.projectData.total_donations.toString(),
+                donors: project.projectData.number_of_donors.toString(),
+                project_status: project.projectData.project_status !== 2 ? "Active" : "Inactive",
+                request_status: project.status === "approved" ? "Active" : "Inactive"
               })
             )
           );
-
         } else {
           console.error("Unexpected response:", projectData);
         }
@@ -61,6 +56,24 @@ export default function ProjectFunds() {
       }
     };
 
+    const fetchDonationsSummary = async () => {
+      try {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations/summary`);
+        const donationSummaryData = response.data;
+        if (donationSummaryData.status === "OK") {
+          console.log("Fetched donation summary:", donationSummaryData);
+          setDonationsSummary({
+            total_raised: donationSummaryData.summary.total_raised
+          });
+        } else {
+          console.error("Unexpected response:", donationSummaryData);
+        }
+      } catch (error) {
+        console.error("Failed to fetch donation summary:", error);
+      }
+    };
+
+    fetchDonationsSummary();
     fetchProjectRequest();
   }, []);
 
@@ -230,11 +243,11 @@ export default function ProjectFunds() {
             <div className="flex flex-col items-center">
               <h3 className="text-xl font-semibold text-astradark mb-2">Total Funds Raised</h3>
               <p className="text-3xl font-bold text-astraprimary">
-                {formatCurrency(totalFundsRaised)}
+                {formatCurrency(donationsSummary.total_raised)}
               </p>
               <p className="text-sm text-astradark mt-2">
                 {searchQuery ? `From search results for "${searchQuery}"` :
-                  selectedStatus === "All" ? "Across all projects" :
+                  selectedStatus === "All" ? "Across all approved projects" :
                     `From ${selectedStatus.toLowerCase()} projects only`}
               </p>
             </div>
