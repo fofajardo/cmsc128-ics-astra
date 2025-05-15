@@ -7,7 +7,7 @@ import ToastNotification from "@/components/ToastNotification";
 import Link from "next/link";
 import axios from "axios";
 import { formatCurrency, formatDate, capitalizeName } from "@/utils/format";
-import { PROJECT_STATUS, PROJECT_TYPE } from "@/constants/projectConsts";
+import { PROJECT_STATUS, PROJECT_TYPE } from "../../../../../common/scopes";
 import { feRoutes } from "../../../../../common/routes";
 import { useSignedInUser } from "@/components/UserContext.jsx";
 

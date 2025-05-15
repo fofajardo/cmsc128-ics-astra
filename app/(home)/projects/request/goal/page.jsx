@@ -8,7 +8,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import "../../../../styles/datepicker.css";
 import BackButton from "@/components/events/IndividualEvent/BackButton";
 import { capitalizeName } from "@/utils/format";
-import { PROJECT_TYPE } from "@/constants/projectConsts"; // TODO: Use constants for project type
+import { PROJECT_TYPE } from "../../../../../common/scopes";
 import { useProjectRequestForm } from "@/utils/hooks/useProjectRequestForm";
 
 const RequestFundraiserGoal = () => {

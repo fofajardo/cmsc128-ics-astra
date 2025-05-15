@@ -4,7 +4,7 @@ import alumniService from "../services/alumniProfilesService.js";
 import contentsService from "../services/contentsService.js";
 
 import { isValidUUID, isValidDate } from "../utils/validators.js";
-import { REQUEST_TYPE } from "../utils/enums.js";
+import { REQUEST_TYPE } from "../../common/scopes.js";
 import { Actions, Subjects } from "../../common/scopes.js";
 import projectsService from "../services/projectsService.js";
 import usersService from "../services/usersService.js";

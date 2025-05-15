@@ -3,7 +3,7 @@ import { X } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "../../styles/datepicker.css";
-import { DONATION_MODE_OF_PAYMENT, DONATION_MODE_OF_PAYMENT_LABELS } from "@/constants/donationConsts";
+import { DONATION_MODE_OF_PAYMENT, DONATION_MODE_OF_PAYMENT_LABELS } from "../../../common/scopes";
 
 export default function SearchFilter({ onClose, onApply }) {
   const [filters, setFilters] = useState({

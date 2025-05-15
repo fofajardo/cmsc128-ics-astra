@@ -2,7 +2,7 @@
 import { GraduationCap, HeartHandshake } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency, capitalizeName } from "@/utils/format";
-import { PROJECT_TYPE } from "@/constants/projectConsts";
+import { PROJECT_TYPE } from "../../common/scopes";
 import axios from "axios";
 
 export default function ProjectCardPending({

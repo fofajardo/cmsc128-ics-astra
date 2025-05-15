@@ -4,7 +4,7 @@ import { GraduationCap, HeartHandshake, Users, Calendar } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { formatCurrency, formatDate, capitalizeName } from "@/utils/format";
-import { PROJECT_TYPE } from "@/constants/projectConsts";
+import { PROJECT_TYPE } from "../../../common/scopes";
 
 export default function ProjectCard({
   id,

@@ -13,7 +13,7 @@ import { capitalizeName } from "@/utils/format";
 import axios from "axios";
 import { HeartHandshake } from "lucide-react";
 import { GraduationCap } from "lucide-react";
-import { PROJECT_TYPE } from "@/constants/projectConsts";
+import { PROJECT_TYPE } from "../../../../../common/scopes";
 
 export default function PendingProjectDetail({ params }) {
   const id = use(params).id;

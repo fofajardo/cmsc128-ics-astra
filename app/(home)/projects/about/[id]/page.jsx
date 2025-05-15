@@ -19,7 +19,7 @@ import {
 import ToastNotification from "@/components/ToastNotification";
 import axios from "axios";
 import { formatCurrency, formatDate, capitalizeName } from "@/utils/format";
-import { PROJECT_TYPE } from "@/constants/projectConsts";
+import { PROJECT_TYPE } from "../../../../../common/scopes";
 import { useSignedInUser } from "@/components/UserContext.jsx";
 import { feRoutes } from "../../../../../common/routes";
 

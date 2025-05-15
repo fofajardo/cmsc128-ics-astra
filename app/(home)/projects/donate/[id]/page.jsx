@@ -8,11 +8,9 @@ import BackButton from "@/components/events/IndividualEvent/BackButton";
 import ToastNotification from "@/components/ToastNotification";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
-import { DONATION_MODE_OF_PAYMENT } from "@/constants/donationConsts";
+import { DONATION_MODE_OF_PAYMENT, PROJECT_STATUS, REQUEST_STATUS } from "../../../../../common/scopes";
 import { useSignedInUser } from "@/components/UserContext";
 import { formatCurrency } from "@/utils/format";
-import { PROJECT_STATUS } from "@/constants/projectConsts";
-import { REQUEST_STATUS } from "@/constants/requestConsts";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 export default function DonatePage() {

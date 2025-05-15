@@ -21,8 +21,7 @@ import ToastNotification from "@/components/ToastNotification";
 import EditModal from "./EditModal";
 import axios from "axios";
 import { formatCurrency, capitalizeName } from "@/utils/format";
-import { PROJECT_TYPE } from "@/constants/projectConsts";
-import { REQUEST_STATUS, REQUEST_STATUS_LABELS } from "@/constants/requestConsts";
+import { PROJECT_TYPE, REQUEST_STATUS, REQUEST_STATUS_LABELS } from "../../../../../common/scopes";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 export default function UserProjects() {

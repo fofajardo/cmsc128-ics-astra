@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Back from "@/components/jobs/view/back";
 import { formatDate } from "@/utils/format";
-import { DONATION_MODE_OF_PAYMENT, DONATION_MODE_OF_PAYMENT_LABELS } from "@/constants/donationConsts";
+import { DONATION_MODE_OF_PAYMENT, DONATION_MODE_OF_PAYMENT_LABELS } from "../../../../../common/scopes";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { Image } from "lucide-react";
 // import BigJobCardwDelete from "@/components/jobs/admin/bigJobCardwDelete";

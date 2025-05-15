@@ -10,7 +10,7 @@ import axios from "axios";
 import { TabContext } from "../../components/TabContext";
 import ConfirmationPrompt from "@/components/jobs/edit/confirmation";
 import { formatDate } from "@/utils/format";
-import { DONATION_MODE_OF_PAYMENT, DONATION_MODE_OF_PAYMENT_LABELS } from "@/constants/donationConsts";
+import { DONATION_MODE_OF_PAYMENT, DONATION_MODE_OF_PAYMENT_LABELS } from "../../../common/scopes";
 import { useSignedInUser } from "@/components/UserContext";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 

@@ -6,7 +6,7 @@ import ToastNotification from "@/components/ToastNotification";
 import {GoBackButton} from "@/components/Buttons";
 import axios from "axios";
 import { formatCurrency, capitalizeName } from "@/utils/format";
-import { PROJECT_STATUS, PROJECT_STATUS_LABELS } from "@/constants/projectConsts";
+import { PROJECT_STATUS, PROJECT_STATUS_LABELS } from "../../../../common/scopes";
 
 /*
 Projects are considered active if they satisfy the ff:
