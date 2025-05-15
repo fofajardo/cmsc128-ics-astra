@@ -17,6 +17,7 @@ export default function InactiveProjectDetail({ params }) {
   const id = use(params).id;
   const router = useRouter();
   const userContext = useSignedInUser();
+  const user_id = userContext.state.user?.id;
   const [toast, setToast] = useState(null);
   const [showContactModal, setShowContactModal] = useState(false);
   const [message, setMessage] = useState("");
@@ -61,6 +62,7 @@ export default function InactiveProjectDetail({ params }) {
 
           const donationsResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations`, {
             params: {
+              requester_id: user_id,
               project_id: projectId
             }
           });
