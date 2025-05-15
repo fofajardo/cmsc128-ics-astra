@@ -19,6 +19,8 @@ const statisticsRouter = () => {
   router.get("/alumni-field-stats", statisticsController.getAlumniFieldStats);
   router.get("/alumni-highest-degree-stats", statisticsController.getAlumniHighestDegreeStats);
   router.get("alumni-income-range-stats", statisticsController.getAlumniIncomeRangeStats);
+  router.get("/alumni-employment-status", statisticsController.getAlumniEmploymentStatus);
+
   return router;
 };
 
