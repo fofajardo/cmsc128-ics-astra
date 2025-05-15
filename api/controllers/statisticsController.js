@@ -257,6 +257,21 @@ const getAlumniEmploymentStatus = async (req, res) => {
   }
 };
 
+const getAlumniBatch = async (req, res) => {
+  try {
+    const stats = await statisticsService.fetchAlumniBatch(req.supabase);
+
+    res.status(httpStatus.OK).json({
+      status: "OK",
+      stats: stats
+    });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
 
 const statisticsController = {
   getAlumniStats,
@@ -275,6 +290,7 @@ const statisticsController = {
   getAlumniIncomeRangeStats,
   getProjectContributors,
   getAlumniEmploymentStatus,
+  getAlumniBatch,
 };
 
 export default statisticsController;
