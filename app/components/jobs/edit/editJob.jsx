@@ -5,12 +5,13 @@ import Select from "react-select";
 import ConfirmationPrompt from "./confirmation";
 import { useState } from "react";
 import axios from "axios";
+import { JobsStatus } from "../../../../common/scopes";
 
 export default function JobForm({isEdit, close, job, content, handleUpdate}){
   const [showPrompt, setPrompt] = useState(false);
   const employmentOptions =[{value: 0, label: "Part-Time"},{value: 1, label: "Full-time"}, {value: 2, label: "Temporary"}, {value: 3, label: "Freelance"}];
   const locationOptions =[{value: 0, label: "Onsite"},{value: 1, label: "Remote"}, {value: 2, label: "Hybrid"}];
-  const statusOptions =[{value: 0, label: "Open"},{value: 1, label: "Closed"}];
+  const statusOptions =[{value: JobsStatus.OPEN_UNTIL_EXPIRED, label: "Open"},{value: JobsStatus.CLOSED, label: "Closed"}];
   const [errors, setErrors] = useState({});
 
   const [formData, setFormData] = useState({
@@ -21,7 +22,7 @@ export default function JobForm({isEdit, close, job, content, handleUpdate}){
   });
   const [employmentType, setEmploymentType] = useState(employmentOptions.find(option => option.value === job.employment_type));
   const [locationType, setLocationType] = useState(locationOptions.find(option => option.value === job.location_type));
-  const [status, setStatus] = useState({value: 0, label: "Open"});
+  const [status, setStatus] = useState(statusOptions.find(option => option.value === job.status));
 
   const handleClear = () => {
     setFormData({company_name: "", job_title: "", location: "", salary: "", apply_link: "", description: "", expires_at: "", requirements: "", hiring_manager: ""});
@@ -98,7 +99,7 @@ export default function JobForm({isEdit, close, job, content, handleUpdate}){
         };
         await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${job.job_id}`, contentToSend);
       }
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs/${job.job_id}`);
+      // const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs/${job.job_id}`);
       console.log("Job and/or content updated successfully!");
       setPrompt(false);
       handleUpdate(job.job_id);
