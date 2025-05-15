@@ -133,6 +133,22 @@ const createJob = async (req, res) => {
       });
     }
 
+    // check description character count
+    if (details.length > 3000) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "Exceeded job description maximum character count"
+      });
+    }
+
+    // validate requirements character count
+    if (requirements.length > 1500) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "Exceeded job requirements maximum character count"
+      });
+    }
+
     // 1. Check if job already exists
     const { data: existingJobs, error: checkError } = await jobsService.checkExistingJob(
       req.supabase, job_title, company_name, location
@@ -309,6 +325,16 @@ const updateJob =  async (req, res) => {
         status: "FAILED",
         message: "No valid fields to update"
       });
+    }
+
+    // validate requirements character count
+    if (requirements){
+      if (requirements.length > 1500) {
+        return res.status(httpStatus.BAD_REQUEST).json({
+          status: "FAILED",
+          message: "Exceeded job requirements maximum character count"
+        });
+      }
     }
 
     const { error: updateError } = await jobsService.updateJobData(req.supabase, jobId, updateData);

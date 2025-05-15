@@ -6,7 +6,7 @@ import { Image, Trash2, Save, Send } from "lucide-react";
 import ConfirmModal from "@/components/ConfirmModal";
 import ToastNotification from "@/components/ToastNotification";
 import axios from "axios";
-import { PhotoType } from "../../../../../common/photo_types";
+import { PhotoType } from "../../../../../common/scopes.js";
 
 export default function AnnouncementDetail() {
   const router = useRouter();

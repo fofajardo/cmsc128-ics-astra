@@ -14,11 +14,15 @@ import { useSignedInUser } from "@/components/UserContext";
 export default function JobsPage() {
   const user = useSignedInUser();
   const [jobs, setJobs] = useState([]);
-  const [myJobs, setMyJobs] = useState([]);
   const [filteredJobs, setFilteredJobs] = useState([]);
-  const [jobCards, setJobCards] = useState(6);
-  const [myJobCards, setMyJobCards] = useState(6);
+  const [myJobs, setMyJobs] = useState([]);
+  const [jobCards, setJobCards] = useState(6); // limit / no. of cards to show
+  const [myJobCards, setMyJobCards] = useState(6); // limit / no. of cards owned to show
   const CARDS_PER_CLICK = 6;
+
+  const handleSeeMore = (cards, addCards) => {
+    addCards(cards + CARDS_PER_CLICK);
+  };
 
   const fetchJobs = async () => {
     try {
@@ -41,9 +45,14 @@ export default function JobsPage() {
                   ? res.data
                   : res.data.list || [];
 
-                const hasUserContent = contents.some((content) => content.user_id === userId);
+                const hasUserContent = contents.some(
+                  (content) => content.user_id === userId
+                );
 
-                return {...job, hasUserContent};
+                return {
+                  ...job,
+                  hasUserContent,
+                };
               } catch (err) {
                 console.error(`Error fetching content for job ${job.job_id}`, err);
                 return { ...job, hasUserContent: false };
@@ -64,6 +73,57 @@ export default function JobsPage() {
     fetchJobs();
   }, [user]);
 
+  useEffect(() => {
+    setFilteredJobs(jobs);
+  }, [jobs]);
+
+  const sort = (filtered, asc) => {
+    return filtered.sort((a, b) => (new Date(b.created_at) - new Date(a.created_at)) * (asc ? 1 : -1));
+  };
+
+  const handleApplyFilter = (filters) => {
+    const {job_type = "",
+      status = "",
+      location = "",
+      location_type = "",
+      min_salary = "",
+      max_salary = "",
+      recent = false
+    } = filters;
+
+    const lowerLocation = location.toLowerCase();
+    const dateToday = new Date();
+
+    var filtered = jobs.filter(job => {
+      const matchesJobType = job_type === job.employment_type || job_type === "";
+
+      const statusVal = ((dateToday - new Date (job.expires_at)) < 0) ? 0 : 1;
+
+      const matchesStatus = status === statusVal || status === "";
+
+      const jobLowerLocation = job.location.toLowerCase();
+      const matchesLocation = jobLowerLocation.includes(lowerLocation) || lowerLocation.length === 0;
+
+      const matchesLocationType = location_type === job.location_type || location_type === "";
+
+      const matchesMinSalary = min_salary <= job.salary || min_salary === "";
+      const matchesMaxSalary = max_salary >= job.salary || max_salary === "";
+
+      return (
+        matchesJobType &&
+        matchesStatus &&
+        matchesLocationType &&
+        matchesLocation &&
+        matchesMinSalary && matchesMaxSalary
+      );
+    });
+
+    const sorted = sort(filtered, recent);
+    console.log(sorted);
+
+    setFilteredJobs(filtered);
+  };
+
   const [showExpired, setExpired] = useState(false);
 
   return (
@@ -82,12 +142,12 @@ export default function JobsPage() {
       <SearchBar onSearch={(query) => {
         const lower = query.toLowerCase();
         const filtered = jobs.filter(job =>
-          (job.job_title || "").toLowerCase().includes(lower));
+          (job.job_title || "").toLowerCase().includes(lower) || (job.company_name || "").toLowerCase().includes(lower));
         setFilteredJobs(filtered);}}/>
 
-      <Filter/>
+      <Filter onApply={handleApplyFilter}/>
 
-      {jobs.length == 0 ? <Image src="/jobs/empty.png" width={181} height={224} alt='empty' className="shrink-0 col-span-3"/>
+      {filteredJobs.length == 0 ? <Image src="/jobs/empty.png" width={181} height={224} alt='empty' className="shrink-0 col-span-3"/>
         : <div className="grid grid-cols-[351px] lg:grid-cols-[351px_351px_351px] md:grid-cols-[351px_351px] gap-5 justify-items-center justify-center mx-30">
           <h1 className="text-astrablack font-bold text-2xl ml-2 lg:col-span-3 md:col-span-2 justify-self-start">Recommended Jobs</h1>
           {(filteredJobs.length > 0 ? filteredJobs : jobs).slice(0, jobCards).map((job) => {
@@ -97,20 +157,13 @@ export default function JobsPage() {
         </div>
       }
 
-      {jobs.length === 0 ? (
-        <></>
-      ) : jobCards >= jobs.length ? (
+      {filteredJobs.length === 0 ? <></> : filteredJobs.length <= jobCards ?
         <div className="text-center my-10 text-gray-400 text-lg font-medium">
           All jobs loaded
-        </div>
-      ) : (
-        <button
-          onClick={() => setJobCards(prev => prev + CARDS_PER_CLICK)}
-          className="my-10 hover:scale-none hover:text-astrawhite border-1 border-astraprimary text-lg rounded-lg relative flex h-[50px] w-33 items-center justify-center overflow-hidden bg-astrawhite text-astraprimary transition-all before:absolute before:h-0 before:w-0 before:rounded-full before:bg-astraprimary before:text-astraprimary before:duration-500 before:ease-out hover:before:h-56 hover:before:w-56"
-        >
+        </div> :
+        <button onClick={()=>handleSeeMore(jobCards, setJobCards)} className="my-10 hover:scale-none hover:text-astrawhite border-1 border-astraprimary text-lg rounded-lg relative flex h-[50px] w-33 items-center justify-center overflow-hidden bg-astrawhite text-astraprimary transition-all before:absolute before:h-0 before:w-0 before:rounded-full before:bg-astraprimary before:text-astraprimary before:duration-500 before:ease-out hover:before:h-56 hover:before:w-56">
           <span className="relative z-10">See More</span>
-        </button>
-      )}
+        </button>}
 
       {myJobs.length == 0 ? <></>
         :
@@ -129,21 +182,16 @@ export default function JobsPage() {
                 <JobEditCard key={job.job_id} job={job}/>
               );})}
           </div>
+
+
+          {myJobs.length === 0 ? <></> :  myJobs.length <= myJobCards ?
+            <div className="text-center my-10 text-gray-400 text-lg font-medium">
+              All my jobs loaded
+            </div> :
+            <button onClick={()=>handleSeeMore(myJobCards, setMyJobCards)} className="my-10 hover:scale-none hover:text-astrawhite border-1 border-astraprimary text-lg rounded-lg relative flex h-[50px] w-33 items-center justify-center overflow-hidden bg-astrawhite text-astraprimary transition-all before:absolute before:h-0 before:w-0 before:rounded-full before:bg-astraprimary before:text-astraprimary before:duration-500 before:ease-out hover:before:h-56 hover:before:w-56">
+              <span className="relative z-10">See More</span>
+            </button>}
         </>
       }
-      {myJobs.length === 0 ? (
-        <></>
-      ) : myJobCards >= myJobs.length ? (
-        <div className="text-center my-10 text-gray-400 text-lg font-medium">
-          All my jobs loaded
-        </div>
-      ) : (
-        <button
-          onClick={() => setMyJobCards(prev => prev + CARDS_PER_CLICK)}
-          className="my-10 hover:scale-none hover:text-astrawhite border-1 border-astraprimary text-lg rounded-lg relative flex h-[50px] w-33 items-center justify-center overflow-hidden bg-astrawhite text-astraprimary transition-all before:absolute before:h-0 before:w-0 before:rounded-full before:bg-astraprimary before:text-astraprimary before:duration-500 before:ease-out hover:before:h-56 hover:before:w-56"
-        >
-          <span className="relative z-10">See More</span>
-        </button>
-      )}
     </div>
   );}

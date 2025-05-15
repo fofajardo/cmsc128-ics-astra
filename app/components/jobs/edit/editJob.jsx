@@ -6,11 +6,11 @@ import ConfirmationPrompt from "./confirmation";
 import { useState } from "react";
 import axios from "axios";
 
-export default function JobForm({isEdit, close, job, content}){
+export default function JobForm({isEdit, close, job, content, handleUpdate}){
   const [showPrompt, setPrompt] = useState(false);
-  const employmentOptions =[{value: "0", label: "Part-Time"},{value: "1", label: "Full-Time"}, {value: "2", label: "Temporary"}, {value: "3", label: "Freelance"}];
-  const locationOptions =[{value: "0", label: "Onsite"},{value: "1", label: "Remote"}, {value: "2", label: "Hybrid"}];
-  const statusOptions =[{value: "0", label: "Open"},{value: "1", label: "Closed"}];
+  const employmentOptions =[{value: 0, label: "Part-Time"},{value: 1, label: "Full-time"}, {value: 2, label: "Temporary"}, {value: 3, label: "Freelance"}];
+  const locationOptions =[{value: 0, label: "Onsite"},{value: 1, label: "Remote"}, {value: 2, label: "Hybrid"}];
+  const statusOptions =[{value: 0, label: "Open"},{value: 1, label: "Closed"}];
   const [errors, setErrors] = useState({});
 
   const [formData, setFormData] = useState({
@@ -19,9 +19,9 @@ export default function JobForm({isEdit, close, job, content}){
     requirements: job.requirements || "",
     hiring_manager: job.hiring_manager || "",
   });
-  const [employmentType, setEmploymentType] = useState(employmentOptions.find(option => option.label === job.employment_type));
-  const [locationType, setLocationType] = useState(locationOptions.find(option => option.label === job.location_type));
-  const [status, setStatus] = useState({value: "1", label: "Open"});
+  const [employmentType, setEmploymentType] = useState(employmentOptions.find(option => option.value === job.employment_type));
+  const [locationType, setLocationType] = useState(locationOptions.find(option => option.value === job.location_type));
+  const [status, setStatus] = useState({value: 0, label: "Open"});
 
   const handleClear = () => {
     setFormData({company_name: "", job_title: "", location: "", salary: "", apply_link: "", description: "", expires_at: "", requirements: "", hiring_manager: ""});
@@ -33,8 +33,13 @@ export default function JobForm({isEdit, close, job, content}){
 
   const handleChange = (e) => {
     e.preventDefault();
-    const {name, value} = e.target;
-    console.log(name + " " + value);
+
+    var {name, value} = e.target;
+
+    // trim texts as needed
+    if (name === "requirements" && value.length > 1500) value = value.slice(0, 1500);
+    if (name === "description" && value.length > 3000) value = value.slice(0, 3000);
+
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -48,7 +53,7 @@ export default function JobForm({isEdit, close, job, content}){
       }
       return formData[key] !== job[key];
     });
-
+    console.log(changedFields);
     if (changedFields.length === 0) {
       console.error("No changes detected.");
       setPrompt(false);
@@ -93,9 +98,10 @@ export default function JobForm({isEdit, close, job, content}){
         };
         await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${job.job_id}`, contentToSend);
       }
-
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs/${job.job_id}`);
       console.log("Job and/or content updated successfully!");
       setPrompt(false);
+      handleUpdate(job.job_id);
       close();
     } catch (error) {
       console.error("Error updating job:", error.response?.data || error.message);
@@ -318,7 +324,7 @@ export default function JobForm({isEdit, close, job, content}){
           {/* Hiring Manager */}
           <div>
             <div className="flex flex-row gap-2 items-center justify-between">
-              <label className="text-black font-medium text-lg">Contact Information</label>
+              <label className="text-black font-medium text-lg">Contact Person</label>
               {errors.hiring_manager && (
                 <p className="text-sm text-astrared self-end">Required</p>
               )}
@@ -342,7 +348,7 @@ export default function JobForm({isEdit, close, job, content}){
               )}
             </div>
             <textarea
-              placeholder="Provide a concise overview of the role..."
+              placeholder="Provide a concise overview of the role... (3,000 characters maximum)"
               onChange={handleChange}
               name="description"
               value={formData.description}
@@ -359,7 +365,7 @@ export default function JobForm({isEdit, close, job, content}){
               )}
             </div>
             <textarea
-              placeholder="Provide the requirements needed for the role..."
+              placeholder="Provide the requirements needed for the role... (1,500 characters maximum)"
               onChange={handleChange}
               name="requirements"
               value={formData.requirements}

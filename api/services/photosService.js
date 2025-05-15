@@ -1,6 +1,4 @@
-// FIXME: THESE PHOTO TYPES SHOULD BE IN AN ENUM!
-import { PhotoType } from "../../common/photo_types.js"; // Assuming you have an enum for photo types
-
+import { PhotoType } from "../../common/scopes.js";
 const fetchAllPhotos = async (supabase) => {
   return await supabase
     .from("photos")
