@@ -34,7 +34,7 @@ export default function SearchFilter({ onClose, onApply }) {
     setFromDate(date);
     setFilters((prev) => ({
       ...prev,
-      fromDate: date ? date.toISOString().split('T')[0] : "",
+      fromDate: date ? date.toISOString().split("T")[0] : "",
     }));
   };
 
@@ -42,7 +42,7 @@ export default function SearchFilter({ onClose, onApply }) {
     setToDate(date);
     setFilters((prev) => ({
       ...prev,
-      toDate: date ? date.toISOString().split('T')[0] : "",
+      toDate: date ? date.toISOString().split("T")[0] : "",
     }));
   };
 

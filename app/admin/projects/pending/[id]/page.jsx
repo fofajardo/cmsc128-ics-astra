@@ -221,12 +221,12 @@ export default function PendingProjectDetail({ params }) {
         <img
           src={imageSrc}
           alt={project.title}
-          className={`w-full h-full object-cover transition-opacity duration-300 ${imageLoading ? 'opacity-0' : 'opacity-100'}`}
+          className={`w-full h-full object-cover transition-opacity duration-300 ${imageLoading ? "opacity-0" : "opacity-100"}`}
           onLoad={() => {
             setImageLoading(false);
           }}
           onError={(e) => {
-            console.error('Image failed to load:', e);
+            console.error("Image failed to load:", e);
             setImageError(true);
             setImageSrc(FALLBACK_IMAGE);
             setImageLoading(false);

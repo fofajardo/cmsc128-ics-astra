@@ -54,10 +54,11 @@ export default function ProjectDetails({ params }) {
     Math.round((raisedValue / goalValue) * 100),
     100
   );
-  const handleDonateClick = (e) => {
-    e.stopPropagation(); // prevents the outer link from triggering
-    router.push(`/projects/donate/${requestId}`);
-  };
+
+  // const handleDonateClick = (e) => {
+  //   e.stopPropagation(); // prevents the outer link from triggering
+  //   router.push(`/projects/donate/${requestId}`);
+  // };
 
   // Add timeout for image loading
   useEffect(() => {
@@ -191,14 +192,14 @@ export default function ProjectDetails({ params }) {
       const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(projectData.organizer.email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
 
       // Open Gmail in a new tab
-      window.open(gmailUrl, '_blank');
+      window.open(gmailUrl, "_blank");
 
-        setToast({
-          type: "success",
+      setToast({
+        type: "success",
         message: "Opening Gmail...",
-        });
-        setIsContactModalOpen(false);
-        setMessage("");
+      });
+      setIsContactModalOpen(false);
+      setMessage("");
     } catch (error) {
       console.error("Failed to open Gmail:", error);
       setToast({
@@ -233,9 +234,9 @@ export default function ProjectDetails({ params }) {
           <div className="flex flex-col items-center justify-center py-16 sm:py-24 md:py-32">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-astraprimary mb-3 sm:mb-4">404</h1>
             <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-astradarkgray mb-3 sm:mb-4">Project Not Found</h2>
-            <p className="text-sm sm:text-base text-astradarkgray mb-6 sm:mb-8 text-center max-w-md px-4">The project you're looking for doesn't exist or has been removed.</p>
+            <p className="text-sm sm:text-base text-astradarkgray mb-6 sm:mb-8 text-center max-w-md px-4">The project you&apos;re looking for doesn&apos;t exist or has been removed.</p>
             <button
-              onClick={() => router.push('/projects')}
+              onClick={() => router.push("/projects")}
               className="bg-astraprimary text-astrawhite px-5 sm:px-6 py-2 sm:py-2.5 rounded-lg hover:bg-astraprimary/90 transition-colors text-sm sm:text-base"
             >
               Back to Projects
@@ -310,13 +311,13 @@ export default function ProjectDetails({ params }) {
             alt={projectData?.title || "Project Image"}
             layout="fill"
             objectFit="cover"
-            className={`rounded-xl transition-opacity duration-300 ${imageLoading ? 'opacity-0' : 'opacity-100'}`}
+            className={`rounded-xl transition-opacity duration-300 ${imageLoading ? "opacity-0" : "opacity-100"}`}
             priority
             onLoad={() => {
               setImageLoading(false);
             }}
             onError={(e) => {
-              console.error('Image failed to load:', e);
+              console.error("Image failed to load:", e);
               setImageError(true);
               setImageSrc(FALLBACK_IMAGE);
               setImageLoading(false);

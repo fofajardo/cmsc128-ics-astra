@@ -71,7 +71,7 @@ function AlumniItem({ alumni, router }) {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/alum/${userId}`
       );
-      
+
       if (response.data.status === "OK" && response.data.photo) {
         setProfilePhoto(response.data.photo);
       }
@@ -116,12 +116,12 @@ function AlumniItem({ alumni, router }) {
 
 function getInitials(name) {
   if (!name) return "??";
-  
+
   const nameParts = name.split(" ");
   if (nameParts.length >= 2) {
     return `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`.toUpperCase();
   }
-  
+
   return name.substring(0, 2).toUpperCase();
 }
 

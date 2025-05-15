@@ -266,13 +266,13 @@ export default function ActiveProjectDetail({ params }) {
     try {
       // Create email subject and body
       const subject = `Inquiry about ${projectData.title}`;
-      const emailBody = `Hello ${projectData.requester.name},\n\n${message}\n\nBest regards,\n${userContext?.state?.user?.name || userContext?.state?.user?.email || 'Anonymous'}`;
+      const emailBody = `Hello ${projectData.requester.name},\n\n${message}\n\nBest regards,\n${userContext?.state?.user?.name || userContext?.state?.user?.email || "Anonymous"}`;
 
       // Create Gmail URL with pre-filled information
       const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(projectData.requester.email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
 
       // Open Gmail in a new tab
-      window.open(gmailUrl, '_blank');
+      window.open(gmailUrl, "_blank");
 
       setToast({
         type: "success",
@@ -945,7 +945,7 @@ export default function ActiveProjectDetail({ params }) {
                           handleInputChange({
                             target: {
                               name: "endDate",
-                              value: date ? date.toISOString().split('T')[0] : ""
+                              value: date ? date.toISOString().split("T")[0] : ""
                             }
                           });
                         }}
@@ -1074,12 +1074,12 @@ export default function ActiveProjectDetail({ params }) {
         <img
           src={imageSrc}
           alt={projectData.title}
-          className={`w-full h-full object-cover transition-opacity duration-300 ${imageLoading ? 'opacity-0' : 'opacity-100'}`}
+          className={`w-full h-full object-cover transition-opacity duration-300 ${imageLoading ? "opacity-0" : "opacity-100"}`}
           onLoad={() => {
             setImageLoading(false);
           }}
           onError={(e) => {
-            console.error('Image failed to load:', e);
+            console.error("Image failed to load:", e);
             setImageError(true);
             setImageSrc(FALLBACK_IMAGE);
             setImageLoading(false);

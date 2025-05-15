@@ -81,7 +81,7 @@ const RequestFundraiserGoal = () => {
         setTargetDateError("Please select a future date");
       } else {
         setTargetDateError("");
-        updateFormData({ targetDate: date.toISOString().split('T')[0] });
+        updateFormData({ targetDate: date.toISOString().split("T")[0] });
       }
     } else {
       setTargetDateError("");

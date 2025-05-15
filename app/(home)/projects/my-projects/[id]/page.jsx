@@ -76,10 +76,10 @@ export default function UserProjects() {
 
           const mappedProjects = projectData.list.map(
             project => {
-              console.log('Project status:', project.status);
-              console.log('Project response:', project.response);
-              console.log('REQUEST_STATUS_LABELS:', REQUEST_STATUS_LABELS);
-              console.log('REQUEST_STATUS_LABELS[REQUEST_STATUS.APPROVED]:', REQUEST_STATUS_LABELS[REQUEST_STATUS.APPROVED]);
+              console.log("Project status:", project.status);
+              console.log("Project response:", project.response);
+              console.log("REQUEST_STATUS_LABELS:", REQUEST_STATUS_LABELS);
+              console.log("REQUEST_STATUS_LABELS[REQUEST_STATUS.APPROVED]:", REQUEST_STATUS_LABELS[REQUEST_STATUS.APPROVED]);
               return {
                 id: project.projectData.project_id,
                 title: project.projectData.title,
@@ -101,7 +101,7 @@ export default function UserProjects() {
               };
             }
           );
-          console.log('Mapped projects:', mappedProjects);
+          console.log("Mapped projects:", mappedProjects);
           setProjects(mappedProjects);
         } else {
           console.error("Unexpected response:", projectData);
@@ -258,15 +258,15 @@ export default function UserProjects() {
               <button
                 onClick={() => setShowMobileTabs(!showMobileTabs)}
                 className={`w-full py-4 px-6 flex items-center justify-between bg-astrawhite border-b ${
-                  showMobileTabs ? 'border-astragray/20' : 'border-astraprimary'
+                  showMobileTabs ? "border-astragray/20" : "border-astraprimary"
                 }`}
               >
                 <span className="font-medium text-astrablack">
                   {activeTab === "all" ? "All Projects" :
-                   activeTab === REQUEST_STATUS_LABELS[REQUEST_STATUS.SENT] ? "Pending" :
-                   capitalizeName(activeTab)}
+                    activeTab === REQUEST_STATUS_LABELS[REQUEST_STATUS.SENT] ? "Pending" :
+                      capitalizeName(activeTab)}
                 </span>
-                <ChevronDown className={`w-5 h-5 transition-transform ${showMobileTabs ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`w-5 h-5 transition-transform ${showMobileTabs ? "rotate-180" : ""}`} />
               </button>
 
               {showMobileTabs && (

@@ -218,7 +218,7 @@ export default function Donations() {
       console.error("Error approving donation:", error);
     }
   };
-//method for declining a donation, pa-check nalang
+  //method for declining a donation, pa-check nalang
   const handleDecline = async () => {
     if (!donationToDecline?.id) {
       console.error("No donation selected for decline.");

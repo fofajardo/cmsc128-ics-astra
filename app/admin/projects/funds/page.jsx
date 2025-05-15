@@ -167,17 +167,17 @@ export default function ProjectFunds() {
 
       let comparison = 0;
       switch (sortBy.field) {
-        case "goal":
-          comparison = parseInt(a.goal.replace(/[₱,]/g, "")) - parseInt(b.goal.replace(/[₱,]/g, ""));
-          break;
-        case "raised":
-          comparison = parseInt(a.raised.replace(/[₱,]/g, "")) - parseInt(b.raised.replace(/[₱,]/g, ""));
-          break;
-        case "type":
-          comparison = a.type.localeCompare(b.type);
-          break;
-        default:
-          return 0;
+      case "goal":
+        comparison = parseInt(a.goal.replace(/[₱,]/g, "")) - parseInt(b.goal.replace(/[₱,]/g, ""));
+        break;
+      case "raised":
+        comparison = parseInt(a.raised.replace(/[₱,]/g, "")) - parseInt(b.raised.replace(/[₱,]/g, ""));
+        break;
+      case "type":
+        comparison = a.type.localeCompare(b.type);
+        break;
+      default:
+        return 0;
       }
 
       return sortBy.order === "asc" ? comparison : -comparison;
@@ -421,14 +421,14 @@ function renderProject(title) {
 function renderType(type) {
   let bgColor;
   switch (type) {
-    case "Scholarship":
-      bgColor = "bg-astralight text-astrawhite";
-      break;
-    case "Donation Drive":
-      bgColor = "bg-astragreen text-astratintedwhite";
-      break;
-    default:
-      bgColor = "bg-astralightgray text-astradirtywhite";
+  case "Scholarship":
+    bgColor = "bg-astralight text-astrawhite";
+    break;
+  case "Donation Drive":
+    bgColor = "bg-astragreen text-astratintedwhite";
+    break;
+  default:
+    bgColor = "bg-astralightgray text-astradirtywhite";
   }
 
   return (
@@ -442,7 +442,7 @@ function renderType(type) {
 
 function renderAmount(amount, isRaised) {
   return (
-    <div className={`text-center font-s ${isRaised ? 'text-astraprimary' : 'text-astradark'}`}>
+    <div className={`text-center font-s ${isRaised ? "text-astraprimary" : "text-astradark"}`}>
       {formatCurrency(amount)}
     </div>
   );
@@ -451,17 +451,17 @@ function renderAmount(amount, isRaised) {
 function renderStatus(project_status) {
   let bgColor;
   switch (project_status) {
-    case PROJECT_STATUS.AWAITING_BUDGET:
-      bgColor = "bg-yellow-100 text-astrayellow";
-      break;
-    case PROJECT_STATUS.ONGOING:
-      bgColor = "bg-green-100 text-astragreen";
-      break;
-    case PROJECT_STATUS.FINISHED:
-      bgColor = "bg-red-100 text-astrared";
-      break;
-    default:
-      bgColor = "bg-red-100 text-astrared";
+  case PROJECT_STATUS.AWAITING_BUDGET:
+    bgColor = "bg-yellow-100 text-astrayellow";
+    break;
+  case PROJECT_STATUS.ONGOING:
+    bgColor = "bg-green-100 text-astragreen";
+    break;
+  case PROJECT_STATUS.FINISHED:
+    bgColor = "bg-red-100 text-astrared";
+    break;
+  default:
+    bgColor = "bg-red-100 text-astrared";
   }
 
   return (

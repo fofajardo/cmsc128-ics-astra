@@ -22,9 +22,9 @@ const RequestFundraiserPreview = () => {
 
   // Format amount to currency
   const formatAmount = (amount) => {
-    return new Intl.NumberFormat('en-PH', {
-      style: 'currency',
-      currency: 'PHP',
+    return new Intl.NumberFormat("en-PH", {
+      style: "currency",
+      currency: "PHP",
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     }).format(amount);
@@ -32,12 +32,12 @@ const RequestFundraiserPreview = () => {
 
   // Format date to readable format
   const formatDate = (dateString) => {
-    if (!dateString) return '';
+    if (!dateString) return "";
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric"
     });
   };
 
@@ -69,17 +69,17 @@ const RequestFundraiserPreview = () => {
   const handleFile = (file) => {
     if (file) {
       // Check file type
-      if (!file.type.startsWith('image/')) {
-        setPhotoError('Please upload an image file');
+      if (!file.type.startsWith("image/")) {
+        setPhotoError("Please upload an image file");
         return;
       }
       // Check file size (5MB limit)
       if (file.size > 5 * 1024 * 1024) {
-        setPhotoError('Image size should be less than 5MB');
+        setPhotoError("Image size should be less than 5MB");
         return;
       }
       setPhoto(file);
-      setPhotoError('');
+      setPhotoError("");
       // Create preview
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -101,10 +101,10 @@ const RequestFundraiserPreview = () => {
         donation_link: formData.externalLink || "test_link",
         type: formData.projectType.toLowerCase(),
       };
-  
+
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/v1/projects`, data);
       const projectData = response.data;
-  
+
       if (projectData.status === "CREATED") {
         console.log("Created project:", projectData);
         return {
@@ -131,28 +131,28 @@ const RequestFundraiserPreview = () => {
       });
       return;
     }
-  
+
     setIsSubmitting(true);
-  
+
     try {
       const projectResponse = await requestProject();
-      
+
       if (!projectResponse || projectResponse.status !== "CREATED") {
         throw new Error("Failed to create project");
       }
-      
+
       const contentId = projectResponse.id;
       console.log("Project created with ID:", contentId);
-      
+
       if (photo) {
         try {
           const formData = new FormData();
           formData.append("File", photo);
           formData.append("content_id", contentId);
           formData.append("type", 5); // TODO: use appropriate ENUM; check photo_type.js once merged
-          
+
           console.log("Uploading photo for project ID:", contentId);
-          
+
           const photoResponse = await axios.post(
             `${process.env.NEXT_PUBLIC_API_URL}/v1/photos`,
             formData,
@@ -162,7 +162,7 @@ const RequestFundraiserPreview = () => {
               }
             }
           );
-          
+
           if (photoResponse.data.status === "CREATED") {
             console.log("Photo uploaded successfully:", photoResponse.data);
           } else {
@@ -172,13 +172,13 @@ const RequestFundraiserPreview = () => {
           console.error("Failed to upload project photo:", photoError);
         }
       }
-      
+
       // Show success toast
       setShowToast({
         type: "success",
         message: "Project request submitted successfully!"
       });
-  
+
       setTimeout(() => {
         clearFormData();
         router.push("/projects");
@@ -242,7 +242,7 @@ const RequestFundraiserPreview = () => {
                     ) : (
                       <div
                         className={`relative border-2 border-dashed rounded-lg p-4 sm:p-6 md:p-8 text-center h-full flex items-center justify-center ${
-                          isDragging ? 'border-astraprimary bg-astralightgray' : 'border-astraprimary'
+                          isDragging ? "border-astraprimary bg-astralightgray" : "border-astraprimary"
                         } transition-colors duration-200`}
                         onDragOver={handleDragOver}
                         onDragLeave={handleDragLeave}
