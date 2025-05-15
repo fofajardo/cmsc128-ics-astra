@@ -360,11 +360,21 @@ function renderProject(title) {
 }
 
 function renderType(type) {
+  let bgColor;
+  switch (type) {
+    case "Scholarship":
+      bgColor = "bg-astralight text-astrawhite";
+      break;
+    case "Donation Drive":
+      bgColor = "bg-astragreen text-astratintedwhite";
+      break;
+    default:
+      bgColor = "bg-astralightgray text-astradirtywhite";
+  }
+
   return (
     <div className="text-center">
-      <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-        type === "Scholarship" ? "bg-astralightblue text-astrablue" : "bg-astralightgreen text-astragreen"
-      }`}>
+      <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${bgColor}`}>
         {type}
       </span>
     </div>
