@@ -10,6 +10,8 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { Eye, EyeOff } from "lucide-react";
 import { useSignedInUser } from "@/components/UserContext";
+import { JobsStatus } from "../../../common/scopes";
+import { job } from "./dummy";
 
 export default function JobsPage() {
   const user = useSignedInUser();
@@ -82,6 +84,7 @@ export default function JobsPage() {
   };
 
   const handleApplyFilter = (filters) => {
+    console.log(jobs);
     const {job_type = "",
       status = "",
       location = "",
@@ -97,9 +100,11 @@ export default function JobsPage() {
     var filtered = jobs.filter(job => {
       const matchesJobType = job_type === job.employment_type || job_type === "";
 
-      const statusVal = ((dateToday - new Date (job.expires_at)) < 0) ? 0 : 1;
-
-      const matchesStatus = status === statusVal || status === "";
+      const statusExpired = ((dateToday - new Date (job.expires_at)) < 0) ? true : false;
+      const statusVal = job.status === JobsStatus.OPEN_UNTIL_EXPIRED
+        ? statusExpired : job.status === JobsStatus.CLOSED ? false : true;
+      const matchesStatus = status === "" ? true : ([JobsStatus.OPEN_UNTIL_EXPIRED, JobsStatus.OPEN_INDEFINITE].includes(status)
+        ? statusVal : !statusVal);
 
       const jobLowerLocation = job.location.toLowerCase();
       const matchesLocation = jobLowerLocation.includes(lowerLocation) || lowerLocation.length === 0;
