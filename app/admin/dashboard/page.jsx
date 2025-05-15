@@ -126,7 +126,7 @@ export default function Dashboard() {
       );
 
     case "age": {
-      // Example dummy data for stacked bars 
+      // Example dummy data for stacked bars
       const dummyStackedAges = Array.from({ length: 19 }, (_, i) => ({
         age: 20 + i,
         male: Math.floor(Math.random() * 20),
