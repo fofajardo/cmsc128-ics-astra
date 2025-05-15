@@ -72,7 +72,7 @@ export default function JobsPage() {
   }
 
   return (
-    <div className="py-8 bg-astratintedwhite w-full flex flex-col items-center">
+    <div className="pb-8 pt-25 bg-astratintedwhite w-full flex flex-col items-center">
       <Back />
       <div className="flex justify-between gap-y-2 flex-wrap max-w-[1250px] w-19/20">
         {

@@ -5,6 +5,8 @@ import AdminStatCard from "@/components/AdminStatCard";
 import { CalendarClock, CalendarRange, CalendarCheck2 } from "lucide-react";
 import { TabContext } from "@/components/TabContext";
 import { Skeleton } from "@/components/ui/skeleton";
+import {ActiveNavItemMarker} from "@/components/Header.jsx";
+import {NavMenuItemId} from "../../../common/scopes.js";
 
 export default function AdminEventsLayout({ children }) {
   const [info, setInfo] = useState({
@@ -31,6 +33,7 @@ export default function AdminEventsLayout({ children }) {
   return (
     <>
       {/* Header with background */}
+      <ActiveNavItemMarker id={NavMenuItemId.EVENTS}/>
       <div className="relative">
         <img
           src="/blue-bg.png"
