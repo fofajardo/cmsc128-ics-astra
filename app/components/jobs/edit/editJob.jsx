@@ -54,7 +54,7 @@ export default function JobForm({isEdit, close, job, content, handleUpdate}){
       }
       return formData[key] !== job[key];
     });
-    console.log(changedFields);
+    // console.log(changedFields);
     if (changedFields.length === 0) {
       console.error("No changes detected.");
       setPrompt(false);

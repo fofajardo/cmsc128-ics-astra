@@ -84,7 +84,6 @@ export default function JobsPage() {
   };
 
   const handleApplyFilter = (filters) => {
-    console.log(jobs);
     const {job_type = "",
       status = "",
       location = "",
@@ -124,7 +123,6 @@ export default function JobsPage() {
     });
 
     const sorted = sort(filtered, recent);
-    console.log(sorted);
 
     setFilteredJobs(filtered);
   };

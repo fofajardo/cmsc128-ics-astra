@@ -25,11 +25,11 @@ export default function JobsPage() {
     try {
       // Fetch job data
       const jobResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs/${id}`);
-      console.log("Job API Response:", jobResponse.data);
+      // console.log("Job API Response:", jobResponse.data);
 
       // Fetch content data
       const contentResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`);
-      console.log("Content API Response:", contentResponse.data);
+      // console.log("Content API Response:", contentResponse.data);
 
       if (
         jobResponse.data.status === "OK" &&
@@ -46,8 +46,8 @@ export default function JobsPage() {
         };
         setJob(jobData);
         setContent(contentResponse.data.content);
-        console.log("Normalized job data:", jobData);
-        console.log("Content data:", contentResponse.data.content);
+        // console.log("Normalized job data:", jobData);
+        // console.log("Content data:", contentResponse.data.content);
       } else {
         setError("Job or content not found.");
       }
