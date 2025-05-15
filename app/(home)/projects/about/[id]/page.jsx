@@ -88,7 +88,8 @@ export default function ProjectDetails({ params }) {
 
           const donationsResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations`, {
             params: {
-              project_id: projectId
+              project_id: projectId,
+              is_verified: true
             }
           });
           const donationData = donationsResponse.data;
