@@ -179,6 +179,46 @@ export const NavMenuItemId = Object.freeze({
   ORGANIZATIONS: "organizations"
 });
 
+export const DONATION_MODE_OF_PAYMENT = {
+  PHYSICAL_PAYMENT: 0,
+  BANK_TRANSFER: 1,
+};
+
+export const DONATION_MODE_OF_PAYMENT_LABELS = {
+  [DONATION_MODE_OF_PAYMENT.PHYSICAL_PAYMENT]: "Physical",
+  [DONATION_MODE_OF_PAYMENT.BANK_TRANSFER]: "Bank Transfer",
+};
+
+export const PROJECT_STATUS = {
+  AWAITING_BUDGET: 0,
+  ONGOING: 1,
+  FINISHED: 2,
+};
+
+export const PROJECT_STATUS_LABELS = {
+  [PROJECT_STATUS.AWAITING_BUDGET]: "Awaiting Budget",
+  [PROJECT_STATUS.ONGOING]: "Ongoing",
+  [PROJECT_STATUS.FINISHED]: "Finished",
+};
+
+export const PROJECT_TYPE = {
+  DONATION_DRIVE: "donation drive",
+  FUNDRAISING: "fundraising",
+  SCHOLARSHIP: "scholarship",
+};
+
+export const REQUEST_STATUS = {
+  SENT: 0,
+  APPROVED: 1,
+  REJECTED: 2,
+};
+
+export const REQUEST_STATUS_LABELS = {
+  [REQUEST_STATUS.SENT]: "Sent",
+  [REQUEST_STATUS.APPROVED]: "Approved",
+  [REQUEST_STATUS.REJECTED]: "Rejected",
+};
+
 export {
   RoleName,
   Subjects,
