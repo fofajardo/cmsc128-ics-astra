@@ -49,6 +49,9 @@ export function NavigationMenuDemo({
     <NavigationMenu className="w-full">
       <NavigationMenuList className="w-full">
         <NavigationMenuItem>
+          <div className="font-sb">
+            Demographics
+          </div>
           <NavigationMenuTrigger>
             {currentCategory === "demographics" && getSelectedLabel("demographics", tab) !== "Demographics" ? (
               <span className="font-semibold text-astraprimary flex items-center gap-1">
@@ -56,7 +59,7 @@ export function NavigationMenuDemo({
                 {/* <Check className="w-4 h-4" /> */}
               </span>
             ) : (
-              "Demographics"
+              "Select..."
             )}
           </NavigationMenuTrigger>
           <NavigationMenuContent>
@@ -81,6 +84,9 @@ export function NavigationMenuDemo({
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
+          <div className="font-sb">
+            Career
+          </div>
           <NavigationMenuTrigger>
             {currentCategory === "career" && getSelectedLabel("career", tab) !== "Career" ? (
               <span className="font-semibold text-primary flex items-center gap-1">
@@ -88,7 +94,7 @@ export function NavigationMenuDemo({
                 {/* <Check className="w-4 h-4" /> */}
               </span>
             ) : (
-              "Career"
+              "Select..."
             )}
           </NavigationMenuTrigger>
           <NavigationMenuContent>
@@ -113,6 +119,9 @@ export function NavigationMenuDemo({
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
+          <div className="font-sb">
+            Status
+          </div>
           <NavigationMenuTrigger>
             {currentCategory === "status" && getSelectedLabel("status", tab) !== "Status" ? (
               <span className="font-semibold text-primary flex items-center gap-1">
@@ -120,7 +129,7 @@ export function NavigationMenuDemo({
                 {/* <Check className="w-4 h-4" /> */}
               </span>
             ) : (
-              "Status"
+              "Select..."
             )}
           </NavigationMenuTrigger>
           <NavigationMenuContent>
