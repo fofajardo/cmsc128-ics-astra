@@ -66,7 +66,7 @@ const getDonations = async (req, res) => {
       } else if (!alum) {
         full_name = "Deleted user";
       } else {
-        full_name = [alum.first_name, alum.middle_name, alum.last_name]
+        full_name = [alum.first_name, alum.last_name]
           .filter(Boolean) // remove undefined/null/empty values
           .join(" ");
       };
