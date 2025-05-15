@@ -219,6 +219,12 @@ export const REQUEST_STATUS_LABELS = {
   [REQUEST_STATUS.REJECTED]: "Rejected",
 };
 
+export const REQUEST_TYPE = {
+  PROJECT_FUNDS: 0,
+  FUNDRAISING: 1,
+  OTHERS: 2,
+};
+
 export {
   RoleName,
   Subjects,
