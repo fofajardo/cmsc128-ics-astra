@@ -11,7 +11,7 @@ import TransitionSlide from "@/components/transitions/TransitionSlide";
 import axios from "axios";
 import { capitalizeTitle } from "@/utils/format";
 import { NavigationMenuDemo } from "./components/navigationmenu";
-import BarChartComponent from "./components/BarChart";
+import { BarChartComponent, VerticalBarChart, StackedBarChart } from "./components/BarChart";
 import ReusablePieChart from "./components/ReusablePieChart";
 
 export default function Dashboard() {
@@ -24,7 +24,8 @@ export default function Dashboard() {
   const [alumniSexStats, setAlumniSexStats] = useState([]);
   const [alumniCivilStats, setAlumniCivilStats] = useState([]);
   const [alumniOrgStats, setAlumniOrgStats] = useState([]);
-  const [category, setCategory] = useState("demographics");
+  const [alumniFieldStats, setAlumniFieldStats] = useState([]);
+  const [alumniIncomeStats, setAlumniIncomeStats] = useState([]);
   const [tab, setTab] = useState("donations");
 
   useEffect(() => {
@@ -40,8 +41,10 @@ export default function Dashboard() {
           axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-sex-stats`),
           axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-civil-status-stats`),
           axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-org-affiliation-stats`),
+          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-field-stats`),
+          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-income-range-stats`),
         ];
-  
+
         const [
           alumniRes,
           jobsRes,
@@ -52,13 +55,15 @@ export default function Dashboard() {
           alumniSexRes,
           alumniCivilRes,
           alumniOrgRes,
+          alumniFieldRes,
+          alumniIncomeRes,
         ] = await Promise.allSettled(urls);
-  
+
         if (alumniRes.status === "fulfilled") setActiveAlumniStats(alumniRes.value.data.stats);
         if (jobsRes.status === "fulfilled") setActiveJobsStats(jobsRes.value.data.stats);
         if (eventsRes.status === "fulfilled") setActiveEventsStats(eventsRes.value.data.stats);
         if (fundsRes.status === "fulfilled") setFundsRaisedStats(fundsRes.value.data.stats);
-  
+
         if (alumniAgeRes.status === "fulfilled" && alumniAgeRes.value.data.status === "OK") {
           setAlumniAgeStats(alumniAgeRes.value.data.stats);
         }
@@ -71,6 +76,16 @@ export default function Dashboard() {
         if (alumniOrgRes.status === "fulfilled" && alumniOrgRes.value.data.status === "OK") {
           setAlumniOrgStats(alumniOrgRes.value.data.stats);
         }
+
+        if (alumniFieldRes.status === "fulfilled" && alumniFieldRes.value.data.status === "OK") {
+          setAlumniFieldStats(alumniFieldRes.value.data.stats);
+        }
+
+        if (alumniIncomeRes.status === "fulfilled" && alumniIncomeRes.value.data.status === "OK") {
+          console.log("Alumni Income Stats:", alumniIncomeRes.value.data.stats);
+          setAlumniIncomeStats(alumniIncomeRes.value.data.stats);
+        }
+
         if (donationSummaryRes.status === "fulfilled" && donationSummaryRes.value.data.status === "OK") {
           const updatedProjectDonationSummary = await Promise.all(
             donationSummaryRes.value.data.list.map(async (project) => ({
@@ -110,19 +125,31 @@ export default function Dashboard() {
         />
       );
 
-    case "age":
+    case "age": {
+      // Example dummy data for stacked bars 
+      const dummyStackedAges = Array.from({ length: 19 }, (_, i) => ({
+        age: 20 + i,
+        male: Math.floor(Math.random() * 20),
+        female: Math.floor(Math.random() * 20),
+      }));
+
       return (
-        <BarChartComponent
-          data={alumniAgeStats.filter(item => item.age > 0)}
-          config={{ count: { label: "Alumni Count", color: "var(--color-astraprimary)" } }}
-          title="Alumni Age Distribution"
-          description="Active alumni by age"
-          xKey="age"
-          barKey="count"
-          barLabel="Alumni Count"
-          barColor="var(--color-astraprimary)"
-        />
+        <TransitionSlide>
+          <StackedBarChart
+            data={alumniAgeStats.filter(item => item.age > 0)}
+            config={{
+              active: { label: "Active", color: "var(--color-astraprimary)" },
+              inactive: { label: "Inactive", color: "#60a5fa" },
+            }}
+            title="Alumni Age Distribution"
+            description="Active and inactive alumni by age"
+            xKey="age"
+            barKeys={["active", "inactive"]}
+            barColors={["var(--color-astraprimary)", "#60a5fa"]}
+          />
+        </TransitionSlide>
       );
+    }
 
     case "sex": {
       const colorConfig = {
@@ -140,18 +167,20 @@ export default function Dashboard() {
       });
 
       return (
-        <ReusablePieChart
-          data={pieSexStats}
-          config={{
-            Female: { label: "Female", color: "#60a5fa" },
-            Male: { label: "Male", color: "var(--color-astraprimary)" },
-          }}
-          title="Alumni Sex Distribution"
-          description="Active alumni by sex"
-          dataKey="value"
-          nameKey="name"
-          maxHeight={300}
-        />
+        <TransitionSlide>
+          <ReusablePieChart
+            data={pieSexStats}
+            config={{
+              Female: { label: "Female", color: "#60a5fa" },
+              Male: { label: "Male", color: "var(--color-astraprimary)" },
+            }}
+            title="Alumni Sex Distribution"
+            description="Active alumni by sex"
+            dataKey="value"
+            nameKey="name"
+            maxHeight={300}
+          />
+        </TransitionSlide>
       );
     }
 
@@ -174,21 +203,119 @@ export default function Dashboard() {
       });
 
       return (
-        <ReusablePieChart
-          data={pieCivilStats}
-          config={{
-            Married: { label: "Married"},
-            Single: { label: "Single"},
-            Divorced: { label: "Divorced"},
-            Separated: { label: "Separated"},
-            Widowed: { label: "Widowed"},
-          }}
-          title="Alumni Civil Status Distribution"
-          description="Active alumni by civil status"
-          dataKey="value"
-          nameKey="name"
-          maxHeight={300}
-        />
+        <TransitionSlide>
+          <ReusablePieChart
+            data={pieCivilStats}
+            config={{
+              Married: { label: "Married"},
+              Single: { label: "Single"},
+              Divorced: { label: "Divorced"},
+              Separated: { label: "Separated"},
+              Widowed: { label: "Widowed"},
+            }}
+            title="Alumni Civil Status Distribution"
+            description="Active alumni by civil status"
+            dataKey="value"
+            nameKey="name"
+            maxHeight={300}
+          />
+        </TransitionSlide>
+      );
+    }
+
+    case "org": {
+      // Dummy data for testing scalability
+      const dummyAlumniOrgStats = Array.from({ length: 10 }, (_, i) => ({
+        organization: `Org ${i + 1}`,
+        count: Math.floor(Math.random() * 200) + 10, // 10 to 209 alumni
+        active: Math.floor(Math.random() * 100),
+        inactive: Math.floor(Math.random() * 100),
+      }));
+      return (
+        <TransitionSlide>
+          <VerticalBarChart
+            data={alumniOrgStats.sort((a, b) => b.count - a.count)}
+            config={{
+              count: { label: "Active Alumni", color: "var(--color-astraprimary)" },
+              active: { color: "#60a5fa" },
+              inactive: { color: "#a3a3a3" },
+            }}
+            title="Alumni by Organization"
+            description="Active alumni per organization"
+            yKey="organization"
+            barKey="count"
+            barLabel="Total Alumni"
+            barColor="var(--color-astradark)"
+          />
+        </TransitionSlide>
+      );
+    }
+
+    case "field": {
+      // Dummy data for testing scalability
+      const dummyAlumniFieldStats = Array.from({ length: 10 }, (_, i) => ({
+        field: `Field ${i + 1}`,
+        count: Math.floor(Math.random() * 200) + 10, // 10 to 209 alumni
+        active: Math.floor(Math.random() * 100),
+        inactive: Math.floor(Math.random() * 100),
+      }));
+      const sortedFieldStats = [...alumniFieldStats].sort((a, b) => b.count - a.count);
+
+      return (
+        <TransitionSlide>
+          <VerticalBarChart
+            data={sortedFieldStats}
+            config={{
+              count: { label: "Total Alumni", color: "var(--color-astraprimary)" },
+              active: { color: "#60a5fa" },
+              inactive: { color: "#a3a3a3" },
+            }}
+            title="Alumni by Field"
+            description="Number of alumni per field"
+            yKey="field"
+            barKey="count"
+            barLabel="Total Alumni"
+            barColor="var(--color-astraprimary)"
+          />
+        </TransitionSlide>
+      );
+    }
+
+    case "income": {
+      // Dummy data for testing scalability
+      const dummyAlumniIncomeStats = Array.from({ length: 7 }, (_, i) => ({
+        income_range: `$${(i + 1) * 100}k`,
+        count: Math.floor(Math.random() * 200) + 10, // 10 to 209 alumni
+        active: Math.floor(Math.random() * 100),
+        inactive: Math.floor(Math.random() * 100),
+      }));
+
+      const sortedIncomeStats = [...alumniIncomeStats].sort((a, b) => {
+        const getMin = (range) => {
+          if (!range) return 0;
+          const match = range.match(/^(\d+)[kK]/);
+          return match ? parseInt(match[1], 10) : 0;
+        };
+        return getMin(a.income_range) - getMin(b.income_range);
+      });
+
+      return (
+        <TransitionSlide>
+          <BarChartComponent
+            data={sortedIncomeStats}
+            config={{
+              count: { label: "Total Alumni", color: "var(--color-astraprimary)" },
+              active: { color: "#60a5fa" },
+              inactive: { color: "#a3a3a3" },
+            }}
+            title="Alumni by Income Range"
+            description="Number of alumni per income range"
+            xKey="income_range"
+            barKey="count"
+            barLabel="Alumni Count"
+            barColor="var(--color-astraprimary)"
+          />
+        </TransitionSlide>
       );
     }
 
@@ -234,7 +361,7 @@ export default function Dashboard() {
       <div className="flex gap-4 flex-col bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24">
         <div className="flex flex-col md:flex-row gap-4">
           <AlumAct_Events />
-          <div className="flex flex-col gap-2 flex-1">
+          <div className="flex flex-col gap-2 flex-2">
             <NavigationMenuDemo tab={tab} setTab={setTab} />
             {renderTabContent()}
           </div>

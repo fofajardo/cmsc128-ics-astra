@@ -221,7 +221,7 @@ export function Donut({ fundsRaised, projectStatistics }) {
         {showChart ? (
           <ChartContainer
             config={chartConfig}
-            className="mx-auto aspect-square max-h-[330px]"
+            className="mx-auto aspect-square max-h-[350px]"
           >
             <PieChart>
               <ChartTooltip
@@ -232,7 +232,7 @@ export function Donut({ fundsRaised, projectStatistics }) {
                 data={paginatedData}
                 dataKey="funds"
                 nameKey="donationTitle"
-                innerRadius={80}
+                innerRadius={85}
                 strokeWidth={5}
               >
                 <Label
