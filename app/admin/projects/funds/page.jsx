@@ -6,6 +6,7 @@ import ToastNotification from "@/components/ToastNotification";
 import {GoBackButton} from "@/components/Buttons";
 import axios from "axios";
 import { formatCurrency, capitalizeName } from "@/utils/format";
+import { PROJECT_STATUS, PROJECT_STATUS_LABELS } from "@/constants/projectConsts";
 
 /*
 Projects are considered active if they satisfy the ff:
@@ -30,22 +31,42 @@ export default function ProjectFunds() {
         setLoading(true);
         const projectResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/requests/projects`);
         const projectData = projectResponse.data;
-        console.log(projectData);
+        console.log("Raw API Response:", projectData);
         if (projectData.status === "OK") {
-          setProjectData(
-            projectData.list.map(
-              project => ({
+          const mappedProjects = projectData.list.map(
+            project => {
+              console.log("Complete Project Data:", {
+                request_id: project.request_id,
+                status: project.status,
+                projectData: {
+                  project_id: project.projectData.project_id,
+                  title: project.projectData.title,
+                  type: project.projectData.type,
+                  goal_amount: project.projectData.goal_amount,
+                  total_donations: project.projectData.total_donations,
+                  number_of_donors: project.projectData.number_of_donors,
+                  project_status: project.projectData.project_status,
+                  due_date: project.projectData.due_date,
+                  date_complete: project.projectData.date_complete,
+                  donation_link: project.projectData.donation_link,
+                  details: project.projectData.details
+                },
+                requesterData: project.requesterData
+              });
+              return {
                 id: project.projectData.project_id,
                 title: project.projectData.title,
                 type: capitalizeName(project.projectData.type),
                 goal: project.projectData.goal_amount.toString(),
                 raised: project.projectData.total_donations.toString(),
                 donors: project.projectData.number_of_donors.toString(),
-                project_status: project.projectData.project_status !== 2 ? "Active" : "Inactive",
-                request_status: project.status === "approved" ? "Active" : "Inactive"
-              })
-            )
+                project_status: project.projectData.project_status,
+                request_status: project.status
+              };
+            }
           );
+          console.log("Final Mapped Projects:", mappedProjects);
+          setProjectData(mappedProjects);
         } else {
           console.error("Unexpected response:", projectData);
         }
@@ -116,8 +137,16 @@ export default function ProjectFunds() {
   const filteredProjects = projectData
     .filter(project => {
       // Apply status filter
-      if (selectedStatus !== "All" && project.project_status !== selectedStatus && project.request_status !== selectedStatus) {
-        return false;
+      if (selectedStatus !== "All") {
+        if (selectedStatus === "Pending" && project.request_status !== 0) {
+          return false;
+        }
+        if (selectedStatus === "Active" && !(project.project_status < 2 && project.request_status === 1)) {
+          return false;
+        }
+        if (selectedStatus === "Inactive" && !(project.project_status === 2 || project.request_status === 2)) {
+          return false;
+        }
       }
 
       // Apply search filter (case insensitive)
@@ -193,6 +222,7 @@ export default function ProjectFunds() {
                   onChange={(e) => setTempSelectedStatus(e.target.value)}
                 >
                   <option value="All">All Projects</option>
+                  <option value="Pending">Pending</option>
                   <option value="Active">Active</option>
                   <option value="Inactive">Inactive</option>
                 </select>
@@ -284,7 +314,13 @@ export default function ProjectFunds() {
               )}
             </div>
           ) : (
-            <Table cols={cols} data={createRows(currentProjects, selectedIds, setSelectedIds, setToast)} />
+            <div className="overflow-x-auto">
+              <div className="min-w-full inline-block align-middle">
+                <div className="overflow-hidden">
+                  <Table cols={cols} data={createRows(currentProjects, selectedIds, setSelectedIds, setToast)} />
+                </div>
+              </div>
+            </div>
           )}
 
           {filteredProjects.length > 0 && (
@@ -296,12 +332,12 @@ export default function ProjectFunds() {
   );
 }
 
-// Table columns definition - removed Progress and Quick Actions columns
+// Table columns definition
 const cols = [
   { label: "Project", justify: "start", visible: "all" },
   { label: "Type", justify: "center", visible: "md" },
-  { label: "Goal", justify: "center", visible: "lg" },
   { label: "Raised", justify: "center", visible: "sm" },
+  { label: "Goal", justify: "center", visible: "lg" },
   { label: "Status", justify: "center", visible: "md" },
 ];
 
@@ -310,9 +346,9 @@ function createRows(projects, selectedIds, setSelectedIds, setToast) {
   return projects.map((project) => ({
     "Project": renderProject(project.title),
     "Type": renderType(project.type),
-    "Goal": renderAmount(project.goal),
-    "Raised": renderAmount(project.raised),
-    "Status": renderStatus(project.project_status, project.request_status),
+    "Raised": renderAmount(project.raised, true),
+    "Goal": renderAmount(project.goal, false),
+    "Status": renderStatus(project.project_status),
   }));
 }
 
@@ -335,17 +371,34 @@ function renderType(type) {
   );
 }
 
-function renderAmount(amount) {
-  return <div className="text-center text-astradarkgray font-s">{formatCurrency(amount)}</div>;
+function renderAmount(amount, isRaised) {
+  return (
+    <div className={`text-center font-s ${isRaised ? 'text-astraprimary' : 'text-astradark'}`}>
+      {formatCurrency(amount)}
+    </div>
+  );
 }
 
-function renderStatus(project_status, request_status) {
+function renderStatus(project_status) {
+  let bgColor;
+  switch (project_status) {
+    case PROJECT_STATUS.AWAITING_BUDGET:
+      bgColor = "bg-yellow-100 text-astrayellow";
+      break;
+    case PROJECT_STATUS.ONGOING:
+      bgColor = "bg-green-100 text-astragreen";
+      break;
+    case PROJECT_STATUS.FINISHED:
+      bgColor = "bg-red-100 text-astrared";
+      break;
+    default:
+      bgColor = "bg-red-100 text-astrared";
+  }
+
   return (
     <div className="text-center">
-      <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-        project_status === "Active" && request_status === "Active" ? "bg-astralightgreen text-astragreen" : "bg-astralightgray text-astradarkgray"
-      }`}>
-        {project_status === "Active" && request_status === "Active" ? "Active" : "Inactive"}
+      <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${bgColor}`}>
+        {PROJECT_STATUS_LABELS[project_status]}
       </span>
     </div>
   );
