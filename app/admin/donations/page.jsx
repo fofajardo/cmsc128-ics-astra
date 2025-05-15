@@ -10,7 +10,7 @@ import axios from "axios";
 import { TabContext } from "../../components/TabContext";
 import ConfirmationPrompt from "@/components/jobs/edit/confirmation";
 import { formatDate } from "@/utils/format";
-import { DONATION_MODE_OF_PAYMENT, DONATION_MODE_OF_PAYMENT_LABELS } from "../../../common/scopes";
+import { DONATION_MODE_OF_PAYMENT_LABELS } from "../../../common/scopes";
 import { useSignedInUser } from "@/components/UserContext";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 
@@ -51,7 +51,11 @@ export default function Donations() {
   const fetchDonations = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations?requester_id=${encodeURIComponent(user_id)}`);
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations`, {
+        params: {
+          requester_id: user_id,
+        }
+      });
       console.log(response.data);
       if (response.data.status === "OK") {
         setDonations(response.data.donations || []);
