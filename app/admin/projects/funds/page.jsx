@@ -223,6 +223,25 @@ export default function ProjectFunds() {
         </div>
       </div>
 
+      {/* Total Funds Raised Section */}
+      <div className="bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24">
+        <div className="max-w-6xl mx-auto">
+          <div className="bg-astrawhite rounded-lg p-6 shadow-sm">
+            <div className="flex flex-col items-center">
+              <h3 className="text-xl font-semibold text-astradark mb-2">Total Funds Raised</h3>
+              <p className="text-3xl font-bold text-astraprimary">
+                {formatCurrency(totalFundsRaised)}
+              </p>
+              <p className="text-sm text-astradark mt-2">
+                {searchQuery ? `From search results for "${searchQuery}"` :
+                  selectedStatus === "All" ? "Across all projects" :
+                    `From ${selectedStatus.toLowerCase()} projects only`}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Table section */}
       <div className="bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24 flex flex-col">
         <div className="max-w-6xl px-4 mt-4">
@@ -258,21 +277,6 @@ export default function ProjectFunds() {
           {filteredProjects.length > 0 && (
             <PageTool pagination={pagination} setPagination={setPagination} />
           )}
-
-          {/* Total Funds Raised Section */}
-          <div className="mt-6 bg-astrawhite rounded-lg p-6 shadow-sm">
-            <div className="flex flex-col items-center">
-              <h3 className="text-xl font-semibold text-astradarkgray mb-2">Total Funds Raised</h3>
-              <p className="text-3xl font-bold text-astrablue">
-                {formatCurrency(totalFundsRaised)}
-              </p>
-              <p className="text-sm text-astragray mt-2">
-                {searchQuery ? `From search results for "${searchQuery}"` :
-                  selectedStatus === "All" ? "Across all projects" :
-                    `From ${selectedStatus.toLowerCase()} projects only`}
-              </p>
-            </div>
-          </div>
         </div>
       </div>
     </div>
