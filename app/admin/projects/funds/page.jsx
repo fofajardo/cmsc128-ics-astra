@@ -19,6 +19,8 @@ export default function ProjectFunds() {
   const [toast, setToast] = useState(null);
   const [tempSelectedStatus, setTempSelectedStatus] = useState("All");
   const [selectedStatus, setSelectedStatus] = useState("All");
+  const [sortBy, setSortBy] = useState({ field: "", order: "asc" });
+  const [tempSortBy, setTempSortBy] = useState({ field: "", order: "asc" });
   const [totalFundsRaised, setTotalFundsRaised] = useState(0);
 
   const [projectData, setProjectData] = useState([]);
@@ -133,7 +135,7 @@ export default function ProjectFunds() {
     }));
   };
 
-  // Apply both search and status filters to the projects
+  // Apply both search, status filters, and sorting to the projects
   const filteredProjects = projectData
     .filter(project => {
       // Apply status filter
@@ -159,6 +161,26 @@ export default function ProjectFunds() {
       }
 
       return true;
+    })
+    .sort((a, b) => {
+      if (!sortBy.field) return 0;
+
+      let comparison = 0;
+      switch (sortBy.field) {
+        case "goal":
+          comparison = parseInt(a.goal.replace(/[₱,]/g, "")) - parseInt(b.goal.replace(/[₱,]/g, ""));
+          break;
+        case "raised":
+          comparison = parseInt(a.raised.replace(/[₱,]/g, "")) - parseInt(b.raised.replace(/[₱,]/g, ""));
+          break;
+        case "type":
+          comparison = a.type.localeCompare(b.type);
+          break;
+        default:
+          return 0;
+      }
+
+      return sortBy.order === "asc" ? comparison : -comparison;
     });
 
   // Update pagination based on filtered results
@@ -208,13 +230,14 @@ export default function ProjectFunds() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-astrawhite p-8 rounded-xl w-80"
+            className="bg-astrawhite p-8 rounded-xl w-96"
           >
-            <h3 className="font-lb text-xl mb-4">Filter Projects</h3>
+            <h3 className="font-lb text-xl mb-4">Filter & Sort Projects</h3>
             <div className="flex flex-col gap-4">
+              {/* Status Filter */}
               <div>
                 <label className="font-s text-astradarkgray mb-2 block">
-                  Status
+                  Project Status
                 </label>
                 <select
                   className="w-full p-2 border border-astragray rounded-lg"
@@ -222,11 +245,46 @@ export default function ProjectFunds() {
                   onChange={(e) => setTempSelectedStatus(e.target.value)}
                 >
                   <option value="All">All Projects</option>
-                  <option value="Pending">Pending</option>
-                  <option value="Active">Active</option>
+                  <option value="Pending">Awaiting Budget</option>
+                  <option value="Active">Ongoing</option>
                   <option value="Inactive">Inactive</option>
                 </select>
               </div>
+
+              {/* Sort Options */}
+              <div>
+                <label className="font-s text-astradarkgray mb-2 block">
+                  Sort By
+                </label>
+                <select
+                  className="w-full p-2 border border-astragray rounded-lg mb-2"
+                  value={tempSortBy.field}
+                  onChange={(e) => setTempSortBy(prev => ({ ...prev, field: e.target.value }))}
+                >
+                  <option value="">No Sorting</option>
+                  <option value="goal">Goal Amount</option>
+                  <option value="raised">Raised Amount</option>
+                  <option value="type">Project Type</option>
+                </select>
+              </div>
+
+              {/* Sort Order */}
+              {tempSortBy.field && (
+                <div>
+                  <label className="font-s text-astradarkgray mb-2 block">
+                    Sort Order
+                  </label>
+                  <select
+                    className="w-full p-2 border border-astragray rounded-lg"
+                    value={tempSortBy.order}
+                    onChange={(e) => setTempSortBy(prev => ({ ...prev, order: e.target.value }))}
+                  >
+                    <option value="asc">Ascending</option>
+                    <option value="desc">Descending</option>
+                  </select>
+                </div>
+              )}
+
               <div className="flex justify-end gap-3 mt-4">
                 <button className="gray-button" onClick={toggleFilter}>
                   Cancel
@@ -234,7 +292,8 @@ export default function ProjectFunds() {
                 <button
                   className="blue-button"
                   onClick={() => {
-                    setSelectedStatus(tempSelectedStatus); // apply the filter
+                    setSelectedStatus(tempSelectedStatus);
+                    setSortBy(tempSortBy);
                     setPagination((prev) => ({
                       ...prev,
                       currPage: 1,
