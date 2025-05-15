@@ -75,6 +75,7 @@ export default function InactiveProjectDetail({ params }) {
               donor: donation.donor,
               amount: donation.amount,
               date: donation.donation_date,
+              isVerified: donation.is_verified,
             }));
           } else {
             console.error("Unexpected response:", donationData);
@@ -366,6 +367,7 @@ export default function InactiveProjectDetail({ params }) {
                 <thead className="sticky top-0 bg-astralightgray">
                   <tr>
                     <th className="py-3 px-4 text-left font-sb">Donor</th>
+                    <th className="py-3 px-4 text-right font-sb">Verified</th>
                     <th className="py-3 px-4 text-right font-sb">Amount</th>
                     <th className="py-3 px-4 text-right font-sb">Date</th>
                   </tr>
@@ -374,6 +376,13 @@ export default function InactiveProjectDetail({ params }) {
                   {projectData?.transactions.map((transaction) => (
                     <tr key={transaction.id} className="hover:bg-astralightgray/10 transition-colors">
                       <td className="py-3 px-4">{transaction.donor}</td>
+                      <td className="py-3 px-4 text-right">
+                        {transaction.isVerified ? (
+                          <span className="text-astragreen font-bold">YES</span>
+                        ) : (
+                          <span className="text-astrared font-bold">NO</span>
+                        )}
+                      </td>
                       <td className="py-3 px-4 text-right font-sb text-astraprimary">{formatCurrency(transaction.amount)}</td>
                       <td className="py-3 px-4 text-right text-astradarkgray">{formatDate(transaction.date)}</td>
                     </tr>
@@ -382,6 +391,7 @@ export default function InactiveProjectDetail({ params }) {
                 <tfoot>
                   <tr className="bg-astralightgray/30 border-t-2 border-astralightgray">
                     <td className="py-3 px-4 font-sb">Total</td>
+                    <td className="py-3 px-4"></td>
                     <td className="py-3 px-4 text-right font-sb text-astraprimary">{formatCurrency(projectData?.raised)}</td>
                     <td className="py-3 px-4"></td>
                   </tr>
