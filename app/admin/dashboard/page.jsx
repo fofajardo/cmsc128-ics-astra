@@ -26,6 +26,7 @@ export default function Dashboard() {
   const [alumniOrgStats, setAlumniOrgStats] = useState([]);
   const [alumniFieldStats, setAlumniFieldStats] = useState([]);
   const [alumniIncomeStats, setAlumniIncomeStats] = useState([]);
+  const [alumniEmploymentStats, setAlumniEmploymentStats] = useState([]);
   const [tab, setTab] = useState("donations");
 
   useEffect(() => {
@@ -43,6 +44,7 @@ export default function Dashboard() {
           axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-org-affiliation-stats`),
           axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-field-stats`),
           axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-income-range-stats`),
+          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-employment-status`),
         ];
 
         const [
@@ -57,6 +59,7 @@ export default function Dashboard() {
           alumniOrgRes,
           alumniFieldRes,
           alumniIncomeRes,
+          alumniEmploymentRes,
         ] = await Promise.allSettled(urls);
 
         if (alumniRes.status === "fulfilled") setActiveAlumniStats(alumniRes.value.data.stats);
@@ -92,8 +95,14 @@ export default function Dashboard() {
         }
 
         if (alumniIncomeRes.status === "fulfilled" && alumniIncomeRes.value.data.status === "OK") {
-          console.log("Alumni Income Stats:", alumniIncomeRes.value.data.stats);
           setAlumniIncomeStats(alumniIncomeRes.value.data.stats);
+        }
+
+        if (alumniEmploymentRes.status === "fulfilled" && alumniEmploymentRes.value.data.status === "OK") {
+          console.log("Alumni Employment Stats:", alumniEmploymentRes.value.data.stats);
+          setAlumniEmploymentStats(alumniEmploymentRes.value.data.stats);
+        } else {
+          console.log("Error fetching alumni employment stats:", alumniEmploymentRes.status);
         }
 
         if (donationSummaryRes.status === "fulfilled" && donationSummaryRes.value.data.status === "OK") {
