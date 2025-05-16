@@ -74,7 +74,17 @@ export default function Dashboard() {
           setAlumniCivilStats(alumniCivilRes.value.data.stats);
         }
         if (alumniOrgRes.status === "fulfilled" && alumniOrgRes.value.data.status === "OK") {
-          setAlumniOrgStats(alumniOrgRes.value.data.stats);
+          const updatedAlumniOrgStats = await Promise.all(
+            alumniOrgRes.value.data.stats.map(async (org) => ({
+              name: org.name,
+              acronym: org.acronym,
+              nameWithAcronym: `${org.name} (${org.acronym})`,
+              count: org.count,
+              active: org.active,
+              inactive: org.inactive,
+            }))
+          );
+          setAlumniOrgStats(updatedAlumniOrgStats);
         }
 
         if (alumniFieldRes.status === "fulfilled" && alumniFieldRes.value.data.status === "OK") {
@@ -226,7 +236,7 @@ export default function Dashboard() {
     case "org": {
       // Dummy data for testing scalability
       const dummyAlumniOrgStats = Array.from({ length: 10 }, (_, i) => ({
-        organization: `Org ${i + 1}`,
+        name: `Org ${i + 1}`,
         count: Math.floor(Math.random() * 200) + 10, // 10 to 209 alumni
         active: Math.floor(Math.random() * 100),
         inactive: Math.floor(Math.random() * 100),
@@ -242,7 +252,8 @@ export default function Dashboard() {
             }}
             title="Alumni by Organization"
             description="Active alumni per organization"
-            yKey="organization"
+            yKey="name"
+            yKeyLong="nameWithAcronym"
             barKey="count"
             barLabel="Total Alumni"
             barColor="var(--color-astradark)"
