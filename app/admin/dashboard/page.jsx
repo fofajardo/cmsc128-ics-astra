@@ -105,7 +105,7 @@ export default function Dashboard() {
           console.log("Alumni Employment Stats:", alumniEmploymentRes.value.data.stats);
           setAlumniEmploymentStats(alumniEmploymentRes.value.data.stats);
         }
-        
+
         if (alumniBatchRes.status === "fulfilled" && alumniBatchRes.value.data.status === "OK") {
           console.log("Alumni Batch Stats:", alumniBatchRes.value.data.stats);
           setAlumniBatchStats(alumniBatchRes.value.data.stats);
@@ -430,7 +430,7 @@ export default function Dashboard() {
             {renderTabContent()}
           </div>
         </div>
-          {/* <InteractiveLineChart/> */}
+        {/* <InteractiveLineChart/> */}
       </div>
     </>
   );
