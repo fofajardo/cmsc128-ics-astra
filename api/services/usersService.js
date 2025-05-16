@@ -55,6 +55,7 @@ const fetchInactiveAlumni = async (supabase, page = 1, limit = 10, search = "", 
   const { data: alumniProfiles, error: profilesError } = await supabase
     .from("inactive_alumni_view")
     .select(`
+      email,
       alum_id,
       first_name,
       middle_name,
@@ -66,7 +67,8 @@ const fetchInactiveAlumni = async (supabase, page = 1, limit = 10, search = "", 
         field
       ),
       student_num,
-      course
+      course,
+      profile_created_at
     `);
 
   if (profilesError) throw profilesError;
