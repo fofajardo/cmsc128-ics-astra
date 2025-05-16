@@ -1,4 +1,4 @@
-import { applyFilter } from "../utils/applyFilter.js";
+import { applyFilter } from "../utils/filters.js";
 import Fuse from "fuse.js";
 
 const fuseThreshold = 0.3;
