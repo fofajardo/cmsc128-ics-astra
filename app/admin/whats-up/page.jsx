@@ -7,7 +7,7 @@ import ToastNotification from "@/components/ToastNotification";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import axios from "axios";
-import { PhotoType } from "../../../common/photo_types.js";
+import { PhotoType } from "../../../common/scopes.js";
 
 export default function CommunicationPage() {
   const router = useRouter();

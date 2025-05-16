@@ -25,6 +25,16 @@ function buildUserContext() {
   const [isModerator, setIsModerator] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
+  const [activeNavItem, setActiveNavItem] = useState(null);
+  const [activeNavSubmenus, setActiveNavSubmenus] = useState({});
+
+  const toggleNavSubmenu = (id) => {
+    setActiveNavSubmenus((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
   return {
     state: {
       initialized,
@@ -40,7 +50,9 @@ function buildUserContext() {
       isUnlinked,
       isAlumnus,
       isModerator,
-      isAdmin
+      isAdmin,
+      activeNavItem,
+      activeNavSubmenus,
     },
     actions: {
       setInitialized,
@@ -56,7 +68,10 @@ function buildUserContext() {
       setIsUnlinked,
       setIsAlumnus,
       setIsModerator,
-      setIsAdmin
+      setIsAdmin,
+      setActiveNavItem,
+      setActiveNavSubmenus,
+      toggleNavSubmenu,
     },
   };
 }

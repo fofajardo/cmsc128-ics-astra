@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import HeaderUser from "../../components/HeaderUser.jsx";
 import ProjectCard from "../../components/projects/ProjectCard";
 import Link from "next/link";
 import { Icon } from "@iconify/react";
@@ -11,6 +9,10 @@ import axios from "axios";
 import { PROJECT_STATUS, PROJECT_STATUS_LABELS, PROJECT_TYPE } from "@/constants/projectConsts.js";
 import { capitalizeName } from "@/utils/format.jsx";
 import { useSignedInUser } from "@/components/UserContext.jsx";
+import FilterDropdown from "@/components/events/GroupedEvents/FilterDropdown";
+import Image from "next/image";
+import donationVector from "../../assets/donation-vector.png";
+
 
 export default function ProjectsPage() {
   const user = useSignedInUser();
@@ -20,14 +22,11 @@ export default function ProjectsPage() {
 
   // Filter modal state
   const [showFilter, setShowFilter] = useState(false);
-  const [selectedType, setSelectedType] = useState("All");
+  const [selectedType, setSelectedType] = useState(null);
   const [tempSelectedType, setTempSelectedType] = useState(selectedType);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("All");
-  const [sortOrder, setSortOrder] = useState("Recent"); // TODO: Implement sorting by date (due date?)
-  const [showTypeDropdown, setShowTypeDropdown] = useState(false);
-  const [showStatusDropdown, setShowStatusDropdown] = useState(false);
-  const [showSortDropdown, setShowSortDropdown] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState(null);
+  const [sortOrder, setSortOrder] = useState(null);
 
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -123,11 +122,10 @@ export default function ProjectsPage() {
 
   // Filter projects based on type and search term
   const filteredProjects = allProjects.filter((project) => {
-    const matchesType = selectedType === "All" || project.type === selectedType.toLowerCase();
-    const matchesSearch = project.title
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    const matchesStatus = selectedStatus === "All" || project.project_status === selectedStatus;
+    const matchesType = !selectedType || !selectedType.label || selectedType.label.toLowerCase() === project.type.toLowerCase();
+    const matchesSearch = !searchTerm || project.title.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = !selectedStatus || selectedStatus === "All" || project.project_status === selectedStatus;
+
     return matchesType && matchesSearch && matchesStatus;
   });
 
@@ -137,189 +135,98 @@ export default function ProjectsPage() {
   );
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Filter Modal */}
-      {showFilter && (
-        <div
-          onClick={toggleFilter}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="bg-astrawhite p-8 rounded-xl w-80"
-          >
-            <h3 className="font-lb text-xl mb-4">Filter Projects</h3>
-            <div className="flex flex-col gap-4">
-              <div>
-                <label className="font-s text-astradarkgray mb-2 block">
-                  Project Type
-                </label>
-                <select
-                  className="w-full p-2 border border-astragray rounded-lg"
-                  value={tempSelectedType}
-                  onChange={(e) => setTempSelectedType(e.target.value)}
-                >
-                  <option value="All">All Projects</option>
-                  <option value={capitalizeName(PROJECT_TYPE.FUNDRAISING)}>{capitalizeName(PROJECT_TYPE.FUNDRAISING)}</option>
-                  <option value={capitalizeName(PROJECT_TYPE.SCHOLARSHIP)}>{capitalizeName(PROJECT_TYPE.SCHOLARSHIP)+"s"}</option>
-                  <option value={capitalizeName(PROJECT_TYPE.DONATION_DRIVE)}>{capitalizeName(PROJECT_TYPE.DONATION_DRIVE)+"s"}</option>
-                </select>
-              </div>
-              <div className="flex justify-end gap-3 mt-4">
-                <button
-                  className="px-4 py-2 border border-astragray text-astradarkgray rounded-lg"
-                  onClick={toggleFilter}
-                >
-                  Cancel
-                </button>
-                <button
-                  className="px-4 py-2 bg-astraprimary text-astrawhite rounded-lg"
-                  onClick={() => {
-                    setSelectedType(tempSelectedType); // apply the filter
-                    toggleFilter();
-                  }}
-                >
-                  Apply
-                </button>
-              </div>
+    <div className="w-full bg-astradirtywhite">
+      {/* Hero Section */}
+      <div className="relative w-full bg-cover bg-center" style={{ backgroundImage: "url('/blue-bg.png')" }}>
+        <div className="max-w-[1440px] mx-auto px-12 py-20 flex flex-col lg:flex-row items-center justify-between text-astrawhite gap-10">
+          <div className="max-w-[600px] space-y-6 text-center lg:text-left animate-hero-text">
+            <h1 className="text-[60px] font-extrabold leading-[1.1]">
+              Empowering <br /> Community Projects
+            </h1>
+            <p className="text-lg font-medium">
+              Discover, support, and contribute to meaningful causes initiated by people like you.
+            </p>
+            <Link href="/projects/request/goal" passHref>
+              <button className="mt-4 px-8 py-3 border-2 border-white text-white hover:bg-white hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer">
+                Request a Project
+              </button>
+            </Link>
+          </div>
+          <div className="w-full lg:w-[550px] flex justify-center">
+            <div className="relative w-full h-auto max-w-[550px] animate-natural-float">
+              <Image
+                src={donationVector}
+                alt="Projects Illustration"
+                className="w-full h-auto object-contain transition-transform duration-300 hover:scale-105"
+                priority
+              />
             </div>
           </div>
         </div>
-      )}
+      </div>
 
-      {/* Hero Section */}
-      <section className="relative bg-[url('/blue-bg.png')] bg-cover bg-center text-white text-center py-32">
-        <motion.div
-          initial={{ y: 100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 1, ease: "easeOut" }}
-          className="relative z-10"
-        >
-          {/* header text */}
-          <h2 className="font-l text-astrawhite text-center mt-10">
-            Equal access to tech futures for everyone
-          </h2>
-          <h1 className="text-[60px] font-extrabold leading-[1.1] text-astrawhite text-center mt-7">
-            <span className="block">Your home</span>
-            <span className="block mt-4">for help</span>
-          </h1>
-
-          {/* Request a fundraiser button */}
-          <Link href="/projects/request/goal" passHref>
-            <button className="mt-12 border-2 border-astrawhite text-astrawhite hover:bg-astrawhite hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-[200px] h-[60px]">
-              Request a Project
-            </button>
-          </Link>
-        </motion.div>
-      </section>
-
-      {/* Project Grid - Dynamic */}
-      <section className="bg-astrawhite py-16 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="mb-8">
-            <h2 className="font-h2 text-center mb-8">Fund the future of technology</h2>
-
-            {/* Search Bar */}
-            <div className="flex w-full gap-0 mb-6">
+      {/* Filters Section */}
+      <div className="relative z-20 bg-astradirtywhite w-full py-14 -mt-10 border-t border-astradarkgray">
+        <div className="max-w-[1440px] mx-auto flex flex-col items-center gap-8 px-4">
+          <div className="w-full max-w-[1000px]">
+            <div className="flex items-stretch w-full border border-astragray bg-astrawhite">
               <input
                 type="text"
-                placeholder="Search for project"
+                placeholder="Search for a project"
+                className="flex-grow py-4 pl-6 focus:outline-none text-base text-astradark"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="flex-1 p-3 border border-astraprimary rounded-l-md focus:outline-none"
               />
-              <button className="px-6 py-3 bg-astraprimary text-astrawhite rounded-r-md flex items-center gap-2">
-                <i className="ri-search-line"></i> Search
+              <button className="px-6 bg-astraprimary hover:bg-astradark text-astrawhite font-semibold transition flex items-center gap-2 cursor-pointer">
+                Search
               </button>
             </div>
-            {/* Filters */}
-            <div className="flex flex-wrap gap-4 justify-center">
-              {/* Type Filter */}
-              <div className="relative">
-                <button
-                  onClick={() => {
-                    setShowTypeDropdown(!showTypeDropdown);
-                    setShowStatusDropdown(false);
-                    setShowSortDropdown(false);
-                  }}
-                  className="flex items-center gap-2 border-2 border-astraprimary px-4 py-2 rounded-md text-[#0E6CF3] font-medium"
-                >
-                  <i className="ri-map-pin-line"></i> Type
-                  <i className="ri-arrow-down-s-line"></i>
-                </button>
-                {showTypeDropdown && (
-                  <div className="absolute mt-2 bg-white border border-gray-300 rounded shadow-md z-10 w-48">
-                    <button onClick={() => { setSelectedType("All"); setShowTypeDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">All Projects</button>
-                    <button onClick={() => { setSelectedType(capitalizeName(PROJECT_TYPE.FUNDRAISING)); setShowTypeDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">{capitalizeName(PROJECT_TYPE.FUNDRAISING)}</button>
-                    <button onClick={() => { setSelectedType(capitalizeName(PROJECT_TYPE.SCHOLARSHIP)); setShowTypeDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">{capitalizeName(PROJECT_TYPE.SCHOLARSHIP)}</button>
-                    <button onClick={() => { setSelectedType(capitalizeName(PROJECT_TYPE.DONATION_DRIVE)); setShowTypeDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">{capitalizeName(PROJECT_TYPE.DONATION_DRIVE)}</button>
-                  </div>
-                )}
-              </div>
-
-              {/* Status Filter */}
-              <div className="relative">
-                <button
-                  onClick={() => {
-                    setShowStatusDropdown(!showStatusDropdown);
-                    setShowTypeDropdown(false);
-                    setShowSortDropdown(false);
-                  }}
-                  className="flex items-center gap-2 border-2 border-astraprimary px-4 py-2 rounded-md text-astraprimary font-medium"
-                >
-                  <i className="ri-time-line"></i> Status
-                  <i className="ri-arrow-down-s-line"></i>
-                </button>
-                {showStatusDropdown && (
-                  <div className="absolute mt-2 bg-white border border-gray-300 rounded shadow-md z-10 w-48">
-                    <button onClick={() => { setSelectedStatus("All"); setShowStatusDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">All</button>
-                    <button onClick={() => { setSelectedStatus(PROJECT_STATUS.AWAITING_BUDGET); setShowStatusDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">{PROJECT_STATUS_LABELS[PROJECT_STATUS.AWAITING_BUDGET]}</button>
-                    <button onClick={() => { setSelectedStatus(PROJECT_STATUS.ONGOING); setShowStatusDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">{PROJECT_STATUS_LABELS[PROJECT_STATUS.ONGOING]}</button>
-                    <button onClick={() => { setSelectedStatus(PROJECT_STATUS.FINISHED); setShowStatusDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">{PROJECT_STATUS_LABELS[PROJECT_STATUS.FINISHED]}</button>
-                  </div>
-                )}
-              </div>
-
-              {/* Sort Filter */}
-              <div className="relative">
-                <button
-                  onClick={() => {
-                    setShowSortDropdown(!showSortDropdown);
-                    setShowTypeDropdown(false);
-                    setShowStatusDropdown(false);
-                  }}
-                  className="flex items-center gap-2 border-2 border-astraprimary px-4 py-2 rounded-md text-astraprimary font-medium"
-                >
-                  <i className="ri-filter-2-line"></i> Sort
-                  <i className="ri-arrow-down-s-line"></i>
-                </button>
-                {showSortDropdown && (
-                  <div className="absolute mt-2 bg-white border border-gray-300 rounded shadow-md z-10 w-48">
-                    <button onClick={() => { setSortOrder("Recent"); setShowSortDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">Most Recent</button>
-                    <button onClick={() => { setSortOrder("Oldest"); setShowSortDropdown(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100">Oldest</button>
-                  </div>
-                )}
-              </div>
-            </div>
-
           </div>
 
+          <div className="w-full max-w-[1000px] flex flex-wrap justify-center gap-4 text-sm font-medium z-20">
+            <FilterDropdown
+              icon="ri-search-line"
+              placeholder="Type"
+              value={selectedType}
+              options={[
+                { label: "Clear", icon: "mdi:close-circle-outline" },
+                { label: capitalizeName(PROJECT_TYPE.FUNDRAISING), icon: "mdi:currency-usd" },
+                { label: capitalizeName(PROJECT_TYPE.SCHOLARSHIP), icon: "mdi:school-outline" },
+                { label: capitalizeName(PROJECT_TYPE.DONATION_DRIVE), icon: "mdi:gift-outline" },
+              ]}
+              onChange={(selected) => selected.label === "Clear" ? setSelectedType(null) : setSelectedType(selected)}
+            />
 
-          {/* Project type indicator */}
-          {selectedType !== "All" && (
-            <div className="mb-4 flex items-center">
-              <span className="bg-astraprimary text-astrawhite px-3 py-1 rounded-lg text-sm">
-                {selectedType}
-              </span>
-              <button
-                onClick={() => setSelectedType("All")}
-                className="ml-2 text-astradarkgray hover:text-astraprimary"
-              >
-                <Icon icon="ic:round-close" className="text-xl" />
-              </button>
-            </div>
-          )}
+            <FilterDropdown
+              icon="ri-time-line"
+              placeholder="Status"
+              value={selectedStatus}
+              options={[
+                { label: "Clear", icon: "mdi:close-circle-outline" },
+                { label: PROJECT_STATUS_LABELS[PROJECT_STATUS.AWAITING_BUDGET], icon: "mdi:clipboard-list-outline" },
+                { label: PROJECT_STATUS_LABELS[PROJECT_STATUS.ONGOING], icon: "mdi:progress-clock" },
+                { label: PROJECT_STATUS_LABELS[PROJECT_STATUS.FINISHED], icon: "mdi:check-circle-outline" },
+              ]}
+              onChange={(selected) => selected.label === "Clear" ? setSelectedStatus(null) : setSelectedStatus(selected)}
+            />
 
+            <FilterDropdown
+              icon="ri-filter-2-line"
+              placeholder="Filter"
+              value={sortOrder}
+              options={[
+                { label: "Clear", icon: "mdi:close-circle-outline" },
+                { label: "Most Recent", icon: "mdi:sort-calendar-descending" },
+                { label: "Oldest", icon: "mdi:sort-calendar-ascending" },
+              ]}
+              onChange={(selected) => selected.label === "Clear" ? setSortOrder(null) : setSortOrder(selected)}
+            />
+          </div>
+        </div>
+      </div>
+
+      <section className="bg-astrawhite py-16 px-4">
+        <div className="max-w-6xl mx-auto">
           {filteredProjects.length > 0 ? (
             <>
               {/* Dynamic Grid*/}
@@ -367,8 +274,10 @@ export default function ProjectsPage() {
               </p>
               <button
                 onClick={() => {
-                  setSelectedType("All");
+                  setSelectedType(null);
                   setSearchTerm("");
+                  setSelectedStatus(null);
+                  setSortOrder(null);
                 }}
                 className="mt-4 blue-button"
               >
@@ -711,6 +620,33 @@ export default function ProjectsPage() {
           />
         </div>
       </section>
+      <style jsx global>{`
+        @keyframes naturalFloat {
+          0% { transform: translate(0px, 0px) rotate(0deg); }
+          25% { transform: translate(8px, -10px) rotate(1deg); }
+          50% { transform: translate(0px, -20px) rotate(0deg); }
+          75% { transform: translate(-8px, -10px) rotate(-1deg); }
+          100% { transform: translate(0px, 0px) rotate(0deg); }
+        }
+        @keyframes fadeBounce {
+          0% { opacity: 0; transform: translateY(-10px); }
+          50% { opacity: 1; transform: translateY(5px); }
+          100% { transform: translateY(0px); }
+        }
+        @keyframes particles {
+          0% { background-position: 0 0; }
+          100% { background-position: 1000px 0; }
+        }
+        .animate-natural-float { animation: naturalFloat 8s ease-in-out infinite; }
+        .animate-fade-bounce { animation: fadeBounce 1.5s ease forwards; }
+        .animate-hero-text { animation: fadeBounce 2s ease-in-out; }
+        .animate-particles {
+          background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+          background-size: 20px 20px;
+          animation: particles 60s linear infinite;
+          pointer-events: none;
+        }
+      `}</style>
     </div>
   );
 }
