@@ -197,6 +197,17 @@ const fetchAlumniBatch = async (supabase) => {
   return data;
 };
 
+const fetchInterestedAlumniEmail = async (supabase) => {
+  const { data, error } = await supabase
+    .from("interested_alumni_email")
+    .select("*");
+
+  if (error) {
+    throw error;
+  }
+  return data;
+};
+
 const statisticsService = {
   fetchAlumniStats,
   fetchActiveAlumniStats,
@@ -215,6 +226,7 @@ const statisticsService = {
   fetchProjectContributors,
   fetchAlumniEmploymentStatus,
   fetchAlumniBatch,
+  fetchInterestedAlumniEmail,
 };
 
 export default statisticsService;
