@@ -5,7 +5,7 @@ import SearchFilter from "./filter";
 import { ActionButton } from "@/components/Buttons";
 import SkillTag from "@/components/SkillTag";
 import axios from "axios";
-import { capitalizeName } from "../../../utils/format.jsx";
+import { capitalizeName } from "@/utils/format.jsx";
 import { Skeleton, CenteredSkeleton } from "@/components/ui/skeleton";
 
 export default function AlumniSearch() {
@@ -113,6 +113,15 @@ export default function AlumniSearch() {
 
     fetchAlumniProfiles();
   }, [pagination.currPage, pagination.numToShow, searchQuery, stableFilters]);
+
+  useEffect(() => {
+    if (pagination.lastPage < pagination.currPage) {
+      setPagination((prev) => ({
+        ...prev,
+        currPage: prev.lastPage
+      }));
+    }
+  }, [pagination.lastPage]);
 
   return (
     <div>

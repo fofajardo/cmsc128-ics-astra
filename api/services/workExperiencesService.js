@@ -72,6 +72,12 @@ const fetchWorkExperiencesByAlumId = async (supabase, userId) => {
     .eq("user_id", userId);
 };
 
+const fetchDistinctFields = async (supabase) => {
+  return await supabase
+    .from("distinct_work_fields")
+    .select("*");
+};
+
 const insertWorkExperience = async (supabase, workExperienceData) => {
   return await supabase
     .from("work_experiences")
@@ -97,6 +103,7 @@ const workExperiencesService = {
   fetchWorkExperiences,
   fetchWorkExperienceById,
   fetchWorkExperiencesByAlumId,
+  fetchDistinctFields,
   insertWorkExperience,
   updateWorkExperience,
   deleteWorkExperience
