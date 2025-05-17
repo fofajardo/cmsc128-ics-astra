@@ -224,10 +224,10 @@ export default function ActivityOverview() {
               const userData = {
                 id: user.id,
                 name: hasProfile
-                  ? capitalizeName(`${user.alumni_profiles.first_name} ${user.alumni_profiles.last_name}`)
+                  ? capitalizeName(`${user.alumni_profiles.first_name} ${user.alumni_profiles.middle_name} ${user.alumni_profiles.last_name}`)
                   : null,
-                email: "To be obtained",
-                date: user.created_at
+                email: user.email,
+                date: new Date(user.created_at).toLocaleDateString()
               };
 
               return userData;
@@ -260,8 +260,8 @@ export default function ActivityOverview() {
             response.data.list.map(async (user) => {
               const userData = {
                 id: user.user_id,
-                name: capitalizeName(`${user.first_name} ${user.last_name}`),
-                email: "To be obtained",
+                name: capitalizeName(`${user.first_name} ${user.middle_name} ${user.last_name}`),
+                email: user.email,
                 date: user.profile_created_at
               };
 

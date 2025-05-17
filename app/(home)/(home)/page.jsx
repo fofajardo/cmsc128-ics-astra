@@ -89,6 +89,7 @@ export default function Page() {
               width={500}
               height={500}
               className="relative z-10 transform transition-all duration-500 hover:scale-105 object-contain"
+              unoptimized
             />
           </motion.div>
         </div>
@@ -154,6 +155,7 @@ export default function Page() {
                   width={500}
                   height={500}
                   className="relative z-10 transform transition-all duration-500 hover:scale-105 object-contain"
+                  unoptimized
                 />
               </motion.div>
             </div>

@@ -346,7 +346,7 @@ const getPhotoByAlumId = async (req, res) => {
 const getDegreeProofPhotoByAlumId = async (req, res) => {
   try {
     const { alum_id } = req.params;
-    console.log("Alum ID:", alum_id);
+    // console.log("Alum ID:", alum_id);
 
     // Fetch the photo record from the database
     const { data, error } = await photosService.fetchDegreeProofPhoto(req.supabase, alum_id);
@@ -386,7 +386,7 @@ const getDegreeProofPhotoByAlumId = async (req, res) => {
 const getJsonOfDegreeProofPhotoByAlumId = async (req, res) => {
   try {
     const { alum_id } = req.params;
-    console.log("Alum ID:", alum_id);
+    // console.log("Alum ID:", alum_id);
 
     // Fetch the photo record from the database
     const { data, error } = await photosService.fetchDegreeProofPhoto(req.supabase, alum_id);

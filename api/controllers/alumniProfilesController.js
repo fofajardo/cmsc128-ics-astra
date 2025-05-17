@@ -108,8 +108,6 @@ const getAlumniProfileById = async (req, res) => {
 
     const { data, error } = await alumniProfilesService.fetchAlumniProfileById(req.supabase, userId);
 
-    console.log("What happened?", data, error);
-
     if (error) {
       return res.status(httpStatus.NOT_FOUND).json({
         status: "FAILED",

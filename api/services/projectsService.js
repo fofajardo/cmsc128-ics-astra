@@ -1,4 +1,4 @@
-import { applyFilter } from "../utils/applyFilter.js";
+import { applyFilter } from "../utils/filters.js";
 
 /*
 Format /projects?query_key=query_value&query2_key=query2_value&...
