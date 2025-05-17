@@ -5,6 +5,7 @@ const workExperiencesRouter = () => {
   const router = express.Router();
 
   router.get("/", workExperiencesController.getWorkExperiences);
+  router.get("/distinct-fields", workExperiencesController.getDistinctFields);
   router.get("/:workExperienceId", workExperiencesController.getWorkExperienceById);
   router.get("/alum/:userId", workExperiencesController.getWorkExperiencesByUserId);
   router.post("/", workExperiencesController.createWorkExperience);
