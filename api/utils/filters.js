@@ -40,9 +40,11 @@ const applyFilter = (query, filters, config = {}) => {
   }
 
   // Pagination
-  const startIndex = (page - 1) * limit;
-  const endIndex = startIndex + Number(limit) - 1;
-  query = query.range(startIndex, endIndex);
+  if (parseInt(page) !== -1) {
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + Number(limit) - 1;
+    query = query.range(startIndex, endIndex);
+  }
 
   return query;
 };
