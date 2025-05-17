@@ -14,6 +14,10 @@ export default function AnnouncementDetail() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [toast, setToast] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [photo, setPhoto] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState(null);
+  const [photoError, setPhotoError] = useState("");
+  const [isDragging, setIsDragging] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -24,6 +28,72 @@ export default function AnnouncementDetail() {
   // Simple text editor as a fallback solution
   const [editorContent, setEditorContent] = useState("");
 
+  // Load photos from localStorage
+  const loadPhotosFromLocalStorage = () => {
+    try {
+      const cachedPhotos = localStorage.getItem('announcementPhotos');
+      const cachedTypesMap = localStorage.getItem('photoTypesMap');
+
+      if (cachedPhotos && cachedTypesMap) {
+        return {
+          photos: JSON.parse(cachedPhotos),
+          typesMap: JSON.parse(cachedTypesMap)
+        };
+      }
+    } catch (error) {
+      console.error("Error loading photos from localStorage:", error);
+    }
+    return { photos: {}, typesMap: {} };
+  };
+
+  // Handle photo upload
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+    handleFile(file);
+  };
+
+  // Handle drag and drop
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files[0];
+    handleFile(file);
+  };
+
+  // Common file handling logic
+  const handleFile = (file) => {
+    if (file) {
+      // Check file type
+      if (!file.type.startsWith("image/")) {
+        setPhotoError("Please upload an image file");
+        return;
+      }
+      // Check file size (5MB limit)
+      if (file.size > 5 * 1024 * 1024) {
+        setPhotoError("Image size should be less than 5MB");
+        return;
+      }
+      setPhoto(file);
+      setPhotoError("");
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhotoPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmit = async () => {
     try {
       const payload = {
@@ -33,8 +103,34 @@ export default function AnnouncementDetail() {
         tags: ["announcement", "published"]
       };
 
-      await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`, payload);
+      const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`, payload);
 
+      if (photo) {
+        try {
+          const formData = new FormData();
+          formData.append("File", photo);
+          formData.append("content_id", id);
+          formData.append("type", 5); // TODO: use appropriate ENUM
+
+          const photoResponse = await axios.post(
+            `${process.env.NEXT_PUBLIC_API_URL}/v1/photos`,
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data"
+              }
+            }
+          );
+
+          if (photoResponse.data.status === "CREATED") {
+            console.log("Photo uploaded successfully:", photoResponse.data);
+          } else {
+            console.error("Unexpected photo upload response:", photoResponse.data);
+          }
+        } catch (photoError) {
+          console.error("Failed to upload announcement photo:", photoError);
+        }
+      }
 
       setToast({ type: "success", message: "Announcement published successfully!" });
       setTimeout(() => router.push("/admin/whats-up"), 2000);
@@ -53,7 +149,34 @@ export default function AnnouncementDetail() {
         tags: ["announcement", "draft"]
       };
 
-        await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`, payload);
+      const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`, payload);
+
+      if (photo) {
+        try {
+          const formData = new FormData();
+          formData.append("File", photo);
+          formData.append("content_id", id);
+          formData.append("type", 5); // TODO: use appropriate ENUM
+
+          const photoResponse = await axios.post(
+            `${process.env.NEXT_PUBLIC_API_URL}/v1/photos`,
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data"
+              }
+            }
+          );
+
+          if (photoResponse.data.status === "CREATED") {
+            console.log("Photo uploaded successfully:", photoResponse.data);
+          } else {
+            console.error("Unexpected photo upload response:", photoResponse.data);
+          }
+        } catch (photoError) {
+          console.error("Failed to upload announcement photo:", photoError);
+        }
+      }
 
       setToast({ type: "success", message: "Draft saved successfully!" });
     } catch (error) {
@@ -65,6 +188,15 @@ export default function AnnouncementDetail() {
   useEffect(() => {
     if (id !== "new") {
       setIsLoading(true);
+
+      // Try to get cached photo from localStorage
+      const { photos } = loadPhotosFromLocalStorage();
+      const cachedPhoto = photos[id];
+
+      if (cachedPhoto) {
+        setPhotoPreview(cachedPhoto);
+      }
+
       axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`)
         .then((response) => {
           const content = response.data.content;
@@ -75,6 +207,11 @@ export default function AnnouncementDetail() {
             image: content?.image || null
           });
           setEditorContent(content?.details || "");
+
+          // If we didn't find a cached photo but content has an image, use that
+          if (!cachedPhoto && content?.image) {
+            setPhotoPreview(content.image);
+          }
         })
         .catch((error) => {
           console.log("Error fetching content", error);
@@ -87,14 +224,6 @@ export default function AnnouncementDetail() {
       setIsLoading(false);
     }
   }, [id]);
-
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setFormData(prev => ({ ...prev, image: imageUrl }));
-    }
-  };
 
   const handleDelete = async () => {
     try {
@@ -140,25 +269,41 @@ export default function AnnouncementDetail() {
         )}
 
         <div className="mt-6">
-          {/* Image Upload Section - Updated overlay color */}
           <div className="relative w-full h-[400px] mb-6 group">
-            <img
-              src={formData.image}
-              alt={formData.title}
-              className="w-full h-full object-cover rounded-xl"
-            />
-            <div className="absolute inset-0 bg-astradarkgray/90 rounded-xl">
-              <label className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer group-hover:bg-astradarkgray/70 transition-colors rounded-xl">
-                <Image className="w-12 h-12 text-astrawhite mb-3" />
-                <span className="text-astrawhite text-lg font-rb">Click to upload image</span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
+            <div className={`relative w-full h-full rounded-xl ${!photoPreview ? "bg-astradarkgray/90" : ""}`}>
+              {photoPreview && (
+                <img
+                  src={photoPreview}
+                  alt="Preview"
+                  className="w-full h-full object-cover rounded-xl"
                 />
+              )}
+              <label htmlFor="announcement-image" className="absolute inset-0">
+                <div className={`absolute inset-0 ${photoPreview ? "bg-astradarkgray/50 group-hover:bg-astradarkgray/70" : ""} rounded-xl transition-colors`}>
+                  <div
+                    className={`absolute inset-0 flex flex-col items-center justify-center cursor-pointer ${
+                      isDragging ? "border-astraprimary bg-astralightgray" : ""
+                    } transition-colors duration-200`}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                  >
+                    <Image className="w-12 h-12 text-astrawhite mb-3" />
+                    <span className="text-astrawhite text-lg font-rb">
+                      {isDragging ? "Drop image here" : "Click or drag to upload image"}
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePhotoChange}
+                      className="hidden"
+                      id="announcement-image"
+                    />
+                  </div>
+                </div>
               </label>
             </div>
+            {photoError && <p className="text-red-500 mt-2">{photoError}</p>}
           </div>
 
           {/* Content Form - Updated with global styles */}
