@@ -1,29 +1,15 @@
 import { applyFilter, applyArrayFilter, applyArraySearch, applyPagination } from "../utils/filters.js";
 
-const fuseThreshold = 0.3; // Adjust this value (0-1) for more/less strict matching
-const fuseOptions = {
-  keys: [
-    "first_name",
-    "middle_name",
-    "last_name",
-    "full_name"
-  ],
-  threshold: fuseThreshold,
-  includeScore: true,
-  ignoreLocation: true,
-  minMatchCharLength: 2
-};
-
 const kAlumniProfileSelectQuery = `
-    *,
-    primary_work_experience:work_experiences (
-        title,
-        field,
-        company,
-        year_started,
-        year_ended,
-        salary
-    )
+  *,
+  primary_work_experience:work_experiences (
+    title,
+    field,
+    company,
+    year_started,
+    year_ended,
+    salary
+  )
 `;
 
 const fetchAlumniProfiles = async (supabase, page = 1, limit = 10, userId = null) => {
@@ -41,56 +27,12 @@ const fetchAlumniProfiles = async (supabase, page = 1, limit = 10, userId = null
 };
 
 const fetchAlumniSearch = async (supabase, page = 1, limit = 10, search = "", filters = {}) => {
-  const { data: alumniProfiles, error: profilesError } = await supabase
-    .from("alumni_profiles")
-    .select(`
-      id,
-      alum_id,
-      first_name,
-      middle_name,
-      last_name,
-      location,
-      skills,
-      created_at,
-      primary_work_experience:work_experiences (
-        field
-      )
-    `)
-    .order("alum_id")
-    .order("created_at", { ascending: false });
+  const { data, error } = await supabase.rpc("fetch_alumni_with_degrees");
 
-  if (profilesError) throw profilesError;
+  if (error) throw error;
 
-  const uniqueAlumni = [];
-  const seenAlumIds = new Set();
-
-  alumniProfiles.forEach(profile => {
-    if (!seenAlumIds.has(profile.alum_id)) {
-      seenAlumIds.add(profile.alum_id);
-      uniqueAlumni.push(profile);
-    }
-  });
-
-  const { data: degreePrograms, error: degreesError } = await supabase
-    .from("degree_programs")
-    .select("user_id, year_graduated")
-    .in("user_id", uniqueAlumni.map(alum => alum.alum_id));
-
-  if (degreesError) throw degreesError;
-
-  const combinedData = uniqueAlumni.map(alum => {
-    const degrees = degreePrograms.filter(d => d.user_id === alum.alum_id);
-
-    return {
-      ...alum,
-      year_graduated: degrees[0]?.year_graduated || null,
-      field: alum.primary_work_experience?.field || null,
-      full_name: `${alum.first_name} ${alum.middle_name ? alum.middle_name + " " : ""}${alum.last_name}`.trim()
-    };
-  });
-
-  let filteredData = combinedData;
-  filteredData = applyArraySearch(filteredData, search, fuseOptions);
+  let filteredData = data;
+  filteredData = applyArraySearch(filteredData, search);
   filteredData = applyArrayFilter(filteredData, filters);
   const paginatedData = applyPagination(filteredData, page, limit);
 

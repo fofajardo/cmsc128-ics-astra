@@ -1,19 +1,22 @@
 import { applyFilter, applyArrayFilter, applyArraySearch, applyPagination } from "../utils/filters.js";
 import { RoleName } from "../../common/scopes.js";
 
-const fuseThreshold = 0.3;
-const fuseOptions = {
-  keys: [
-    "first_name",
-    "middle_name",
-    "last_name",
-    "full_name"
-  ],
-  threshold: fuseThreshold, // Adjust this value (0-1) for more/less strict matching
-  includeScore: true,
-  ignoreLocation: true,
-  minMatchCharLength: 2 // Minimum characters required for matching
-};
+const alumniStatusViewFields = `
+  email,
+  alum_id,
+  first_name,
+  middle_name,
+  last_name,
+  full_name,
+  year_graduated,
+  location,
+  skills,
+  created_at,
+  student_num,
+  course,
+  profile_created_at,
+  field
+`;
 
 const fetchUsers = async (supabase, page = 1, limit = 10, isRecent = false, isAlumni = false) => {
   const startIndex = (page - 1) * limit;
@@ -63,47 +66,14 @@ const fetchUsers = async (supabase, page = 1, limit = 10, isRecent = false, isAl
 };
 
 const fetchInactiveAlumni = async (supabase, page = 1, limit = 10, search = "", filters = {}) => {
-  const { data: alumniProfiles, error: profilesError } = await supabase
+  const { data, error } = await supabase
     .from("inactive_alumni_view")
-    .select(`
-      email,
-      alum_id,
-      first_name,
-      middle_name,
-      last_name,
-      location,
-      skills,
-      created_at,
-      primary_work_experience:work_experiences (
-        field
-      ),
-      student_num,
-      course,
-      profile_created_at
-    `);
+    .select(alumniStatusViewFields);
 
-  if (profilesError) throw profilesError;
+  if (error) throw error;
 
-  const { data: degreePrograms, error: degreesError } = await supabase
-    .from("degree_programs")
-    .select("user_id, year_graduated")
-    .in("user_id", alumniProfiles.map(alum => alum.alum_id));
-
-  if (degreesError) throw degreesError;
-
-  const combinedData = alumniProfiles.map(alum => {
-    const degrees = degreePrograms.filter(d => d.user_id === alum.alum_id);
-
-    return {
-      ...alum,
-      year_graduated: degrees[0]?.year_graduated || null,
-      field: alum.primary_work_experience?.field || null,
-      full_name: `${alum.first_name} ${alum.middle_name ? alum.middle_name + " " : ""}${alum.last_name}`.trim()
-    };
-  });
-
-  let filteredData = combinedData;
-  filteredData = applyArraySearch(filteredData, search, fuseOptions);
+  let filteredData = data;
+  filteredData = applyArraySearch(filteredData, search);
   filteredData = applyArrayFilter(filteredData, filters);
   const paginatedData = applyPagination(filteredData, page, limit);
 
@@ -116,45 +86,14 @@ const fetchInactiveAlumni = async (supabase, page = 1, limit = 10, search = "", 
 };
 
 const fetchApprovedAlumni = async (supabase, page = 1, limit = 10, search = "", filters = {}) => {
-  const { data: alumniProfiles, error: profilesError } = await supabase
+  const { data, error } = await supabase
     .from("approved_alumni_view")
-    .select(`
-      alum_id,
-      first_name,
-      middle_name,
-      last_name,
-      location,
-      skills,
-      created_at,
-      primary_work_experience:work_experiences (
-        field
-      ),
-      student_num,
-      course
-    `);
+    .select(alumniStatusViewFields);
 
-  if (profilesError) throw profilesError;
+  if (error) throw error;
 
-  const { data: degreePrograms, error: degreesError } = await supabase
-    .from("degree_programs")
-    .select("user_id, year_graduated")
-    .in("user_id", alumniProfiles.map(alum => alum.alum_id));
-
-  if (degreesError) throw degreesError;
-
-  const combinedData = alumniProfiles.map(alum => {
-    const degrees = degreePrograms.filter(d => d.user_id === alum.alum_id);
-
-    return {
-      ...alum,
-      year_graduated: degrees[0]?.year_graduated || null,
-      field: alum.primary_work_experience?.field || null,
-      full_name: `${alum.first_name} ${alum.middle_name ? alum.middle_name + " " : ""}${alum.last_name}`.trim()
-    };
-  });
-
-  let filteredData = combinedData;
-  filteredData = applyArraySearch(filteredData, search, fuseOptions);
+  let filteredData = data;
+  filteredData = applyArraySearch(filteredData, search);
   filteredData = applyArrayFilter(filteredData, filters);
   const paginatedData = applyPagination(filteredData, page, limit);
 
@@ -167,45 +106,14 @@ const fetchApprovedAlumni = async (supabase, page = 1, limit = 10, search = "", 
 };
 
 const fetchPendingAlumni = async (supabase, page = 1, limit = 10, search = "", filters = {}) => {
-  const { data: alumniProfiles, error: profilesError } = await supabase
+  const { data, error } = await supabase
     .from("pending_alumni_view")
-    .select(`
-      alum_id,
-      first_name,
-      middle_name,
-      last_name,
-      location,
-      skills,
-      created_at,
-      primary_work_experience:work_experiences (
-        field
-      ),
-      student_num,
-      course
-    `);
+    .select(alumniStatusViewFields);
 
-  if (profilesError) throw profilesError;
+  if (error) throw error;
 
-  const { data: degreePrograms, error: degreesError } = await supabase
-    .from("degree_programs")
-    .select("user_id, year_graduated")
-    .in("user_id", alumniProfiles.map(alum => alum.alum_id));
-
-  if (degreesError) throw degreesError;
-
-  const combinedData = alumniProfiles.map(alum => {
-    const degrees = degreePrograms.filter(d => d.user_id === alum.alum_id);
-
-    return {
-      ...alum,
-      year_graduated: degrees[0]?.year_graduated || null,
-      field: alum.primary_work_experience?.field || null,
-      full_name: `${alum.first_name} ${alum.middle_name ? alum.middle_name + " " : ""}${alum.last_name}`.trim()
-    };
-  });
-
-  let filteredData = combinedData;
-  filteredData = applyArraySearch(filteredData, search, fuseOptions);
+  let filteredData = data;
+  filteredData = applyArraySearch(filteredData, search);
   filteredData = applyArrayFilter(filteredData, filters);
   const paginatedData = applyPagination(filteredData, page, limit);
 

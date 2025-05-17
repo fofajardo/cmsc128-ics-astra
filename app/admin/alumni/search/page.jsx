@@ -35,6 +35,13 @@ export default function AlumniSearch() {
   const stableFilters = useMemo(() => appliedFilters, [JSON.stringify(appliedFilters)]);
 
   useEffect(() => {
+    setPagination((prev) => ({
+      ...prev,
+      currPage: 1
+    }));
+  }, [searchQuery, stableFilters, pagination.numToShow]);
+
+  useEffect(() => {
     const fetchAlumniProfiles = async () => {
       setLoading(true);
       try {
@@ -59,7 +66,7 @@ export default function AlumniSearch() {
                 graduationYear: alum.year_graduated,
                 location: alum.location,
                 fieldOfWork:
-                  alum.primary_work_experience?.field || "N/A",
+                  alum.field || "N/A",
                 skills: alum.skills ? alum.skills.split(",") : [],
                 image:
                   "https://cdn-icons-png.flaticon.com/512/145/145974.png",
@@ -88,7 +95,6 @@ export default function AlumniSearch() {
           );
 
           const listLength = updatedAlumList.length;
-          console.log(listLength);
           const lowerBound = listLength === 0 ? 0 : (pagination.currPage - 1) * pagination.numToShow + 1;
           const upperBound = listLength === 0 ? 0 : lowerBound + listLength - 1;
 
@@ -112,16 +118,7 @@ export default function AlumniSearch() {
     };
 
     fetchAlumniProfiles();
-  }, [pagination.currPage, pagination.numToShow, searchQuery, stableFilters]);
-
-  useEffect(() => {
-    if (pagination.lastPage < pagination.currPage) {
-      setPagination((prev) => ({
-        ...prev,
-        currPage: prev.lastPage
-      }));
-    }
-  }, [pagination.lastPage]);
+  }, [searchQuery, stableFilters, pagination.numToShow, pagination.currPage]);
 
   return (
     <div>

@@ -1,5 +1,21 @@
 import Fuse from "fuse.js";
 
+const fuseThreshold = 0.3; // Adjust this value (0-1) for more/less strict matching
+const fuseOptions = {
+  keys: [
+    "first_name",
+    "middle_name",
+    "last_name",
+    "full_name",
+    "email",
+    "student_num"
+  ],
+  threshold: fuseThreshold,
+  includeScore: true,
+  ignoreLocation: true,
+  minMatchCharLength: 2
+};
+
 const applyFilter = (query, filters, config = {}) => {
   const {
     limit = 10,
@@ -124,8 +140,9 @@ const applyArrayFilter = (data, filters) => {
   return filteredData;
 };
 
-const applyArraySearch = (data, search, fuseOptions) => {
+const applyArraySearch = (data, search) => {
   let filteredData = data;
+  console.log(filteredData);
 
   if (search) {
     const fuse = new Fuse(filteredData, fuseOptions);

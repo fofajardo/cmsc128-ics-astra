@@ -97,30 +97,9 @@ export default function AlumniAccess() {
                 student_num: alum.student_num,
                 image:
                   "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-                degreeProgram: alum.course
+                degreeProgram: alum.course,
+                email: alum.email
               };
-
-              // Fetch email from /v1/users/{user_id}
-              try {
-                const userId = alum.user_id || alum.alum_id;
-                if (userId) {
-                  const userResponse = await axios.get(
-                    `${process.env.NEXT_PUBLIC_API_URL}/v1/users/${userId}`
-                  );
-                  if (
-                    userResponse.data.status === "OK" &&
-                    userResponse.data.user &&
-                    userResponse.data.user.email
-                  ) {
-                    alumData.email = userResponse.data.user.email;
-                  }
-                }
-              } catch (userError) {
-                console.log(
-                  `Failed to fetch user/email for alum_id ${alum.alum_id}:`,
-                  userError
-                );
-              }
 
               try {
                 const photoResponse = await axios.get(
@@ -168,16 +147,7 @@ export default function AlumniAccess() {
     };
 
     fetchAlumniProfiles();
-  }, [pagination.currPage, pagination.numToShow, currTab, searchQuery, stableFilters, refreshTrigger]);
-
-  useEffect(() => {
-    if (pagination.lastPage < pagination.currPage) {
-      setPagination((prev) => ({
-        ...prev,
-        currPage: prev.lastPage
-      }));
-    }
-  }, [pagination.lastPage]);
+  }, [searchQuery, stableFilters, pagination.numToShow, pagination.currPage, currTab, refreshTrigger]);
 
   return (
     <div>
