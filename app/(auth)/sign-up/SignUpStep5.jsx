@@ -8,7 +8,7 @@ import { useSignedInUser } from "@/components/UserContext.jsx";
 import httpStatus from "http-status-codes";
 import {useRef} from "react";
 import {GraduationProofSchema} from "../../../common/validationSchemas.js";
-import {PhotoType} from "../../../common/photo_types.js";
+import {PhotoType} from "../../../common/scopes.js";
 
 export default function SignUpStep5({ onSetPage }) {
   const user = useSignedInUser();

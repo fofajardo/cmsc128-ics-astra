@@ -58,6 +58,28 @@ function getRelativeTime(dateString) {
 
 function AlumniItem({ alumni, router }) {
 
+  const [profilePhoto, setProfilePhoto] = useState("https://cdn-icons-png.flaticon.com/512/145/145974.png");
+
+  useEffect(() => {
+    if (alumni && alumni.id) {
+      fetchUserPhoto(alumni.id);
+    }
+  }, [alumni]);
+
+  const fetchUserPhoto = async (userId) => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/alum/${userId}`
+      );
+
+      if (response.data.status === "OK" && response.data.photo) {
+        setProfilePhoto(response.data.photo);
+      }
+    } catch (error) {
+      console.error(`Failed to fetch photo for user ${userId}:`, error);
+    }
+  };
+
   if (!alumni) {
     return <div className="min-h-[72px]" />;
   }
@@ -66,7 +88,7 @@ function AlumniItem({ alumni, router }) {
     <div className="flex items-center border-b py-2 min-h-[72px]">
       <div className="mr-3 py-1 px-1">
         <Avatar>
-          <AvatarImage src="https://cdn-icons-png.flaticon.com/512/145/145974.png" />
+          <AvatarImage src={profilePhoto} alt={alumni?.name || "User"} />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
 
@@ -92,6 +114,16 @@ function AlumniItem({ alumni, router }) {
   );
 }
 
+function getInitials(name) {
+  if (!name) return "??";
+
+  const nameParts = name.split(" ");
+  if (nameParts.length >= 2) {
+    return `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`.toUpperCase();
+  }
+
+  return name.substring(0, 2).toUpperCase();
+}
 
 function Pagination({ currentPage, totalPages, onPageChange }) {
   const renderPageButton = (page) => (
@@ -192,10 +224,10 @@ export default function ActivityOverview() {
               const userData = {
                 id: user.id,
                 name: hasProfile
-                  ? capitalizeName(`${user.alumni_profiles.first_name} ${user.alumni_profiles.last_name}`)
+                  ? capitalizeName(`${user.alumni_profiles.first_name} ${user.alumni_profiles.middle_name} ${user.alumni_profiles.last_name}`)
                   : null,
-                email: "To be obtained",
-                date: user.created_at
+                email: user.email,
+                date: new Date(user.created_at).toLocaleDateString()
               };
 
               return userData;
@@ -228,8 +260,8 @@ export default function ActivityOverview() {
             response.data.list.map(async (user) => {
               const userData = {
                 id: user.user_id,
-                name: capitalizeName(`${user.first_name} ${user.last_name}`),
-                email: "To be obtained",
+                name: capitalizeName(`${user.first_name} ${user.middle_name} ${user.last_name}`),
+                email: user.email,
                 date: user.profile_created_at
               };
 

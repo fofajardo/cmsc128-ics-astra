@@ -1,4 +1,4 @@
-import { applyFilter } from "../utils/applyFilter.js";
+import { applyFilter } from "../utils/filters.js";
 
 const fetchContents = async (supabase) => {
   return await supabase
@@ -17,6 +17,22 @@ const fetchContentById = async (supabase, contentId) => {
     .select("*")
     .eq("id", contentId)
     .single();
+};
+
+const fetchContentByFilter = async (supabase, filters) => {
+  let query = supabase
+    .from("contents")
+    .select("*");
+
+  query = applyFilter(query, filters, {
+    ilike: [],
+    range: {},
+    sortBy: "created_at",
+    defaultOrder: "desc",
+    specialKeys: []
+  });
+
+  return await query;
 };
 
 const checkExistingContent = async (supabase,title) => {
@@ -59,6 +75,7 @@ const deleteContentData = async (supabase, contentId) => {
 const contentsService = {
   fetchContents,
   fetchContentById,
+  fetchContentByFilter,
   checkExistingContent,
   insertContent,
   findContent,

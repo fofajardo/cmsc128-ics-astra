@@ -13,7 +13,7 @@ import { capitalizeName } from "@/utils/format";
 import axios from "axios";
 import { HeartHandshake } from "lucide-react";
 import { GraduationCap } from "lucide-react";
-import { PROJECT_TYPE } from "@/constants/projectConsts";
+import { PROJECT_TYPE } from "../../../../../common/scopes";
 
 export default function PendingProjectDetail({ params }) {
   const id = use(params).id;
@@ -27,6 +27,9 @@ export default function PendingProjectDetail({ params }) {
 
   const [projectData, setProjectData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [imageLoading, setImageLoading] = useState(true);
+  const [imageError, setImageError] = useState(false);
+  const [imageSrc, setImageSrc] = useState("/projects/assets/Donation.png");
 
   const [projectPhoto, setProjectPhoto] = useState({});
 
@@ -35,6 +38,24 @@ export default function PendingProjectDetail({ params }) {
     DECLINE: 2
   };
 
+  // Add constant for fallback image
+  const FALLBACK_IMAGE = "/projects/assets/Donation.png";
+
+  // Add timeout for image loading
+  useEffect(() => {
+    let timeoutId;
+    if (imageLoading) {
+      timeoutId = setTimeout(() => {
+        setImageLoading(false);
+        setImageError(true);
+        setImageSrc(FALLBACK_IMAGE);
+      }, 5000); // 5 second timeout
+    }
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [imageLoading]);
+
   useEffect(() => {
     const fetchProjectRequest = async () => {
       try {
@@ -42,7 +63,6 @@ export default function PendingProjectDetail({ params }) {
         const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/requests/projects/${id}`);
         const projectData = response.data;
         if (projectData.status === "OK") {
-
           const projectId = projectData.list.projectData.project_id;
 
           // Fetch photo for this single project
@@ -52,17 +72,25 @@ export default function PendingProjectDetail({ params }) {
             );
 
             if (photoResponse.data.status === "OK" && photoResponse.data.photo) {
-              // Store the photo URL
-              setProjectPhoto(photoResponse.data.photo);
+              setImageLoading(true);
+              setImageError(false);
+              setImageSrc(photoResponse.data.photo);
+            } else {
+              setImageLoading(false);
+              setImageError(true);
+              setImageSrc(FALLBACK_IMAGE);
             }
           } catch (error) {
             console.log(`Failed to fetch photo for project_id ${projectId}:`, error);
+            setImageError(true);
+            setImageLoading(false);
+            setImageSrc(FALLBACK_IMAGE);
           }
 
           setProjectData({
             id: projectData.list.projectData.project_id,
             title: projectData.list.projectData.title,
-            image: projectPhoto,
+            image: FALLBACK_IMAGE,
             description: projectData.list.projectData.details,
             longDescription: projectData.list.projectData.details,
             goal: projectData.list.projectData.goal_amount.toString(),
@@ -97,15 +125,6 @@ export default function PendingProjectDetail({ params }) {
 
     fetchProjectRequest();
   }, []);
-
-  useEffect(() => {
-    if (Object.keys(projectData).length > 0) {
-      setProjectData(prevData => ({
-        ...prevData,
-        image: projectPhoto || "/projects/assets/Donation.jpg"
-      }));
-    }
-  }, [projectPhoto]);
 
   const project = projectData;
   // {
@@ -171,6 +190,17 @@ export default function PendingProjectDetail({ params }) {
     setMessage("");
   };
 
+  if (loading) {
+    return (
+      <div className="bg-astradirtywhite min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-astraprimary"></div>
+          <p className="text-astraprimary font-medium">Loading project details...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-astradirtywhite min-h-screen pb-12">
       {toast && (
@@ -183,7 +213,25 @@ export default function PendingProjectDetail({ params }) {
 
       {/* Header Banner */}
       <div className="relative h-64">
-        <img src={!project.image ? "/projects/assets/Donation.jpg" : project.image} alt={project.title} className="w-full h-full object-cover" />
+        {imageLoading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-astralightgray/50 z-10">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-astraprimary"></div>
+          </div>
+        )}
+        <img
+          src={imageSrc}
+          alt={project.title}
+          className={`w-full h-full object-cover transition-opacity duration-300 ${imageLoading ? "opacity-0" : "opacity-100"}`}
+          onLoad={() => {
+            setImageLoading(false);
+          }}
+          onError={(e) => {
+            console.error("Image failed to load:", e);
+            setImageError(true);
+            setImageSrc(FALLBACK_IMAGE);
+            setImageLoading(false);
+          }}
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/30 flex items-end">
           <div className="p-6 text-astrawhite w-full">
             <div className="flex items-center mt-4">

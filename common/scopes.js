@@ -63,6 +63,42 @@ const Actions = Object.freeze({
   MANAGE: "manage",
 });
 
+const PhotoType = Object.freeze({
+  PROFILE_PIC: 0,
+  PROOF_OF_PAYMENT: 1,
+  PROOF_OF_GRADUATION: 2,
+  EVENT_PIC: 3,
+  JOB_PIC: 4,
+  PROJECT_PIC: 5,
+  POSTS_PIC: 6,
+  RECEIPTS_PIC: 7,
+  isDefined: function(aValue) {
+    if (typeof aValue === "string" || aValue instanceof String) {
+      const value = aValue.toLowerCase().trim();
+      switch (value) {
+      case PhotoType.PROFILE_PIC:
+      case PhotoType.PROOF_OF_PAYMENT:
+      case PhotoType.PROOF_OF_GRADUATION:
+      case PhotoType.EVENT_PIC:
+      case PhotoType.JOB_PIC:
+      case PhotoType.PROJECT_PIC:
+      case PhotoType.POSTS_PIC:
+      case PhotoType.RECEIPTS_PIC:
+        return true;
+      default:
+        break;
+      }
+    }
+    return false;
+  },
+  parse: function(aValue) {
+    if (!this.isDefined(aValue)) {
+      return null;
+    }
+    return parseInt(aValue);
+  },
+})
+
 const EmploymentStatus = Object.freeze({
   UNEMPLOYED: 0,
   EMPLOYED: 1,
@@ -74,6 +110,47 @@ const EmploymentStatus = Object.freeze({
       case EmploymentStatus.UNEMPLOYED:
       case EmploymentStatus.EMPLOYED:
       case EmploymentStatus.SELF_EMPLOYED:
+        return true;
+      default:
+        break;
+      }
+    }
+    return false;
+  },
+  parse: function(aValue) {
+    if (!this.isDefined(aValue)) {
+      return null;
+    }
+    return parseInt(aValue);
+  },
+});
+
+const JobsStatus = Object.freeze({
+  OPEN_INDEFINITE: 0,
+  OPEN_UNTIL_EXPIRED: 1,
+  ON_HOLD: 2,
+  CLOSED: 3,
+  isDefined: function(aValue) {
+    if (typeof aValue === "string" || aValue instanceof String) {
+      const value = aValue.toLowerCase().trim();
+      switch (value) {
+      case JobsStatus.OPEN_INDEFINITE:
+      case JobsStatus.OPEN_UNTIL_EXPIRED:
+      case JobsStatus.ON_HOLD:
+      case JobsStatus.CLOSED:
+        return true;
+      default:
+        break;
+      }
+    }
+    return false;
+  },
+  isDefined: function(aValue) {
+    if (typeof aValue === "string" || aValue instanceof String) {
+      const value = aValue.toLowerCase().trim();
+      switch (value) {
+      case JobsStatus.OPEN:
+      case JobsStatus.CLOSED:
         return true;
       default:
         break;
@@ -102,39 +179,51 @@ export const NavMenuItemId = Object.freeze({
   ORGANIZATIONS: "organizations"
 });
 
-const PhotoType = Object.freeze({
-  PROFILE_PIC: 0,
-  PROOF_OF_PAYMENT: 1,
-  PROOF_OF_GRADUATION: 2,
-  EVENT_PIC: 3,
-  JOB_PIC: 4,
-  PROJECT_PIC: 5,
-  POSTS_PIC: 6,
-  isDefined: function(aValue) {
-    if (typeof aValue === "string" || aValue instanceof String) {
-      const value = aValue.toLowerCase().trim();
-      switch (value) {
-      case PhotoType.PROFILE_PIC:
-      case PhotoType.PROOF_OF_PAYMENT:
-      case PhotoType.PROOF_OF_GRADUATION:
-      case PhotoType.EVENT_PIC:
-      case PhotoType.JOB_PIC:
-      case PhotoType.PROJECT_PIC:
-      case PhotoType.POSTS_PIC:
-        return true;
-      default:
-        break;
-      }
-    }
-    return false;
-  },
-  parse: function(aValue) {
-    if (!this.isDefined(aValue)) {
-      return null;
-    }
-    return parseInt(aValue);
-  },
-});
+export const DONATION_MODE_OF_PAYMENT = {
+  PHYSICAL_PAYMENT: 0,
+  BANK_TRANSFER: 1,
+};
+
+export const DONATION_MODE_OF_PAYMENT_LABELS = {
+  [DONATION_MODE_OF_PAYMENT.PHYSICAL_PAYMENT]: "Physical",
+  [DONATION_MODE_OF_PAYMENT.BANK_TRANSFER]: "Bank Transfer",
+};
+
+export const PROJECT_STATUS = {
+  AWAITING_BUDGET: 0,
+  ONGOING: 1,
+  FINISHED: 2,
+};
+
+export const PROJECT_STATUS_LABELS = {
+  [PROJECT_STATUS.AWAITING_BUDGET]: "Awaiting Budget",
+  [PROJECT_STATUS.ONGOING]: "Ongoing",
+  [PROJECT_STATUS.FINISHED]: "Finished",
+};
+
+export const PROJECT_TYPE = {
+  DONATION_DRIVE: "donation drive",
+  FUNDRAISING: "fundraising",
+  SCHOLARSHIP: "scholarship",
+};
+
+export const REQUEST_STATUS = {
+  SENT: 0,
+  APPROVED: 1,
+  REJECTED: 2,
+};
+
+export const REQUEST_STATUS_LABELS = {
+  [REQUEST_STATUS.SENT]: "Sent",
+  [REQUEST_STATUS.APPROVED]: "Approved",
+  [REQUEST_STATUS.REJECTED]: "Rejected",
+};
+
+export const REQUEST_TYPE = {
+  PROJECT_FUNDS: 0,
+  FUNDRAISING: 1,
+  OTHERS: 2,
+};
 
 const EventStatus = Object.freeze({
   OPEN: "open",
@@ -168,5 +257,6 @@ export {
   Actions,
   PhotoType,
   EmploymentStatus,
-  EventStatus
+  EventStatus,
+  JobsStatus,
 };

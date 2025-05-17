@@ -4,14 +4,101 @@ import { TableHeader, Table, PageTool } from "@/components/TableBuilder";
 import { Eye, BarChart2 } from "lucide-react";
 import ToastNotification from "@/components/ToastNotification";
 import {GoBackButton} from "@/components/Buttons";
+import axios from "axios";
+import { formatCurrency, capitalizeName } from "@/utils/format";
+import { PROJECT_STATUS, PROJECT_STATUS_LABELS } from "../../../../common/scopes";
 
+/*
+Projects are considered active if they satisfy the ff:
+project_status is awaiting budget (0) or ongoing (1)
+request_status is approved
+*/
 export default function ProjectFunds() {
   const [showFilter, setShowFilter] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
   const [toast, setToast] = useState(null);
   const [tempSelectedStatus, setTempSelectedStatus] = useState("All");
   const [selectedStatus, setSelectedStatus] = useState("All");
+  const [sortBy, setSortBy] = useState({ field: "", order: "asc" });
+  const [tempSortBy, setTempSortBy] = useState({ field: "", order: "asc" });
   const [totalFundsRaised, setTotalFundsRaised] = useState(0);
+
+  const [projectData, setProjectData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [donationsSummary, setDonationsSummary] = useState({ total_raised: 0 });
+
+  useEffect(() => {
+    const fetchProjectRequest = async () => {
+      try {
+        setLoading(true);
+        const projectResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/requests/projects`);
+        const projectData = projectResponse.data;
+        console.log("Raw API Response:", projectData);
+        if (projectData.status === "OK") {
+          const mappedProjects = projectData.list.map(
+            project => {
+              console.log("Complete Project Data:", {
+                request_id: project.request_id,
+                status: project.status,
+                projectData: {
+                  project_id: project.projectData.project_id,
+                  title: project.projectData.title,
+                  type: project.projectData.type,
+                  goal_amount: project.projectData.goal_amount,
+                  total_donations: project.projectData.total_donations,
+                  number_of_donors: project.projectData.number_of_donors,
+                  project_status: project.projectData.project_status,
+                  due_date: project.projectData.due_date,
+                  date_complete: project.projectData.date_complete,
+                  donation_link: project.projectData.donation_link,
+                  details: project.projectData.details
+                },
+                requesterData: project.requesterData
+              });
+              return {
+                id: project.projectData.project_id,
+                title: project.projectData.title,
+                type: capitalizeName(project.projectData.type),
+                goal: project.projectData.goal_amount.toString(),
+                raised: project.projectData.total_donations.toString(),
+                donors: project.projectData.number_of_donors.toString(),
+                project_status: project.projectData.project_status,
+                request_status: project.status
+              };
+            }
+          );
+          console.log("Final Mapped Projects:", mappedProjects);
+          setProjectData(mappedProjects);
+        } else {
+          console.error("Unexpected response:", projectData);
+        }
+      } catch (error) {
+        console.error("Failed to fetch project:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchDonationsSummary = async () => {
+      try {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations/summary`);
+        const donationSummaryData = response.data;
+        if (donationSummaryData.status === "OK") {
+          console.log("Fetched donation summary:", donationSummaryData);
+          setDonationsSummary({
+            total_raised: donationSummaryData.summary.total_raised
+          });
+        } else {
+          console.error("Unexpected response:", donationSummaryData);
+        }
+      } catch (error) {
+        console.error("Failed to fetch donation summary:", error);
+      }
+    };
+
+    fetchDonationsSummary();
+    fetchProjectRequest();
+  }, []);
 
   // Information for the table header
   const [info, setInfo] = useState({
@@ -48,12 +135,20 @@ export default function ProjectFunds() {
     }));
   };
 
-  // Apply both search and status filters to the projects
-  const filteredProjects = projectFundsData
+  // Apply both search, status filters, and sorting to the projects
+  const filteredProjects = projectData
     .filter(project => {
       // Apply status filter
-      if (selectedStatus !== "All" && project.status !== selectedStatus) {
-        return false;
+      if (selectedStatus !== "All") {
+        if (selectedStatus === "Pending" && project.request_status !== 0) {
+          return false;
+        }
+        if (selectedStatus === "Active" && !(project.project_status < 2 && project.request_status === 1)) {
+          return false;
+        }
+        if (selectedStatus === "Inactive" && !(project.project_status === 2 || project.request_status === 2)) {
+          return false;
+        }
       }
 
       // Apply search filter (case insensitive)
@@ -66,6 +161,26 @@ export default function ProjectFunds() {
       }
 
       return true;
+    })
+    .sort((a, b) => {
+      if (!sortBy.field) return 0;
+
+      let comparison = 0;
+      switch (sortBy.field) {
+      case "goal":
+        comparison = parseInt(a.goal.replace(/[₱,]/g, "")) - parseInt(b.goal.replace(/[₱,]/g, ""));
+        break;
+      case "raised":
+        comparison = parseInt(a.raised.replace(/[₱,]/g, "")) - parseInt(b.raised.replace(/[₱,]/g, ""));
+        break;
+      case "type":
+        comparison = a.type.localeCompare(b.type);
+        break;
+      default:
+        return 0;
+      }
+
+      return sortBy.order === "asc" ? comparison : -comparison;
     });
 
   // Update pagination based on filtered results
@@ -97,11 +212,6 @@ export default function ProjectFunds() {
     setTotalFundsRaised(total);
   }, [filteredProjects]);
 
-  // Format number as currency
-  const formatCurrency = (amount) => {
-    return "₱" + amount.toLocaleString();
-  };
-
   return (
     <div>
       {/* Toast notification */}
@@ -120,13 +230,14 @@ export default function ProjectFunds() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-astrawhite p-8 rounded-xl w-80"
+            className="bg-astrawhite p-8 rounded-xl w-96"
           >
-            <h3 className="font-lb text-xl mb-4">Filter Projects</h3>
+            <h3 className="font-lb text-xl mb-4">Filter & Sort Projects</h3>
             <div className="flex flex-col gap-4">
+              {/* Status Filter */}
               <div>
                 <label className="font-s text-astradarkgray mb-2 block">
-                  Status
+                  Project Status
                 </label>
                 <select
                   className="w-full p-2 border border-astragray rounded-lg"
@@ -134,10 +245,46 @@ export default function ProjectFunds() {
                   onChange={(e) => setTempSelectedStatus(e.target.value)}
                 >
                   <option value="All">All Projects</option>
-                  <option value="Active">Active</option>
+                  <option value="Pending">Awaiting Budget</option>
+                  <option value="Active">Ongoing</option>
                   <option value="Inactive">Inactive</option>
                 </select>
               </div>
+
+              {/* Sort Options */}
+              <div>
+                <label className="font-s text-astradarkgray mb-2 block">
+                  Sort By
+                </label>
+                <select
+                  className="w-full p-2 border border-astragray rounded-lg mb-2"
+                  value={tempSortBy.field}
+                  onChange={(e) => setTempSortBy(prev => ({ ...prev, field: e.target.value }))}
+                >
+                  <option value="">No Sorting</option>
+                  <option value="goal">Goal Amount</option>
+                  <option value="raised">Raised Amount</option>
+                  <option value="type">Project Type</option>
+                </select>
+              </div>
+
+              {/* Sort Order */}
+              {tempSortBy.field && (
+                <div>
+                  <label className="font-s text-astradarkgray mb-2 block">
+                    Sort Order
+                  </label>
+                  <select
+                    className="w-full p-2 border border-astragray rounded-lg"
+                    value={tempSortBy.order}
+                    onChange={(e) => setTempSortBy(prev => ({ ...prev, order: e.target.value }))}
+                  >
+                    <option value="asc">Ascending</option>
+                    <option value="desc">Descending</option>
+                  </select>
+                </div>
+              )}
+
               <div className="flex justify-end gap-3 mt-4">
                 <button className="gray-button" onClick={toggleFilter}>
                   Cancel
@@ -145,7 +292,8 @@ export default function ProjectFunds() {
                 <button
                   className="blue-button"
                   onClick={() => {
-                    setSelectedStatus(tempSelectedStatus); // apply the filter
+                    setSelectedStatus(tempSelectedStatus);
+                    setSortBy(tempSortBy);
                     setPagination((prev) => ({
                       ...prev,
                       currPage: 1,
@@ -173,6 +321,25 @@ export default function ProjectFunds() {
           <div className="text-center">
             <h1 className="font-h1">Project Funds</h1>
             <p className="font-s mt-2">Financial overview of ongoing and completed projects</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Total Funds Raised Section */}
+      <div className="bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24">
+        <div className="max-w-6xl mx-auto">
+          <div className="bg-astrawhite rounded-lg p-6 shadow-sm">
+            <div className="flex flex-col items-center">
+              <h3 className="text-xl font-semibold text-astradark mb-2">Total Funds Raised</h3>
+              <p className="text-3xl font-bold text-astraprimary">
+                {formatCurrency(donationsSummary.total_raised)}
+              </p>
+              <p className="text-sm text-astradark mt-2">
+                {searchQuery ? `From search results for "${searchQuery}"` :
+                  selectedStatus === "All" ? "Across all approved projects" :
+                    `From ${selectedStatus.toLowerCase()} projects only`}
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -206,39 +373,30 @@ export default function ProjectFunds() {
               )}
             </div>
           ) : (
-            <Table cols={cols} data={createRows(currentProjects, selectedIds, setSelectedIds, setToast)} />
+            <div className="overflow-x-auto">
+              <div className="min-w-full inline-block align-middle">
+                <div className="overflow-hidden">
+                  <Table cols={cols} data={createRows(currentProjects, selectedIds, setSelectedIds, setToast)} />
+                </div>
+              </div>
+            </div>
           )}
 
           {filteredProjects.length > 0 && (
             <PageTool pagination={pagination} setPagination={setPagination} />
           )}
-
-          {/* Total Funds Raised Section */}
-          <div className="mt-6 bg-astrawhite rounded-lg p-6 shadow-sm">
-            <div className="flex flex-col items-center">
-              <h3 className="text-xl font-semibold text-astradarkgray mb-2">Total Funds Raised</h3>
-              <p className="text-3xl font-bold text-astrablue">
-                {formatCurrency(totalFundsRaised)}
-              </p>
-              <p className="text-sm text-astragray mt-2">
-                {searchQuery ? `From search results for "${searchQuery}"` :
-                  selectedStatus === "All" ? "Across all projects" :
-                    `From ${selectedStatus.toLowerCase()} projects only`}
-              </p>
-            </div>
-          </div>
         </div>
       </div>
     </div>
   );
 }
 
-// Table columns definition - removed Progress and Quick Actions columns
+// Table columns definition
 const cols = [
   { label: "Project", justify: "start", visible: "all" },
   { label: "Type", justify: "center", visible: "md" },
-  { label: "Goal", justify: "center", visible: "lg" },
   { label: "Raised", justify: "center", visible: "sm" },
+  { label: "Goal", justify: "center", visible: "lg" },
   { label: "Status", justify: "center", visible: "md" },
 ];
 
@@ -247,9 +405,9 @@ function createRows(projects, selectedIds, setSelectedIds, setToast) {
   return projects.map((project) => ({
     "Project": renderProject(project.title),
     "Type": renderType(project.type),
-    "Goal": renderAmount(project.goal),
-    "Raised": renderAmount(project.raised),
-    "Status": renderStatus(project.status),
+    "Raised": renderAmount(project.raised, true),
+    "Goal": renderAmount(project.goal, false),
+    "Status": renderStatus(project.project_status),
   }));
 }
 
@@ -261,123 +419,56 @@ function renderProject(title) {
 }
 
 function renderType(type) {
+  let bgColor;
+  switch (type) {
+  case "Scholarship":
+    bgColor = "bg-astralight text-astrawhite";
+    break;
+  case "Donation Drive":
+    bgColor = "bg-astragreen text-astratintedwhite";
+    break;
+  default:
+    bgColor = "bg-astralightgray text-astradirtywhite";
+  }
+
   return (
     <div className="text-center">
-      <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-        type === "Scholarship" ? "bg-astralightblue text-astrablue" : "bg-astralightgreen text-astragreen"
-      }`}>
+      <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${bgColor}`}>
         {type}
       </span>
     </div>
   );
 }
 
-function renderAmount(amount) {
-  return <div className="text-center text-astradarkgray font-s">{amount}</div>;
-}
-
-function renderStatus(status) {
+function renderAmount(amount, isRaised) {
   return (
-    <div className="text-center">
-      <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-        status === "Active" ? "bg-astralightgreen text-astragreen" : "bg-astralightgray text-astradarkgray"
-      }`}>
-        {status}
-      </span>
+    <div className={`text-center font-s ${isRaised ? "text-astraprimary" : "text-astradark"}`}>
+      {formatCurrency(amount)}
     </div>
   );
 }
 
-// Sample project funds data based on the projectsData from the original file
-const projectFundsData = [
-  {
-    id: 1,
-    title: "Computer Science Scholarship Fund",
-    type: "Scholarship",
-    goal: "₱500,000",
-    raised: "₱350,000",
-    donors: 45,
-    status: "Active",
-  },
-  {
-    id: 2,
-    title: "Programming Lab Equipment Drive",
-    type: "Fundraiser",
-    goal: "₱750,000",
-    raised: "₱420,000",
-    donors: 67,
-    status: "Active",
-  },
-  {
-    id: 3,
-    title: "ICS Building Renovation Fund",
-    type: "Fundraiser",
-    goal: "₱1,200,000",
-    raised: "₱185,000",
-    donors: 29,
-    status: "Active",
-  },
-  {
-    id: 6,
-    title: "Research Excellence Scholarship",
-    type: "Scholarship",
-    goal: "₱250,000",
-    raised: "₱175,000",
-    donors: 12,
-    status: "Inactive",
-  },
-  {
-    id: 7,
-    title: "CS Library Enhancement Fund",
-    type: "Fundraiser",
-    goal: "₱200,000",
-    raised: "₱76,000",
-    donors: 31,
-    status: "Active",
-  },
-  {
-    id: 8,
-    title: "Hackathon Sponsorship Fund",
-    type: "Fundraiser",
-    goal: "₱150,000",
-    raised: "₱84,000",
-    donors: 23,
-    status: "Active",
-  },
-  {
-    id: 10,
-    title: "CS Department 25th Anniversary Fund",
-    type: "Fundraiser",
-    goal: "₱500,000",
-    raised: "₱125,000",
-    donors: 87,
-    status: "Inactive",
-  },
-  {
-    id: 12,
-    title: "International Exchange Scholarship",
-    type: "Scholarship",
-    goal: "₱400,000",
-    raised: "₱320,000",
-    donors: 28,
-    status: "Active",
-  },
-  {
-    id: 13,
-    title: "IT Career Conference Fund",
-    type: "Fundraiser",
-    goal: "₱120,000",
-    raised: "₱35,000",
-    donors: 14,
-    status: "Active",
-  },
-  {
-    id: 14,
-    title: "Indigenous CS Education Fund",
-    type: "Scholarship",
-    goal: "₱275,000",
-    raised: "₱120,000",
-    donors: 19,
-    status: "Inactive",
-  },
-];
+function renderStatus(project_status) {
+  let bgColor;
+  switch (project_status) {
+  case PROJECT_STATUS.AWAITING_BUDGET:
+    bgColor = "bg-yellow-100 text-astrayellow";
+    break;
+  case PROJECT_STATUS.ONGOING:
+    bgColor = "bg-green-100 text-astragreen";
+    break;
+  case PROJECT_STATUS.FINISHED:
+    bgColor = "bg-red-100 text-astrared";
+    break;
+  default:
+    bgColor = "bg-red-100 text-astrared";
+  }
+
+  return (
+    <div className="text-center">
+      <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${bgColor}`}>
+        {PROJECT_STATUS_LABELS[project_status]}
+      </span>
+    </div>
+  );
+}

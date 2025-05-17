@@ -5,7 +5,7 @@ import SearchFilter from "./filter";
 import { ActionButton } from "@/components/Buttons";
 import SkillTag from "@/components/SkillTag";
 import axios from "axios";
-import { capitalizeName } from "../../../utils/format.jsx";
+import { capitalizeName } from "@/utils/format.jsx";
 import { Skeleton, CenteredSkeleton } from "@/components/ui/skeleton";
 
 export default function AlumniSearch() {
@@ -28,19 +28,16 @@ export default function AlumniSearch() {
     currPage: 1,            // Current active page
     lastPage: 10,           // Last Page => total/numToShow
     numToShow: 10,          // How many alum to show
-    total: 0              // How many alum in db
+    total: 0                // How many alum in db
   });
   const [searchQuery, setSearchQuery] = useState("");
 
   const stableFilters = useMemo(() => appliedFilters, [JSON.stringify(appliedFilters)]);
 
-  // FOR BACKEND PEEPS
   useEffect(() => {
     const fetchAlumniProfiles = async () => {
       setLoading(true);
       try {
-        // For better search, fetch all or more profiles when searching
-        // This allows for more sophisticated client-side filtering
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/alumni-search`,
           {
@@ -95,14 +92,13 @@ export default function AlumniSearch() {
           const lowerBound = listLength === 0 ? 0 : (pagination.currPage - 1) * pagination.numToShow + 1;
           const upperBound = listLength === 0 ? 0 : lowerBound + listLength - 1;
 
-          // Set total and lastPage based on the fetched total count
           setPagination((prev) => ({
             ...prev,
             display: [lowerBound, upperBound],
             total: response.data.total,
             lastPage: Math.ceil(response.data.total / prev.numToShow),
           }));
-          // Store raw data
+
           setAlumList(updatedAlumList);
           setLoading(false);
         } else {
@@ -116,7 +112,16 @@ export default function AlumniSearch() {
     };
 
     fetchAlumniProfiles();
-  }, [pagination.currPage, pagination.numToShow, searchQuery, stableFilters]); // Don't refetch when search or filters change
+  }, [pagination.currPage, pagination.numToShow, searchQuery, stableFilters]);
+
+  useEffect(() => {
+    if (pagination.lastPage < pagination.currPage) {
+      setPagination((prev) => ({
+        ...prev,
+        currPage: prev.lastPage
+      }));
+    }
+  }, [pagination.lastPage]);
 
   return (
     <div>
@@ -166,8 +171,6 @@ export default function AlumniSearch() {
     </div>
   );
 }
-
-// Rest of the code remains unchanged
 
 const cols = [
   { label: "Image:label-hidden", justify: "center", visible: "all" },
@@ -269,107 +272,3 @@ function renderActions(id) {
     </div>
   );
 }
-
-
-const mockdata = [
-  {
-    id: 1,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "Emma Johnson",
-    email: "emma.johnson@example.com",
-    graduationYear: 2015,
-    location: "New York, NY",
-    fieldOfWork: "Backend Development",
-    skills: ["Java", "Spring Boot", "REST APIs", "PostgreSQL"]
-  },
-  {
-    id: 2,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "Liam Smith",
-    email: "liam.smith@example.com",
-    graduationYear: 2018,
-    location: "San Francisco, CA",
-    fieldOfWork: "Machine Learning Engineering",
-    skills: ["Python", "Scikit-learn", "Pandas"]
-  },
-  {
-    id: 3,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "Olivia Brown",
-    email: "olivia.brown@example.com",
-    graduationYear: 2012,
-    location: "Chicago, IL",
-    fieldOfWork: "Frontend Development",
-    skills: ["HTML", "CSS", "JavaScript", "Vue.js"]
-  },
-  {
-    id: 4,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "Noah Davis",
-    email: "noah.davis@example.com",
-    graduationYear: 2020,
-    location: "Austin, TX",
-    fieldOfWork: "DevOps Engineering",
-    skills: ["Docker", "Kubernetes", "AWS", "CI/CD", "Terraform"]
-  },
-  {
-    id: 5,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "Ava Wilson",
-    email: "ava.wilson@example.com",
-    graduationYear: 2017,
-    location: "Seattle, WA",
-    fieldOfWork: "Mobile App Development",
-    skills: ["Swift", "iOS", "Firebase"]
-  },
-  {
-    id: 6,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "William Martinez",
-    email: "william.martinez@example.com",
-    graduationYear: 2014,
-    location: "Miami, FL",
-    fieldOfWork: "Full Stack Development",
-    skills: ["Node.js", "React", "MongoDB", "GraphQL"]
-  },
-  {
-    id: 7,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "Sophia Garcia",
-    email: "sophia.garcia@example.com",
-    graduationYear: 2016,
-    location: "Denver, CO",
-    fieldOfWork: "Cloud Engineering",
-    skills: ["Azure", "Linux", "Networking", "Python"]
-  },
-  {
-    id: 8,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "James Anderson",
-    email: "james.anderson@example.com",
-    graduationYear: 2013,
-    location: "Boston, MA",
-    fieldOfWork: "Security Engineering",
-    skills: ["Penetration Testing", "OWASP", "Metasploit"]
-  },
-  {
-    id: 9,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "Isabella Thomas",
-    email: "isabella.thomas@example.com",
-    graduationYear: 2019,
-    location: "Los Angeles, CA",
-    fieldOfWork: "AI Research",
-    skills: ["PyTorch", "Deep Learning", "NLP"]
-  },
-  {
-    id: 10,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "Benjamin Lee",
-    email: "benjamin.lee@example.com",
-    graduationYear: 2011,
-    location: "Atlanta, GA",
-    fieldOfWork: "Database Administration",
-    skills: ["SQL", "Oracle", "Database Tuning", "Shell Scripting", "PL/SQL"]
-  }
-];

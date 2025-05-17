@@ -1,4 +1,4 @@
-import { applyFilter } from "../utils/applyFilter.js";
+import { applyFilter } from "../utils/filters.js";
 
 const fetchJobs = async (supabase, filters) => {
   console.log("Supabase:", supabase);

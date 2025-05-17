@@ -18,8 +18,10 @@ const statisticsRouter = () => {
   router.get("/alumni-org-affiliation-stats", statisticsController.getAlumniOrgAffiliationStats);
   router.get("/alumni-field-stats", statisticsController.getAlumniFieldStats);
   router.get("/alumni-highest-degree-stats", statisticsController.getAlumniHighestDegreeStats);
-  router.get("alumni-income-range-stats", statisticsController.getAlumniIncomeRangeStats);
   router.get("/events-summary", statisticsController.getEventsSummary);
+  router.get("/alumni-income-range-stats", statisticsController.getAlumniIncomeRangeStats);
+  router.get("/alumni-employment-status", statisticsController.getAlumniEmploymentStatus);
+  router.get("/alumni-batch", statisticsController.getAlumniBatch);
 
   return router;
 };

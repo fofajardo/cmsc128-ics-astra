@@ -114,6 +114,36 @@ const getWorkExperiencesByUserId = async (req, res) => {
   }
 };
 
+const getDistinctFields = async (req, res) => {
+  if (req.you.cannot(Actions.READ, Subjects.WORK_EXPERIENCES)) {
+    return res.status(httpStatus.FORBIDDEN).json({
+      status: "FORBIDDEN",
+      message: "You are not allowed to access this resource",
+    });
+  }
+
+  try {
+    const { data, error } = await workExperiencesService.fetchDistinctFields(req.supabase);
+
+    if (error) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error.message,
+      });
+    }
+
+    return res.status(httpStatus.OK).json({
+      status: "OK",
+      list: data || [],
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message,
+    });
+  }
+};
+
 const createWorkExperience = async (req, res) => {
   if (req.you.cannot(Actions.CREATE, Subjects.WORK_EXPERIENCES)) {
     return res.status(httpStatus.FORBIDDEN).json({
@@ -420,6 +450,7 @@ const workExperiencesController = {
   getWorkExperiences,
   getWorkExperienceById,
   getWorkExperiencesByUserId,
+  getDistinctFields,
   createWorkExperience,
   updateWorkExperience,
   deleteWorkExperience,
