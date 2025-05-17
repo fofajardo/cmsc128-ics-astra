@@ -51,7 +51,7 @@ const applySkillsSearch = (data, filterSkills) => {
   if (!filterSkills || filterSkills.length === 0) return data;
 
   const fuse = new Fuse(data, {
-    keys: ['skills'],
+    keys: ["skills"],
     threshold: 0.3,
     includeScore: true
   });
