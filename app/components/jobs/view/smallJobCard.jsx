@@ -3,12 +3,17 @@ import Link from "next/link";
 import { jobTypeMap, locationTypeMap } from "@/components/jobs/mappings";
 import { Clock } from "lucide-react";
 import JobMap from "../map";
+import { JobsStatus } from "../../../../common/scopes";
 import { ReportButton } from "@/components/Buttons";
 
 export default function SmallJobCard({job, showApply, canReport}) {
   const isOpen = (date) => {
-    const dateToday = new Date();
-    if (dateToday - date < 0) return true;
+    if (job.status === JobsStatus.OPEN_INDEFINITE) return true;
+    if ([JobsStatus.CLOSED, JobsStatus.ON_HOLD].includes(job.status)) return false;
+    if (job.status === JobsStatus.OPEN_UNTIL_EXPIRED){
+      const dateToday = new Date();
+      if (dateToday - date < 0) return true;
+    }
     return false;
   };
 
