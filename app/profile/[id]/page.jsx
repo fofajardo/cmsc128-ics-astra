@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react"; // Make sure React is imported
 import { Info } from "lucide-react";
 import { PersonalInfo } from "@/components/profile/sections/PersonalInfo";
 import { TechnicalSkills } from "@/components/profile/sections/TechnicalSkills";
@@ -13,8 +13,18 @@ import ExperienceModal from "@/components/profile/modals/ExperienceModal";
 import InterestsModal from "@/components/profile/modals/InterestsModal";
 import PersonalInfoModal from "@/components/profile/modals/PersonalInfoModal";
 import TechnicalSkillsModal from "@/components/profile/modals/TechnicalSkillsModal";
+import axios from "axios";
 
-export default function AlumniProfilePage() {
+export default function AlumniProfilePage({ params }) {
+  const unwrappedParams = React.use(params);
+  const { id } = unwrappedParams;
+
+  const [profileImage, setProfileImage] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // TODO: Fetch the profile data using the id from params
+  // Still a static/dummy data
   const profileData = {
     Title: "Mr.",
     FirstName: "Juan Miguel",
@@ -134,6 +144,42 @@ export default function AlumniProfilePage() {
   const [isShowAddExperienceForm, setIsShowAddExperienceForm] = useState(false);
   const [isShowAddAffiliationForm, setIsShowAddAffiliationForm] = useState(false);
 
+  // Fetch profile photo on component mount and when id changes
+  useEffect(() => {
+    fetchProfilePhoto();
+  }, [id]);
+
+  // Function to fetch profile photo
+  const fetchProfilePhoto = async () => {
+    setIsLoading(true);
+    try {
+      // console.log("Fetching photo for user ID:", id);
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/alum/${id}`
+      );
+      
+      // console.log("Photo response:", response.data);
+      if (response.data.status === "OK" && response.data.photo) {
+        setProfileImage(response.data.photo);
+      } else {
+        // Keep profile image as null if no photo is returned
+        setProfileImage(null);
+      }
+      setError(null);
+    } catch (err) {
+      console.error("Error fetching profile photo:", err);
+      setError("Failed to load profile picture");
+      setProfileImage(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handler for profile picture updates
+  const handleProfilePictureUpdate = () => {
+    fetchProfilePhoto();
+  };
+
   {/* Disables background scrolling */}
   useEffect(() => {
     const isAnyModalOpen =
@@ -180,6 +226,9 @@ export default function AlumniProfilePage() {
           profileData={profileData}
           isVerified={isVerified}
           setIsShowPersonalForm={setIsShowPersonalForm}
+          profileImage={profileImage}
+          userId={id}
+          onUpdateProfilePicture={handleProfilePictureUpdate}
         />
 
         {isVerified && (
@@ -212,8 +261,10 @@ export default function AlumniProfilePage() {
       {/* Modal Forms */}
       {isShowPersonalForm && (
         <PersonalInfoModal
+          alumniId ={id}
           profileData={profileData}
           onClose={() => setIsShowPersonalForm(false)}
+          onUpdate={handleProfilePictureUpdate}
         />
       )}
 

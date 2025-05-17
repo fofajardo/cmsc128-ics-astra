@@ -27,6 +27,7 @@ import {feRoutes} from "../../common/routes.js";
 import {useRouter} from "next/navigation";
 import {NavMenuItemId} from "../../common/scopes.js";
 import { ShieldUser } from "lucide-react";
+import axios from "axios";
 
 const menuItemsMain = {
   [NavMenuItemId.HOME]: {
@@ -274,6 +275,39 @@ function HeaderAuth() {
 function HeaderAvatar({context}) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const [avatarUrl, setAvatarUrl] = useState(context.state.authUser?.avatar_url || "https://cdn-icons-png.flaticon.com/512/145/145974.png");
+  
+  const fetchUserAvatar = async () => {
+    try {
+      if (!context.state.user?.id) return;
+      
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/alum/${context.state.user.id}?t=${new Date().getTime()}`
+      );
+      
+      if (response.data.status === "OK" && response.data.photo) {
+        setAvatarUrl(response.data.photo);
+      }
+    } catch (error) {
+      console.error("Error fetching user avatar:", error);
+    }
+  };
+  
+  useEffect(() => {
+    fetchUserAvatar();
+  }, [context.state.user?.id]);
+
+  useEffect(() => {
+    const handleProfilePictureUpdate = () => {
+      fetchUserAvatar();
+    };
+    
+    window.addEventListener("profilePictureUpdated", handleProfilePictureUpdate);
+
+    return () => {
+      window.removeEventListener("profilePictureUpdated", handleProfilePictureUpdate);
+    };
+  }, []);
 
   const handleMenuClose = () => {
     setIsMenuOpen(false);
@@ -291,14 +325,20 @@ function HeaderAvatar({context}) {
 
   return (
     <div className="relative flex items-center">
-      <Image
-        src={context.state.authUser?.avatar_url}
-        alt="User Avatar"
-        width={40}
-        height={40}
-        className="rounded-full border-2 border-astraprimary shadow-md transition-all duration-300 hover:scale-105 cursor-pointer"
-        onClick={() => setIsMenuOpen(!isMenuOpen)}
-      />
+      <div className="rounded-full overflow-hidden border-2 border-astraprimary shadow-md w-[40px] h-[40px] transition-all duration-300 hover:scale-105 cursor-pointer">
+        <Image
+          src={avatarUrl}
+          alt="User Avatar"
+          width={40}
+          height={40}
+          className="object-cover w-full h-full"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          onError={(e) => {
+            e.target.onerror = null; // Prevent infinite loop
+            e.target.src = "https://cdn-icons-png.flaticon.com/512/145/145974.png";
+          }}
+        />
+      </div>
       {isMenuOpen && (
         <div
           ref={dropdownRef}

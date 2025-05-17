@@ -204,7 +204,7 @@ const deletePhoto = async (req, res) => {
     // Fetch the photo details to get the file path (image_key)
     const { data: photo, error: fetchError } = await photosService.fetchPhotoById(req.supabase, id);
 
-    console.log("Fetched photo:", photo);
+    // console.log("Fetched photo:", photo);
     console.log("Fetch error:", fetchError);
 
     if (fetchError || !photo) {

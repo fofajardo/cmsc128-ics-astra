@@ -1,14 +1,46 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Camera } from "lucide-react";
 import ToastNotification from "@/components/ToastNotification";
+import axios from "axios";
+import { PhotoType } from "../../../../common/scopes";
+import { Loader2 } from "lucide-react";
 
-export default function PersonalInfoModal({ profileData, onClose }) {
+export default function PersonalInfoModal({ alumniId, profileData, onClose, onUpdate }) {
   const [formData, setFormData] = useState(profileData || {});
+  const [profileImageFile, setProfileImageFile] = useState(null);
+  const [profileImageUrl, setProfileImageUrl] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
   const [isMaidenNameChecked, setIsMaidenNameChecked] = useState(
     profileData?.Title === "Ms." || profileData?.Title === "Mrs." ? profileData?.IsMaidenName : false
   );
   const [showToast, setShowToast] = useState(false);
+
+  useEffect(() => {
+    fetchProfilePhoto();
+  }, []);
+
+  const fetchProfilePhoto = async () => {
+    try {
+      const userId = alumniId;
+      if (!userId) return;
+
+      // Remove withCredentials and crossDomain options as they might be causing issues
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/alum/${userId}?t=${new Date().getTime()}`
+      );
+      
+      if (response.data.status === "OK" && response.data.photo) {
+        // Don't modify the URL with cache-busting, just use it directly
+        setProfileImageUrl(response.data.photo);
+      } else {
+        setProfileImageUrl(null);
+      }
+    } catch (error) {
+      console.error("Error fetching profile photo:", error);
+      setProfileImageUrl(null);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -25,11 +57,125 @@ export default function PersonalInfoModal({ profileData, onClose }) {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setFormData({ ...formData, ProfilePicture: URL.createObjectURL(file) });
+      // File validation
+      if (!file.type.startsWith('image/')) {
+        setShowToast({ type: "fail", message: "Please select an image file" });
+        return;
+      }
+      
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        setShowToast({ type: "fail", message: "File size should be less than 5MB" });
+        return;
+      }
+  
+      // If there's a previous object URL, revoke it to prevent memory leaks
+      if (profileImageUrl && profileImageUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(profileImageUrl);
+      }
+  
+      // Create a local object URL for preview instead of using the file directly
+      const objectUrl = URL.createObjectURL(file);
+      setProfileImageFile(file);
+      setProfileImageUrl(objectUrl);
+    }
+  };
+  
+  // Also add this effect to clean up object URLs when component unmounts
+  useEffect(() => {
+    return () => {
+      // Clean up any object URLs when component unmounts
+      if (profileImageUrl && profileImageUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(profileImageUrl);
+      }
+    };
+  }, [profileImageUrl]);
+
+  const uploadProfilePicture = async () => {
+    if (!profileImageFile) return;
+  
+    setIsUploading(true);
+    
+    try {
+      const userId = alumniId;
+      
+      if (!userId) {
+        setShowToast({ type: "fail", message: "User ID not found" });
+        return;
+      }
+  
+      // Create form data
+      const formData = new FormData();
+      formData.append('user_id', userId);
+      formData.append('type', PhotoType.PROFILE_PIC);
+      formData.append('File', profileImageFile, profileImageFile.name);
+  
+      // First check if user already has a profile picture
+      const existingPhotoResponse = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/profile-pics`
+      );
+      
+      const userPhoto = existingPhotoResponse.data.profilePics?.find(
+        photo => photo.user_id === userId && photo.type === PhotoType.PROFILE_PIC
+      );
+      
+      // If user already has a profile picture, delete it first
+      if (userPhoto && userPhoto.id) {
+        // console.log("Deleting existing photo with ID:", userPhoto.id);
+        
+        // Delete the existing photo
+        const deleteResponse = await axios.delete(
+          `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/${userPhoto.id}`
+        );
+        
+        if (deleteResponse.data.status !== "DELETED") {
+          console.warn("Warning: Failed to delete existing photo before upload");
+          // Continue anyway - we'll just create a new photo
+        } else {
+          // console.log("Successfully deleted existing photo");
+        }
+      }
+      
+      // Now upload the new photo (always using POST since we deleted any existing photo)
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/photos`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+      
+      // console.log("Created new photo:", response.data);
+      
+      if (response.data.status === "CREATED" || response.data.status === "OK") {
+        setShowToast({ type: "success", message: "Profile picture updated successfully!" });
+        
+        // Refresh the local image URL from the server
+        fetchProfilePhoto();
+        
+        // Call the parent component's onUpdate function if provided
+        if (onUpdate) {
+          onUpdate();
+        }
+        
+        // Dispatch global event to notify all components about the profile picture change
+        window.dispatchEvent(new Event("profilePictureUpdated"));
+      } else {
+        setShowToast({ type: "fail", message: "Failed to update profile picture" });
+      }
+    } catch (error) {
+      console.error("Error uploading profile picture:", error);
+      setShowToast({ 
+        type: "fail", 
+        message: error.response?.data?.message || "Failed to upload profile picture" 
+      });
+    } finally {
+      setIsUploading(false);
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const requiredFields = {
       Title: formData.Title,
@@ -43,18 +189,37 @@ export default function PersonalInfoModal({ profileData, onClose }) {
       BirthPlace: formData.BirthPlace,
       Citizenship: formData.Citizenship,
     };
-
+  
     const isEmpty = (value) =>
       value === undefined || value === null || (typeof value === "string" && value.trim() === "");
-
+  
     const missingFields = Object.entries(requiredFields).filter(([_, value]) => isEmpty(value));
-
+  
     if (missingFields.length > 0) {
       setShowToast({ type: "fail", message: "Please fill in the missing fields." });
       return;
     }
-
-    setShowToast({ type: "success", message: "Your profile has been saved!" });
+  
+    try {
+      // If a new profile image was selected, upload it first
+      if (profileImageFile) {
+        await uploadProfilePicture();
+      }
+      
+      // Here you would normally save the other profile data
+      // For now, we'll just show a success message
+      
+      setShowToast({ type: "success", message: "Your profile has been saved!" });
+      
+      // Close the modal after a brief delay to let the user see the success message
+      setTimeout(() => {
+        onClose();
+      }, 1500);
+      
+    } catch (error) {
+      console.error("Error saving profile:", error);
+      setShowToast({ type: "fail", message: "Failed to save profile. Please try again." });
+    }
   };
 
   return (
@@ -65,24 +230,41 @@ export default function PersonalInfoModal({ profileData, onClose }) {
           <div className="flex justify-center w-full mb-6 relative">
             <div className="relative">
               <img
-                src={formData?.ProfilePicture || "/Placeholder.png"}
-                className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-2 border-gray-300"
+                src={profileImageUrl || "/Placeholder.png"}
+                className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-2 border-gray-300 object-cover"
                 alt="Profile"
+                crossOrigin="anonymous"
+                onError={(e) => {
+                  e.target.onerror = null; // Prevent infinite loop
+                  e.target.src = "/Placeholder.png"; // Fallback image
+                }}
               />
-              <input
-                type="file"
-                accept="image/*"
-                className="absolute bottom-0 right-0 opacity-0 cursor-pointer w-24 h-24 sm:w-32 sm:h-32 rounded-full"
-                onChange={handleImageChange}
-                id="profile-picture-upload"
-              />
-              <label
-                htmlFor="profile-picture-upload"
-                className="absolute bottom-0 right-0 p-2 bg-black bg-opacity-50 rounded-full cursor-pointer"
-              >
-                <Camera className="text-white" size={24} />
-              </label>
+              
+              {!isUploading ? (
+                <>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="absolute bottom-0 right-0 opacity-0 cursor-pointer w-24 h-24 sm:w-32 sm:h-32 rounded-full"
+                    onChange={handleImageChange}
+                    id="profile-picture-upload"
+                  />
+                  <label
+                    htmlFor="profile-picture-upload"
+                    className="absolute bottom-0 right-0 p-2 bg-black bg-opacity-50 rounded-full cursor-pointer"
+                  >
+                    <Camera className="text-white" size={24} />
+                  </label>
+                </>
+              ) : (
+                <div className="absolute inset-0 bg-black bg-opacity-40 rounded-full flex justify-center items-center">
+                  <Loader2 className="h-10 w-10 text-white animate-spin" />
+                </div>
+              )}
             </div>
+            <p className="text-xs text-gray-500 absolute bottom-[-20px]">
+              {isUploading ? "Uploading..." : "Click to change profile picture"}
+            </p>
           </div>
 
           {/* Preferred Title & Maiden Name */}
