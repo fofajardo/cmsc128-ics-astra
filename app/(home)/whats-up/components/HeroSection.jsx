@@ -59,8 +59,6 @@ export function HeroSection() {
                 alt="What's Up Illustration"
                 className="w-full h-auto object-contain transition-transform duration-300 hover:scale-105"
                 priority
-                width={200}
-                height={250}
               />
             </div>
           </div>
