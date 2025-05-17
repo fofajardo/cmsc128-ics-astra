@@ -29,13 +29,13 @@ const authRouter = () => {
     controller.signedInUser
   ]);
 
-  router.get("/sign-in/confirm", [
+  router.get("/confirm", [
     controller.signInGate,
     controller.signInSbConfirm,
     controller.signInRedirectFe
   ]);
 
-  router.get("/sign-in/confirm/raw", [
+  router.get("/confirm/raw", [
     controller.signInGate,
     controller.signInSbConfirm,
     controller.signedInUser
