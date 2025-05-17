@@ -162,7 +162,7 @@ class FrontEndRoutes extends BaseRoutes {
   }
 
   get BASE_URL() {
-    return this.isAbsolute ? process.env.ICSA_FE_URL : "";
+    return this.isAbsolute ? process.env.NEXT_PUBLIC_ICSA_FE_URL : "";
   }
 
   /**
