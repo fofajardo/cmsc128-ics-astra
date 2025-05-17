@@ -270,6 +270,7 @@ const updateJob =  async (req, res) => {
       location_type,
       employment_type,
       requirements,
+      status,
       expires_at
     } = req.body;
 
@@ -283,6 +284,7 @@ const updateJob =  async (req, res) => {
       validateField(location, "Location"),
       validateField(location_type, "Location type"),
       validateField(employment_type, "Employment type"),
+      validateField(status, "Status"),
     ].filter(Boolean);
 
     // Check if there are validation errors
@@ -310,7 +312,7 @@ const updateJob =  async (req, res) => {
     }
 
     // Prepare update data
-    const allowedUpdates = ["job_title", "hiring_manager", "company_name", "salary", "apply_link", "location", "location_type", "employment_type", "expires_at", "requirements"];
+    const allowedUpdates = ["job_title", "hiring_manager", "company_name", "salary", "apply_link", "location", "location_type", "employment_type", "expires_at", "requirements", "status"];
     const updateData = {};
 
     allowedUpdates.forEach(field => {

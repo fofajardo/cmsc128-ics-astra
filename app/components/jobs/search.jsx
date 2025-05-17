@@ -19,7 +19,7 @@ export default function SearchBar({ onSearch }) {
           placeholder="Search for job title"
           value={searchString}
           onChange={handleChange}
-          className="font-normal text-sm text-astradarkgray outline-none focus:border-b-1 border-0 border-astraprimary/50 focus:pb-1 w-full transition-all duration-150 ease-in"
+          className="font-normal text-sm text-astradarkgray outline-none border-0 border-astraprimary/50 pr-4 w-full transition-all duration-150 ease-in"
         />
       </div>
     </div>

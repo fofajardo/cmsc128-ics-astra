@@ -160,7 +160,7 @@ export default function ProjectsPage() {
         <div className="max-w-[1440px] mx-auto px-12 py-20 flex flex-col lg:flex-row items-center justify-between text-astrawhite gap-10">
           <div className="max-w-[600px] space-y-6 text-center lg:text-left animate-hero-text">
             <h1 className="text-[60px] font-extrabold leading-[1.1]">
-              Empowering <br /> Community Projects
+              Donations & <br /> Fundraising Projects
             </h1>
             <p className="text-lg font-medium">
               Discover, support, and contribute to meaningful causes initiated by people like you.

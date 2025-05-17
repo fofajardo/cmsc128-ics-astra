@@ -20,8 +20,8 @@ const jobTypeOptions = [
 
 const statusOptions = [
   {value: "", label: "All"},
-  {value: 0, label: "Open"},
-  {value: 1, label: "Closed"}
+  {value: 1, label: "Open"},
+  {value: 3, label: "Closed"}
 ];
 
 const locationTypeOptions = [

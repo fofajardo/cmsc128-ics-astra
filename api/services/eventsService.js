@@ -1,4 +1,4 @@
-import { applyFilter } from "../utils/applyFilter.js";
+import { applyFilter } from "../utils/filters.js";
 
 const fetchEvents = async (supabase, filters) => {
   let query = supabase
