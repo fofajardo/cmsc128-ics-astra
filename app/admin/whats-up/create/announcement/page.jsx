@@ -8,7 +8,7 @@ import axios from "axios";
 import { useSignedInUser } from "@/components/UserContext";
 
 export default function CreateAnnouncement() {
-  const user = useSignedInUser();
+  const userContext = useSignedInUser();
   const router = useRouter();
   const [toast, setToast] = useState(null);
   const [formData, setFormData] = useState({
@@ -30,15 +30,20 @@ export default function CreateAnnouncement() {
   const handleSubmit = async () => {
     try {
       const payload = {
-
+        user_id: userContext?.state?.authUser?.id,
         title: formData.title,
         details: formData.content,
         views: 0,
         tags: ["announcement", "published"]
       };
 
-      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/`, payload);
-
+      const response =  await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/`, payload);
+      const contentId = response.data.data.id;
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/v1/photos/event/${contentId}`, {
+        photo: formData.image,
+        content_id: contentId
+      });
+      console.log(response.data.data.id);
 
       setToast({ type: "success", message: "Announcement published successfully!" });
       setTimeout(() => router.push("/admin/whats-up"), 2000);

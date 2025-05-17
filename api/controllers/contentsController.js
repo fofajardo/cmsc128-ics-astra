@@ -46,11 +46,6 @@ const getAnnouncements = async (req, res) => {
       });
     }
 
-    // Filter data to only include items with 'announcement' tag
-    const announcements = data ? data.filter(item =>
-      item.tags && Array.isArray(item.tags) && item.tags.includes('announcement')
-    ) : [];
-
     return res.status(httpStatus.OK).json({
       status: "OK",
       list: announcements || [],

@@ -10,6 +10,11 @@ const fetchContents = async (supabase, filters = {}) => {
     .from("contents")
     .select("*", { count: "exact" });
 
+  // Filter for announcements if specified
+  if (filters.tag === 'announcement') {
+    query = query.contains('tags', ['announcement']);
+  }
+
   // Apply filters if any
   query = applyFilter(query, filters, {
     ilike: ["title", "details"],
@@ -20,11 +25,12 @@ const fetchContents = async (supabase, filters = {}) => {
     defaultOrder: filters.order || "desc",
     specialKeys: [
       "page",
-      "limit", 
+      "limit",
       "created_at_from",
       "created_at_to",
       "sort_by",
-      "order"
+      "order",
+      "tag"
     ]
   });
 
