@@ -464,7 +464,7 @@ export default function ProjectsPage() {
       </section>
 
       {/* Why Your Support Matters*/}
-      <section className="bg-astralightgray pt-20 pb-40 px-4 text-center">
+      <section className="bg-astralightgray/20 pt-20 pb-40 px-4 text-center">
         <h2 className="font-h2 mb-2 text-astrablack">
           Why Your Support Matters
         </h2>
@@ -599,7 +599,7 @@ export default function ProjectsPage() {
       </section>
 
       {/* Finished Fundraisers*/}
-      <section className="bg-astralightgray pt-20 pb-30">
+      <section className="bg-astralightgray/30 pt-20 pb-30">
         <div className="max-w-7xl mx-auto px-4 relative">
           <h2 className="font-h2 text-astrablack mb-3">
             Finished Fundraisers

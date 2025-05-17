@@ -99,7 +99,7 @@ const RequestFundraiserGoal = () => {
   return (
     <div className="min-h-screen w-full flex flex-col md:flex-row">
       {/*edit left side*/}
-      <div className="w-full md:w-[35%] bg-astralightgray flex py-12 md:py-0">
+      <div className="w-full md:w-[35%] bg-astralightgray/30 flex py-12 md:py-0">
         <div className="flex flex-col items-start space-y-6 pl-10 pt-60 ml-6">
           {/* Header text */}
           <h2 className="text-5xl text-astrablack text-left">
