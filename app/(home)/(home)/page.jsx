@@ -2,13 +2,11 @@
 
 import Image from "next/image";
 import Head from "next/head";
-import Slideshow from "@/components/Slideshow";
+import Slideshow from "@/components/Slideshow.jsx";
 import { FileText } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Rocket, Users, Code, Database, Star } from "lucide-react";
 import Link from "next/link";
-import {RouteGuard} from "@/components/RouteGuard.jsx";
-
 
 const initialLoopImages1 = [
   "/icsloop1.jpg",
@@ -35,7 +33,6 @@ const loopImages2 = Array.from({ length: numberOfDuplicates }, () => initialLoop
 export default function Page() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-[var(--color-astrawhite)] to-[var(--color-astratintedwhite)]">
-      <RouteGuard />
       <Head>
         <title>ICS-ASTRA</title>
         <link rel="icon" href="/astra-logo.png" />

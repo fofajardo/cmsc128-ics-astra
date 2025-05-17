@@ -361,7 +361,7 @@ export default function Page() {
           <div className="max-w-[1440px] mx-auto px-6 py-10 md:px-12 md:py-16 lg:px-12 lg:py-20 flex flex-col lg:flex-row items-center justify-between text-astrawhite gap-6 lg:gap-10">
             <div className="max-w-[600px] space-y-4 text-center lg:text-left animate-slide-up">
               <h1 className="font-h1 text-astrawhite leading-[1.1] text-3xl md:text-4xl lg:text-5xl">
-                Search for Alumni <br className="hidden lg:block" /> & Connections
+                Alumni Directory
               </h1>
               <p className="font-l text-astrawhite text-sm md:text-base">
                 Discover, connect, and engage with alumni to expand your network!

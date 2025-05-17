@@ -7,22 +7,48 @@ import ToastNotification from "@/components/ToastNotification";
 import Link from "next/link";
 import axios from "axios";
 import { formatCurrency, formatDate, capitalizeName } from "@/utils/format";
-import { PROJECT_STATUS, PROJECT_TYPE } from "@/constants/projectConsts";
+import { PROJECT_STATUS, PROJECT_TYPE } from "../../../../../common/scopes";
+import { feRoutes } from "../../../../../common/routes";
+import { useSignedInUser } from "@/components/UserContext.jsx";
 
 //for admin/projects/inactive/[id]
 export default function InactiveProjectDetail({ params }) {
   //fix the params.id error by unwrapping with use()
   const id = use(params).id;
   const router = useRouter();
+  const userContext = useSignedInUser();
+  const user_id = userContext.state.user?.id;
   const [toast, setToast] = useState(null);
   const [showContactModal, setShowContactModal] = useState(false);
   const [message, setMessage] = useState("");
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const MAX_MESSAGE_LENGTH = 500;
 
   const [projectData, setProjectData] = useState(null);
 
   const [projectPhoto, setProjectPhoto] = useState({});
+  const [imageLoading, setImageLoading] = useState(true);
+  const [imageError, setImageError] = useState(false);
+  const [imageSrc, setImageSrc] = useState("/projects/assets/Donation.png");
+
+  // Add constant for fallback image
+  const FALLBACK_IMAGE = "/projects/assets/Donation.png";
+
+  // Add timeout for image loading
+  useEffect(() => {
+    let timeoutId;
+    if (imageLoading) {
+      timeoutId = setTimeout(() => {
+        setImageLoading(false);
+        setImageError(true);
+        setImageSrc(FALLBACK_IMAGE);
+      }, 5000); // 5 second timeout
+    }
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [imageLoading]);
 
   useEffect(() => {
     const fetchProjectRequest = async () => {
@@ -36,6 +62,7 @@ export default function InactiveProjectDetail({ params }) {
 
           const donationsResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations`, {
             params: {
+              requester_id: user_id,
               project_id: projectId
             }
           });
@@ -48,6 +75,7 @@ export default function InactiveProjectDetail({ params }) {
               donor: donation.donor,
               amount: donation.amount,
               date: donation.donation_date,
+              isVerified: donation.is_verified,
             }));
           } else {
             console.error("Unexpected response:", donationData);
@@ -59,7 +87,7 @@ export default function InactiveProjectDetail({ params }) {
             project_status: projectData.list.projectData.project_status,
             title: projectData.list.projectData.title,
             type: projectData.list.projectData.type,
-            image: null,
+            image: FALLBACK_IMAGE, // Use constant for default image
             urlLink: projectData.list.projectData.donation_link,
             description: projectData.list.projectData.details,
             longDescription: projectData.list.projectData.details,
@@ -88,10 +116,20 @@ export default function InactiveProjectDetail({ params }) {
             );
 
             if (photoResponse.data.status === "OK" && photoResponse.data.photo) {
-              setProjectPhoto(photoResponse.data.photo);
+              setImageLoading(true);
+              setImageError(false);
+              setImageSrc(photoResponse.data.photo);
+            } else {
+              // Handle case where photo data is not in expected format
+              setImageLoading(false);
+              setImageError(true);
+              setImageSrc(FALLBACK_IMAGE);
             }
           } catch (photoError) {
             console.log(`Failed to fetch photo for project_id ${projectId}:`, photoError);
+            setImageError(true);
+            setImageLoading(false);
+            setImageSrc(FALLBACK_IMAGE);
           }
         } else {
           console.error("Unexpected response:", projectData);
@@ -138,34 +176,51 @@ export default function InactiveProjectDetail({ params }) {
     setIsShareModalOpen(true);
   };
 
-  //Open edit modal with current project data
-  // const handleEdit = () => {
-  //   const cleanedGoal = parseInt(projectData.goal.replace(/[^0-9]/g, ""), 10);
-  //   const cleanedRaised = parseInt(
-  //     projectData.raised.replace(/[^0-9]/g, ""),
-  //     10
-  //   );
-  //
-  //   setEditFormData({
-  //     ...projectData,
-  //     goal: cleanedGoal,
-  //     raised: cleanedRaised,
-  //   });
-  //   setErrors({});
-  //   setShowEditModal(true);
-  // };
-
   //handle send message button click
-  //placeholder
   const handleSendMessage = () => {
-    // In a real app, you would send this message to the backend
-    setToast({
-      type: "success",
-      message: "Message sent successfully!"
-    });
-    setShowContactModal(false);
-    setMessage("");
+    try {
+      // Create email subject and body
+      const subject = `Inquiry about ${projectData.title}`;
+      const emailBody = `Hello ${projectData.requester.name},\n\n${message}\n\nBest regards,\n${userContext?.state?.user?.name || userContext?.state?.user?.email || "Anonymous"}`;
+
+      // Create Gmail URL with pre-filled information
+      const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(projectData.requester.email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
+
+      // Open Gmail in a new tab
+      window.open(gmailUrl, "_blank");
+
+      setToast({
+        type: "success",
+        message: "Opening Gmail...",
+      });
+      setShowContactModal(false);
+      setMessage("");
+    } catch (error) {
+      console.error("Failed to open Gmail:", error);
+      setToast({
+        type: "fail",
+        message: "Failed to open Gmail. Please try again.",
+      });
+    }
   };
+
+  const handleMessageChange = (e) => {
+    const newMessage = e.target.value;
+    if (newMessage.length <= MAX_MESSAGE_LENGTH) {
+      setMessage(newMessage);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="bg-astradirtywhite min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-astraprimary"></div>
+          <p className="text-astraprimary font-medium">Loading project details...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-astradirtywhite min-h-screen pb-12">
@@ -179,10 +234,24 @@ export default function InactiveProjectDetail({ params }) {
 
       {/* Project image and title section */}
       <div className="relative h-64">
+        {imageLoading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-astralightgray/50 z-10">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-astraprimary"></div>
+          </div>
+        )}
         <img
-          src={projectData?.image}
+          src={imageSrc}
           alt={projectData?.title}
-          className="w-full h-full object-cover"
+          className={`w-full h-full object-cover transition-opacity duration-300 ${imageLoading ? "opacity-0" : "opacity-100"}`}
+          onLoad={() => {
+            setImageLoading(false);
+          }}
+          onError={(e) => {
+            console.error("Image failed to load:", e);
+            setImageError(true);
+            setImageSrc(FALLBACK_IMAGE);
+            setImageLoading(false);
+          }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
           <div className="p-6 text-astrawhite w-full">
@@ -198,11 +267,6 @@ export default function InactiveProjectDetail({ params }) {
                   <HeartHandshake className="w-4 h-4" />
                 )}
                 {projectData?.type ? capitalizeName(projectData.type) : projectData?.type}
-              </div>
-
-              <div className="ml-4 bg-astrawhite text-astradark px-3 py-1 rounded-lg text-sm font-s flex items-center gap-1">
-                <Calendar className="w-4 h-4" />
-                <span>{projectData?.project_status === PROJECT_STATUS.FINISHED ? `Date Ended: ${formatDate(projectData?.endDate)}` : `Date Deleted: ${formatDate(projectData?.dateReviewed)}`}</span>
               </div>
             </div>
           </div>
@@ -303,6 +367,7 @@ export default function InactiveProjectDetail({ params }) {
                 <thead className="sticky top-0 bg-astralightgray">
                   <tr>
                     <th className="py-3 px-4 text-left font-sb">Donor</th>
+                    <th className="py-3 px-4 text-right font-sb">Verified</th>
                     <th className="py-3 px-4 text-right font-sb">Amount</th>
                     <th className="py-3 px-4 text-right font-sb">Date</th>
                   </tr>
@@ -311,6 +376,13 @@ export default function InactiveProjectDetail({ params }) {
                   {projectData?.transactions.map((transaction) => (
                     <tr key={transaction.id} className="hover:bg-astralightgray/10 transition-colors">
                       <td className="py-3 px-4">{transaction.donor}</td>
+                      <td className="py-3 px-4 text-right">
+                        {transaction.isVerified ? (
+                          <span className="text-astragreen font-bold">YES</span>
+                        ) : (
+                          <span className="text-astrared font-bold">NO</span>
+                        )}
+                      </td>
                       <td className="py-3 px-4 text-right font-sb text-astraprimary">{formatCurrency(transaction.amount)}</td>
                       <td className="py-3 px-4 text-right text-astradarkgray">{formatDate(transaction.date)}</td>
                     </tr>
@@ -319,6 +391,7 @@ export default function InactiveProjectDetail({ params }) {
                 <tfoot>
                   <tr className="bg-astralightgray/30 border-t-2 border-astralightgray">
                     <td className="py-3 px-4 font-sb">Total</td>
+                    <td className="py-3 px-4"></td>
                     <td className="py-3 px-4 text-right font-sb text-astraprimary">{formatCurrency(projectData?.raised)}</td>
                     <td className="py-3 px-4"></td>
                   </tr>
@@ -428,7 +501,7 @@ export default function InactiveProjectDetail({ params }) {
                 <input
                   type="text"
                   readOnly
-                  value={projectData?.urlLink}
+                  value={feRoutes.projects.about(id)}
                   className="w-full text-sm py-1 bg-transparent focus:outline-none text-gray-700 overflow-hidden text-ellipsis"
                 />
               </div>
@@ -437,7 +510,7 @@ export default function InactiveProjectDetail({ params }) {
             <div className="mt-6 flex justify-center">
               <button
                 onClick={() => {
-                  navigator.clipboard.writeText(projectData?.urlLink);
+                  navigator.clipboard.writeText(feRoutes.projects.about(id));
 
                   // Show success animation in button
                   const btn = document.getElementById("copyBtn");
@@ -473,7 +546,7 @@ export default function InactiveProjectDetail({ params }) {
                 <p className="text-xs text-gray-500 mb-3">Or share directly to</p>
                 <div className="flex space-x-4 justify-center">
                   <a
-                    href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(projectData?.urlLink)}`}
+                    href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(feRoutes.projects.about(id))}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition-colors"
@@ -483,7 +556,7 @@ export default function InactiveProjectDetail({ params }) {
                     </svg>
                   </a>
                   <a
-                    href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(projectData?.urlLink)}&text=Check out this project!`}
+                    href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(feRoutes.projects.about(id))}&text=Check out this project!`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-blue-400 text-white p-2 rounded-full hover:bg-blue-500 transition-colors"
@@ -493,7 +566,7 @@ export default function InactiveProjectDetail({ params }) {
                     </svg>
                   </a>
                   <a
-                    href={`https://api.whatsapp.com/send?text=Check out this project! ${encodeURIComponent(projectData?.urlLink)}`}
+                    href={`https://api.whatsapp.com/send?text=Check out this project! ${encodeURIComponent(feRoutes.projects.about(id))}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-green-500 text-white p-2 rounded-full hover:bg-green-600 transition-colors"
@@ -503,7 +576,7 @@ export default function InactiveProjectDetail({ params }) {
                     </svg>
                   </a>
                   <a
-                    href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(projectData?.urlLink)}`}
+                    href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(feRoutes.projects.about(id))}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition-colors"
@@ -596,14 +669,15 @@ export default function InactiveProjectDetail({ params }) {
                     className="w-full border border-astragray/30 rounded-lg p-4 min-h-32 focus:ring-2 focus:ring-astraprimary/30 focus:border-astraprimary transition-all bg-white shadow-inner"
                     placeholder="Introduce yourself and explain why you're reaching out..."
                     value={message}
-                    onChange={(e) => setMessage(e.target.value)}
+                    onChange={handleMessageChange}
+                    maxLength={MAX_MESSAGE_LENGTH}
                   ></textarea>
                 </div>
 
                 <div className="flex justify-between mt-2 text-xs text-astragray">
                   <p>Be professional and clear about your intent</p>
-                  <p className={`${message.length > 500 ? "text-red-500 font-medium" : ""}`}>
-                    {message.length}/1000 characters
+                  <p className={`${message.length >= MAX_MESSAGE_LENGTH ? "text-red-500 font-medium" : ""}`}>
+                    {message.length}/{MAX_MESSAGE_LENGTH} characters
                   </p>
                 </div>
               </div>

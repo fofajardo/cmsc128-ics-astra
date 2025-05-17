@@ -6,6 +6,8 @@ import AdminTabs from "@/components/AdminTabs";
 import {Megaphone, Newspaper, CalendarDays, FilePlus2,  } from "lucide-react";
 import { TabContext } from "../../components/TabContext";
 import { useRouter, usePathname } from "next/navigation";
+import {NavMenuItemId} from "../../../common/scopes.js";
+import {ActiveNavItemMarker} from "@/components/Header.jsx";
 
 export default function AdminAlumniLayout({ children }) {
   const router = useRouter();
@@ -63,6 +65,7 @@ export default function AdminAlumniLayout({ children }) {
   return (
     <>
       {/* Header with background */}
+      <ActiveNavItemMarker id={NavMenuItemId.NEWS}/>
       <div className="relative">
         <img
           src="/blue-bg.png"

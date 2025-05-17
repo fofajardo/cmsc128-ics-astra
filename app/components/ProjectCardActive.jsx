@@ -2,7 +2,7 @@
 import { GraduationCap, HeartHandshake, Users, Calendar } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency, formatDate, capitalizeName } from "@/utils/format";
-import { PROJECT_TYPE } from "@/constants/projectConsts";
+import { PROJECT_TYPE } from "../../common/scopes";
 
 export default function ProjectCardActive({
   id,
