@@ -29,7 +29,7 @@ export default function PersonalInfoModal({ alumniId, profileData, onClose, onUp
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/alum/${userId}?t=${new Date().getTime()}`
       );
-      
+
       if (response.data.status === "OK" && response.data.photo) {
         // Don't modify the URL with cache-busting, just use it directly
         setProfileImageUrl(response.data.photo);
@@ -58,33 +58,33 @@ export default function PersonalInfoModal({ alumniId, profileData, onClose, onUp
     const file = e.target.files[0];
     if (file) {
       // File validation
-      if (!file.type.startsWith('image/')) {
+      if (!file.type.startsWith("image/")) {
         setShowToast({ type: "fail", message: "Please select an image file" });
         return;
       }
-      
+
       if (file.size > 5 * 1024 * 1024) { // 5MB limit
         setShowToast({ type: "fail", message: "File size should be less than 5MB" });
         return;
       }
-  
+
       // If there's a previous object URL, revoke it to prevent memory leaks
-      if (profileImageUrl && profileImageUrl.startsWith('blob:')) {
+      if (profileImageUrl && profileImageUrl.startsWith("blob:")) {
         URL.revokeObjectURL(profileImageUrl);
       }
-  
+
       // Create a local object URL for preview instead of using the file directly
       const objectUrl = URL.createObjectURL(file);
       setProfileImageFile(file);
       setProfileImageUrl(objectUrl);
     }
   };
-  
+
   // Also add this effect to clean up object URLs when component unmounts
   useEffect(() => {
     return () => {
       // Clean up any object URLs when component unmounts
-      if (profileImageUrl && profileImageUrl.startsWith('blob:')) {
+      if (profileImageUrl && profileImageUrl.startsWith("blob:")) {
         URL.revokeObjectURL(profileImageUrl);
       }
     };
@@ -92,41 +92,41 @@ export default function PersonalInfoModal({ alumniId, profileData, onClose, onUp
 
   const uploadProfilePicture = async () => {
     if (!profileImageFile) return;
-  
+
     setIsUploading(true);
-    
+
     try {
       const userId = alumniId;
-      
+
       if (!userId) {
         setShowToast({ type: "fail", message: "User ID not found" });
         return;
       }
-  
+
       // Create form data
       const formData = new FormData();
-      formData.append('user_id', userId);
-      formData.append('type', PhotoType.PROFILE_PIC);
-      formData.append('File', profileImageFile, profileImageFile.name);
-  
+      formData.append("user_id", userId);
+      formData.append("type", PhotoType.PROFILE_PIC);
+      formData.append("File", profileImageFile, profileImageFile.name);
+
       // First check if user already has a profile picture
       const existingPhotoResponse = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/profile-pics`
       );
-      
+
       const userPhoto = existingPhotoResponse.data.profilePics?.find(
         photo => photo.user_id === userId && photo.type === PhotoType.PROFILE_PIC
       );
-      
+
       // If user already has a profile picture, delete it first
       if (userPhoto && userPhoto.id) {
         // console.log("Deleting existing photo with ID:", userPhoto.id);
-        
+
         // Delete the existing photo
         const deleteResponse = await axios.delete(
           `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/${userPhoto.id}`
         );
-        
+
         if (deleteResponse.data.status !== "DELETED") {
           console.warn("Warning: Failed to delete existing photo before upload");
           // Continue anyway - we'll just create a new photo
@@ -134,31 +134,31 @@ export default function PersonalInfoModal({ alumniId, profileData, onClose, onUp
           // console.log("Successfully deleted existing photo");
         }
       }
-      
+
       // Now upload the new photo (always using POST since we deleted any existing photo)
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/v1/photos`,
         formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
           },
         }
       );
-      
+
       // console.log("Created new photo:", response.data);
-      
+
       if (response.data.status === "CREATED" || response.data.status === "OK") {
         setShowToast({ type: "success", message: "Profile picture updated successfully!" });
-        
+
         // Refresh the local image URL from the server
         fetchProfilePhoto();
-        
+
         // Call the parent component's onUpdate function if provided
         if (onUpdate) {
           onUpdate();
         }
-        
+
         // Dispatch global event to notify all components about the profile picture change
         window.dispatchEvent(new Event("profilePictureUpdated"));
       } else {
@@ -166,9 +166,9 @@ export default function PersonalInfoModal({ alumniId, profileData, onClose, onUp
       }
     } catch (error) {
       console.error("Error uploading profile picture:", error);
-      setShowToast({ 
-        type: "fail", 
-        message: error.response?.data?.message || "Failed to upload profile picture" 
+      setShowToast({
+        type: "fail",
+        message: error.response?.data?.message || "Failed to upload profile picture"
       });
     } finally {
       setIsUploading(false);
@@ -189,33 +189,33 @@ export default function PersonalInfoModal({ alumniId, profileData, onClose, onUp
       BirthPlace: formData.BirthPlace,
       Citizenship: formData.Citizenship,
     };
-  
+
     const isEmpty = (value) =>
       value === undefined || value === null || (typeof value === "string" && value.trim() === "");
-  
+
     const missingFields = Object.entries(requiredFields).filter(([_, value]) => isEmpty(value));
-  
+
     if (missingFields.length > 0) {
       setShowToast({ type: "fail", message: "Please fill in the missing fields." });
       return;
     }
-  
+
     try {
       // If a new profile image was selected, upload it first
       if (profileImageFile) {
         await uploadProfilePicture();
       }
-      
+
       // Here you would normally save the other profile data
       // For now, we'll just show a success message
-      
+
       setShowToast({ type: "success", message: "Your profile has been saved!" });
-      
+
       // Close the modal after a brief delay to let the user see the success message
       setTimeout(() => {
         onClose();
       }, 1500);
-      
+
     } catch (error) {
       console.error("Error saving profile:", error);
       setShowToast({ type: "fail", message: "Failed to save profile. Please try again." });
@@ -239,7 +239,7 @@ export default function PersonalInfoModal({ alumniId, profileData, onClose, onUp
                   e.target.src = "/Placeholder.png"; // Fallback image
                 }}
               />
-              
+
               {!isUploading ? (
                 <>
                   <input

@@ -157,7 +157,7 @@ export default function AlumniProfilePage({ params }) {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/alum/${id}`
       );
-      
+
       // console.log("Photo response:", response.data);
       if (response.data.status === "OK" && response.data.photo) {
         setProfileImage(response.data.photo);

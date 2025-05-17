@@ -276,15 +276,15 @@ function HeaderAvatar({context}) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
   const [avatarUrl, setAvatarUrl] = useState(context.state.authUser?.avatar_url || "https://cdn-icons-png.flaticon.com/512/145/145974.png");
-  
+
   const fetchUserAvatar = async () => {
     try {
       if (!context.state.user?.id) return;
-      
+
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/alum/${context.state.user.id}?t=${new Date().getTime()}`
       );
-      
+
       if (response.data.status === "OK" && response.data.photo) {
         setAvatarUrl(response.data.photo);
       }
@@ -292,7 +292,7 @@ function HeaderAvatar({context}) {
       console.error("Error fetching user avatar:", error);
     }
   };
-  
+
   useEffect(() => {
     fetchUserAvatar();
   }, [context.state.user?.id]);
@@ -301,7 +301,7 @@ function HeaderAvatar({context}) {
     const handleProfilePictureUpdate = () => {
       fetchUserAvatar();
     };
-    
+
     window.addEventListener("profilePictureUpdated", handleProfilePictureUpdate);
 
     return () => {
