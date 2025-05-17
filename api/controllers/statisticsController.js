@@ -243,7 +243,7 @@ const getProjectContributors = async (req, res) => {
 
 const getAlumniEmploymentStatus = async (req, res) => {
   try {
-    const stats = await statisticsService.fetchAlumniEmploymentStatusStats(req.supabase);
+    const stats = await statisticsService.fetchAlumniEmploymentStatus(req.supabase);
 
     res.status(httpStatus.OK).json({
       status: "OK",

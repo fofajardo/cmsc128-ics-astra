@@ -2,7 +2,7 @@
 import { GraduationCap, HeartHandshake } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency, capitalizeName } from "@/utils/format";
-import { PROJECT_TYPE } from "@/constants/projectConsts";
+import { PROJECT_TYPE } from "../../common/scopes";
 import axios from "axios";
 
 export default function ProjectCardPending({
@@ -73,7 +73,7 @@ export default function ProjectCardPending({
           <p className="text-astradarkgray font-s mt-1">
             <span className="font-sb">Goal:</span> {formatCurrency(goal)}
           </p>
-          <p className="text-astradarkgray font-s mt-2 line-clamp-2">{description}</p>
+          <p className="text-astradarkgray font-s mt-2 line-clamp-1">{description}</p>
 
           {/* Action Buttons */}
           <div className="flex flex-col gap-3 mt-4">

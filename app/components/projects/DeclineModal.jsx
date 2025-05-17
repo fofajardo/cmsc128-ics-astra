@@ -27,10 +27,15 @@ export default function DeclineModal({ reason, setReason, onClose, onSubmit }) {
             className="w-full border border-astragray/30 rounded-lg p-4 min-h-32 focus:ring-astrared transition-all bg-white shadow-inner"
             placeholder="Explain your reason for declining the request..."
             value={reason}
-            onChange={(e) => setReason(e.target.value)}
+            onChange={(e) => {
+              if (e.target.value.length <= 500) {
+                setReason(e.target.value);
+              }
+            }}
+            maxLength={500}
           />
           <p className={`text-xs text-right mt-2 ${reason.length > 500 ? "text-red-500 font-medium" : "text-astragray"}`}>
-            {reason.length}/1000 characters
+            {reason.length}/500 characters
           </p>
         </div>
 

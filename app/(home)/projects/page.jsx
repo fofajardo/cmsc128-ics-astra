@@ -1,18 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import ProjectCard from "../../components/projects/ProjectCard";
 import Link from "next/link";
 import { Icon } from "@iconify/react";
 import { Filter, User } from "lucide-react";
 import axios from "axios";
-import { PROJECT_STATUS, PROJECT_STATUS_LABELS, PROJECT_TYPE } from "@/constants/projectConsts.js";
+import { PROJECT_STATUS, PROJECT_STATUS_LABELS, PROJECT_TYPE, REQUEST_STATUS } from "../../../common/scopes";
 import { capitalizeName } from "@/utils/format.jsx";
 import { useSignedInUser } from "@/components/UserContext.jsx";
+import { LoadingSpinner } from "@/components/LoadingSpinner.jsx";
 import FilterDropdown from "@/components/events/GroupedEvents/FilterDropdown";
 import Image from "next/image";
 import donationVector from "../../assets/donation-vector.png";
-
 
 export default function ProjectsPage() {
   const user = useSignedInUser();
@@ -36,13 +37,15 @@ export default function ProjectsPage() {
     const fetchApprovedProjects = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/projects/approved`);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/requests/projects`, {
+          params: { status: REQUEST_STATUS.APPROVED }
+        });
         const projectData = response.data;
         if (projectData.status === "OK") {
           console.log("Fetched projects:", projectData);
 
           // extract project id's
-          const projectIds = projectData.projects.map(project => project.projectData.project_id);
+          const projectIds = projectData.list.map(project => project.projectData.project_id);
 
           // map for photos initialization
           const photoMap = {};
@@ -66,7 +69,7 @@ export default function ProjectsPage() {
           setProjectPhotos(photoMap);
 
           setProjects(
-            projectData.projects.map(
+            projectData.list.map(
               project => ({
                 id: project.projectData.project_id,
                 title: project.projectData.title,
@@ -124,9 +127,25 @@ export default function ProjectsPage() {
   const filteredProjects = allProjects.filter((project) => {
     const matchesType = !selectedType || !selectedType.label || selectedType.label.toLowerCase() === project.type.toLowerCase();
     const matchesSearch = !searchTerm || project.title.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = !selectedStatus || selectedStatus === "All" || project.project_status === selectedStatus;
+    const matchesStatus = !selectedStatus || PROJECT_STATUS_LABELS[project.project_status] === selectedStatus.label;
+
+    // Check if project is past due date
+    const isPastDueDate = new Date(project.endDate) < new Date();
+    const isActive = !isPastDueDate && project.project_status !== PROJECT_STATUS.FINISHED;
+
+    // If project is past due date and not already marked as finished, it should be considered inactive
+    if (isPastDueDate && project.project_status !== PROJECT_STATUS.FINISHED) {
+      project.project_status = PROJECT_STATUS.FINISHED;
+    }
 
     return matchesType && matchesSearch && matchesStatus;
+  }).sort((a, b) => {
+    if (!sortOrder || sortOrder.label === "Most Recent") {
+      return new Date(a.endDate) - new Date(b.endDate);
+    } else if (sortOrder.label === "Oldest") {
+      return new Date(b.endDate) - new Date(a.endDate);
+    }
+    return 0;
   });
 
   const visibleCompletedProjects = finishedProjects.slice(
@@ -212,7 +231,7 @@ export default function ProjectsPage() {
 
             <FilterDropdown
               icon="ri-filter-2-line"
-              placeholder="Filter"
+              placeholder="Sort By"
               value={sortOrder}
               options={[
                 { label: "Clear", icon: "mdi:close-circle-outline" },
@@ -227,63 +246,70 @@ export default function ProjectsPage() {
 
       <section className="bg-astrawhite py-16 px-4">
         <div className="max-w-6xl mx-auto">
-          {filteredProjects.length > 0 ? (
-            <>
-              {/* Dynamic Grid*/}
-              <div
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8"
-                style={{
-                  gridAutoRows: "1fr",
-                }}
-              >
-                {filteredProjects.slice(0, visibleCount).map((project) => (
-                  <Link
-                    href={`/projects/about/${project.request_id}`}
-                    key={project.id}
-                    className="block h-full"
-                  >
-                    <ProjectCard
-                      id={project.id}
-                      image={project.image}
-                      title={project.title}
-                      description={project.description}
-                      goal={project.goal}
-                      raised={project.raised}
-                      donors={project.donors}
-                      type={project.type}
-                      endDate={project.endDate}
-                    />
-                  </Link>
-                ))}
-              </div>
-
-              {/* Loading Indicator for large datasets */}
-              {visibleCount < filteredProjects.length &&
-                filteredProjects.length > 20 && (
-                <div className="flex justify-center items-center py-4">
-                  <div className="animate-pulse text-astradarkgray">
-                    Loading more projects...
-                  </div>
-                </div>
-              )}
-            </>
-          ) : (
-            <div className="text-center py-16">
-              <p className="text-astradarkgray font-s text-lg">
-                No projects found matching your criteria.
-              </p>
-              <button
-                onClick={() => {
-                  setSelectedType(null);
-                  setSearchTerm("");
-                  setSelectedStatus(null);
-                  setSortOrder(null);
-                }}
-                className="mt-4 blue-button"
-              >
-                Reset Filters
-              </button>
+          {loading ? (
+            <div className="bg-astrawhite p-6 rounded-b-xl flex items-center justify-center">
+              <LoadingSpinner className="h-10 w-10" />
             </div>
+          ) : (
+            filteredProjects.length > 0 ? (
+              <>
+                {/* Dynamic Grid*/}
+                <div
+                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8"
+                  style={{
+                    gridAutoRows: "1fr",
+                  }}
+                >
+                  {filteredProjects.slice(0, visibleCount).map((project) => (
+                    <div className="block h-full"
+                      key={project.id}
+                    >
+                      <ProjectCard
+                        id={project.id}
+                        image={project.image}
+                        title={project.title}
+                        description={project.description}
+                        goal={project.goal}
+                        raised={project.raised}
+                        donors={project.donors}
+                        endDate={project.endDate}
+                        type={project.type}
+                        requestId={project.request_id}
+                        donationLink={project.donationLink}
+                        showDonate={user?.state?.user && project.project_status !== PROJECT_STATUS.FINISHED ? true : false}
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Loading Indicator for large datasets */}
+                {visibleCount < filteredProjects.length &&
+                  filteredProjects.length > 20 && (
+                  <div className="flex justify-center items-center py-4">
+                    <div className="animate-pulse text-astradarkgray">
+                      Loading more projects...
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="text-center py-16">
+                <p className="text-astradarkgray font-s text-lg">
+                  No projects found matching your criteria.
+                </p>
+                <button
+                  onClick={() => {
+                    setSelectedType(null);
+                    setSearchTerm("");
+                    setSelectedStatus(null);
+                    setSortOrder(null);
+                  }}
+                  className="mt-4 blue-button"
+                >
+                  Reset Filters
+                </button>
+              </div>
+            )
           )}
 
           {/* See More Button */}
@@ -511,10 +537,10 @@ export default function ProjectsPage() {
       <section className="bg-astralightgray pt-20 pb-30">
         <div className="max-w-7xl mx-auto px-4 relative">
           <h2 className="font-h2 text-astrablack mb-3">
-            Finished Fundraisers
+            Inactive Projects
           </h2>
           <p className="text-astrablack font-r mb-10">
-            See the fundraisers and scholarships we&apos;ve brought to life together.
+            See the projects we&apos;ve brought to life together.
           </p>
 
           <div className="relative">
