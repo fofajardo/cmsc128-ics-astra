@@ -2,16 +2,16 @@ import Fuse from "fuse.js";
 
 const applyFilter = (query, filters, config = {}) => {
   const {
-    limit = 10,     // default 10 pages
-    page = 1,       // default 1st page
+    limit = 10,
+    page = 1
   } = filters;
 
   const {
-    ilike = [],       // fields to apply ilike instead of eq (pattern-matching, case-insensitive)
-    range = {},       // { field: [from, to] }
-    sortBy,           // default sort field
+    ilike = [],            // fields to apply ilike instead of eq (pattern-matching, case-insensitive)
+    range = {},            // { field: [from, to] }
+    sortBy,                // default sort field
     defaultOrder = "desc",
-    specialKeys     // add keys to not check for equality here e.g. defined [from, to] range fields
+    specialKeys            // add keys to not check for equality here e.g. defined [from, to] range fields
   } = config;
 
   for (const [key, value] of Object.entries(filters)) {
@@ -20,7 +20,6 @@ const applyFilter = (query, filters, config = {}) => {
     } else if (key === "limit" || key === "page" || key === "sort_by" || key === "order" || specialKeys.includes(key)) {
       continue; // skip pagination/sorting here
     } else if (Array.isArray(value)) {
-      // If value is an array, use .in query
       query = query.in(key, value);
     } else {
       query = query.eq(key, value);
@@ -46,6 +45,35 @@ const applyFilter = (query, filters, config = {}) => {
   query = query.range(startIndex, endIndex);
 
   return query;
+};
+
+const applySkillsSearch = (data, filterSkills) => {
+  if (!filterSkills || filterSkills.length === 0) return data;
+
+  const fuse = new Fuse(data, {
+    keys: ['skills'],
+    threshold: 0.3,
+    includeScore: true
+  });
+
+  let resultMap = new Map();
+
+  filterSkills.forEach(skill => {
+    const results = fuse.search(skill);
+    results.forEach(({ item }) => {
+      const key = JSON.stringify(item);
+      if (!resultMap.has(key)) {
+        resultMap.set(key, { item, matchCount: 0 });
+      }
+      resultMap.get(key).matchCount += 1;
+    });
+  });
+
+  const sorted = [...resultMap.values()]
+    .sort((a, b) => b.matchCount - a.matchCount)
+    .map(entry => entry.item);
+
+  return sorted;
 };
 
 const applyArrayFilter = (data, filters) => {
@@ -75,13 +103,7 @@ const applyArrayFilter = (data, filters) => {
     );
   }
 
-  if (filters.skills) {
-    filteredData = filteredData.filter(alum =>
-      alum.skills && alum.skills.some(skill =>
-        skill.toLowerCase().includes(filters.skills.toLowerCase())
-      )
-    );
-  }
+  filteredData = applySkillsSearch(filteredData, filters.skills);
 
   if (filters.sortCategory && filters.sortOrder) {
     const sortMapping = {
