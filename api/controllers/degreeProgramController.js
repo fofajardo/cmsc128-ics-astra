@@ -59,9 +59,9 @@ const getDegreeProgramById = async (req, res) => {
 
 const createDegreeProgram = async (req, res) => {
   try {
-    const { name, level, user_id, institution, year_started, year_graduated } = req.body;
+    const { name, level, user_id, institution, year_started, year_graduated, is_uplb } = req.body;
 
-    if (!name || !level || !user_id || !institution || !year_started || !year_graduated) {
+    if (!name || !level || !user_id || !institution || !year_started || !year_graduated || !is_uplb) {
       return res.status(httpStatus.BAD_REQUEST).json({
         status: "FAILED",
         message: "All fields are required",
@@ -76,6 +76,7 @@ const createDegreeProgram = async (req, res) => {
       institution,
       year_started,
       year_graduated,
+      is_uplb,
     };
 
     const { data, error } = await degreeProgramService.insertDegreeProgram(req.supabase, degreeProgramData);
