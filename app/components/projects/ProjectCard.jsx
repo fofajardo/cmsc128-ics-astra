@@ -4,7 +4,7 @@ import { GraduationCap, HeartHandshake, Users, Calendar } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { formatCurrency, formatDate, capitalizeName } from "@/utils/format";
-import { PROJECT_TYPE } from "@/constants/projectConsts";
+import { PROJECT_TYPE } from "../../../common/scopes";
 
 export default function ProjectCard({
   id,
@@ -16,6 +16,8 @@ export default function ProjectCard({
   donors = "30K",
   endDate = "2025-06-30",
   type = "Fundraiser",
+  requestId = "",
+  donationLink = "",
   showDonate = true
 }) {
   const router = useRouter();
@@ -54,6 +56,15 @@ export default function ProjectCard({
     };
   }, []);
 
+  const handleCardClick = () => {
+    router.push(`/projects/about/${requestId}`);
+  };
+
+  const handleDonateClick = (e) => {
+    e.stopPropagation(); // prevents the outer link from triggering
+    router.push(`/projects/donate/${requestId}`);
+  };
+
   // Adjust image height based on screen size
   const getImageHeight = () => {
     if (!isMounted) return "h-48";
@@ -71,7 +82,9 @@ export default function ProjectCard({
   };
 
   return (
-    <div className="group bg-astrawhite rounded-2xl shadow hover:shadow-lg transition-all duration-300 cursor-pointer border-2 border-transparent hover:border-astraprimary overflow-hidden h-full flex flex-col">
+    <div
+      onClick={handleCardClick}
+      className="group bg-astrawhite rounded-2xl shadow hover:shadow-lg transition-all duration-300 cursor-pointer border-2 border-transparent hover:border-astraprimary overflow-hidden h-full flex flex-col">
       {/* Project Image */}
       <div className={`relative ${getImageHeight()} w-full overflow-hidden`}>
         <Image
@@ -125,7 +138,7 @@ export default function ProjectCard({
         {/* Action Button */}
         {showDonate && (
           <button
-            onClick={() => router.push(`/projects/donate/${id}`)}
+            onClick={handleDonateClick}
             className="mt-3 w-full blue-button font-s py-1"
           >
             Donate

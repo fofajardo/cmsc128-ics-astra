@@ -1,4 +1,0 @@
-export const DONATION_MODE_OF_PAYMENT = {
-  PHYSICAL_PAYMENT: 0,
-  BANK_TRANSFER: 1,
-};
