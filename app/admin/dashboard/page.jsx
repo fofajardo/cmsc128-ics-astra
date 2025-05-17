@@ -26,6 +26,8 @@ export default function Dashboard() {
   const [alumniOrgStats, setAlumniOrgStats] = useState([]);
   const [alumniFieldStats, setAlumniFieldStats] = useState([]);
   const [alumniIncomeStats, setAlumniIncomeStats] = useState([]);
+  const [alumniEmploymentStats, setAlumniEmploymentStats] = useState([]);
+  const [alumniBatchStats, setAlumniBatchStats] = useState([]);
   const [tab, setTab] = useState("donations");
 
   useEffect(() => {
@@ -43,6 +45,8 @@ export default function Dashboard() {
           axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-org-affiliation-stats`),
           axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-field-stats`),
           axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-income-range-stats`),
+          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-employment-status`),
+          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-batch`),
         ];
 
         const [
@@ -57,6 +61,8 @@ export default function Dashboard() {
           alumniOrgRes,
           alumniFieldRes,
           alumniIncomeRes,
+          alumniEmploymentRes,
+          alumniBatchRes,
         ] = await Promise.allSettled(urls);
 
         if (alumniRes.status === "fulfilled") setActiveAlumniStats(alumniRes.value.data.stats);
@@ -74,7 +80,17 @@ export default function Dashboard() {
           setAlumniCivilStats(alumniCivilRes.value.data.stats);
         }
         if (alumniOrgRes.status === "fulfilled" && alumniOrgRes.value.data.status === "OK") {
-          setAlumniOrgStats(alumniOrgRes.value.data.stats);
+          const updatedAlumniOrgStats = await Promise.all(
+            alumniOrgRes.value.data.stats.map(async (org) => ({
+              name: org.name,
+              acronym: org.acronym,
+              nameWithAcronym: `${org.name} (${org.acronym})`,
+              count: org.count,
+              active: org.active,
+              inactive: org.inactive,
+            }))
+          );
+          setAlumniOrgStats(updatedAlumniOrgStats);
         }
 
         if (alumniFieldRes.status === "fulfilled" && alumniFieldRes.value.data.status === "OK") {
@@ -82,8 +98,17 @@ export default function Dashboard() {
         }
 
         if (alumniIncomeRes.status === "fulfilled" && alumniIncomeRes.value.data.status === "OK") {
-          console.log("Alumni Income Stats:", alumniIncomeRes.value.data.stats);
           setAlumniIncomeStats(alumniIncomeRes.value.data.stats);
+        }
+
+        if (alumniEmploymentRes.status === "fulfilled" && alumniEmploymentRes.value.data.status === "OK") {
+          console.log("Alumni Employment Stats:", alumniEmploymentRes.value.data.stats);
+          setAlumniEmploymentStats(alumniEmploymentRes.value.data.stats);
+        }
+
+        if (alumniBatchRes.status === "fulfilled" && alumniBatchRes.value.data.status === "OK") {
+          console.log("Alumni Batch Stats:", alumniBatchRes.value.data.stats);
+          setAlumniBatchStats(alumniBatchRes.value.data.stats);
         }
 
         if (donationSummaryRes.status === "fulfilled" && donationSummaryRes.value.data.status === "OK") {
@@ -226,7 +251,7 @@ export default function Dashboard() {
     case "org": {
       // Dummy data for testing scalability
       const dummyAlumniOrgStats = Array.from({ length: 10 }, (_, i) => ({
-        organization: `Org ${i + 1}`,
+        name: `Org ${i + 1}`,
         count: Math.floor(Math.random() * 200) + 10, // 10 to 209 alumni
         active: Math.floor(Math.random() * 100),
         inactive: Math.floor(Math.random() * 100),
@@ -242,7 +267,8 @@ export default function Dashboard() {
             }}
             title="Alumni by Organization"
             description="Active alumni per organization"
-            yKey="organization"
+            yKey="name"
+            yKeyLong="nameWithAcronym"
             barKey="count"
             barLabel="Total Alumni"
             barColor="var(--color-astradark)"
@@ -319,6 +345,44 @@ export default function Dashboard() {
       );
     }
 
+    case "employment": {
+      const colorConfig = {
+        Employed: "var(--color-pieastra-primary-90)",
+        Unemployed: "var(--color-astradark)",
+        "Self Employed": "var(--color-pieastra-primary-60)",
+      };
+
+      const pieEmploymentStats = alumniEmploymentStats.map(item => {
+        // Format status for display and color mapping
+        let name = item.employment_status
+          .replace(/_/g, " ")
+          .replace(/\b\w/g, l => l.toUpperCase());
+        return {
+          name,
+          value: item.total_alumni,
+          fill: colorConfig[name] || "#a3a3a3",
+        };
+      });
+
+      return (
+        <TransitionSlide>
+          <ReusablePieChart
+            data={pieEmploymentStats}
+            config={{
+              Employed: { label: "Employed" },
+              Unemployed: { label: "Unemployed" },
+              "Self Employed": { label: "Self Employed" },
+            }}
+            title="Alumni Employment Status"
+            description="Active alumni by employment status"
+            dataKey="value"
+            nameKey="name"
+            maxHeight={300}
+          />
+        </TransitionSlide>
+      );
+    }
+
     default:
       return (
         <div className="p-8 text-center text-muted-foreground">
@@ -366,6 +430,7 @@ export default function Dashboard() {
             {renderTabContent()}
           </div>
         </div>
+        {/* <InteractiveLineChart/> */}
       </div>
     </>
   );

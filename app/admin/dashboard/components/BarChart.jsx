@@ -206,6 +206,7 @@ export function VerticalBarChart({
   title = "Vertical Bar Chart",
   description = "",
   yKey = "month",
+  yKeyLong = null,
   barKey = "desktop",
   barLabel,
   barColor = "var(--color-desktop)",
@@ -240,7 +241,8 @@ export function VerticalBarChart({
             <XAxis dataKey={barKey} type="number" hide />
             <ChartTooltip
               cursor={true}
-              content={<ChartTooltipContent indicator="line" />}
+              content={<ChartTooltipContent indicator="line"/>}
+              labelFormatter={yKeyLong ? (_, payload) => payload[0]?.payload?.[yKeyLong] : undefined}
             />
             <Bar
               dataKey={barKey}
