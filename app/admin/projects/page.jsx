@@ -84,11 +84,11 @@ export default function ProjectsAdmin() {
                 endDate: project.projectData.due_date,
                 dateCompleted: project.projectData.date_complete,
                 donationLink: project.projectData.donation_link,
-                requester: project.requesterData.full_name !== ""
-                  ? capitalizeName(project.requesterData.full_name)
-                  : project.requesterData.role === "unlinked"
+                requester: project.requesterData?.full_name !== ""
+                  ? capitalizeName(project.requesterData?.full_name)
+                  : project.requesterData?.role === "unlinked"
                     ? "Deleted User"
-                    : capitalizeName(project.requesterData.role)
+                    : capitalizeName(project.requesterData?.role)
                 ,
               })
             )

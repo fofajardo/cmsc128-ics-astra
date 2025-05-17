@@ -1,6 +1,22 @@
 import httpStatus from "http-status-codes";
 import statisticsService from "../services/statisticsService.js";
 
+const getAlumniStats = async (req, res) => {
+  try {
+    const stats = await statisticsService.fetchAlumniStats(req.supabase);
+
+    res.status(httpStatus.OK).json({
+      status: "OK",
+      stats: stats
+    });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
+
 const getActiveAlumniStats = async (req, res) => {
   try {
     const stats = await statisticsService.fetchActiveAlumniStats(req.supabase);
@@ -98,6 +114,7 @@ const getProjectDonationSummary = async (req, res) => {
 };
 
 const statisticsController = {
+  getAlumniStats,
   getActiveAlumniStats,
   getActiveJobsStats,
   getActiveEventsStats,

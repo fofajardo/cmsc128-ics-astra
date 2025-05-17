@@ -8,6 +8,7 @@ import ToastNotification from "@/components/ToastNotification";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import axios from "axios";
+import { PhotoType } from "../../../common/photo_types.js";
 
 export default function CommunicationPage() {
   const router = useRouter();
@@ -19,6 +20,8 @@ export default function CommunicationPage() {
   const [selectedType, setSelectedType] = useState("All");
   const [tempSelectedType, setTempSelectedType] = useState("All");
   const [announcements, setAnnouncements] = useState([]);
+  const [contentPhotos, setContentPhotos] = useState({});
+  const [photoTypesMap, setPhotoTypesMap] = useState({});
 
   const [info, setInfo] = useState({
     title: currTab === "Newsletters" ? "Newsletters" : "Announcements",
@@ -33,6 +36,102 @@ export default function CommunicationPage() {
     total: 0
   });
 
+  // Function to determine which photo fetching endpoint to use based on photo type
+  const getPhotoEndpointByType = (type) => {
+    switch (type) {
+    case PhotoType.EVENT_PIC:
+      return "event";
+    case PhotoType.PROJECT_PIC:
+      return "project";
+    case PhotoType.JOB_PIC:
+      return "jobs";
+    default:
+      return "event"; // Default to event if type is unknown
+    }
+  };
+
+  // Helper functions for default images based on photo type
+  const getDefaultImageByPhotoType = (type) => {
+    switch (type) {
+    case PhotoType.EVENT_PIC:
+      return getDefaultEventImage();
+    case PhotoType.PROJECT_PIC:
+      return getDefaultProjectImage();
+    case PhotoType.JOB_PIC:
+      return getDefaultJobImage();
+    default:
+      return getDefaultEventImage();
+    }
+  };
+
+  // Separate helper functions for default images
+  const getDefaultEventImage = () => {
+    return "/events/default-event.jpg";
+  };
+
+  const getDefaultProjectImage = () => {
+    return "/projects/assets/Donation.jpg";
+  };
+
+  const getDefaultJobImage = () => {
+    return "/jobs/assets/default-job.jpg";
+  };
+
+  // Modified function to fetch content photos
+  // Modified function to fetch content photos
+  const fetchContentPhotos = async (contentIds) => {
+    try {
+      const photoMap = {};
+
+      // First, fetch the photo type information for all content IDs
+      const photoTypesResponse = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/content-types`,
+        { params: { content_ids: contentIds.join(",") } }
+      );
+
+      // Create a map of content IDs to their photo types
+      const photoTypesMap = {};
+      if (photoTypesResponse.data.status === "OK" && photoTypesResponse.data.types) {
+        photoTypesResponse.data.types.forEach(item => {
+          photoTypesMap[item.content_id] = item.type;
+        });
+      }
+
+      // Create arrays of promises for fetching photos
+      const photoPromises = [];
+
+      // For each content ID, fetch the photo based on its type from the photos table
+      contentIds.forEach((contentId) => {
+        const photoType = photoTypesMap[contentId];
+
+        if (photoType !== undefined) {
+          const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/${getPhotoEndpointByType(photoType)}/${contentId}`;
+
+          const photoPromise = axios.get(endpoint)
+            .then(response => {
+              if (response.data.status === "OK" && response.data.photo) {
+                photoMap[contentId] = response.data.photo;
+              }
+            })
+            .catch(error => {
+              console.log(`Failed to fetch photo for content_id ${contentId}:`, error);
+            });
+
+          photoPromises.push(photoPromise);
+        }
+      });
+
+      // Wait for all photo fetch operations to complete
+      await Promise.all(photoPromises);
+      // Return the correct structure
+      return { photos: photoMap, typesMap: photoTypesMap };
+    } catch (error) {
+      console.error("Error fetching photos:", error);
+      // Return empty objects to avoid undefined values
+      return { photos: {}, typesMap: {} };
+    }
+  };
+
   useEffect(() => {
     const fetchContents = async () => {
       try {
@@ -40,6 +139,16 @@ export default function CommunicationPage() {
         if (response.data.status === "OK") {
           const list = response.data.list || response.data.data?.list || [];
           setAnnouncements(list);
+
+          // Extract content IDs for photo fetching
+          const contentIds = list.map(item => item.id);
+
+          // Fetch photos for all announcements
+          const { photos, typesMap } = await fetchContentPhotos(contentIds);
+          setContentPhotos(photos);
+          setPhotoTypesMap(typesMap);
+
+          console.log("Fetched photos:", photos);
         } else {
           console.error("Unexpected response format:", response.data);
           setAnnouncements([]);
@@ -52,6 +161,28 @@ export default function CommunicationPage() {
 
     fetchContents();
   }, []);
+
+  // Main function to determine image based on content type
+  const getDefaultImageByType = (type) => {
+    if (!type) return getDefaultEventImage();
+
+    // Check if type is a string and normalize it
+    const contentType = typeof type === "string" ? type.toLowerCase() : null;
+
+    switch (contentType) {
+    case "event":
+      return getDefaultEventImage();
+    case "project":
+    case "donation_drive":
+    case "fundraising":
+    case "scholarship":
+      return getDefaultProjectImage();
+    case "job":
+      return getDefaultJobImage();
+    default:
+      return getDefaultEventImage();
+    }
+  };
 
   const filteredAnnouncements = announcements.filter((announcement) => {
     const hasAnnouncementTag = announcement.tags?.includes("announcement");
@@ -184,7 +315,8 @@ export default function CommunicationPage() {
                     <Link href={`/admin/whats-up/announcements/${announcement.id}`}>
                       <div className="relative aspect-[4/3] rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer">
                         <img
-                          src={announcement.image}
+                          src={contentPhotos[announcement.id] ||
+                               getDefaultImageByPhotoType(photoTypesMap[announcement.id] || PhotoType.EVENT_PIC)}
                           className="w-full h-full object-cover"
                           alt={announcement.title}
                         />

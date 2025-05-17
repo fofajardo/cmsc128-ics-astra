@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { TableHeader, Table, PageTool } from "@/components/TableBuilder";
 import SearchFilter from "admin/alumni/search/filter";
 import { Check, Eye, Trash2, CheckCircle2, ShieldCheck } from "lucide-react";
@@ -9,17 +9,16 @@ import ConfirmModal from "@/components/ConfirmModal";
 import ToastNotification from "@/components/ToastNotification";
 import axios from "axios";
 import { capitalizeName } from "@/utils/format";
-
+import { CenteredSkeleton, NameEmailSkeleton, Skeleton } from "@/components/ui/skeleton";
 
 export default function AlumniAccess() {
+  const { currTab, info, refreshTrigger, setRefreshTrigger } = useTab();
   const [showFilter, setShowFilter] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
-  const { currTab, info } = useTab();
   const [toast, setToast] = useState(null);
   const toggleFilter = () => { setShowFilter((prev) => !prev); };
-  // console.log("Current tab from layout:", info);
-
-  const [alumList, setAlumList] = useState(mockdata);
+  const [loading, setLoading] = useState(true);
+  const [alumList, setAlumList] = useState([]);
   const [appliedFilters, updateFilters] = useState({
     yearFrom: "",
     yearTo: "",
@@ -34,33 +33,56 @@ export default function AlumniAccess() {
     currPage: 1,            // Current active page
     lastPage: 10,           // Last Page => total/numToShow
     numToShow: 10,          // How many alum to show
-    total: 999              // How many alum in db
+    total: 0                // How many alum in db
   });
   const [searchQuery, setSearchQuery] = useState("");
+  const stableFilters = useMemo(() => appliedFilters, [JSON.stringify(appliedFilters)]);
 
   useEffect(() => {
-    setSelectedIds([]);
-  }, [currTab]);
-
-
-  // FOR BACKEND PEEPS
-  useEffect(() => {
-    console.log("State updated:", {
-      appliedFilters,
-      pagination,
-      searchQuery,
+    setPagination({
+      display: [1, 10],
+      currPage: 1,
+      lastPage: 10,
+      numToShow: 10,
+      total: 0
     });
 
+    updateFilters({
+      yearFrom: "",
+      yearTo: "",
+      location: "",
+      field: "",
+      skills: [],
+      sortCategory: "",
+      sortOrder: "asc",
+    });
+
+    setSearchQuery("");
+    setSelectedIds([]);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [currTab]);
+
+  useEffect(() => {
     const fetchAlumniProfiles = async () => {
+      setLoading(true);
       try {
-        // For better search, fetch all or more profiles when searching
-        // This allows for more sophisticated client-side filtering
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles`,
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+
+        const endpoints = {
+          Pending: "/v1/users/pending-alumni",
+          Approved: "/v1/users/approved-alumni",
+          Inactive: "/v1/users/inactive-alumni",
+        };
+
+        const route = `${baseUrl}${endpoints[currTab] || endpoints["Pending"]}`;
+
+        const response = await axios.get(route,
           {
             params: {
-              page: searchQuery ? 1 : pagination.currPage,
-              limit: searchQuery ? 50 : pagination.numToShow, // Fetch more when searching
+              page: pagination.currPage,
+              limit: pagination.numToShow,
+              search: searchQuery,
+              filters: stableFilters
             },
           }
         );
@@ -70,19 +92,35 @@ export default function AlumniAccess() {
             response.data.list.map(async (alum) => {
               const alumData = {
                 id: alum.alum_id,
-                alumname: capitalizeName(`${alum.first_name} ${alum.last_name}`),
-                firstName: alum.first_name.toLowerCase(), // Store for searching
-                lastName: alum.last_name.toLowerCase(),   // Store for searching
-                email: alum.email,
+                alumname: capitalizeName(`${alum.first_name} ${alum.middle_name} ${alum.last_name}`),
+                graduationYear: alum.year_graduated,
                 student_num: alum.student_num,
-                graduationYear: "N/A",
-                location: alum.location,
-                fieldOfWork:
-                  alum.primary_work_experience?.field || "No Position Title",
-                skills: alum.skills ? alum.skills.split(",") : [],
                 image:
                   "https://cdn-icons-png.flaticon.com/512/145/145974.png",
+                degreeProgram: alum.course
               };
+
+              // Fetch email from /v1/users/{user_id}
+              try {
+                const userId = alum.user_id || alum.alum_id;
+                if (userId) {
+                  const userResponse = await axios.get(
+                    `${process.env.NEXT_PUBLIC_API_URL}/v1/users/${userId}`
+                  );
+                  if (
+                    userResponse.data.status === "OK" &&
+                    userResponse.data.user &&
+                    userResponse.data.user.email
+                  ) {
+                    alumData.email = userResponse.data.user.email;
+                  }
+                }
+              } catch (userError) {
+                console.log(
+                  `Failed to fetch user/email for alum_id ${alum.alum_id}:`,
+                  userError
+                );
+              }
 
               try {
                 const photoResponse = await axios.get(
@@ -101,42 +139,22 @@ export default function AlumniAccess() {
                 );
               }
 
-              try {
-                const idForDegree = alum.user_id || alum.alum_id;
-                if (idForDegree) {
-                  const degreeResponse = await axios.get(
-                    `${process.env.NEXT_PUBLIC_API_URL}/v1/degree-programs/alumni/${idForDegree}`
-                  );
-                  if (
-                    degreeResponse.data.status === "OK" &&
-                    degreeResponse.data.degreePrograms?.length > 0
-                  ) {
-                    const sortedPrograms = [
-                      ...degreeResponse.data.degreePrograms,
-                    ].sort(
-                      (a, b) =>
-                        new Date(b.year_graduated) -
-                        new Date(a.year_graduated)
-                    );
-                    alumData.graduationYear = new Date(
-                      sortedPrograms[0].year_graduated
-                    )
-                      .getFullYear()
-                      .toString();
-                  }
-                }
-              } catch (degreeError) {
-                console.error(
-                  `Failed to fetch degree programs for alum ${alum.alum_id}:`,
-                  degreeError
-                );
-              }
-
               return alumData;
             })
           );
 
-          // Store raw data
+          const totalCount = response.data.total;
+          const listLength = updatedAlumList.length;
+          const lowerBound = listLength === 0 ? 0 : (pagination.currPage - 1) * pagination.numToShow + 1;
+          const upperBound = listLength === 0 ? 0 : lowerBound + listLength - 1;
+
+          setPagination((prev) => ({
+            ...prev,
+            display: [lowerBound, upperBound],
+            total: totalCount,
+            lastPage: Math.ceil(totalCount / prev.numToShow),
+          }));
+
           setAlumList(updatedAlumList);
         } else {
           console.error("Unexpected response:", response.data);
@@ -144,10 +162,22 @@ export default function AlumniAccess() {
       } catch (error) {
         console.error("Failed to fetch alumni:", error);
       }
+      finally {
+        setLoading(false);
+      }
     };
 
     fetchAlumniProfiles();
-  }, [pagination.currPage, pagination.numToShow]);
+  }, [pagination.currPage, pagination.numToShow, currTab, searchQuery, stableFilters, refreshTrigger]);
+
+  useEffect(() => {
+    if (pagination.lastPage < pagination.currPage) {
+      setPagination((prev) => ({
+        ...prev,
+        currPage: prev.lastPage
+      }));
+    }
+  }, [pagination.lastPage]);
 
   return (
     <div>
@@ -183,20 +213,18 @@ export default function AlumniAccess() {
             toggleFilter={toggleFilter}
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery} />
-          <Table cols={cols} data={createRows(alumList, selectedIds, setSelectedIds, currTab)} />
+          <Table cols={cols} data={loading ? skeletonRows : createRows(alumList, selectedIds, setSelectedIds, currTab, setRefreshTrigger, setToast)} />
           <PageTool pagination={pagination} setPagination={setPagination} />
         </div>
         <div className="flex flex-row justify-between md:pl-4 lg:pl-8">
           <ActionButton label="Reset Selection" color="blue" onClick={() => setSelectedIds([])} />
 
-          <BottomButtons selectedCount={selectedIds.length} currTab={currTab} setToast={setToast} />
+          <BottomButtons selectedCount={selectedIds.length} currTab={currTab} setToast={setToast} selectedIds={selectedIds} setRefreshTrigger={setRefreshTrigger} alumList={alumList} pagination={pagination} setPagination={setPagination} />
         </div>
       </div>
     </div>
   );
 }
-
-
 
 function getNotifyContent(action, selectedCount) {
   const plural = selectedCount > 1 ? "s" : "";
@@ -231,8 +259,7 @@ function getNotifyContent(action, selectedCount) {
   return { notifyMessage: message, notifyType: type };
 }
 
-
-function BottomButtons({ selectedCount, currTab, setToast }) {
+function BottomButtons({ selectedCount, currTab, setToast, selectedIds, setRefreshTrigger, alumList, pagination, setPagination }) {
   const [modal, setModal] = useState({
     open: false,
     action: null, // "approve", "decline", etc.
@@ -249,19 +276,113 @@ function BottomButtons({ selectedCount, currTab, setToast }) {
     setModal({ open: false, action: null });
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     const { notifyMessage, notifyType } = getNotifyContent(modal.action, selectedCount);
+    closeModal();
 
-    closeModal(); // first close the modal
+    const allIds = selectedCount > 0 ? selectedIds : alumList.map(alum => alum.id);
+    const isRemovingAllFromPage = selectedCount === 0 || selectedCount === alumList.length;
+    const isNotFirstPage = pagination.currPage > 1;
 
-    setTimeout(() => {
-      setToast({
-        type: notifyType,
-        message: notifyMessage
-      });
-    }, 50);
+    if (modal.action === "approve") {
+      try {
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/multiple-approve`,
+          allIds
+        );
+
+        if (response.data.status === "CREATED") {
+          if (isRemovingAllFromPage && isNotFirstPage) {
+            setPagination(prev => ({
+              ...prev,
+              currPage: prev.currPage - 1
+            }));
+          }
+          setRefreshTrigger(prev => prev + 1);
+          setToast({
+            type: "success",
+            message: response.data?.message || notifyMessage
+          });
+        } else {
+          setToast({ type: "error", message: `Failed to approve selected profiles. ${response.data.message}` });
+        }
+
+      } catch (err) {
+        console.error("Approval failed", err);
+        setToast({
+          type: "error",
+          message: err?.response?.data?.message || "Failed to approve selected profiles."
+        });
+      }
+    } else if (modal.action === "remove") {
+      try {
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/multiple-remove`,
+          allIds
+        );
+
+        if (response.data.status === "CREATED") {
+          if (isRemovingAllFromPage && isNotFirstPage) {
+            setPagination(prev => ({
+              ...prev,
+              currPage: prev.currPage - 1
+            }));
+          }
+          setRefreshTrigger(prev => prev + 1);
+          setToast({
+            type: "success",
+            message: response.data?.message || notifyMessage
+          });
+        } else {
+          setToast({ type: "error", message: `Failed to remove selected profiles' access. ${response.data.message}` });
+        }
+
+      } catch (err) {
+        console.error("Remove failed", err);
+        setToast({
+          type: "error",
+          message: err?.response?.data?.message || "Failed to remove selected profiles' access."
+        });
+      }
+    } else if (modal.action === "reactivate") {
+      try {
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/multiple-reactivate`,
+          allIds
+        );
+
+        if (response.data.status === "CREATED") {
+          if (isRemovingAllFromPage && isNotFirstPage) {
+            setPagination(prev => ({
+              ...prev,
+              currPage: prev.currPage - 1
+            }));
+          }
+          setRefreshTrigger(prev => prev + 1);
+          setToast({
+            type: "success",
+            message: response.data?.message || notifyMessage
+          });
+        } else {
+          setToast({ type: "error", message: `Failed to reactivate selected profiles. ${response.data.message}` });
+        }
+
+      } catch (err) {
+        console.error("Reactivate failed", err);
+        setToast({
+          type: "error",
+          message: err?.response?.data?.message || "Failed to reactivate selected profiles."
+        });
+      }
+    } else {
+      setTimeout(() => {
+        setToast({
+          type: notifyType,
+          message: notifyMessage
+        });
+      }, 50);
+    }
   };
-
 
   const modals = {
     approve: {
@@ -349,8 +470,15 @@ function BottomButtons({ selectedCount, currTab, setToast }) {
   );
 }
 
-
-
+const skeletonRows = Array(10).fill({
+  "Checkbox:label-hidden": <CenteredSkeleton className="w-6 h-6 ml-1" />,
+  "Image:label-hidden": <CenteredSkeleton className="w-12 h-12 my-3" />,
+  Name: <NameEmailSkeleton />,
+  "Graduation Year": <CenteredSkeleton className="w-16 h-4" />,
+  "Student ID": <CenteredSkeleton className="w-24 h-4" />,
+  "Course": <CenteredSkeleton className="w-32 h-4" />,
+  "Quick Actions": <CenteredSkeleton className="h-4 w-44" />,
+});
 
 const cols = [
   { label: "Checkbox:label-hidden", justify: "center", visible: "all" },
@@ -358,19 +486,19 @@ const cols = [
   { label: "Name", justify: "start", visible: "all" },
   { label: "Graduation Year", justify: "center", visible: "lg" },
   { label: "Student ID", justify: "center", visible: "md" },
-  // { label: "Course", justify: "center", visible: "md" },
+  { label: "Course", justify: "center", visible: "md" },
   { label: "Quick Actions", justify: "center", visible: "all" },
 ];
 
-function createRows(alumList, selectedIds, setSelectedIds, currTab) {
+function createRows(alumList, selectedIds, setSelectedIds, currTab, setRefreshTrigger, setToast) {
   return alumList.map((alum) => ({
     "Checkbox:label-hidden": renderCheckboxes(alum.id, selectedIds, setSelectedIds),
     "Image:label-hidden": renderAvatar(alum.image, alum.alumname),
     Name: renderName(alum.alumname, alum.email),
     "Graduation Year": renderText(alum.graduationYear),
     "Student ID": renderText(alum.student_num),
-    // "Course": renderText(alum.course),
-    "Quick Actions": renderActions(alum.id, alum.alumname, currTab),
+    "Course": renderText(alum.degreeProgram),
+    "Quick Actions": renderActions(alum.id, alum.alumname, currTab, setRefreshTrigger, setToast),
   }));
 }
 
@@ -402,8 +530,6 @@ function renderCheckboxes(id, selectedIds, setSelectedIds) {
   );
 }
 
-
-
 function renderAvatar(image, name) {
   return (
     <div className="flex justify-center">
@@ -431,9 +557,134 @@ function renderText(text) {
   return <div className="text-center text-astradarkgray font-s">{text}</div>;
 }
 
+function renderActions(id, name, currTab, setRefreshTrigger, setToast) {
+  // Based muna sa currTab pero I think mas maganda kung sa mismong account/user kukunin yung active status
+  const handleApprove = async () => {
+    try {
+      console.log(`Approving ID: ${id}.`);
 
-function renderActions(id, name, currTab) {
-  // Based muna sa currTab pero I think mas maganda kung sa mismong account/user kukunin yung active status*/
+      const getResponse = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/${id}`
+      );
+
+      const latestProfile = getResponse.data?.alumniProfile;
+
+      if (!latestProfile) {
+        setToast({ type: "error", message: `No existing profile found for ${name}.` });
+        return;
+      }
+
+      const {
+        id: _,
+        created_at: __,
+        approved: ___,
+        ...rest
+      } = latestProfile;
+
+      const newProfile = {
+        ...rest,
+        approved: true
+      };
+
+      const postResponse = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/${id}`,
+        newProfile
+      );
+
+      if (postResponse.data.status === "CREATED") {
+        setToast({ type: "success", message: `${name} has been approved!` });
+        setRefreshTrigger(prev => prev + 1);
+      } else {
+        setToast({ type: "error", message: `Failed to approve ${name}. ${postResponse.data.message}` });
+      }
+    } catch (error) {
+      console.error(`Failed to approve ${name}:`, error);
+      setToast({ type: "error", message: `An error occurred while approving ${name}.` });
+    }
+  };
+
+  const handleRemoveAccess = async () => {
+    try {
+      const getResponse = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/${id}`
+      );
+
+      const latestProfile = getResponse.data?.alumniProfile;
+
+      if (!latestProfile) {
+        setToast({ type: "error", message: `No existing profile found for ${name}.` });
+        return;
+      }
+
+      const {
+        id: _,
+        created_at: __,
+        approved: ___,
+        ...rest
+      } = latestProfile;
+
+      const newProfile = {
+        ...rest,
+        approved: false
+      };
+
+      const postResponse = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/${id}`,
+        newProfile
+      );
+
+      if (postResponse.data.status === "CREATED") {
+        setToast({ type: "success", message: `${name}'s access has been removed!` });
+        setRefreshTrigger(prev => prev + 1);
+      } else {
+        setToast({ type: "error", message: `Failed to remove ${name}'s access. ${postResponse.data.message}` });
+      }
+    } catch (error) {
+      console.error(`Failed to remove ${name}'s access:`, error);
+      setToast({ type: "error", message: `An error occurred while removing ${name}'s access.` });
+    }
+  };
+
+  const handleReactivate = async () => {
+    try {
+      const getResponse = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/${id}`
+      );
+
+      const latestProfile = getResponse.data?.alumniProfile;
+
+      if (!latestProfile) {
+        setToast({ type: "error", message: `No existing profile found for ${name}.` });
+        return;
+      }
+
+      const {
+        id: _,
+        created_at: __,
+        ...rest
+      } = latestProfile;
+
+      const newProfile = {
+        ...rest
+      };
+
+      const postResponse = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/${id}`,
+        newProfile
+      );
+
+      if (postResponse.data.status === "CREATED") {
+        setToast({ type: "success", message: `${name} has been reactivated!` });
+        setRefreshTrigger(prev => prev + 1);
+      } else {
+        setToast({ type: "error", message: `Failed to reactivate ${name}. ${postResponse.data.message}` });
+      }
+    } catch (error) {
+      console.error(`Failed to reactivate ${name}:`, error);
+      setToast({ type: "error", message: `An error occurred while reactivating ${name}.` });
+    }
+  };
+
   return (
     <div className="flex justify-center gap-3 md:pr-4 lg:pr-2">
       <div className="hidden md:block">
@@ -458,6 +709,7 @@ function renderActions(id, name, currTab) {
               color="green"
               notifyMessage={`${name} has been approved!`}
               notifyType="success"
+              onClick={handleApprove}
             />
           </div>
           <div className="block md:hidden">
@@ -466,6 +718,7 @@ function renderActions(id, name, currTab) {
               color="green"
               notifyMessage={`${name} has been approved!`}
               notifyType="success"
+              onClick={handleApprove}
             />
           </div>
           <div className="hidden md:block">
@@ -495,6 +748,7 @@ function renderActions(id, name, currTab) {
               color="red"
               notifyMessage={`${name} has been removed!`}
               notifyType="fail"
+              onClick={handleRemoveAccess}
             />
           </div>
           <div className="block md:hidden">
@@ -503,6 +757,7 @@ function renderActions(id, name, currTab) {
               color="red"
               notifyMessage={`${name} has been removed!`}
               notifyType="fail"
+              onClick={handleRemoveAccess}
             />
           </div>
         </>
@@ -516,6 +771,7 @@ function renderActions(id, name, currTab) {
               color="blue"
               notifyMessage={`${name} has been reactivated!`}
               notifyType="success"
+              onClick={handleReactivate}
             />
           </div>
           <div className="block md:hidden">
@@ -524,6 +780,7 @@ function renderActions(id, name, currTab) {
               color="blue"
               notifyMessage={`${name} has been reactivated!`}
               notifyType="success"
+              onClick={handleReactivate}
             />
           </div>
         </>
@@ -531,128 +788,3 @@ function renderActions(id, name, currTab) {
     </div>
   );
 }
-
-
-
-const mockdata = [
-  {
-    id: 1,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "Emma Johnson",
-    email: "emma.johnson@example.com",
-    graduationYear: 2015,
-    student_num: "2022-03814",
-    course: "BS Computer Science",
-    location: "New York, NY",
-    fieldOfWork: "Backend Development",
-    skills: ["Java", "Spring Boot", "REST APIs", "PostgreSQL"]
-  },
-  {
-    id: 2,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "Liam Smith",
-    email: "liam.smith@example.com",
-    graduationYear: 2018,
-    student_num: "2021-03814",
-    course: "BS Civil Engineering",
-    location: "San Francisco, CA",
-    fieldOfWork: "Machine Learning Engineering",
-    skills: ["Python", "Scikit-learn", "Pandas"]
-  },
-  {
-    id: 3,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "Olivia Brown",
-    email: "olivia.brown@example.com",
-    graduationYear: 2012,
-    student_num: "2020-03814",
-    course: "BS Education",
-    location: "Chicago, IL",
-    fieldOfWork: "Frontend Development",
-    skills: ["HTML", "CSS", "JavaScript", "Vue.js"]
-  },
-  {
-    id: 4,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "Noah Davis",
-    email: "noah.davis@example.com",
-    graduationYear: 2020,
-    student_num: "2022-30214",
-    course: "BS Computer Science",
-    location: "Austin, TX",
-    fieldOfWork: "DevOps Engineering",
-    skills: ["Docker", "Kubernetes", "AWS", "CI/CD", "Terraform"]
-  },
-  {
-    id: 5,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "Ava Wilson",
-    email: "ava.wilson@example.com",
-    graduationYear: 2017,
-    student_num: "2020-12314",
-    course: "BS Computer Science",
-    location: "Seattle, WA",
-    fieldOfWork: "Mobile App Development",
-    skills: ["Swift", "iOS", "Firebase"]
-  },
-  {
-    id: 6,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "William Martinez",
-    email: "william.martinez@example.com",
-    graduationYear: 2014,
-    student_num: "2021-41237",
-    course: "BS Chemical Engineering",
-    location: "Miami, FL",
-    fieldOfWork: "Full Stack Development",
-    skills: ["Node.js", "React", "MongoDB", "GraphQL"]
-  },
-  {
-    id: 7,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "Sophia Garcia",
-    email: "sophia.garcia@example.com",
-    graduationYear: 2016,
-    student_num: "2022-99632",
-    course: "BS Forestry",
-    location: "Denver, CO",
-    fieldOfWork: "Cloud Engineering",
-    skills: ["Azure", "Linux", "Networking", "Python"]
-  },
-  {
-    id: 8,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "James Anderson",
-    email: "james.anderson@example.com",
-    graduationYear: 2013,
-    student_num: "2017-26934",
-    course: "BS Computer Science",
-    location: "Boston, MA",
-    fieldOfWork: "Security Engineering",
-    skills: ["Penetration Testing", "OWASP", "Metasploit"]
-  },
-  {
-    id: 9,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "Isabella Thomas",
-    email: "isabella.thomas@example.com",
-    graduationYear: 2019,
-    student_num: "2015-04814",
-    course: "BS Industrial Engineering",
-    location: "Los Angeles, CA",
-    fieldOfWork: "AI Research",
-    skills: ["PyTorch", "Deep Learning", "NLP"]
-  },
-  {
-    id: 10,
-    image: "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-    alumname: "Benjamin Lee",
-    email: "benjamin.lee@example.com",
-    graduationYear: 2011,
-    student_num: "2013-03825",
-    course: "BS Information Technology",
-    location: "Atlanta, GA",
-    fieldOfWork: "Database Administration",
-    skills: ["SQL", "Oracle", "Database Tuning", "Shell Scripting", "PL/SQL"]
-  }
-];

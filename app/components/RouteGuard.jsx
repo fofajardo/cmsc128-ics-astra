@@ -1,3 +1,5 @@
+"use client";
+
 import {useSignedInUser} from "@/components/UserContext.jsx";
 import {useContext, useLayoutEffect} from "react";
 import {redirect, useRouter} from "next/navigation";
@@ -5,7 +7,8 @@ import {feRoutes} from "../../common/routes.js";
 import {RouteGuardMode} from "../../common/scopes.js";
 
 export function RouteGuard({mode, onChange}) {
-  const requireAuthenticated = mode === RouteGuardMode.RA;
+  const requireAdmin = mode === RouteGuardMode.ADMIN;
+  const requireAuthenticated = mode === RouteGuardMode.RA || requireAdmin;
   const requireUnauthenticated = mode === RouteGuardMode.RU;
 
   const userContext = useSignedInUser();
@@ -24,6 +27,12 @@ export function RouteGuard({mode, onChange}) {
     if (mode !== RouteGuardMode.AUTH_SIGN_UP) {
       if (userContext.state.isAlumnus && !userContext.state.profile) {
         return feRoutes.auth.signUp();
+      }
+    }
+
+    if (requireAdmin) {
+      if (!userContext.state.isAdmin) {
+        return feRoutes.main.home();
       }
     }
 
