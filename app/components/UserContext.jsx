@@ -88,6 +88,35 @@ function buildUserContext() {
       setIsAlumnus,
       setIsModerator,
       setIsAdmin,
+      patchUser: function(key, value) {
+        const updatedUser = {
+          ...user,
+          [key]: value,
+        };
+        return setUser(updatedUser);
+      },
+      patchProfile: function(key, value) {
+        const updatedProfile = {
+          ...profile,
+          [key]: value,
+        };
+        return setProfile(updatedProfile);
+      },
+      patchDegreePrograms: function(index, value) {
+        const updatedDegreePrograms = degreePrograms;
+        updatedDegreePrograms[index] = value;
+        return setDegreePrograms(updatedDegreePrograms);
+      },
+      patchWorkExperiences: function(index, value) {
+        const updatedWorkExperiences = workExperiences;
+        updatedWorkExperiences[index] = value;
+        return setWorkExperiences(updatedWorkExperiences);
+      },
+      patchOrganizationAffiliations: function(index, value) {
+        const updatedOrganizationAffiliations = organizationAffiliations;
+        updatedOrganizationAffiliations[index] = value;
+        return setOrganizationAffiliations(updatedOrganizationAffiliations);
+      },
       setActiveNavItem,
       setActiveNavSubmenus,
       toggleNavSubmenu,
