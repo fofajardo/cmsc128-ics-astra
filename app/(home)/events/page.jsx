@@ -254,7 +254,7 @@ export default function EventsPage() {
                 onChange={(e)=>setSearchQuery(e.target.value)}
               />
               <button className="px-6 bg-astraprimary hover:bg-astradark text-astrawhite font-semibold transition flex items-center gap-2 cursor-pointer"
-              onClick={handleSearch}
+                onClick={handleSearch}
               >
                 Search
               </button>
@@ -331,10 +331,10 @@ export default function EventsPage() {
         <h1 className="text-[28px] font-extrabold text-astradarkgray mb-10">
           All Events
         </h1>
-          {isLoading ? (
-            <div className="flex justify-center items-center h-40">
-              <LoadingSpinner className="h-10 w-10" />
-            </div>
+        {isLoading ? (
+          <div className="flex justify-center items-center h-40">
+            <LoadingSpinner className="h-10 w-10" />
+          </div>
         ) : eventList.length > 0 ? (
           <div className="space-y-10 transition-all duration-700 ease-in-out">
             {eventList.map((event, index) => (

@@ -210,7 +210,7 @@ const createEvent = async (req, res) => {
             typeof access_link === "string" &&
             typeof online === "boolean" &&
             typeof slots === "number" &&
-            typeof status === "string"
+            typeof status === "string";
 
     if (!isValidTypes) {
       return res.status(httpStatus.BAD_REQUEST).json({
@@ -427,13 +427,13 @@ const sendEventEmail = async(req, res) => {
   const { emails, subject, content } = req.body;
 
   if (!emails || !Array.isArray(emails) || !subject || !content) {
-    return res.status(httpStatus.BAD_REQUEST).json({ error: 'Invalid request format' });
+    return res.status(httpStatus.BAD_REQUEST).json({ error: "Invalid request format" });
   }
 
   try {
     const {results,error} = await sendEmailBlast(emails, subject, content);
     if (error){
-       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
         status: "FAILED",
         message: error
       });
@@ -444,7 +444,7 @@ const sendEventEmail = async(req, res) => {
     });
   } catch (err) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-      error: 'Failed to send emails', details: err.message
+      error: "Failed to send emails", details: err.message
     });
   }
 };

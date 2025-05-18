@@ -14,9 +14,9 @@ const applyFilters = (events, filters) => {
 
   if (filters.locationFilter) {
     const { label } = filters.locationFilter;
-    if (label === 'Online') {
+    if (label === "Online") {
       filteredEvents = filteredEvents.filter(event => event.online === true);
-    } else if (label === 'In-person') {
+    } else if (label === "In-person") {
       filteredEvents = filteredEvents.filter(event => event.online === false);
     }
   }
@@ -25,12 +25,12 @@ const applyFilters = (events, filters) => {
     const { label } = filters.statusFilter;
     const currentDate = new Date();
 
-    if (label === 'Upcoming') {
+    if (label === "Upcoming") {
       filteredEvents = filteredEvents.filter(event => {
         const eventDate = new Date(event.event_date);
         return eventDate > currentDate;
       });
-    } else if (label === 'Ongoing') {
+    } else if (label === "Ongoing") {
       filteredEvents = filteredEvents.filter(event => {
         const eventDate = new Date(event.event_date);
         const eventEndDate = event.end_date ? new Date(event.end_date) : new Date(eventDate);
@@ -38,7 +38,7 @@ const applyFilters = (events, filters) => {
 
         return eventDate <= currentDate && eventEndDate >= currentDate;
       });
-    } else if (label === 'Completed') {
+    } else if (label === "Completed") {
       filteredEvents = filteredEvents.filter(event => {
         const eventDate = new Date(event.event_date);
         const eventEndDate = event.end_date ? new Date(event.end_date) : new Date(eventDate);
@@ -71,11 +71,11 @@ const sortEvents = (events, sortFilter) => {
   const { label } = sortFilter;
   let sortedEvents = [...events];
 
-  if (label === 'Newest First') {
+  if (label === "Newest First") {
     sortedEvents.sort((a, b) => new Date(b.event_date) - new Date(a.event_date));
-  } else if (label === 'Oldest First') {
+  } else if (label === "Oldest First") {
     sortedEvents.sort((a, b) => new Date(a.event_date) - new Date(b.event_date));
-  } else if (label === 'Popular') {
+  } else if (label === "Popular") {
     sortedEvents.sort((a, b) => (b.interest_count || 0) - (a.interest_count || 0));
   }
 

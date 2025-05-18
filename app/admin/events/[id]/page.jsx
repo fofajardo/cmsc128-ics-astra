@@ -429,7 +429,7 @@ export default function EventAdminDetailPage() {
         <EditEventModal
           event={event}
           onClose={() => {
-            setShowEditModal(false)}}
+            setShowEditModal(false);}}
           onSave={
             handleEdit
           }

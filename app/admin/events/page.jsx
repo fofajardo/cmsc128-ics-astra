@@ -177,8 +177,8 @@ export default function Events() {
       });
 
       // Add search query if present
-      if (searchQuery && searchQuery.trim() !== '') {
-        params.append('searchQuery', searchQuery);
+      if (searchQuery && searchQuery.trim() !== "") {
+        params.append("searchQuery", searchQuery);
       }
       const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events`, {params});
       const eventData = response.data;
@@ -633,7 +633,7 @@ function renderActions(event, confirmDelete, toggleEditModal,setAddFormData) {
               description: event.description || "",
             });
 
-              toggleEditModal(event);
+            toggleEditModal(event);
           }}
           className="bg-astraprimary text-astrawhite px-4 py-2 rounded-md text-sm font-semibold hover:bg-[#0062cc]"
         >
@@ -667,7 +667,7 @@ function renderActions(event, confirmDelete, toggleEditModal,setAddFormData) {
               description: event.description || "",
             });
 
-              toggleEditModal(event);
+            toggleEditModal(event);
 
           }}
           className="bg-astraprimary text-astrawhite p-2 rounded-md"
