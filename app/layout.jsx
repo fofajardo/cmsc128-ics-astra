@@ -1,6 +1,7 @@
 import { SignedInUserFetcher, SignedInUserProvider } from "./components/UserContext";
 import PropTypes from "prop-types";
 import {RootLoadingOverlay} from "@/components/LoadingOverlay.jsx";
+import { Toaster } from "sonner";
 
 export const metadata = {
   title: {
