@@ -80,18 +80,6 @@ export function BarChartComponent({
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
-        {footer ? (
-          footer
-        ) : (
-          <>
-            <div className="flex gap-2 font-medium leading-none">
-              Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-            </div>
-            <div className="leading-none text-muted-foreground">
-              Showing total visitors for the last 6 months
-            </div>
-          </>
-        )}
       </CardFooter>
     </Card>
   );
@@ -205,7 +193,6 @@ export function StackedBarChart({
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
-        {total}
       </CardFooter>
     </Card>
   );
@@ -280,18 +267,6 @@ export function VerticalBarChart({
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
-        {footer ? (
-          footer
-        ) : (
-          <>
-            <div className="flex gap-2 font-medium leading-none">
-              Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-            </div>
-            <div className="leading-none text-muted-foreground">
-              Showing total visitors for the last 6 months
-            </div>
-          </>
-        )}
       </CardFooter>
     </Card>
   );
