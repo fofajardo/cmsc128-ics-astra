@@ -2,6 +2,7 @@
 
 import { TrendingUp } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, LabelList, Rectangle, XAxis, YAxis } from "recharts";
+import { useMemo } from "react";
 
 import {
   Card,
@@ -38,7 +39,7 @@ export function BarChartComponent({
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
       <CardContent>
-        <ChartContainer config={config}>
+        <ChartContainer config={config} className="aspect-auto h-[380px] w-full">
           <BarChart
             accessibilityLayer
             data={data}
@@ -47,6 +48,13 @@ export function BarChartComponent({
             }}
           >
             <CartesianGrid vertical={false} />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              allowDecimals={false}
+              width={28}
+            />
             <XAxis
               dataKey={xKey}
               tickLine={false}
@@ -99,14 +107,22 @@ export function StackedBarChart({
   barColors = [],
   footer = null,
 }) {
+  // Calculate total alumni
+  const total = data.reduce(
+    (sum, row) =>
+      sum +
+      barKeys.reduce((rowSum, key) => rowSum + (row[key] || 0), 0),
+    0
+  );
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
-        {description && <CardDescription>{description}</CardDescription>}
+        {description && <CardDescription>Showing {total} {description}</CardDescription>}
       </CardHeader>
       <CardContent>
-        <ChartContainer config={config}>
+        <ChartContainer config={config} className="aspect-auto h-[380px] w-full">
           <BarChart
             accessibilityLayer
             data={data}
@@ -115,6 +131,12 @@ export function StackedBarChart({
             }}
           >
             <CartesianGrid vertical={false} />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              width={28}
+            />
             <XAxis
               dataKey={xKey}
               tickLine={false}
@@ -183,18 +205,7 @@ export function StackedBarChart({
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
-        {footer ? (
-          footer
-        ) : (
-          <>
-            <div className="flex gap-2 font-medium leading-none">
-              Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-            </div>
-            <div className="leading-none text-muted-foreground">
-              Showing total visitors for the last 6 months
-            </div>
-          </>
-        )}
+        {total}
       </CardFooter>
     </Card>
   );
@@ -219,7 +230,7 @@ export function VerticalBarChart({
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
       <CardContent>
-        <ChartContainer config={config}>
+        <ChartContainer config={config} className="aspect-auto h-[380px] w-full">
           <BarChart
             accessibilityLayer
             data={data}
@@ -234,11 +245,11 @@ export function VerticalBarChart({
               tickMargin={10}
               axisLine={false}
               tickFormatter={(value) =>
-                typeof value === "string" ? value.slice(0, 3) : value
+                typeof value === "string" ? value.slice(0, 3) : value.slice(0, 3)
               }
               hide
             />
-            <XAxis dataKey={barKey} type="number" hide />
+            <XAxis dataKey={barKey} type="number" tickLine={false} axisLine={false} allowDecimals={false}/>
             <ChartTooltip
               cursor={true}
               content={<ChartTooltipContent indicator="line"/>}

@@ -47,12 +47,12 @@ export default function ReusablePieChart({
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
         <CardTitle>{title}</CardTitle>
-        {description && <CardDescription>{description}</CardDescription>}
+        {description && <CardDescription>Showing {total} {description}</CardDescription>}
       </CardHeader>
       <CardContent className="flex-1 pb-0 px-4">
         <ChartContainer
           config={config}
-          className={`mx-auto aspect-square max-h-[${maxHeight + 10}px] font-s pb-0 [&_.recharts-pie-label-text]:fill-foreground [&_.recharts-pie-label-text]:text-xs [&_.recharts-pie-label-text]:font-semibold [&_.recharts-pie-label-text]:leading-none`}
+          className="aspect-auto h-[400px] w-full"
         >
           <PieChart>
             <ChartTooltip content={<ChartTooltipContent hideLabel />} />
@@ -64,16 +64,12 @@ export default function ReusablePieChart({
             />
             <ChartLegend
               content={props => <ChartLegendContent {...props} nameKey={nameKey} />}
+              className="flex-wrap"
             />
           </PieChart>
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
-        {footer && <p className="text-muted-foreground">{footer}</p>}
-        <div className="flex items-center gap-2">
-          <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          <span className="text-muted-foreground">Total: {total}</span>
-        </div>
       </CardFooter>
     </Card>
   );
