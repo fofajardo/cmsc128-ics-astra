@@ -1,5 +1,6 @@
 import httpStatus from "http-status-codes";
 import eventsService from "../services/eventsService.js";
+import {sendEmailBlast} from "../services/email.js";
 import { isValidUUID, isValidDate } from "../utils/validators.js";
 import { Actions, Subjects } from "../../common/scopes.js";
 
@@ -412,6 +413,31 @@ const deleteEvent = async (req, res) => {
   }
 };
 
+const sendEventEmail = async(req, res) => {
+  const { emails, subject, content } = req.body;
+
+  if (!emails || !Array.isArray(emails) || !subject || !content) {
+    return res.status(httpStatus.BAD_REQUEST).json({ error: 'Invalid request format' });
+  }
+
+  try {
+    const {results,error} = await sendEmailBlast(emails, subject, content);
+    if (error){
+       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error
+      });
+    }
+    return res.status(httpStatus.OK).json({
+      status: "OK",
+      message: "Events successfully sent",
+    });
+  } catch (err) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      error: 'Failed to send emails', details: err.message
+    });
+  }
+};
 const eventsController = {
   getEvents,
   getEventById,
@@ -420,7 +446,8 @@ const eventsController = {
   createEvent,
   updateEvent,
   deleteEmptyEvent,
-  deleteEvent
+  deleteEvent,
+  sendEventEmail
 };
 
 export default eventsController;
