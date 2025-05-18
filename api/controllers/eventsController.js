@@ -4,43 +4,6 @@ import {sendEmailBlast} from "../services/email.js";
 import { isValidUUID, isValidDate } from "../utils/validators.js";
 import { Actions, Subjects } from "../../common/scopes.js";
 
-// const getEvents = async (req, res) => {
-//   try {
-
-//     const filters = req.query;
-
-//     if (req.you.cannot(Actions.READ, Subjects.EVENT)) {
-//       return res.status(httpStatus.FORBIDDEN).json({
-//         status: "FORBIDDEN",
-//         message: "You do not have permission to view events"
-
-//       });
-//     }
-
-//     const { data, count, error } = await eventsService.fetchEvents(req.supabase);
-
-//     if (error) {
-//       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-//         status: "FAILED",
-//         message: error.message
-//       });
-//     }
-
-//     return res.status(httpStatus.OK).json({
-//       status: "OK",
-//       list: data || [],
-//       total: count || 0,
-//       request: filters
-//     });
-
-//   } catch (error) {
-//     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-//       status: "FAILED",
-//       message: error.message
-//     });
-//   }
-// };
-
 const getEvents = async (req, res) => {
   try {
 

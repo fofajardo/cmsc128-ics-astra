@@ -1,37 +1,3 @@
-
-// const fetchEvents = async (supabase) => {
-//   let query = supabase
-//     .from("events")
-//     .select("*", {count:"exact"});
-
-//   // query = applyFilter(query, filters, {
-//   //   ilike: ["venue"],
-//   //   range: {
-//   //     event_date: [filters.event_date_from, filters.event_date_to]
-//   //   },
-//   //   sortBy: "event_date",
-//   //   defaultOrder: "desc",
-//   //   specialKeys: [
-//   //     "event_date_from",
-//   //     "event_date_to",
-//   //     "limit",
-//   //     "page"
-//   //   ]
-//   // });
-
-//   // const hasPagination = filters.limit || filters.page;
-
-//   // if (hasPagination) {
-//   //   const limit = parseInt(filters.limit);
-//   //   const page = parseInt(filters.page);
-//   //   const from = (page - 1) * limit;
-//   //   const to = from + limit - 1;
-//   //   query = query.range(from, to);
-//   // }
-
-//   return await query;
-// };
-
 const searchEvents = (events, searchQuery) => {
   if (!searchQuery) return events;
 
