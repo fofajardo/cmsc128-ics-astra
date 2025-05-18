@@ -4,21 +4,65 @@ import {sendEmailBlast} from "../services/email.js";
 import { isValidUUID, isValidDate } from "../utils/validators.js";
 import { Actions, Subjects } from "../../common/scopes.js";
 
+// const getEvents = async (req, res) => {
+//   try {
+
+//     const filters = req.query;
+
+//     if (req.you.cannot(Actions.READ, Subjects.EVENT)) {
+//       return res.status(httpStatus.FORBIDDEN).json({
+//         status: "FORBIDDEN",
+//         message: "You do not have permission to view events"
+
+//       });
+//     }
+
+//     const { data, count, error } = await eventsService.fetchEvents(req.supabase);
+
+//     if (error) {
+//       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+//         status: "FAILED",
+//         message: error.message
+//       });
+//     }
+
+//     return res.status(httpStatus.OK).json({
+//       status: "OK",
+//       list: data || [],
+//       total: count || 0,
+//       request: filters
+//     });
+
+//   } catch (error) {
+//     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+//       status: "FAILED",
+//       message: error.message
+//     });
+//   }
+// };
+
 const getEvents = async (req, res) => {
   try {
-  //  console.log("User role:", req.user?.role);
-    //console.log("Permissions check:", req.you.can(Actions.READ, Subjects.EVENT)); //Fix: alumnus permission results to false here
-    const filters = req.query;
 
-    if (req.you.cannot(Actions.READ, Subjects.EVENT)) {
+    if (req.you && req.you.cannot(Actions.READ, Subjects.EVENT)) {
       return res.status(httpStatus.FORBIDDEN).json({
         status: "FORBIDDEN",
         message: "You do not have permission to view events"
-
       });
     }
 
-    const { data, count, error } = await eventsService.fetchEvents(req.supabase);
+    const filters = {
+      searchQuery: req.query.searchQuery || null,
+      locationFilter: req.query.locationFilter ? JSON.parse(req.query.locationFilter) : null,
+      statusFilter: req.query.statusFilter ? JSON.parse(req.query.statusFilter) : null,
+      startDateFilter: req.query.startDateFilter || null,
+      endDateFilter: req.query.endDateFilter || null,
+      sortFilter: req.query.sortFilter ? JSON.parse(req.query.sortFilter) : null,
+      page: req.query.page || 1,
+      limit: req.query.limit || 4
+    };
+
+    const { data, count, error } = await eventsService.fetchEvents(req.supabase, filters);
 
     if (error) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -31,10 +75,13 @@ const getEvents = async (req, res) => {
       status: "OK",
       list: data || [],
       total: count || 0,
-      request: filters
+      page: parseInt(filters.page),
+      limit: parseInt(filters.limit),
+      totalPages: Math.ceil(count / filters.limit) || 0
     });
 
   } catch (error) {
+    console.error("Error in getEvents controller:", error);
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: "FAILED",
       message: error.message
