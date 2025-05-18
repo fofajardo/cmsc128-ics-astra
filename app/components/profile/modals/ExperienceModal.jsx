@@ -30,7 +30,7 @@ export default function ExperienceModal({ experiences: initialExperiences, onClo
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
       <div className="w-full max-w-5xl bg-white rounded-lg shadow-lg p-8">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl md:text-2xl font-bold">Edit Experiences</h2>

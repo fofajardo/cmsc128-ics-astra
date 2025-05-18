@@ -79,8 +79,8 @@ export default function EditAffiliationModal({ affiliation, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="w-full max-w-3xl bg-white rounded-lg shadow-lg p-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+      <div className="w-full max-w-3xl max-h-screen overflow-y-auto bg-white rounded-lg shadow-lg p-8">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl md:text-2xl font-bold">Edit Affiliation</h2>
@@ -99,7 +99,7 @@ export default function EditAffiliationModal({ affiliation, onClose }) {
               name="organization"
               value={formData.organization}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+              className="w-full px-3 py-1 border border-gray-300 rounded-lg text-sm md:text-base"
               required
             />
           </div>
@@ -115,7 +115,7 @@ export default function EditAffiliationModal({ affiliation, onClose }) {
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                className="w-full px-3 py-1 border border-gray-300 rounded-lg text-sm md:text-base"
                 required
               />
             </div>
@@ -128,7 +128,7 @@ export default function EditAffiliationModal({ affiliation, onClose }) {
                 name="location"
                 value={formData.location}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                className="w-full px-3 py-1 border border-gray-300 rounded-lg text-sm md:text-base"
                 required
               />
             </div>
@@ -159,7 +159,7 @@ export default function EditAffiliationModal({ affiliation, onClose }) {
                   name="startDate.month"
                   value={formData.startDate.month}
                   onChange={handleChange}
-                  className="px-4 py-2 border border-gray-300 rounded-lg"
+                  className="px-3 py-1 border border-gray-300 rounded-lg text-sm md:text-base"
                   required
                 >
                   <option value="">Month</option>
@@ -169,7 +169,7 @@ export default function EditAffiliationModal({ affiliation, onClose }) {
                   name="startDate.year"
                   value={formData.startDate.year}
                   onChange={handleChange}
-                  className="px-4 py-2 border border-gray-300 rounded-lg"
+                  className="px-3 py-1 border border-gray-300 rounded-lg text-sm md:text-base"
                   required
                 >
                   <option value="">Year</option>
@@ -188,7 +188,7 @@ export default function EditAffiliationModal({ affiliation, onClose }) {
                     name="endDate.month"
                     value={formData.endDate.month}
                     onChange={handleChange}
-                    className="px-4 py-2 border border-gray-300 rounded-lg"
+                    className="px-3 py-1 border border-gray-300 rounded-lg text-sm md:text-base"
                     required
                   >
                     <option value="">Month</option>
@@ -198,7 +198,7 @@ export default function EditAffiliationModal({ affiliation, onClose }) {
                     name="endDate.year"
                     value={formData.endDate.year}
                     onChange={handleChange}
-                    className="px-4 py-2 border border-gray-300 rounded-lg"
+                    className="px-3 py-1 border border-gray-300 rounded-lg text-sm md:text-base"
                     required
                   >
                     <option value="">Year</option>
@@ -218,7 +218,7 @@ export default function EditAffiliationModal({ affiliation, onClose }) {
               name="description"
               value={formData.description}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg h-28"
+              className="w-full px-3 py-1 border border-gray-300 rounded-lg h-32 text-sm md:text-base"
             />
           </div>
 
@@ -227,13 +227,13 @@ export default function EditAffiliationModal({ affiliation, onClose }) {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100"
+              className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-[var(--color-astraprimary)] text-white rounded-lg hover:bg-[var(--color-astradark)]"
+              className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 bg-[var(--color-astraprimary)] text-white rounded-lg hover:bg-[var(--color-astradark)]"
             >
               Save
             </button>

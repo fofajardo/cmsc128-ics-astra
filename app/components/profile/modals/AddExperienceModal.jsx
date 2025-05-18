@@ -67,8 +67,8 @@ export default function AddExperienceModal({ onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="w-full max-w-3xl bg-white rounded-lg shadow-lg p-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+      <div className="w-full max-w-3xl max-h-screen overflow-y-auto bg-white rounded-lg shadow-lg p-8">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl md:text-2xl font-bold">Add Experience</h2>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
@@ -88,7 +88,7 @@ export default function AddExperienceModal({ onClose }) {
               value={formData.company}
               onChange={handleChange}
               placeholder="Ex: Department of Information and Communications Technology"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+              className="w-full px-3 py-1 border border-gray-300 rounded-lg text-sm md:text-base"
               required
             />
           </div>
@@ -105,7 +105,7 @@ export default function AddExperienceModal({ onClose }) {
                 value={formData.title}
                 onChange={handleChange}
                 placeholder="Ex: Software Engineer"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                className="w-full px-3 py-1 border border-gray-300 rounded-lg text-sm md:text-base"
                 required
               />
             </div>
@@ -117,7 +117,7 @@ export default function AddExperienceModal({ onClose }) {
                 name="type"
                 value={formData.type}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                className="w-full px-3 py-1 border border-gray-300 rounded-lg text-sm md:text-base"
                 required
               >
                 <option value="">Select type</option>
@@ -135,7 +135,7 @@ export default function AddExperienceModal({ onClose }) {
               name="isCurrentlyWorking"
               checked={formData.isCurrentlyWorking}
               onChange={handleChange}
-              className="h-4 w-4 text-blue-600 border-gray-300 rounded"
+              className="h-4 w-4 text-blue-600 border-gray-300 rounded text-sm md:text-base"
             />
             <label className="ml-2 text-sm md:text-base text-gray-700">
               I am currently working in this role
@@ -153,7 +153,7 @@ export default function AddExperienceModal({ onClose }) {
                   name="startDate.month"
                   value={formData.startDate.month}
                   onChange={handleChange}
-                  className="px-4 py-2 border border-gray-300 rounded-lg"
+                  className="px-3 py-1 border border-gray-300 rounded-lg text-sm md:text-base"
                   required
                 >
                   <option value="">Month</option>
@@ -163,7 +163,7 @@ export default function AddExperienceModal({ onClose }) {
                   name="startDate.year"
                   value={formData.startDate.year}
                   onChange={handleChange}
-                  className="px-4 py-2 border border-gray-300 rounded-lg"
+                  className="px-3 py-1 border border-gray-300 rounded-lg text-sm md:text-base"
                   required
                 >
                   <option value="">Year</option>
@@ -182,7 +182,7 @@ export default function AddExperienceModal({ onClose }) {
                     name="endDate.month"
                     value={formData.endDate.month}
                     onChange={handleChange}
-                    className="px-4 py-2 border border-gray-300 rounded-lg"
+                    className="px-3 py-1 border border-gray-300 rounded-lg text-sm md:text-base"
                     required
                   >
                     <option value="">Month</option>
@@ -192,7 +192,7 @@ export default function AddExperienceModal({ onClose }) {
                     name="endDate.year"
                     value={formData.endDate.year}
                     onChange={handleChange}
-                    className="px-4 py-2 border border-gray-300 rounded-lg"
+                    className="px-3 py-1 border border-gray-300 rounded-lg text-sm md:text-base"
                     required
                   >
                     <option value="">Year</option>
@@ -215,7 +215,7 @@ export default function AddExperienceModal({ onClose }) {
                 value={formData.location}
                 onChange={handleChange}
                 placeholder="Ex: Makati, Philippines"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                className="w-full px-3 py-1 border border-gray-300 rounded-lg text-sm md:text-base"
                 required
               />
             </div>
@@ -227,7 +227,7 @@ export default function AddExperienceModal({ onClose }) {
                 name="locationType"
                 value={formData.locationType}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                className="w-full px-3 py-1 border border-gray-300 rounded-lg text-sm md:text-base"
                 required
               >
                 {locationTypes.map(type => (
@@ -247,7 +247,7 @@ export default function AddExperienceModal({ onClose }) {
               value={formData.description}
               onChange={handleChange}
               placeholder="Describe your role and responsibilities"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg h-32"
+              className="w-full px-3 py-1 border border-gray-300 rounded-lg h-32 text-sm md:text-base"
             />
           </div>
 
@@ -256,13 +256,13 @@ export default function AddExperienceModal({ onClose }) {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100"
+              className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-[var(--color-astraprimary)] text-white rounded-lg hover:bg-[var(--color-astradark)]"
+              className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 bg-[var(--color-astraprimary)] text-white rounded-lg hover:bg-[var(--color-astradark)]"
             >
               Save
             </button>
