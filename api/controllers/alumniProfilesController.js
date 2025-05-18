@@ -210,7 +210,8 @@ const createAlumniProfile = async (req, res) => {
       is_profile_public,
       skills,
       suffix,
-      approved
+      approved,
+      interests,
     } = req.body;
 
     const { result, error } = await alumniProfilesService.insertAlumniProfile(req.supabase, {
@@ -231,7 +232,8 @@ const createAlumniProfile = async (req, res) => {
       is_profile_public,
       skills,
       suffix,
-      approved
+      approved,
+      interests,
     });
 
     if (error) {
@@ -440,7 +442,8 @@ const updateAlumniProfile = async (req, res) => {
       "suffix",
       "sex",
       "primary_work_experience_id",
-      "approved"
+      "approved",
+      "interests",
     ];
 
     const updateData = {};
