@@ -27,7 +27,7 @@ export default function AdminJobsLayout({ children }) {
   });
 
   const tabs = {
-    All: 3,
+    All: 0,
     Reported: 0,
   };
 
@@ -116,7 +116,7 @@ export default function AdminJobsLayout({ children }) {
       </div>
 
       {/* Tabs + children context */}
-      <TabContext.Provider value={{ info, setInfo, setJobCounts }}>
+      <TabContext.Provider value={{ currTab, info, setInfo, setJobCounts }}>
         <AdminTabs tabs={tabs} currTab={currTab} handleTabChange={dynamicTabClick} />
         {children}
       </TabContext.Provider>

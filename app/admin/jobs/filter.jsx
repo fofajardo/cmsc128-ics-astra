@@ -90,7 +90,7 @@ export default function SearchFilter({onClose, onApply, filter}) {
           className="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white font-r"
         >
           {jobTypeOptions.map((option) => {
-            return <option key={option.value} value={option.value}>{option.label}</option>
+            return <option key={option.value} value={option.value}>{option.label}</option>;
           })}
         </select>
       </div>

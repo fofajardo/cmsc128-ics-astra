@@ -33,6 +33,34 @@ const getJobs = async (req, res) => {
   }
 };
 
+const getReportedJobs = async (req, res) => {
+  try {
+    const filters = req.query;
+
+    const { data, error } = await jobsService.fetchReportedJobs(req.supabase, filters);
+
+    if (error) {
+      console.log(error);
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error.message
+      });
+    }
+
+    return res.status(httpStatus.OK).json({
+      status: "OK",
+      list: data || [],
+    });
+
+  } catch (error) {
+    console.log(error);
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
+
 const getJobById  = async (req, res) => {
   try {
     const { jobId } = req.params;
@@ -235,9 +263,6 @@ const createJob = async (req, res) => {
   }
 };
 
-
-
-
 const updateJob =  async (req, res) => {
   const jobId = req.params.jobId;
   try {
@@ -424,6 +449,7 @@ const deleteJob = async (req, res) => {
 
 const jobsController = {
   getJobs,
+  getReportedJobs,
   getJobById,
   createJob,
   updateJob,

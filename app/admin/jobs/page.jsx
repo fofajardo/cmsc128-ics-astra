@@ -38,6 +38,15 @@ export default function Jobs() {
     sortOrder: "asc",
   };
 
+  const initialPagination = {
+    display: [1, itemsPerPage],
+    currPage: 1,
+    lastPage: 1,
+    numToShow: itemsPerPage,
+    total: 0,
+    itemsPerPage
+  };
+
   const [filter, setFilter] = useState(initialFilters);
 
   const toggleFilter = () => {
@@ -45,18 +54,11 @@ export default function Jobs() {
     setShowFilter((prev) => !prev);
   };
 
-  const [pagination, setPagination] = useState({
-    display: [1, itemsPerPage],
-    currPage: 1,
-    lastPage: 1,
-    numToShow: itemsPerPage,
-    total: 0,
-    itemsPerPage
-  });
+  const [pagination, setPagination] = useState(initialPagination);
 
   const fetchJobs = async () => {
     try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs`);
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs${currTab === "Reported" ? "/reported" : ""}`);
       if (response.data.status === "OK") {
         setJobs(response.data.list || []);
         computeCounts(response.data.list || []);
@@ -67,14 +69,6 @@ export default function Jobs() {
       console.error("Failed to fetch jobs. Please try again later.");
     }
   };
-
-  useEffect(() => {
-    fetchJobs();
-  }, []);
-
-  useEffect(() => {
-    setFilteredJobs(jobs);
-  }, [jobs]);
 
   useEffect(() => {
     const total = filteredJobs.length;
@@ -89,6 +83,19 @@ export default function Jobs() {
       itemsPerPage
     });
   }, [filteredJobs, searchQuery]);
+
+  useEffect(() => {
+    setFilter(initialFilters);
+
+    setSearchQuery("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    fetchJobs();
+  }, [currTab]);
+
+  useEffect(() => {
+    setFilteredJobs(jobs);
+  }, [jobs]);
 
   useEffect(() => {
     const start = (pagination.currPage - 1) * pagination.itemsPerPage;
@@ -126,16 +133,16 @@ export default function Jobs() {
   const sort = (filtered, sortBy, asc) => {
     asc = asc === "asc" ? true : false;
     switch (sortBy) {
-      case "company":
-        return filtered.sort((a, b) => a.company_name.toLowerCase().localeCompare(b.company_name.toLowerCase())
+    case "company":
+      return filtered.sort((a, b) => a.company_name.toLowerCase().localeCompare(b.company_name.toLowerCase())
           * (asc ? 1 : -1));
-      case "location":
-        return filtered.sort((a, b) => a.location.toLowerCase().localeCompare(b.location.toLowerCase())
+    case "location":
+      return filtered.sort((a, b) => a.location.toLowerCase().localeCompare(b.location.toLowerCase())
           * (asc ? 1 : -1));
-      case "date":
-          return filtered.sort((a, b) => (new Date(a.created_at) - new Date(b.created_at)) * (asc ? 1 : -1));
-      default:
-        return filtered;
+    case "date":
+      return filtered.sort((a, b) => (new Date(a.created_at) - new Date(b.created_at)) * (asc ? 1 : -1));
+    default:
+      return filtered;
     }
   };
 
@@ -309,8 +316,8 @@ function renderStatus(expiresAt) {
   const isExpired = isNaN(expiryDate) || expiryDate < today;
 
   const text = isExpired ? "Expired" : "Active";
-  const color = isExpired ? "text-red-600" : "text-green-600";
-  return <div className={`text-center ${text === "Expired" ? "text-astrared" : "text-astragreen"} font-s`}>{text}</div>;
+  const color = isExpired ? "text-astrared" : "text-astragreen";
+  return <div className={`text-center ${color} font-s`}>{text}</div>;
 }
 
 function renderActions(id, name, currTab, setPrompt, setJobToDelete) {
