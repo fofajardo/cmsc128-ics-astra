@@ -112,7 +112,7 @@ export default function LineChartComponent({ alumniBatchStats }) {
             <button
               key={key}
               data-active={activeChart === key}
-              className="flex md:whitespace-nowrap flex-1 flex-col justify-center gap-1 border-t px-3 py-2 text-left even:border-l data-[active=true]:bg-muted/50 sm:border-l sm:border-t-0 sm:px-8 sm:py-6"
+              className="flex md:whitespace-nowrap flex-1 flex-col justify-center gap-1 border-t px-3 py-2 text-left even:border-l data-[active=true]:bg-muted/50 sm:border-l sm:border-t-0 lg:px-8 lg:py-6"
               onClick={() => setActiveChart(key)}
             >
               <span className="font-s text-astradark">
