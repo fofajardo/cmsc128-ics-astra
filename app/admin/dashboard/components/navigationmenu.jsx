@@ -22,6 +22,7 @@ const tabOptions = {
     { value: "income", label: "Income Range", description: "Income range distribution." },
     { value: "org", label: "Org Affiliation", description: "Organization affiliations." },
     { value: "donations", label: "Donations", description: "Alumni donations and fundraising." },
+    { value: "degree", label: "Highest Degree", description: "Highest degree obtained by alumni." },
   ],
   status: [
     { value: "alumni", label: "Alumni Status", description: "Active, inactive, and other statuses." },
@@ -54,7 +55,7 @@ export function NavigationMenuDemo({
           </div>
           <NavigationMenuTrigger>
             {currentCategory === "demographics" && getSelectedLabel("demographics", tab) !== "Demographics" ? (
-              <span className="font-semibold text-astraprimary flex items-center gap-1">
+              <span className="font-semibold text-astraprimary flex items-center gap-1 line-clamp-1">
                 {getSelectedLabel("demographics", tab)}
                 {/* <Check className="w-4 h-4" /> */}
               </span>
@@ -63,7 +64,7 @@ export function NavigationMenuDemo({
             )}
           </NavigationMenuTrigger>
           <NavigationMenuContent>
-            <ul className="grid grid-cols-2 gap-2 p-4 w-90 md:w-max">
+            <ul className="grid grid-cols-2 gap-2 p-3 w-90 md:w-max">
               {tabOptions.demographics.map(opt => (
                 <li key={opt.value}>
                   <button
@@ -89,7 +90,7 @@ export function NavigationMenuDemo({
           </div>
           <NavigationMenuTrigger>
             {currentCategory === "career" && getSelectedLabel("career", tab) !== "Career" ? (
-              <span className="font-semibold text-primary flex items-center gap-1">
+              <span className="font-semibold text-primary flex items-center gap-1 line-clamp-1">
                 {getSelectedLabel("career", tab)}
                 {/* <Check className="w-4 h-4" /> */}
               </span>
@@ -124,7 +125,7 @@ export function NavigationMenuDemo({
           </div>
           <NavigationMenuTrigger>
             {currentCategory === "status" && getSelectedLabel("status", tab) !== "Status" ? (
-              <span className="font-semibold text-primary flex items-center gap-1">
+              <span className="font-semibold text-primary flex items-center gap-1 line-clamp-1">
                 {getSelectedLabel("status", tab)}
                 {/* <Check className="w-4 h-4" /> */}
               </span>

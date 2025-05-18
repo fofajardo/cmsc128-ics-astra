@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import AdminStatCard from "@/components/AdminStatCard";
 import { GraduationCap, Calendar, Briefcase, HandHeart } from "lucide-react";
 import BarGraph from "./components/bargraph";
@@ -13,6 +13,19 @@ import { capitalizeTitle } from "@/utils/format";
 import { NavigationMenuDemo } from "./components/navigationmenu";
 import { BarChartComponent, VerticalBarChart, StackedBarChart } from "./components/BarChart";
 import ReusablePieChart from "./components/ReusablePieChart";
+import LineChartComponent from "./components/LineChart";
+
+// custom hook to check if screen width is medium or larger for responsive design
+function useIsMd() {
+  const [isMd, setIsMd] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMd(window.matchMedia("(min-width: 768px)").matches);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMd;
+}
 
 export default function Dashboard() {
   const [activeAlumniStats, setActiveAlumniStats] = useState(null);
@@ -28,7 +41,9 @@ export default function Dashboard() {
   const [alumniIncomeStats, setAlumniIncomeStats] = useState([]);
   const [alumniEmploymentStats, setAlumniEmploymentStats] = useState([]);
   const [alumniBatchStats, setAlumniBatchStats] = useState([]);
-  const [tab, setTab] = useState("donations");
+  const [alumniHighestDegreeStats, setAlumniHighestDegreeStats] = useState([]);
+  const [tab, setTab] = useState("batch");
+  const isMd = useIsMd();
 
   useEffect(() => {
     const fetchStatistics = async () => {
@@ -47,6 +62,7 @@ export default function Dashboard() {
           axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-income-range-stats`),
           axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-employment-status`),
           axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-batch`),
+          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/alumni-highest-degree-stats`),
         ];
 
         const [
@@ -63,9 +79,11 @@ export default function Dashboard() {
           alumniIncomeRes,
           alumniEmploymentRes,
           alumniBatchRes,
+          alumniHighestDegreeRes,
         ] = await Promise.allSettled(urls);
 
         if (alumniRes.status === "fulfilled") setActiveAlumniStats(alumniRes.value.data.stats);
+        console.log("alumniRes", alumniRes.value.data.stats);
         if (jobsRes.status === "fulfilled") setActiveJobsStats(jobsRes.value.data.stats);
         if (eventsRes.status === "fulfilled") setActiveEventsStats(eventsRes.value.data.stats);
         if (fundsRes.status === "fulfilled") setFundsRaisedStats(fundsRes.value.data.stats);
@@ -102,13 +120,16 @@ export default function Dashboard() {
         }
 
         if (alumniEmploymentRes.status === "fulfilled" && alumniEmploymentRes.value.data.status === "OK") {
-          console.log("Alumni Employment Stats:", alumniEmploymentRes.value.data.stats);
           setAlumniEmploymentStats(alumniEmploymentRes.value.data.stats);
         }
 
         if (alumniBatchRes.status === "fulfilled" && alumniBatchRes.value.data.status === "OK") {
-          console.log("Alumni Batch Stats:", alumniBatchRes.value.data.stats);
           setAlumniBatchStats(alumniBatchRes.value.data.stats);
+        }
+
+        if (alumniHighestDegreeRes.status === "fulfilled" && alumniHighestDegreeRes.value.data.status === "OK") {
+          console.log("alumniHighestDegreeRes", alumniHighestDegreeRes.value.data.stats);
+          setAlumniHighestDegreeStats(alumniHighestDegreeRes.value.data.stats);
         }
 
         if (donationSummaryRes.status === "fulfilled" && donationSummaryRes.value.data.status === "OK") {
@@ -140,6 +161,11 @@ export default function Dashboard() {
     value: item.count,
   }));
 
+  const sortedAlumniOrgStats = useMemo(
+    () => [...alumniOrgStats].sort((a, b) => b.count - a.count),
+    [alumniOrgStats]
+  );
+
   function renderTabContent() {
     switch (tab) {
     case "donations":
@@ -167,7 +193,7 @@ export default function Dashboard() {
               inactive: { label: "Inactive", color: "#60a5fa" },
             }}
             title="Alumni Age Distribution"
-            description="Active and inactive alumni by age"
+            description="active and inactive alumni by age"
             xKey="age"
             barKeys={["active", "inactive"]}
             barColors={["var(--color-astraprimary)", "#60a5fa"]}
@@ -200,10 +226,10 @@ export default function Dashboard() {
               Male: { label: "Male", color: "var(--color-astraprimary)" },
             }}
             title="Alumni Sex Distribution"
-            description="Active alumni by sex"
+            description="active alumni by sex"
             dataKey="value"
             nameKey="name"
-            maxHeight={300}
+            maxHeight={0}
           />
         </TransitionSlide>
       );
@@ -239,7 +265,7 @@ export default function Dashboard() {
               Widowed: { label: "Widowed"},
             }}
             title="Alumni Civil Status Distribution"
-            description="Active alumni by civil status"
+            description="active alumni by civil status"
             dataKey="value"
             nameKey="name"
             maxHeight={300}
@@ -252,14 +278,16 @@ export default function Dashboard() {
       // Dummy data for testing scalability
       const dummyAlumniOrgStats = Array.from({ length: 10 }, (_, i) => ({
         name: `Org ${i + 1}`,
-        count: Math.floor(Math.random() * 200) + 10, // 10 to 209 alumni
+        acronym: `ORG${i + 1}`,
+        nameWithAcronym: `Org ${i + 1} (ORG${i + 1})`,
+        count: Math.floor(Math.random() * 200) + 10,
         active: Math.floor(Math.random() * 100),
         inactive: Math.floor(Math.random() * 100),
       }));
       return (
         <TransitionSlide>
           <VerticalBarChart
-            data={alumniOrgStats.sort((a, b) => b.count - a.count)}
+            data={sortedAlumniOrgStats}
             config={{
               count: { label: "Active Alumni", color: "var(--color-astraprimary)" },
               active: { color: "#60a5fa" },
@@ -267,7 +295,7 @@ export default function Dashboard() {
             }}
             title="Alumni by Organization"
             description="Active alumni per organization"
-            yKey="name"
+            yKey={isMd ? "name" : "acronym"}
             yKeyLong="nameWithAcronym"
             barKey="count"
             barLabel="Total Alumni"
@@ -383,6 +411,100 @@ export default function Dashboard() {
       );
     }
 
+    case "batch": {
+      return (
+        <TransitionSlide>
+          <LineChartComponent alumniBatchStats={alumniBatchStats}/>
+        </TransitionSlide>
+
+      );
+    }
+
+    case "degree": {
+      const colorConfig = [
+        // "var(--color-astraprimary)",
+        "var(--color-pieastra-primary-80)",
+        "var(--color-astradark)",
+        "var(--color-pieastra-primary-60)",
+        "var(--color-pieastra-primary-40)",
+        "#a3a3a3"
+      ];
+      const pieDegreeStats = alumniHighestDegreeStats.map((item, idx) => ({
+        name: item.level,
+        value: item.count,
+        fill: colorConfig[idx % colorConfig.length],
+      }));
+
+      const config = {};
+      alumniHighestDegreeStats.forEach((item, idx) => {
+        config[item.level] = { label: item.level, color: colorConfig[idx % colorConfig.length] };
+      });
+
+      return (
+        <TransitionSlide>
+          <ReusablePieChart
+            data={pieDegreeStats}
+            config={config}
+            title="Alumni Highest Degree"
+            description="Distribution of highest degrees obtained by alumni"
+            dataKey="value"
+            nameKey="name"
+            maxHeight={300}
+          />
+        </TransitionSlide>
+      );
+    }
+
+    case "alumni": {
+      // Prepare your data and config
+      const pieAlumniStatus = [
+        { name: "Active", value: activeAlumniStats?.active_alumni_count ?? 0, fill: "var(--color-astraprimary)" },
+        { name: "Inactive", value: activeAlumniStats?.inactive_alumni_count ?? 0, fill: "#a3a3a3" },
+      ];
+      const pieAlumniApproval = [
+        { name: "Approved", value: activeAlumniStats?.approved_alumni_count ?? 0, fill: "var(--color-astradark)" },
+        { name: "Pending", value: activeAlumniStats?.pending_alumni_count ?? 0, fill: "var(--color-pieastra-primary-80)" },
+      ];
+
+      const alumniPieSelectOptions = {
+        options: [
+          { label: "Status", value: "status" },
+          { label: "Approval", value: "approval" },
+        ],
+        dataMap: {
+          status: {
+            data: pieAlumniStatus,
+            config: {
+              Active: { label: "Active", color: "var(--color-astraprimary)" },
+              Inactive: { label: "Inactive", color: "#a3a3a3" },
+            },
+          },
+          approval: {
+            data: pieAlumniApproval,
+            config: {
+              Approved: { label: "Approved", color: "var(--color-astradark)" },
+              Pending: { label: "Pending", color: "var(--color-pieastra-primary-80)" },
+            },
+          },
+        },
+        defaultValue: "status",
+      };
+
+      return (
+        <TransitionSlide>
+          <ReusablePieChart
+            data={pieAlumniStatus}
+            selectOptions={alumniPieSelectOptions}
+            title="Alumni Status/Approval"
+            description="alumni breakdown"
+            dataKey="value"
+            nameKey="name"
+            maxHeight={300}
+          />
+        </TransitionSlide>
+      );
+    }
+
     default:
       return (
         <div className="p-8 text-center text-muted-foreground">
@@ -423,14 +545,13 @@ export default function Dashboard() {
       </div>
 
       <div className="flex gap-4 flex-col bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24">
-        <div className="flex flex-col md:flex-row gap-4">
-          <AlumAct_Events />
-          <div className="flex flex-col gap-2 flex-2">
-            <NavigationMenuDemo tab={tab} setTab={setTab} />
-            {renderTabContent()}
-          </div>
+        <div className="flex flex-col gap-2 flex-2">
+          <NavigationMenuDemo tab={tab} setTab={setTab} />
+          {renderTabContent()}
         </div>
-        {/* <InteractiveLineChart/> */}
+        {/* <div className="flex flex-col md:flex-row gap-4"> */}
+        <AlumAct_Events />
+        {/* </div> */}
       </div>
     </>
   );
@@ -449,7 +570,7 @@ function Activity() {
 }
 
 function AlumAct_Events() {
-  return <div className="flex-grow flex flex-col gap-4">
+  return <div className="flex-grow flex flex-col md:flex-row gap-4">
     <TransitionSlide className="flex-2 flex-grow h-auto w-auto">
       <ActivityOverview />
     </TransitionSlide>

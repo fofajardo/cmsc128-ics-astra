@@ -289,6 +289,22 @@ const getInterestedAlumniEmail = async (req, res) => {
   }
 };
 
+const getEventsStats = async (req, res) => {
+  try {
+    const stats = await statisticsService.fetchEventsStats(req.supabase);
+
+    res.status(httpStatus.OK).json({
+      status: "OK",
+      stats: stats
+    });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
+
 const statisticsController = {
   getAlumniStats,
   getActiveAlumniStats,
@@ -308,6 +324,7 @@ const statisticsController = {
   getAlumniEmploymentStatus,
   getAlumniBatch,
   getInterestedAlumniEmail,
+  getEventsStats,
 };
 
 export default statisticsController;
