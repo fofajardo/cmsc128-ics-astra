@@ -168,6 +168,8 @@ async function fetchData(aUser, aContext) {
       aContext.actions.setAuthUser(aUser);
       const rawUser = await axios.get(clientRoutes.users.base(`/${aUser.id}`));
       aUser = rawUser?.data?.user;
+    } else {
+      aUser = aUser.user;
     }
     try {
       const rawProfile = await axios.get(clientRoutes.alumniProfiles.base(`/${aUser.id}`));
