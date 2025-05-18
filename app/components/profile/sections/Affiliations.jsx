@@ -31,10 +31,16 @@ export const Affiliations = ({ affiliations, setIsShowAffiliationForm, setIsShow
               <h3 className="text-lg md:text-xl font-bold text-[var(--color-astrablack)]">{aff.organization}</h3>
               <p className="text-sm text-[var(--color-astrablack)]">{aff.title}</p>
               <p className="text-sm text-[var(--color-astrablack)]">
-                {aff.startDate} {aff.isCurrentlyAffiliated ? "- Present" : `- ${aff.endDate}`}
+                {aff.startDate} {
+                  aff.isCurrent
+                    ? "- Present"
+                    : !aff.endDate
+                      ? ""
+                      : `- ${aff.endDate}`
+                }
               </p>
               <p className="text-[var(--color-astrablack)] text-sm md:text-md text-justify">
-                {aff.location} • {aff.isCurrentlyAffiliated ? "Currently Affiliated" : "Not Affiliated"}
+                {aff.location}
               </p>
               <p className="text-[var(--color-astrablack)] text-sm md:text-md text-justify mt-2">{aff.description}</p>
             </div>

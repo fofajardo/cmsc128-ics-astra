@@ -17,7 +17,12 @@ import PersonalInfoModal from "@/components/profile/modals/PersonalInfoModal";
 import TechnicalSkillsModal from "@/components/profile/modals/TechnicalSkillsModal";
 import {UserFetcher, UserProvider, useUser} from "@/components/UserContext.jsx";
 import {feRoutes} from "../../../common/routes.js";
-import {CIVIL_STATUS_LABELS, SEX_LABELS} from "../../../common/scopes.js";
+import {
+  CIVIL_STATUS_LABELS,
+  EMPLOYMENT_STATUS_LABELS,
+  LOCATION_TYPE_LABELS,
+  SEX_LABELS
+} from "../../../common/scopes.js";
 import nationalities from "i18n-nationality";
 import nationalities_en from "i18n-nationality/langs/en.json";
 import {useParams} from "next/navigation";
@@ -94,97 +99,47 @@ function Page() {
     StudentNumber: context.state.profile.student_num,
   };
 
-  const technicalSkills = [
-    { text: "Frontend", color: "bg-blue-100 text-blue-800 border-blue-300" },
-    { text: "Database", color: "bg-green-100 text-green-800 border-green-300" },
-    { text: "Figma", color: "bg-pink-100 text-pink-800 border-pink-300" },
-    { text: "Python", color: "bg-yellow-100 text-yellow-800 border-yellow-300" },
-    { text: "Java", color: "bg-red-100 text-red-800 border-red-300" },
-    { text: "HTML", color: "bg-purple-100 text-purple-800 border-purple-300" },
-    { text: "CSS", color: "bg-teal-100 text-teal-800 border-teal-300" },
-    { text: "JavaScript", color: "bg-orange-100 text-orange-800 border-orange-300" },
-    { text: "React", color: "bg-gray-100 text-gray-800 border-gray-300" },
-    { text: "Node.js", color: "bg-indigo-100 text-indigo-800 border-indigo-300" },
-  ];
+  const technicalSkills = (context.state.profile.skills?.trim() ?? "") === ""
+    ? []
+    : context.state.profile.skills.split(",").map(function(skill) {
+      return { text: skill };
+    });
 
-  const fieldOfInterests = [
-    { text: "Artificial Intelligence", color: "bg-indigo-100 text-indigo-800 border-indigo-300" },
-    { text: "Web Development", color: "bg-cyan-100 text-cyan-800 border-cyan-300" },
-    { text: "UI/UX Design", color: "bg-rose-100 text-rose-800 border-rose-300" },
-    { text: "Cybersecurity", color: "bg-purple-100 text-purple-800 border-purple-300" },
-  ];
+  const fieldOfInterests = (context.state.profile.interests?.trim() ?? "") === ""
+    ? []
+    : context.state.profile.interests.split(",").map(function(interest) {
+      return { text: interest };
+    });
 
-  const experiences = [
-    {
-      company: "Department of Information and Communications Technology",
-      title: "Full-Stack Web Developer",
-      type: "Full-time",
-      startDate: "August 2019",
-      endDate: null,
-      location: "Makati, Philippines",
-      locationType: "On-site",
-      isCurrentlyWorking: true,
-      description:
-        "Assisted in the design and development of responsive and intuitive user interfaces (UI) and user experiences (UX) for web applications. Collaborated with backend developers to integrate frontend components with server-side logic and APIs.",
-    },
-    {
-      company: "ICS Research and Development Center",
-      title: "Intern",
-      type: "Internship",
-      startDate: "June 2019",
-      endDate: "July 2019",
-      location: "Laguna, Philippines",
-      locationType: "On-site",
-      isCurrentlyWorking: false,
-      description:
-        "Assisted in the development of a web-based application for data management. Gained hands-on experience in HTML, CSS, and JavaScript. Participated in team meetings and contributed to project discussions.",
-    },
-    {
-      company: "Tech Solutions Inc.",
-      title: "Frontend Developer",
-      type: "Part-time",
-      startDate: "June 2020",
-      endDate: "July 2021",
-      location: "Quezon City, Philippines",
-      locationType: "Remote",
-      isCurrentlyWorking: false,
-      description:
-        "Developed interactive and responsive web pages using React and Redux. Worked closely with designers to create cohesive and visually appealing user experiences. Implemented unit tests to ensure application reliability.",
-    },
-  ];
+  const experiences = context.state.workExperiences
+    ? context.state.workExperiences.map((experience) => {
+      return {
+        company: experience.company,
+        title: experience.title,
+        type: experience.employment_type !== null ? EMPLOYMENT_STATUS_LABELS[experience.employment_type] : "",
+        startDate: experience.year_started,
+        endDate: experience.year_ended,
+        location: experience.location,
+        locationType: experience.location_type !== null ? LOCATION_TYPE_LABELS[experience.location_type] : "",
+        description: experience.description,
+        isCurrent: experience.is_current,
+      };
+    })
+    : [];
 
-  const affiliations = [
-    {
-      organization: "Philippine Association of Computing Professionals",
-      title: "Active Member",
-      location: "Makati, Philippines",
-      isCurrentlyAffiliated: true,
-      startDate: "January 2022",
-      endDate: null,
-      description:
-        "Participated in collaborative projects and conferences to advocate for technological advancements and computing research across the country.",
-    },
-    {
-      organization: "Tech Innovators Guild",
-      title: "Volunteer Coordinator",
-      location: "Pasig City, Philippines",
-      isCurrentlyAffiliated: false,
-      startDate: "March 2020",
-      endDate: "December 2021",
-      description:
-        "Organized and managed volunteer programs for community outreach initiatives focused on digital literacy education.",
-    },
-    {
-      organization: "Philippine Association of Computing Professionals",
-      title: "Active Member",
-      location: "Makati, Philippines",
-      isCurrentlyAffiliated: true,
-      startDate: "January 2022",
-      endDate: null,
-      description:
-        "Participated in collaborative projects and conferences to advocate for technological advancements and computing research across the country.",
-    }
-  ];
+  const affiliations = context.state.organizationAffiliations
+    ? context.state.organizationAffiliations.map((affiliation) => {
+      return {
+        organization: affiliation.organizations.name,
+        title: affiliation.role,
+        location: affiliation.organizations.location,
+        startDate: affiliation.joined_date,
+        endDate: affiliation.end_date,
+        description: affiliation.description,
+        isCurrent: affiliation.is_current,
+      };
+    })
+    : [];
 
   return (
     <div className="min-h-screen bg-[var(--color-astratintedwhite)]">
@@ -287,7 +242,7 @@ export default function WrappedPage() {
 
   return (
     <UserProvider>
-      <UserFetcher userId={id} />
+      <UserFetcher userId={id} isMinimal={false} />
       <Page />
     </UserProvider>
   );

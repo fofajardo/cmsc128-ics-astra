@@ -11,7 +11,6 @@ export const TechnicalSkills = ({ technicalSkills, setIsShowTechnicalForm }) => 
           <SkillTag
             key={index}
             text={skill.text}
-            color={skill.color}
           />
         ))}
         <button

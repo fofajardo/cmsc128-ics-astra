@@ -11,7 +11,6 @@ export const FieldsOfInterest = ({ fieldOfInterests, setIsShowInterestForm }) =>
           <SkillTag
             key={index}
             text={interest.text}
-            color={interest.color}
           />
         ))}
         <button

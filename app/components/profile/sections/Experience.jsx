@@ -29,11 +29,21 @@ export const Experience = ({ experiences, setIsShowExperienceForm, setIsShowAddE
             </div>
             <div className="flex-1">
               <h3 className="text-lg md:text-xl font-bold text-[var(--color-astrablack)]">{exp.company}</h3>
-              <p className="text-sm text-[var(--color-astrablack)]">{exp.title} • {exp.type}</p>
               <p className="text-sm text-[var(--color-astrablack)]">
-                {exp.startDate} {exp.isCurrentlyWorking ? "- Present" : `- ${exp.endDate}`}
+                {exp.title}{exp.type !== "" && " • "}{exp.type}
               </p>
-              <p className="text-[var(--color-astrablack)] text-sm md:text-md text-justify">{exp.location}</p>
+              <p className="text-sm text-[var(--color-astrablack)]">
+                {exp.startDate} {
+                  exp.isCurrent
+                    ? "- Present"
+                    : !exp.endDate
+                      ? ""
+                      : `- ${exp.endDate}`
+                }
+              </p>
+              <p className="text-[var(--color-astrablack)] text-sm md:text-md text-justify">
+                {exp.location}{exp.locationType !== "" && " • "}{exp.locationType}
+              </p>
               <p className="text-[var(--color-astrablack)] text-sm md:text-md text-justify mt-2">{exp.description}</p>
             </div>
           </div>
