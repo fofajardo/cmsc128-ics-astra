@@ -27,28 +27,28 @@ export default function ViewDonationIdAdminPage() {
         // Fetch donation data
         const donationResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations/${id}`);
         // console.log("Donation API Response:", donationResponse.data);
-  
+
         if (donationResponse.data.status === "OK" && donationResponse.data.donation) {
           const donationData = donationResponse.data.donation;
           setDonation(donationData);
-  
+
           // Fetch project data
           const projectResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/projects/${donationData.project_id}`);
           // console.log("Project API Response:", projectResponse.data);
           if (projectResponse.data.status === "OK" && projectResponse.data.project) {
             setProject(projectResponse.data.project);
           }
-  
+
           // Fetch user data
           const userResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/users/${donationData.user_id}`);
           // console.log("User API Response:", userResponse.data);
           if (userResponse.data.status === "OK" && userResponse.data.user) {
             setUser(userResponse.data.user);
           }
-          
+
           // Use our new API endpoint to fetch the donation receipt
           const receiptResponse = await axios.get(
-            `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/donation-receipt`, 
+            `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/donation-receipt`,
             {
               params: {
                 user_id: donationData.user_id,
@@ -56,9 +56,9 @@ export default function ViewDonationIdAdminPage() {
               }
             }
           );
-          
+
           // console.log("Receipt Response:", receiptResponse.data);
-          
+
           if (receiptResponse.data.status === "OK" && receiptResponse.data.url) {
             setReceiptPhoto({
               ...receiptResponse.data.photo,
@@ -75,7 +75,7 @@ export default function ViewDonationIdAdminPage() {
         setLoading(false);
       }
     };
-  
+
     if (id) {
       fetchDonationDetails();
     }
@@ -107,10 +107,10 @@ export default function ViewDonationIdAdminPage() {
           <div className="mb-6 bg-gray-100 rounded-xl p-4 flex flex-col items-center justify-center min-h-[300px]">
             {receiptPhoto?.url ? (
               <div className="w-full h-full">
-                <img 
-                  src={receiptPhoto.url} 
-                  alt="Donation Receipt" 
-                  className="w-full h-full object-contain max-h-[500px]" 
+                <img
+                  src={receiptPhoto.url}
+                  alt="Donation Receipt"
+                  className="w-full h-full object-contain max-h-[500px]"
                   onError={(e) => {
                     e.target.onerror = null;
                     e.target.src = "/placeholder-image.jpg";

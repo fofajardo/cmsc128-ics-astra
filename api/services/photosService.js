@@ -124,7 +124,7 @@ const fetchDonationReceipt = async (supabase, userId, projectId) => {
     .select("*")
     .eq("user_id", userId)
     .eq("content_id", projectId)
-    .eq("type", PhotoType.PROOF_OF_PAYMENT)
+    .eq("type", PhotoType.PROOF_OF_PAYMENT);
 };
 
 const photosService = {

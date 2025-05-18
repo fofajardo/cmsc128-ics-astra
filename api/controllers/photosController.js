@@ -651,24 +651,24 @@ const getPhotosByContentId = async (req, res) => {
 const getDonationReceipt = async (req, res) => {
   try {
     const { user_id, project_id } = req.query;
-    
+
     if (!user_id || !project_id) {
       return res.status(httpStatus.BAD_REQUEST).json({
         status: "FAILED",
         message: "Both user_id and project_id are required"
       });
     }
-    
+
     // Fetch the receipt photo matching both user_id and project_id
     const { data, error } = await photosService.fetchDonationReceipt(req.supabase, user_id, project_id);
-    
+
     if (error) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
         status: "FAILED",
         message: error.message
       });
     }
-    
+
     // If no receipt photo found
     if (!data || data.length === 0) {
       return res.status(httpStatus.OK).json({
@@ -677,23 +677,23 @@ const getDonationReceipt = async (req, res) => {
         photo: null
       });
     }
-    
+
     // Found receipt photo - generate a signed URL
     const receiptPhoto = data[0];
-    
+
     try {
       const { data: signedUrlData, error: signedUrlError } = await req.supabase
         .storage
         .from("user-photos-bucket")
         .createSignedUrl(receiptPhoto.image_key, 60 * 60); // URL valid for 1 hour
-        
+
       if (signedUrlError) {
         // Try public URL as fallback
         const { data: publicUrlData } = req.supabase
           .storage
           .from("user-photos-bucket")
           .getPublicUrl(receiptPhoto.image_key);
-          
+
         if (publicUrlData && publicUrlData.publicUrl) {
           return res.status(httpStatus.OK).json({
             status: "OK",
@@ -709,7 +709,7 @@ const getDonationReceipt = async (req, res) => {
           });
         }
       }
-      
+
       return res.status(httpStatus.OK).json({
         status: "OK",
         photo: receiptPhoto,

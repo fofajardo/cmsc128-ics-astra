@@ -21,29 +21,29 @@ async function uploadReceiptImage(userId, projectId, file) {
     // console.log("AAHAHAHAHAHAHAHA");
     // Create form data for the receipt upload
     const formData = new FormData();
-    formData.append('user_id', userId);
-    formData.append('content_id', projectId);
-    formData.append('type', PhotoType.PROOF_OF_PAYMENT);
-    formData.append('File', file);
+    formData.append("user_id", userId);
+    formData.append("content_id", projectId);
+    formData.append("type", PhotoType.PROOF_OF_PAYMENT);
+    formData.append("File", file);
 
-    console.log("Uploading receipt with:", { 
-      userId, 
-      projectId, 
-      fileName: file.name, 
-      photoType: PhotoType.PROOF_OF_PAYMENT 
+    console.log("Uploading receipt with:", {
+      userId,
+      projectId,
+      fileName: file.name,
+      photoType: PhotoType.PROOF_OF_PAYMENT
     });
-    
+
     // Upload the receipt image
     const response = await axios.post(
       `${process.env.NEXT_PUBLIC_API_URL}/v1/photos`,
       formData,
       {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       }
     );
-    
+
     if (response.data.status === "CREATED") {
       // console.log("Receipt uploaded successfully:", response.data);
       return response.data.photo?.id || null;
@@ -119,57 +119,57 @@ export default function DonatePage() {
     fetchProjectRequest();
   }, []);
 
-const createDonation = async () => {
-  try {
-    setStatus("loading"); // Start loading state
-    
-    const generatedRefNum = "REF" + uuidv4();
-    const userId = user?.state?.user?.id;
-    
-    // Upload receipt image first (if available)
-    let receiptPhotoId = null;
-    if (receipt) {
-      receiptPhotoId = await uploadReceiptImage(userId, projectData.id, receipt);
-      
-      if (!receiptPhotoId) {
-        setShowToast({ type: "fail", message: "Failed to upload receipt. Please try again." });
-        setStatus("idle");
-        return;
-      }
-    }
-    
-    // Create donation record with reference to the uploaded receipt
-    const data = {
-      user_id: userId,
-      project_id: projectData.id,
-      donation_date: new Date().toISOString(),
-      reference_num: generatedRefNum,
-      mode_of_payment: paymentMethod === "external" ? 
-        DONATION_MODE_OF_PAYMENT.PHYSICAL_PAYMENT : 
-        DONATION_MODE_OF_PAYMENT.BANK_TRANSFER,
-      amount: amount,
-      is_anonymous: isAnonymous,
-      comment: null,
-      receipt_photo_id: receiptPhotoId, // Link to the uploaded receipt photo
-    };
+  const createDonation = async () => {
+    try {
+      setStatus("loading"); // Start loading state
 
-    const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations`, data);
-    const donationData = response.data;
-    
-    if (donationData.status === "CREATED") {
+      const generatedRefNum = "REF" + uuidv4();
+      const userId = user?.state?.user?.id;
+
+      // Upload receipt image first (if available)
+      let receiptPhotoId = null;
+      if (receipt) {
+        receiptPhotoId = await uploadReceiptImage(userId, projectData.id, receipt);
+
+        if (!receiptPhotoId) {
+          setShowToast({ type: "fail", message: "Failed to upload receipt. Please try again." });
+          setStatus("idle");
+          return;
+        }
+      }
+
+      // Create donation record with reference to the uploaded receipt
+      const data = {
+        user_id: userId,
+        project_id: projectData.id,
+        donation_date: new Date().toISOString(),
+        reference_num: generatedRefNum,
+        mode_of_payment: paymentMethod === "external" ?
+          DONATION_MODE_OF_PAYMENT.PHYSICAL_PAYMENT :
+          DONATION_MODE_OF_PAYMENT.BANK_TRANSFER,
+        amount: amount,
+        is_anonymous: isAnonymous,
+        comment: null,
+        receipt_photo_id: receiptPhotoId, // Link to the uploaded receipt photo
+      };
+
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations`, data);
+      const donationData = response.data;
+
+      if (donationData.status === "CREATED") {
       // console.log("Created donation:", donationData);
-      setStatus("success"); // Show success UI
-    } else {
+        setStatus("success"); // Show success UI
+      } else {
       // console.error("Unexpected response:", donationData);
-      setShowToast({ type: "fail", message: "Failed to process donation. Please try again." });
+        setShowToast({ type: "fail", message: "Failed to process donation. Please try again." });
+        setStatus("idle"); // Return to idle state
+      }
+    } catch (error) {
+    // console.error("Failed to create donation:", error);
+      setShowToast({ type: "fail", message: "An error occurred. Please try again." });
       setStatus("idle"); // Return to idle state
     }
-  } catch (error) {
-    // console.error("Failed to create donation:", error);
-    setShowToast({ type: "fail", message: "An error occurred. Please try again." });
-    setStatus("idle"); // Return to idle state
-  }
-};
+  };
 
   const handleAmountChange = (newAmount) => {
     setAmount(Number(newAmount));
@@ -396,7 +396,7 @@ const createDonation = async () => {
                                   <X size={16} />
                                 </button>
                               </div>
-                              {receipt.type.startsWith('image/') && (
+                              {receipt.type.startsWith("image/") && (
                                 <div className="mt-2">
                                   <img
                                     src={URL.createObjectURL(receipt)}
