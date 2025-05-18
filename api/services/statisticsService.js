@@ -208,6 +208,19 @@ const fetchInterestedAlumniEmail = async (supabase) => {
   return data;
 };
 
+const fetchEventsStats = async (supabase) => {
+  const { data, error } = await supabase
+    .from("all_events_stats")
+    .select("*")
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+};
+
 const statisticsService = {
   fetchAlumniStats,
   fetchActiveAlumniStats,
@@ -227,6 +240,7 @@ const statisticsService = {
   fetchAlumniEmploymentStatus,
   fetchAlumniBatch,
   fetchInterestedAlumniEmail,
+  fetchEventsStats,
 };
 
 export default statisticsService;
