@@ -69,7 +69,7 @@ async function signInSbConfirm(aRequest, aResponse, aNext) {
     return;
   }
 
-  const { token_hash, type } = aRequest.query;
+  const { token_hash, type, redirect_to } = aRequest.query;
 
   const authTokenResponse = await aRequest.supabase.auth.verifyOtp({
     type,
@@ -83,6 +83,10 @@ async function signInSbConfirm(aRequest, aResponse, aNext) {
   }
 
   aRequest.fetchAuthState(authTokenResponse);
+
+  if (redirect_to) {
+    return aResponse.redirect(redirect_to);
+  }
 
   return aNext();
 }

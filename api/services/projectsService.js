@@ -1,4 +1,4 @@
-import { applyFilter } from "../utils/applyFilter.js";
+import { applyFilter } from "../utils/filters.js";
 
 /*
 Format /projects?query_key=query_value&query2_key=query2_value&...
@@ -60,6 +60,13 @@ const updateProjectData = async (supabase, projectId, updateData) => {
     .eq("project_id", projectId);
 };
 
+const updateProjectsStatus = async (supabase, projectIds, updateData) => {
+  return await supabase
+    .from("projects")
+    .update(updateData)
+    .in("project_id", projectIds);
+};
+
 const deleteProject = async (supabase, projectId) => {
   return await supabase
     .from("projects")
@@ -72,6 +79,7 @@ const projectsService = {
   fetchProjectById,
   insertProject,
   updateProjectData,
+  updateProjectsStatus,
   deleteProject
 };
 

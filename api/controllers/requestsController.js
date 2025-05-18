@@ -4,7 +4,7 @@ import alumniService from "../services/alumniProfilesService.js";
 import contentsService from "../services/contentsService.js";
 
 import { isValidUUID, isValidDate } from "../utils/validators.js";
-import { REQUEST_TYPE } from "../utils/enums.js";
+import { REQUEST_TYPE } from "../../common/scopes.js";
 import { Actions, Subjects } from "../../common/scopes.js";
 import projectsService from "../services/projectsService.js";
 import usersService from "../services/usersService.js";
@@ -191,6 +191,7 @@ const getProjectRequests = async (req, res) => {
     // get requests from Requests table
     const completeFilters = {
       ...filters,
+      page: -1, // Get all project requests
       type: [REQUEST_TYPE.PROJECT_FUNDS, REQUEST_TYPE.FUNDRAISING],
     };
     const { data: requestData, error: requestError } = await requestsService.fetchProjectRequests(req.supabase, completeFilters);
@@ -203,7 +204,8 @@ const getProjectRequests = async (req, res) => {
     };
 
     // get name and role from alumni profiles table
-    const { data: alumData, error: alumError } = await alumniService.fetchAlumniProfiles(req.supabase);
+    const userIds = requestData.map(request => request.user_id);
+    const { data: alumData, error: alumError } = await alumniService.fetchAlumniProfilesByFilter(req.supabase, { alum_id: userIds, page: -1 });
 
     if (alumError) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -213,7 +215,7 @@ const getProjectRequests = async (req, res) => {
     };
 
     // get emails from Users table
-    const { data: userData, error: userError } = await usersService.fetchUsers(req.supabase);
+    const { data: userData, error: userError } = await usersService.fetchUsersByFilter(req.supabase, { id: userIds, page: -1 });
 
     if (userError) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -224,7 +226,10 @@ const getProjectRequests = async (req, res) => {
 
     // get project details from Projects table
     const projectIds = requestData.map(request => request.content_id);
-    const projectFilter = { project_id: projectIds };
+    const projectFilter = {
+      project_id: projectIds,
+      page: -1  // Get all projects
+    };
     const { data: projectData, error: projectError } = await projectsService.fetchProjects(req.supabase, projectFilter);
 
     if (projectError) {

@@ -2,16 +2,22 @@
 
 import {LoadingSpinner} from "@/components/LoadingSpinner.jsx";
 import {useSignedInUser} from "@/components/UserContext.jsx";
+import {cn} from "@/lib/utils.jsx";
 
-export default function LoadingOverlay({loading, coverContainer = false, hideContainer = false}) {
+export default function LoadingOverlay({loading, coverContainer = false, hideContainer = false, className}) {
   if (!loading) {
     return null;
   }
 
-  const backgroundClass = hideContainer ? "bg-white" : "bg-white/80";
-  const overlayClass = coverContainer
-    ? `absolute inset-0 z-100 flex items-center justify-center ${backgroundClass}`
-    : `fixed inset-0 z-100 flex items-center justify-center ${backgroundClass}`;
+  const overlayClass = cn(
+    "inset-0 z-100 flex items-center justify-center",
+    coverContainer
+      ? "absolute"
+      : "fixed",
+    hideContainer
+      ? "bg-white"
+      : "bg-white/80",
+    className);
 
   return (
     <div className={overlayClass}>

@@ -37,13 +37,20 @@ function hasNull(aTarget, aValues) {
   return nullValues;
 }
 
-const LOG = true;
-const FILTER = [];
-const TRACE_SERVER_ERROR = false;
-const TRACE_UNAUTHORIZED = false;
-const TRACE_BAD_REQUEST = false;
-const TRACE_FORBIDDEN = false;
-const TRACE_ALL = false;
+const LOG =
+  process.env.ICSA_API_RH_LOG === "TRUE";
+const FILTER =
+  process.env.ICSA_API_RH_FILTER?.split(",") ?? [];
+const TRACE_SERVER_ERROR =
+  process.env.ICSA_API_RH_TRACE_SERVER_ERROR === "TRUE";
+const TRACE_UNAUTHORIZED =
+  process.env.ICSA_API_RH_TRACE_UNAUTHORIZED === "TRUE";
+const TRACE_BAD_REQUEST =
+  process.env.ICSA_API_RH_TRACE_BAD_REQUEST === "TRUE";
+const TRACE_FORBIDDEN =
+  process.env.ICSA_API_RH_TRACE_FORBIDDEN === "TRUE";
+const TRACE_ALL =
+  process.env.ICSA_API_RH_TRACE_ALL === "TRUE";
 
 export function ResponseHelper(aRequest, aResponse, aNext) {
   // Dump entire response body to console if we're logging info.

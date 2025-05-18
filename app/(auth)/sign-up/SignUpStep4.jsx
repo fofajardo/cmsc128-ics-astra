@@ -53,6 +53,7 @@ export default function SignUpStep4({ onSetPage }) {
       values.year_started += "-01-01";
       values.year_graduated += "-01-01";
       delete values.degree_program_const;
+      values.is_uplb = true;
 
       const response = await axios.post(clientRoutes.degreePrograms.base(), values);
 

@@ -28,6 +28,7 @@ class BaseRoutes {
       signIn: () => `${this.BASE_URL}/auth/sign-in`,
       signInExternal: (aProvider) => `${this.BASE_URL}/auth/sign-in/external?provider=${aProvider}`,
       signInExternalCallback: () => `${this.BASE_URL}/auth/sign-in/external/callback`,
+      signInConfirm: () => `${this.BASE_URL}/auth/confirm`,
       signedInUser: () => `${this.BASE_URL}/auth/signed-in-user`,
       signOut: () => `${this.BASE_URL}/auth/sign-out`
     };
@@ -40,8 +41,10 @@ class BaseRoutes {
       base: (append = "") => `${this.BASE_URL}/users${append}`,
       getOne: (id) => `${this.BASE_URL}/users/${id}`,
       getOneDegreePrograms: (id) => `${this.BASE_URL}/users/${id}/degree-programs`,
-      getOneAlumniProfile: (id) => `${this.BASE_URL}/users/${id}/profile/latest`,
+      getLatestAlumniProfile: (id) => `${this.BASE_URL}/users/${id}/profile/latest`,
       getAlumniProfiles: (id) => `${this.BASE_URL}/users/${id}/profile`,
+      getWorkExperiences: (id) => `${this.BASE_URL}/users/${id}/work-experiences`,
+      getOrganizations: (id) => `${this.BASE_URL}/users/${id}/organizations`,
     };
 
     this.degreePrograms = {
@@ -108,7 +111,7 @@ class BaseRoutes {
     this.statistics = {
       base: (append = "") => `${this.BASE_URL}/statistics${append}`
     };
-      
+
     this.announcements = {
       base: (append = "") => `${this.BASE_URL}/announcements${append}`,
     };
@@ -161,7 +164,7 @@ class FrontEndRoutes extends BaseRoutes {
   }
 
   get BASE_URL() {
-    return this.isAbsolute ? process.env.ICSA_FE_URL : "";
+    return this.isAbsolute ? process.env.NEXT_PUBLIC_ICSA_FE_URL : "";
   }
 
   /**

@@ -1,6 +1,4 @@
-// FIXME: THESE PHOTO TYPES SHOULD BE IN AN ENUM!
-import { PhotoType } from "../../common/photo_types.js"; // Assuming you have an enum for photo types
-
+import { PhotoType } from "../../common/scopes.js";
 const fetchAllPhotos = async (supabase) => {
   return await supabase
     .from("photos")
@@ -111,6 +109,15 @@ const getAvatarUrl = async (supabase, id) => {
     .eq("type", PhotoType.PROFILE_PIC)
     .single();
   if (keyError) {
+    // Try fetching from user metadata provided by auth.
+    const { data: authData, error: authError } = await supabase
+      .auth
+      .admin
+      .getUserById(id);
+    const metaAvatarUrl = authData.user?.user_metadata?.avatar_url;
+    if (!authError && metaAvatarUrl) {
+      return { data: { signedUrl: metaAvatarUrl}, error: null };
+    }
     return { data: keyData, error: keyError };
   }
 

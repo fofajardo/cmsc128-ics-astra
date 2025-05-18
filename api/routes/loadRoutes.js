@@ -13,7 +13,7 @@ import authRouter from "./authRoutes.js";
 import projectsRouter from "./projectsRoutes.js";
 import donationsRouter from "./donationsRoutes.js";
 import organizationsRouter from "./organizationsRoutes.js";
-import organizationAffiliationsRouter from "./organizationAffiliationsRoutes.js";
+import usersExtensionRoutes from "./usersExtensionRoutes.js";
 import postsRouter from "./postsRoutes.js";
 import reportsRouter from "./reportsRoutes.js";
 import requestsRouter from "./requestsRoutes.js";
@@ -34,6 +34,7 @@ const registerRoutes = (app) => {
 
   app.use(serverRoutes.auth.base(), authRouter());
   app.use(serverRoutes.users.base(), usersRouter());
+  app.use(serverRoutes.users.base(), usersExtensionRoutes());
   app.use(serverRoutes.degreePrograms.base(), degreeProgramsRouter());
   app.use(serverRoutes.photos.base(), photosRouter());
   app.use(serverRoutes.alumniProfiles.base(), alumniProfilesRouter());
@@ -45,7 +46,6 @@ const registerRoutes = (app) => {
   app.use(serverRoutes.projects.base(), projectsRouter());
   app.use(serverRoutes.donations.base(), donationsRouter());
   app.use(serverRoutes.organizations.base(), organizationsRouter());
-  app.use(serverRoutes.organizationAffiliations.base(), organizationAffiliationsRouter());
   app.use(serverRoutes.reports.base(), reportsRouter());
   app.use(serverRoutes.requests.base(), requestsRouter());
   app.use(serverRoutes.jobs.base(), jobsRouter());

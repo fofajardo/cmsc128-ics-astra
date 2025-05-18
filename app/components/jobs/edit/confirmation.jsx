@@ -1,15 +1,24 @@
-export default function ConfirmationPrompt({prompt, close, object, handleConfirm}){
+export default function ConfirmationPrompt({ prompt, close, object, handleConfirm }) {
   return (
-    <div className="fixed inset-0 bg-astrablack/60 flex items-center justify-center z-100">
-      <div className="bg-astrawhite max-w-[600px] w-19/20 min-h-[100px] h-auto rounded-2xl p-7 pb-5">
+    <div className="fixed inset-0 bg-astrablack/60 flex items-center justify-center z-50 px-4">
+      <div className="bg-astrawhite w-full max-w-lg rounded-xl p-5 sm:p-6">
+        <h1 className="text-astrablack text-base sm:text-lg font-medium">{prompt}</h1>
 
-        <h1 className="text-astrablack text-xl font-normal">{prompt}</h1>
-
-        <div className="flex gap-4 mt-3">
-          <button onClick={handleConfirm} className="!cursor-pointer text-astrawhite border-1 border-astraprimary bg-astraprimary font-semibold w-16 py-2 rounded-lg text-lg">Yes</button>
-          <button onClick={close} className="!cursor-pointer text-astraprimary border-1 border-astraprimary font-semibold w-17 py-2 rounded-lg text-lg">No</button>
+        <div className="flex gap-3 mt-4 justify-start">
+          <button
+            onClick={handleConfirm}
+            className="!cursor-pointer text-astrawhite bg-astraprimary border border-astraprimary font-medium px-4 py-1.5 text-sm sm:text-base rounded-md"
+          >
+            Yes
+          </button>
+          <button
+            onClick={close}
+            className="!cursor-pointer text-astraprimary border border-astraprimary font-medium px-4 py-1.5 text-sm sm:text-base rounded-md"
+          >
+            No
+          </button>
         </div>
-
       </div>
     </div>
-  );}
+  );
+}

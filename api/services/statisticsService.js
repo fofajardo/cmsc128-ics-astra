@@ -187,6 +187,52 @@ const fetchProjectContributors = async (supabase) => {
   return data;
 };
 
+const fetchAlumniEmploymentStatus = async (supabase) => {
+  const { data, error } = await supabase
+    .from("alumni_employment_status")
+    .select("*");
+
+  if (error) {
+    throw error;
+  }
+  return data;
+};
+
+const fetchAlumniBatch = async (supabase) => {
+  const { data, error } = await supabase
+    .from("alumni_batch")
+    .select("*");
+
+  if (error) {
+    throw error;
+  }
+  return data;
+};
+
+const fetchInterestedAlumniEmail = async (supabase) => {
+  const { data, error } = await supabase
+    .from("interested_alumni_email")
+    .select("*");
+
+  if (error) {
+    throw error;
+  }
+  return data;
+};
+
+const fetchEventsStats = async (supabase) => {
+  const { data, error } = await supabase
+    .from("all_events_stats")
+    .select("*")
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+};
+
 const statisticsService = {
   fetchAlumniStats,
   fetchActiveAlumniStats,
@@ -203,6 +249,11 @@ const statisticsService = {
   fetchAlumniFieldStats,
   fetchAlumniHighestDegreeStats,
   fetchAlumniIncomeRangeStats,
+  fetchProjectContributors,
+  fetchAlumniEmploymentStatus,
+  fetchAlumniBatch,
+  fetchInterestedAlumniEmail,
+  fetchEventsStats,
 };
 
 export default statisticsService;

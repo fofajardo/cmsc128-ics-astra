@@ -1,23 +1,27 @@
 "use client";
 
-export const PersonalInfo = ({ profileData, isVerified, setIsShowPersonalForm }) => {
+import Image from "next/image";
+
+export function PersonalInfo({context, profileData, setIsShowPersonalForm}) {
   return (
     <section className="bg-white rounded-lg px-10 py-12 mb-6 max-w-7xl mx-auto">
       <div className="flex flex-col md:flex-row gap-10">
         {/* Profile Picture Column */}
         <div className="flex justify-center items-center md:min-w-[200px]">
-          <img
-            src="/pfp.jpg"
+          <Image
+            src={context.state.avatarUrl}
             alt="Profile Picture"
+            width={180}
+            height={180}
             className="w-[180px] h-[180px] rounded-full object-cover"
           />
         </div>
-
         {/* Profile Info Column */}
+
         <div className="flex-1">
           <div className="flex justify-left gap-4 items-center mb-4">
             <h2 className="text-xl md:text-2xl font-bold text-[var(--color-astrablack)]">Profile Information</h2>
-            {isVerified && (
+            {context.state.isVerified && (
               <button
                 className="text-sm md:text-base px-3 py-2 md:px-4 md:py-2 bg-[var(--color-astraprimary)] text-white hover:bg-[var(--color-astradark)] rounded-md"
                 onClick={() => setIsShowPersonalForm(true)}
@@ -35,12 +39,7 @@ export const PersonalInfo = ({ profileData, isVerified, setIsShowPersonalForm })
                 return !isMaidenName && !isNullSuffix;
               })
               .map(([key, value]) => {
-                const label =
-                  key === "LastName"
-                    ? profileData.IsMaidenName
-                      ? "Maiden Name"
-                      : "Last Name"
-                    : key.replace(/([A-Z])/g, " $1");
+                const label = key.replace(/([A-Z])/g, " $1");
 
                 return (
                   <div key={key} className="flex flex-col py-2">
@@ -54,4 +53,4 @@ export const PersonalInfo = ({ profileData, isVerified, setIsShowPersonalForm })
       </div>
     </section>
   );
-};
+}

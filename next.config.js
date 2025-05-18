@@ -7,17 +7,29 @@ const nextConfig = {
         source: "/api/v1/:path*",
         destination: process.env.ICSA_API_URL
           ? `${process.env.ICSA_API_URL}/v1/:path*`
-          : "http://localhost:3001/v1/:path*"
-      }
-
+          : "http://localhost:3001/v1/:path*",
+      },
     ];
   },
+
   images: {
-    domains: [
-      'lgehxciwuxmrtcnanuxp.supabase.co',
-      'skpodmqiwawjombgvneh.supabase.co',
-      'lh3.googleusercontent.com',
-      'cdn-icons-png.flaticon.com'
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "lgehxciwuxmrtcnanuxp.supabase.co",
+      },
+      {
+        protocol: "https",
+        hostname: "skpodmqiwawjombgvneh.supabase.co",
+      },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn-icons-png.flaticon.com",
+      },
     ],
   },
 };
