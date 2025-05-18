@@ -12,9 +12,7 @@ import AddAffiliationModal from "@/components/profile/modals/AddAffiliationModal
 import AddExperienceModal from "@/components/profile/modals/AddExperienceModal";
 import AffiliationModal from "@/components/profile/modals/AffiliationModal";
 import ExperienceModal from "@/components/profile/modals/ExperienceModal";
-import InterestsModal from "@/components/profile/modals/InterestsModal";
 import PersonalInfoModal from "@/components/profile/modals/PersonalInfoModal";
-import TechnicalSkillsModal from "@/components/profile/modals/TechnicalSkillsModal";
 import {UserFetcher, UserProvider, useUser} from "@/components/UserContext.jsx";
 import {feRoutes} from "../../../common/routes.js";
 import {
@@ -32,8 +30,6 @@ nationalities.registerLocale(nationalities_en);
 function Page() {
   const context = useUser();
   const [isShowPersonalForm, setIsShowPersonalForm] = useState(false);
-  const [isShowTechnicalForm, setIsShowTechnicalForm] = useState(false);
-  const [isShowInterestForm, setIsShowInterestForm] = useState(false);
   const [isShowExperienceForm, setIsShowExperienceForm] = useState(false);
   const [isShowAffiliationForm, setIsShowAffiliationForm] = useState(false);
   const [isShowAddExperienceForm, setIsShowAddExperienceForm] = useState(false);
@@ -43,8 +39,6 @@ function Page() {
   useEffect(() => {
     const isAnyModalOpen =
       isShowPersonalForm ||
-      isShowTechnicalForm ||
-      isShowInterestForm ||
       isShowExperienceForm ||
       isShowAffiliationForm ||
       isShowAddExperienceForm ||
@@ -61,8 +55,6 @@ function Page() {
     };
   }, [
     isShowPersonalForm,
-    isShowTechnicalForm,
-    isShowInterestForm,
     isShowExperienceForm,
     isShowAffiliationForm,
     isShowAddExperienceForm,
@@ -162,13 +154,13 @@ function Page() {
         {context.state.isVerified && (
           <>
             <TechnicalSkills
+              context={context}
               technicalSkills={technicalSkills}
-              setIsShowTechnicalForm={setIsShowTechnicalForm}
             />
 
             <FieldsOfInterest
+              context={context}
               fieldOfInterests={fieldOfInterests}
-              setIsShowInterestForm={setIsShowInterestForm}
             />
 
             <Experience
@@ -191,20 +183,6 @@ function Page() {
         <PersonalInfoModal
           profileData={profileData}
           onClose={() => setIsShowPersonalForm(false)}
-        />
-      )}
-
-      {isShowTechnicalForm && (
-        <TechnicalSkillsModal
-          skills={technicalSkills}
-          onClose={() => setIsShowTechnicalForm(false)}
-        />
-      )}
-
-      {isShowInterestForm && (
-        <InterestsModal
-          interests={fieldOfInterests}
-          onClose={() => setIsShowInterestForm(false)}
         />
       )}
 
