@@ -7,13 +7,13 @@ export const Experience = ({ experiences, setIsShowExperienceForm, setIsShowAddE
         <h2 className="text-xl md:text-2xl font-bold text-[var(--color-astrablack)]">Experience</h2>
         <div className="flex gap-2">
           <button
-            className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[var(--color-astradirtywhite)] rounded-md"
+            className="text-sm md:text-base px-3 py-2 md:px-4 md:py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[var(--color-astradirtywhite)] rounded-md"
             onClick={() => setIsShowAddExperienceForm(true)}
           >
             Add
           </button>
           <button
-            className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[var(--color-astradirtywhite)] rounded-md"
+            className="text-sm md:text-base px-3 py-2 md:px-4 md:py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[var(--color-astradirtywhite)] rounded-md"
             onClick={() => setIsShowExperienceForm(true)}
           >
             Edit
