@@ -25,6 +25,7 @@ export default function EventModal({
   const [imageFile, setImageFile] = useState(null);
   const [fileName, setFileName] = useState("");
   const fileInputRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
 
 
   const handleDateChange = (date) => {
@@ -42,11 +43,22 @@ export default function EventModal({
     });
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
+  const handleFile = (file) => {
     if (file) {
+      // Check file type
+      if(!file.type.startsWith("image/")) {
+        setToast({ type: "error", message: "Invalid file type. Please upload an image." });
+        return;
+      }
+      // Check file size (5MB limit)
+      if (file.size > 5 * 1024 * 1024) {
+        setToast({ type: "error", message: "File size exceeds 5MB limit." });
+        return;
+      }
       setImageFile(file);
       setFileName(file.name);
+
+      // Create preview
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result);
@@ -56,16 +68,42 @@ export default function EventModal({
         });
       };
       reader.readAsDataURL(file);
+    } else {
+      setImagePreview("");
+      setFileName("");
+      setImageFile(null);
+      handleChange({
+        target: { name: "imageFile", value: null },
+      });
     }
   };
 
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files[0];
+    handleFile(file);
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    handleFile(file);
+  };
+
   const handleImageRemove = () => {
-    setImagePreview("");
-    setFileName("");
-    setImageFile(null);
-    handleChange({
-      target: { name: "imageFile", value: null },
-    });
+    const file = null;
+    handleFile(file);
+    fileInputRef.current.value = null; // Clear the file input
   };
 
   const validator = () => {
@@ -227,9 +265,41 @@ export default function EventModal({
                   className="w-full h-full object-cover rounded-xl"
                 />
               ) : (
-                <div className="flex flex-col items-center justify-center text-astraprimary text-sm">
-                  <Upload className="w-8 h-8 mb-1" />
-                  <p>Browse files to upload</p>
+                <div
+                  className={`p-4 sm:p-8 md:p-8 text-center h-full w-full flex items-center justify-center ${
+                    isDragging ? "border-astraprimary bg-astralightgray" : "border-astraprimary"
+                  } transition-colors duration-200`}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                >
+                  <div className="flex flex-col items-center justify-center">
+                    <div className="w-8 h-8 sm:w-8 sm:h-8 mb-1 sm:mb-1">
+                      <svg
+                        className="w-full h-full text-astraprimary"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
+                      </svg>
+                    </div>
+                    <p className="text-astraprimary font-semibold mb-1 sm:mb-2 text-sm sm:text-base">
+                      Drag and drop your photo here
+                    </p>
+                    <p className="text-astraprimary text-xs sm:text-sm">
+                      or click to browse files
+                    </p>
+                    <p className="text-astraprimary text-xs mt-1 sm:mt-2">
+                      Supported formats: JPG, PNG, GIF (max 5MB)
+                    </p>
+                  </div>
                 </div>
               )}
               <input
