@@ -1,21 +1,5 @@
 import Fuse from "fuse.js";
 
-const fuseThreshold = 0.3; // Adjust this value (0-1) for more/less strict matching
-const fuseOptions = {
-  keys: [
-    "first_name",
-    "middle_name",
-    "last_name",
-    "full_name",
-    "email",
-    "student_num"
-  ],
-  threshold: fuseThreshold,
-  includeScore: true,
-  ignoreLocation: true,
-  minMatchCharLength: 2
-};
-
 const applyFilter = (query, filters, config = {}) => {
   const {
     limit = 10,
@@ -140,9 +124,46 @@ const applyArrayFilter = (data, filters) => {
   return filteredData;
 };
 
-const applyArraySearch = (data, search) => {
+const applyOrganizationFilter = (data, filters) => {
   let filteredData = data;
-  console.log(filteredData);
+
+  if (filters.orgName) {
+    filteredData = filteredData.filter(org =>
+      org.name && org.name.toLowerCase().includes(filters.orgName.toLowerCase())
+    );
+  }
+
+  if (filters.fromDate) {
+    filteredData = filteredData.filter(org =>
+      org.founded_date && org.founded_date >= filters.fromDate
+    );
+  }
+
+  if (filters.toDate) {
+    filteredData = filteredData.filter(org =>
+      org.founded_date && org.founded_date <= filters.toDate
+    );
+  }
+
+  if (filters.sortCategory && filters.sortOrder) {
+    const sortMapping = {
+      founded_date: (a, b) => (a.founded_date || "").localeCompare(b.founded_date || ""),
+      name: (a, b) => a.name.localeCompare(b.name)
+    };
+
+    const sortFn = sortMapping[filters.sortCategory] || sortMapping.name;
+    filteredData.sort(sortFn);
+
+    if (filters.sortOrder === "desc") {
+      filteredData.reverse();
+    }
+  }
+
+  return filteredData;
+};
+
+const applyArraySearch = (data, search, fuseOptions) => {
+  let filteredData = data;
 
   if (search) {
     const fuse = new Fuse(filteredData, fuseOptions);
@@ -164,6 +185,7 @@ const applyPagination = (data, page, limit) => {
 export {
   applyFilter,
   applyArrayFilter,
+  applyOrganizationFilter,
   applyArraySearch,
   applyPagination
 };

@@ -17,6 +17,21 @@ const alumniStatusViewFields = `
   profile_created_at,
   field
 `;
+const fuseThreshold = 0.3; // Adjust this value (0-1) for more/less strict matching
+const fuseOptions = {
+  keys: [
+    "first_name",
+    "middle_name",
+    "last_name",
+    "full_name",
+    "email",
+    "student_num"
+  ],
+  threshold: fuseThreshold,
+  includeScore: true,
+  ignoreLocation: true,
+  minMatchCharLength: 2
+};
 
 const fetchUsers = async (supabase, page = 1, limit = 10, isRecent = false, isAlumni = false) => {
   const startIndex = (page - 1) * limit;
@@ -73,7 +88,7 @@ const fetchInactiveAlumni = async (supabase, page = 1, limit = 10, search = "", 
   if (error) throw error;
 
   let filteredData = data;
-  filteredData = applyArraySearch(filteredData, search);
+  filteredData = applyArraySearch(filteredData, search, fuseOptions);
   filteredData = applyArrayFilter(filteredData, filters);
   const paginatedData = applyPagination(filteredData, page, limit);
 
@@ -93,7 +108,7 @@ const fetchApprovedAlumni = async (supabase, page = 1, limit = 10, search = "", 
   if (error) throw error;
 
   let filteredData = data;
-  filteredData = applyArraySearch(filteredData, search);
+  filteredData = applyArraySearch(filteredData, search, fuseOptions);
   filteredData = applyArrayFilter(filteredData, filters);
   const paginatedData = applyPagination(filteredData, page, limit);
 
@@ -113,7 +128,7 @@ const fetchPendingAlumni = async (supabase, page = 1, limit = 10, search = "", f
   if (error) throw error;
 
   let filteredData = data;
-  filteredData = applyArraySearch(filteredData, search);
+  filteredData = applyArraySearch(filteredData, search, fuseOptions);
   filteredData = applyArrayFilter(filteredData, filters);
   const paginatedData = applyPagination(filteredData, page, limit);
 

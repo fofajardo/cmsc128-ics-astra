@@ -11,6 +11,21 @@ const kAlumniProfileSelectQuery = `
     salary
   )
 `;
+const fuseThreshold = 0.3; // Adjust this value (0-1) for more/less strict matching
+const fuseOptions = {
+  keys: [
+    "first_name",
+    "middle_name",
+    "last_name",
+    "full_name",
+    "email",
+    "student_num"
+  ],
+  threshold: fuseThreshold,
+  includeScore: true,
+  ignoreLocation: true,
+  minMatchCharLength: 2
+};
 
 const fetchAlumniProfiles = async (supabase, page = 1, limit = 10, userId = null) => {
   const startIndex = (page - 1) * limit;
@@ -32,7 +47,7 @@ const fetchAlumniSearch = async (supabase, page = 1, limit = 10, search = "", fi
   if (error) throw error;
 
   let filteredData = data;
-  filteredData = applyArraySearch(filteredData, search);
+  filteredData = applyArraySearch(filteredData, search, fuseOptions);
   filteredData = applyArrayFilter(filteredData, filters);
   const paginatedData = applyPagination(filteredData, page, limit);
 
