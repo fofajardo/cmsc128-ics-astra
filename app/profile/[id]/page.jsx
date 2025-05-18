@@ -1,4 +1,6 @@
 "use client";
+
+import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Info } from "lucide-react";
 import { PersonalInfo } from "@/components/profile/sections/PersonalInfo";
@@ -13,26 +15,84 @@ import ExperienceModal from "@/components/profile/modals/ExperienceModal";
 import InterestsModal from "@/components/profile/modals/InterestsModal";
 import PersonalInfoModal from "@/components/profile/modals/PersonalInfoModal";
 import TechnicalSkillsModal from "@/components/profile/modals/TechnicalSkillsModal";
+import {UserFetcher, UserProvider, useUser} from "@/components/UserContext.jsx";
+import {feRoutes} from "../../../common/routes.js";
+import {CIVIL_STATUS_LABELS, SEX_LABELS} from "../../../common/scopes.js";
+import nationalities from "i18n-nationality";
+import nationalities_en from "i18n-nationality/langs/en.json";
+import {useParams} from "next/navigation";
 
-export default function AlumniProfilePage() {
+nationalities.registerLocale(nationalities_en);
+
+function Page() {
+  const context = useUser();
+  const [isShowPersonalForm, setIsShowPersonalForm] = useState(false);
+  const [isShowTechnicalForm, setIsShowTechnicalForm] = useState(false);
+  const [isShowInterestForm, setIsShowInterestForm] = useState(false);
+  const [isShowExperienceForm, setIsShowExperienceForm] = useState(false);
+  const [isShowAffiliationForm, setIsShowAffiliationForm] = useState(false);
+  const [isShowAddExperienceForm, setIsShowAddExperienceForm] = useState(false);
+  const [isShowAddAffiliationForm, setIsShowAddAffiliationForm] = useState(false);
+
+  {/* Disables background scrolling */}
+  useEffect(() => {
+    const isAnyModalOpen =
+      isShowPersonalForm ||
+      isShowTechnicalForm ||
+      isShowInterestForm ||
+      isShowExperienceForm ||
+      isShowAffiliationForm ||
+      isShowAddExperienceForm ||
+      isShowAddAffiliationForm;
+
+    if (isAnyModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [
+    isShowPersonalForm,
+    isShowTechnicalForm,
+    isShowInterestForm,
+    isShowExperienceForm,
+    isShowAffiliationForm,
+    isShowAddExperienceForm,
+    isShowAddAffiliationForm
+  ]);
+
+  if (!context.state.profile) {
+    return (
+      <div className="min-h-screen bg-[var(--color-astratintedwhite)]">
+        <main className="container mx-auto py-8 px-4 max-w-7xl">
+          <div className="bg-[#E2F0FD] border-2 border-[var(--color-astralight)] p-4 rounded-md mb-6 flex items-center">
+            <Info className="h-5 w-5 text-[var(--color-astrablack)] mr-2 flex-shrink-0" />
+            <p className="text-sm text-[var(--color-astrablack)]">
+              Your profile does not yet exist. Please <Link href={feRoutes.auth.signUp()} className="text-[var(--color-astraprimary)] hover:underline">create your profile</Link> to continue.
+            </p>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   const profileData = {
-    Title: "Mr.",
-    FirstName: "Juan Miguel",
-    MiddleName: "Ramirez",
-    LastName: "Dela Cruz",
-    Suffix: "Jr.",
-    Gender: "Female",
-    IsMaidenName: true,
-    BirthDate: "2000-05-08",
-    BirthPlace: "Manila",
-    Citizenship: "Philippines",
-    CivilStatus: "Single",
-    StudentNumber: "2017-00001",
-    Degree: "BS Computer Science",
-    GraduationYear: "2021",
+    Title: context.state.profile.honorifics,
+    FirstName: context.state.profile.first_name,
+    MiddleName: context.state.profile.middle_name,
+    LastName: context.state.profile.last_name,
+    Suffix: context.state.profile.suffix,
+    Gender: context.state.profile.gender,
+    SexAssignedAtBirth: SEX_LABELS[context.state.profile.sex],
+    BirthDate: context.state.profile.birthdate,
+    Address: context.state.profile.address,
+    Citizenship: nationalities.getName(context.state.profile.citizenship, "en"),
+    CivilStatus: CIVIL_STATUS_LABELS[context.state.profile.civil_status],
+    StudentNumber: context.state.profile.student_num,
   };
-
-  const isVerified = true;
 
   const technicalSkills = [
     { text: "Frontend", color: "bg-blue-100 text-blue-800 border-blue-300" },
@@ -126,48 +186,10 @@ export default function AlumniProfilePage() {
     }
   ];
 
-  const [isShowPersonalForm, setIsShowPersonalForm] = useState(false);
-  const [isShowTechnicalForm, setIsShowTechnicalForm] = useState(false);
-  const [isShowInterestForm, setIsShowInterestForm] = useState(false);
-  const [isShowExperienceForm, setIsShowExperienceForm] = useState(false);
-  const [isShowAffiliationForm, setIsShowAffiliationForm] = useState(false);
-  const [isShowAddExperienceForm, setIsShowAddExperienceForm] = useState(false);
-  const [isShowAddAffiliationForm, setIsShowAddAffiliationForm] = useState(false);
-
-  {/* Disables background scrolling */}
-  useEffect(() => {
-    const isAnyModalOpen =
-      isShowPersonalForm ||
-      isShowTechnicalForm ||
-      isShowInterestForm ||
-      isShowExperienceForm ||
-      isShowAffiliationForm ||
-      isShowAddExperienceForm ||
-      isShowAddAffiliationForm;
-
-    if (isAnyModalOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [
-    isShowPersonalForm,
-    isShowTechnicalForm,
-    isShowInterestForm,
-    isShowExperienceForm,
-    isShowAffiliationForm,
-    isShowAddExperienceForm,
-    isShowAddAffiliationForm
-  ]);
-
   return (
     <div className="min-h-screen bg-[var(--color-astratintedwhite)]">
       <main className="container mx-auto py-8 px-4 max-w-7xl">
-        {!isVerified && (
+        {!context.state.isVerified && (
           <div className="bg-[#E2F0FD] border-2 border-[var(--color-astralight)] p-4 rounded-md mb-6 flex items-center">
             <Info className="h-5 w-5 text-[var(--color-astrablack)] mr-2 flex-shrink-0" />
             <p className="text-sm text-[var(--color-astrablack)]">
@@ -177,12 +199,12 @@ export default function AlumniProfilePage() {
         )}
 
         <PersonalInfo
+          context={context}
           profileData={profileData}
-          isVerified={isVerified}
           setIsShowPersonalForm={setIsShowPersonalForm}
         />
 
-        {isVerified && (
+        {context.state.isVerified && (
           <>
             <TechnicalSkills
               technicalSkills={technicalSkills}
@@ -257,5 +279,16 @@ export default function AlumniProfilePage() {
         />
       )}
     </div>
+  );
+}
+
+export default function WrappedPage() {
+  const { id } = useParams();
+
+  return (
+    <UserProvider>
+      <UserFetcher userId={id} />
+      <Page />
+    </UserProvider>
   );
 }
