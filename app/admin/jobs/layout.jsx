@@ -25,7 +25,7 @@ export default function AdminJobsLayout({ children }) {
     total: <Skeleton className="h-7 w-12 my-2" />,
     companies: <Skeleton className="h-7 w-12 my-2" />,
   });
-
+  // TODO: make database view for all and reported jobs
   const tabs = {
     All: 0,
     Reported: 0,

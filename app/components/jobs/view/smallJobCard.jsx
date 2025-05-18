@@ -72,7 +72,7 @@ export default function SmallJobCard({job, showApply, canReport}) {
         </div>
         {canReport &&
         <div className="self-end mr-2">
-          <ReportButton contentType={"Job"}/>
+          <ReportButton contentType={"Job"} id={job.job_id}/>
         </div>}
       </div>
     </div>
