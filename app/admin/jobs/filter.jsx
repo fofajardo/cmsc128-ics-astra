@@ -1,6 +1,9 @@
 import { useState } from "react";
+import { jobTypeOptions, locationTypeOptions, statusOptions } from "@/components/jobs/mappings";
 
-export default function SearchFilter({onClose, onApply}) {
+export default function SearchFilter({onClose, onApply, filter}) {
+  const [filters, setFilters] = useState(filter);
+
   const initialFilters = {
     companyName: "",
     location: "",
@@ -11,9 +14,6 @@ export default function SearchFilter({onClose, onApply}) {
     sortCategory: "",
     sortOrder: "asc",
   };
-
-  const [filters, setFilters] = useState(initialFilters);
-
 
   const handleResetAll = () => {
     setFilters(initialFilters);
@@ -89,11 +89,9 @@ export default function SearchFilter({onClose, onApply}) {
           onChange={(e) => setFilters({ ...filters, jobType: e.target.value })}
           className="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white font-r"
         >
-          <option value="">Select Job Type</option>
-          <option value="0">Full-Time</option>
-          <option value="1">Part-Time</option>
-          <option value="2">Temporary</option>
-          <option value="3">Freelance</option>
+          {jobTypeOptions.map((option) => {
+            return <option key={option.value} value={option.value}>{option.label}</option>
+          })}
         </select>
       </div>
       {/* Date Posted */}

@@ -26,6 +26,19 @@ export default function Jobs() {
   const [searchQuery, setSearchQuery] = useState("");
   const itemsPerPage = 5;
 
+  const initialFilters = {
+    companyName: "",
+    location: "",
+    jobType: "",
+    fromDate: "",
+    toDate: "",
+    status: "",
+    sortCategory: "",
+    sortOrder: "asc",
+  };
+
+  const [filter, setFilter] = useState(initialFilters);
+
   const toggleFilter = () => {
     console.log("Toggling filter modal:", !showFilter);
     setShowFilter((prev) => !prev);
@@ -110,6 +123,7 @@ export default function Jobs() {
   };
 
   const handleApply = (filters = {}) => {
+    setFilter(filters);
     const {
       companyName = "",
       location = "",
@@ -177,7 +191,7 @@ export default function Jobs() {
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
         >
           <div onClick={e => e.stopPropagation()}>
-            <SearchFilter onClose={toggleFilter} onApply={handleApply}/>
+            <SearchFilter onClose={toggleFilter} onApply={handleApply} filter={filter}/>
           </div>
         </div>
       )}
