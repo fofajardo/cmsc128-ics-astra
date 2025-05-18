@@ -24,6 +24,7 @@ export default function RootLayout({ children }) {
           <SignedInUserFetcher />
           <RootLoadingOverlay />
           {children}
+          <Toaster />
         </SignedInUserProvider>
       </body>
     </html>
