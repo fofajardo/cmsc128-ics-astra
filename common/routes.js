@@ -41,8 +41,10 @@ class BaseRoutes {
       base: (append = "") => `${this.BASE_URL}/users${append}`,
       getOne: (id) => `${this.BASE_URL}/users/${id}`,
       getOneDegreePrograms: (id) => `${this.BASE_URL}/users/${id}/degree-programs`,
-      getOneAlumniProfile: (id) => `${this.BASE_URL}/users/${id}/profile/latest`,
+      getLatestAlumniProfile: (id) => `${this.BASE_URL}/users/${id}/profile/latest`,
       getAlumniProfiles: (id) => `${this.BASE_URL}/users/${id}/profile`,
+      getWorkExperiences: (id) => `${this.BASE_URL}/users/${id}/work-experiences`,
+      getOrganizations: (id) => `${this.BASE_URL}/users/${id}/organizations`,
     };
 
     this.degreePrograms = {
