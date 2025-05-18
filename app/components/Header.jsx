@@ -292,7 +292,7 @@ function HeaderAvatar({context}) {
   return (
     <div className="relative flex items-center">
       <Image
-        src={context.state.authUser?.avatar_url}
+        src={context.state.avatarUrl}
         alt="User Avatar"
         width={40}
         height={40}

@@ -1,6 +1,7 @@
 import httpStatus from "http-status-codes";
 import usersService from "../services/usersService.js";
 import { Actions, Subjects } from "../../common/scopes.js";
+import PhotosService from "../services/photosService.js";
 
 const getUsers = async (req, res) => {
   if (req.you.cannot(Actions.READ, Subjects.USER)) {
@@ -190,6 +191,15 @@ const getUserById = async (req, res) => {
         message: "You are not allowed to access this resource."
       });
     }
+
+    // FIXME: commit this image to the repository, don't reference externally!
+    let avatarUrl = "https://cdn-icons-png.flaticon.com/512/145/145974.png";
+    const {data: avatarData, error: avatarError} =
+      await PhotosService.getAvatarUrl(req.supabase, userId);
+    if (!avatarError) {
+      avatarUrl = avatarData?.signedUrl;
+    }
+    data.avatar_url = avatarUrl;
 
     return res.status(httpStatus.OK).json({
       status: "OK",

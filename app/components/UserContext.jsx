@@ -14,6 +14,7 @@ function buildUserContext() {
   const [profile, setProfile] = useState(null);
   const [degreePrograms, setDegreePrograms] = useState(null);
   const [degreeProofUploaded, setDegreeProofUploaded] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState("https://cdn-icons-png.flaticon.com/512/145/145974.png");
 
   const [rules, setRules] = useState(null);
   const [ability, setAbility] = useState(null);
@@ -44,6 +45,7 @@ function buildUserContext() {
       profile,
       degreePrograms,
       degreeProofUploaded,
+      avatarUrl,
       rules,
       ability,
       isGuest,
@@ -62,6 +64,7 @@ function buildUserContext() {
       setProfile,
       setDegreePrograms,
       setDegreeProofUploaded,
+      setAvatarUrl,
       setRules,
       setAbility,
       setIsGuest,
@@ -159,10 +162,9 @@ async function fetchData(aUser, aContext) {
 
   if (aUser) {
     if (aUser.public_metadata) {
-      const authUser = aUser;
-      aUser = authUser.public_metadata;
-      delete authUser.public_metadata;
-      aContext.actions.setAuthUser(authUser);
+      aContext.actions.setAuthUser(aUser);
+      const rawUser = await axios.get(clientRoutes.users.base(`/${aUser.id}`));
+      aUser = rawUser?.data?.user;
     }
     try {
       const rawProfile = await axios.get(clientRoutes.alumniProfiles.base(`/${aUser.id}`));
@@ -193,6 +195,7 @@ async function fetchData(aUser, aContext) {
   aContext.actions.setRules(aUser.scopes);
   delete aUser.scopes;
   aContext.actions.setUser(aUser);
+  aContext.actions.setAvatarUrl(aUser.avatar_url);
   aContext.actions.setInitialized(true);
 }
 
