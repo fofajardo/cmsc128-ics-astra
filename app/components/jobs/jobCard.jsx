@@ -5,31 +5,13 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { jobTypeMap, locationTypeMap } from "@/components/jobs/mappings";
+import { formatDate, formatSalary } from "@/utils/format";
 
 export default function JobCard({ job }) {
   const router = useRouter();
 
   const viewPost = () => {
     router.push(`/jobs/${job.job_id}/view`);
-  };
-
-  const formatSalary = (num) => {
-    const cap = 1_000_000_000;
-    if (num > cap) {
-      // Convert number to string and slice first 12 characters
-      return `₱${num.toLocaleString("en-US").slice(0, 13)}...`;
-    }
-    return `₱${num.toLocaleString("en-US")}`;
-  };
-
-  const formatDate = (date) => {
-    const parsedDate = new Date(date);
-    if (isNaN(parsedDate)) return "Invalid Date";
-    return parsedDate.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric"
-    });
   };
 
   return (
@@ -67,7 +49,7 @@ export default function JobCard({ job }) {
           <div className="flex items-center gap-2">
             <Clock size={14} className="flex-shrink-0" />
             <p className="text-sm text-astrablack truncate">
-              {formatDate(job.expires_at)}
+              {formatDate(job.expires_at, "short-month", "en-US")}
             </p>
           </div>
         </div>

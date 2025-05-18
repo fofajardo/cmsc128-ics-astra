@@ -11,6 +11,7 @@ import { jobTypeMap } from "@/components/jobs/mappings";
 import axios from "axios";
 import { TabContext } from "../../components/TabContext";
 import ConfirmationPrompt from "@/components/jobs/edit/confirmation";
+import { formatDate } from "@/utils/format";
 
 export default function Jobs() {
   const [showPrompt, setPrompt] = useState(false);
@@ -261,7 +262,7 @@ function createRows(selectedIds, setSelectedIds, currTab, filteredJobs, setPromp
     "Company": renderText(job.company_name),
     "Location": renderText(job.location),
     "Type": renderType(job.employment_type),
-    "Posted": renderText(job.created_at),
+    "Posted": renderText(formatDate(job.created_at, "short-month")),
     "Status": renderStatus(job.expires_at),
     "Quick Actions": renderActions(job.job_id, job.job_title, currTab, setPrompt, setJobtoDelete),
   }));
