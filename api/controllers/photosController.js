@@ -423,7 +423,7 @@ const getEventPhotoByContentId = async (req, res) => {
     // console.log("Response error:", error);
 
     if (error || !data) {
-      console.log("Photo not found for content_id:", content_id, "Error:", error);
+      // console.log("Photo not found for content_id:", content_id, "Error:", error);
       return res.status(httpStatus.OK).json({
         status: "OK",
         photo: "/events/default-event.jpg" // Default event image
@@ -493,7 +493,7 @@ const getProjectPhotoByContentId = async (req, res) => {
     // console.log("Response error:", error);
 
     if (error || !data) {
-      console.log("Photo not found for project_id:", project_id, "Error:", error);
+      // console.log("Photo not found for project_id:", project_id, "Error:", error);
       return res.status(httpStatus.OK).json({
         status: "OK",
         photo: "/projects/assets/Donation.jpg" // Default project image
@@ -560,7 +560,7 @@ const getJobPhotoByContentId = async (req, res) => {
     const { data, error } = await photosService.fetchJobPhotos(req.supabase, job_id);
 
     if (error || !data) {
-      console.log("Photo not found for job_id:", job_id, "Error:", error);
+      // console.log("Photo not found for job_id:", job_id, "Error:", error);
       return res.status(200).json({
         status: "OK",
         photo: "/jobs/assets/default-job.jpg" // Default job image
@@ -648,6 +648,91 @@ const getPhotosByContentId = async (req, res) => {
   }
 };
 
+const getDonationReceipt = async (req, res) => {
+  try {
+    const { user_id, project_id } = req.query;
+    
+    if (!user_id || !project_id) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "Both user_id and project_id are required"
+      });
+    }
+    
+    // Fetch the receipt photo matching both user_id and project_id
+    const { data, error } = await photosService.fetchDonationReceipt(req.supabase, user_id, project_id);
+    
+    if (error) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error.message
+      });
+    }
+    
+    // If no receipt photo found
+    if (!data || data.length === 0) {
+      return res.status(httpStatus.OK).json({
+        status: "OK",
+        message: "No receipt photo found for this donation",
+        photo: null
+      });
+    }
+    
+    // Found receipt photo - generate a signed URL
+    const receiptPhoto = data[0];
+    
+    try {
+      const { data: signedUrlData, error: signedUrlError } = await req.supabase
+        .storage
+        .from("user-photos-bucket")
+        .createSignedUrl(receiptPhoto.image_key, 60 * 60); // URL valid for 1 hour
+        
+      if (signedUrlError) {
+        // Try public URL as fallback
+        const { data: publicUrlData } = req.supabase
+          .storage
+          .from("user-photos-bucket")
+          .getPublicUrl(receiptPhoto.image_key);
+          
+        if (publicUrlData && publicUrlData.publicUrl) {
+          return res.status(httpStatus.OK).json({
+            status: "OK",
+            photo: receiptPhoto,
+            url: publicUrlData.publicUrl
+          });
+        } else {
+          return res.status(httpStatus.OK).json({
+            status: "OK",
+            photo: receiptPhoto,
+            url: null,
+            message: "Could not generate URL for receipt photo"
+          });
+        }
+      }
+      
+      return res.status(httpStatus.OK).json({
+        status: "OK",
+        photo: receiptPhoto,
+        url: signedUrlData.signedUrl
+      });
+    } catch (urlError) {
+      console.error("Error generating URL for receipt photo:", urlError);
+      return res.status(httpStatus.OK).json({
+        status: "OK",
+        photo: receiptPhoto,
+        url: null,
+        message: "Error generating URL for receipt photo"
+      });
+    }
+  } catch (error) {
+    console.error("Error in getDonationReceipt:", error);
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
+
 const photosController = {
   getAllPhotos,
   getPhotoById,
@@ -663,6 +748,7 @@ const photosController = {
   getJobPhotoByContentId,
   getContentPhotoTypes,
   getPhotosByContentId,
+  getDonationReceipt,
 };
 
 export default photosController;
