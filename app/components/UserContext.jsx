@@ -53,6 +53,9 @@ function buildUserContext() {
       isAlumnus,
       isModerator,
       isAdmin,
+      get isVerified() {
+        return profile?.approved;
+      },
       activeNavItem,
       activeNavSubmenus,
     },
