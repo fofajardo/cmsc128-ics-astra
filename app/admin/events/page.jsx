@@ -267,6 +267,7 @@ export default function Events() {
   useEffect(() => {
     fetchEvents();
   }, []);
+
 //pagination.currPage, pagination.numToShow
   // useEffect(() => {
   //   const total = eventList.length; // Use actual length instead of pagination.total
@@ -392,6 +393,7 @@ export default function Events() {
     }
     fetchEvents();
   };
+
   const handleAdd = async () => {   // add content -> get the newly created content_id -> add event
     try{
       let contentId;
@@ -673,7 +675,6 @@ export default function Events() {
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
           />
-          <div> {`(${eventList.length})`} </div>
           <Table
             cols={cols}
             data={loading ? skeletonRows : createRows(currentPageData, confirmDelete, toggleEditModal, setAddFormData)}
