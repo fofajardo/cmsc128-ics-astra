@@ -244,11 +244,11 @@ export default function ProjectsPage() {
         </div>
       </div>
 
-      <section className="bg-astrawhite py-16 px-4">
+      <section className="bg-astradirtywhite py-8 px-4">
         <div className="max-w-6xl mx-auto">
           {loading ? (
-            <div className="bg-astrawhite p-6 rounded-b-xl flex items-center justify-center">
-              <LoadingSpinner className="h-10 w-10" />
+            <div className="bg-astradirtywhite p-6 rounded-b-xl flex items-center justify-center">
+              <LoadingSpinner className="h-15 w-15" />
             </div>
           ) : (
             filteredProjects.length > 0 ? (
@@ -317,18 +317,15 @@ export default function ProjectsPage() {
             <div className="flex justify-center mt-6">
               <button
                 onClick={() => setVisibleCount(filteredProjects.length)}
-                className="px-6 py-2 font-r bg-astrawhite border border-astraprimary text-astraprimary rounded hover:bg-blue-100 transition cursor-pointer flex items-center gap-2"
+                className="my-6 hover:text-astrawhite border border-astraprimary rounded-lg relative flex h-9 w-28 items-center justify-center overflow-hidden bg-astrawhite text-astraprimary transition-all before:absolute before:h-0 before:w-0 before:rounded-full before:bg-astraprimary before:duration-500 before:ease-out hover:before:h-40 hover:before:w-40"
               >
-                <span>Show All</span>
-                <span className="bg-astraprimary text-astrawhite px-2 py-0.5 rounded-full text-sm">
-                  {filteredProjects.length - visibleCount} more
-                </span>
+                <span className="relative z-10 text-sm md:text-md font-medium">See More</span>
               </button>
             </div>
           )}
 
           {/* My Projects Section */}
-          {user?.state?.user && <div className="mt-20 bg-astralightgray py-10 px-6 rounded-xl shadow-md">
+          {user?.state?.user && <div className="mt-10 bg-astralightgray py-10 px-6 rounded-xl shadow-md">
             <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
               <div className="text-left">
                 <h3 className="font-lb text-2xl text-astrablack mb-3">Track Your Fundraisers</h3>

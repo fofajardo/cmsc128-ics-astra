@@ -31,7 +31,7 @@ export default function TechnicalSkillsModal({ skills: initialSkills, onClose })
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg p-8">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl md:text-2xl font-bold">Edit Skills</h2>
@@ -58,8 +58,8 @@ export default function TechnicalSkillsModal({ skills: initialSkills, onClose })
               value={newSkill}
               onChange={(e) => setNewSkill(e.target.value)}
               onKeyDown={handleAddSkill}
-              placeholder="Add Skill and Press Enter"
-              className="text-sm bg-white border border-gray-300 rounded-full px-4 py-2 min-w-[140px] h-[36px] outline-none"
+              placeholder="Add Skill"
+              className="text-xs bg-white border border-gray-300 rounded-full px-4 py-2 h-8 w-40 outline-none"
             />
           </div>
         </div>
@@ -67,20 +67,20 @@ export default function TechnicalSkillsModal({ skills: initialSkills, onClose })
         <div className="flex flex-wrap justify-between gap-4">
           <button
             onClick={() => setSkills([])}
-            className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 border border-red-500 text-red-600 rounded-lg bg-white hover:bg-red-50"
+            className="text-sm md:text-base px-3 py-2 md:px-4 md:py-2 border border-red-500 text-red-600 rounded-lg bg-white hover:bg-red-50"
           >
             Clear All
           </button>
           <div className="flex flex-wrap gap-4">
             <button
               onClick={onClose}
-              className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100"
+              className="text-sm md:text-base px-3 py-2 md:px-4 md:py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100"
             >
               Cancel
             </button>
             <button
               onClick={handleSave}
-              className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 bg-[var(--color-astraprimary)] text-white rounded-lg hover:bg-[var(--color-astradark)]"
+              className="text-sm md:text-base px-3 py-2 md:px-4 md:py-2 bg-[var(--color-astraprimary)] text-white rounded-lg hover:bg-[var(--color-astradark)]"
             >
               Save
             </button>

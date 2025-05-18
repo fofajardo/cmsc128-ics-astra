@@ -30,7 +30,7 @@ export default function ExperienceModal({ experiences: initialExperiences, onClo
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
       <div className="w-full max-w-5xl bg-white rounded-lg shadow-lg p-8">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl md:text-2xl font-bold">Edit Experiences</h2>
@@ -75,13 +75,13 @@ export default function ExperienceModal({ experiences: initialExperiences, onClo
         <div className="mt-6 flex justify-end space-x-4">
           <button
             onClick={onClose}
-            className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100"
+            className="text-sm md:text-base px-3 py-2 md:px-4 md:py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
-            className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 bg-[var(--color-astraprimary)] text-white rounded-lg hover:bg-[var(--color-astradark)]"
+            className="text-sm md:text-base px-3 py-2 md:px-4 md:py-2 bg-[var(--color-astraprimary)] text-white rounded-lg hover:bg-[var(--color-astradark)]"
           >
             Save
           </button>
