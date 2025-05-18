@@ -219,6 +219,32 @@ export const REQUEST_STATUS_LABELS = {
   [REQUEST_STATUS.REJECTED]: "Rejected",
 };
 
+export const SEX = {
+  MALE: 1,
+  FEMALE: 2,
+};
+
+export const SEX_LABELS = {
+  [SEX.MALE]: "Male",
+  [SEX.FEMALE]: "Female",
+};
+
+export const CIVIL_STATUS = {
+  SINGLE: 0,
+  MARRIED: 1,
+  DIVORCED: 2,
+  SEPARATED: 3,
+  WIDOWED: 4,
+};
+
+export const CIVIL_STATUS_LABELS = {
+  [CIVIL_STATUS.SINGLE]: "Single",
+  [CIVIL_STATUS.MARRIED]: "Married",
+  [CIVIL_STATUS.DIVORCED]: "Divorced",
+  [CIVIL_STATUS.SEPARATED]: "Separated",
+  [CIVIL_STATUS.WIDOWED]: "Widowed",
+};
+
 export const REQUEST_TYPE = {
   PROJECT_FUNDS: 0,
   FUNDRAISING: 1,
