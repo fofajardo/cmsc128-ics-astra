@@ -10,10 +10,15 @@ import httpStatus from "http-status-codes";
 function buildUserContext() {
   const [initialized, setInitialized] = useState(false);
   const [routeInitialized, setRouteInitialized] = useState(true);
+  const [isMinimal, setIsMinimal] = useState(false);
+
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [degreePrograms, setDegreePrograms] = useState(null);
   const [degreeProofUploaded, setDegreeProofUploaded] = useState(false);
+  const [degreeProofUrl, setDegreeProofUrl] = useState(null);
+  const [workExperiences, setWorkExperiences] = useState(null);
+  const [organizationAffiliations, setOrganizationAffiliations] = useState(null);
   const [avatarUrl, setAvatarUrl] = useState("https://cdn-icons-png.flaticon.com/512/145/145974.png");
 
   const [rules, setRules] = useState(null);
@@ -40,11 +45,15 @@ function buildUserContext() {
     state: {
       initialized,
       routeInitialized,
+      isMinimal,
       user,
       authUser,
       profile,
       degreePrograms,
       degreeProofUploaded,
+      degreeProofUrl,
+      workExperiences,
+      organizationAffiliations,
       avatarUrl,
       rules,
       ability,
@@ -62,11 +71,15 @@ function buildUserContext() {
     actions: {
       setInitialized,
       setRouteInitialized,
+      setIsMinimal,
       setUser,
       setAuthUser,
       setProfile,
       setDegreePrograms,
       setDegreeProofUploaded,
+      setDegreeProofUrl,
+      setWorkExperiences,
+      setOrganizationAffiliations,
       setAvatarUrl,
       setRules,
       setAbility,
@@ -152,7 +165,8 @@ function updateRoleProperties(aUser, aContext) {
   }
 }
 
-async function fetchData(aUser, aContext) {
+async function fetchData(aUser, aContext, aIsMinimal) {
+  aContext.actions.setIsMinimal(aIsMinimal);
   if (aUser === null || aUser === undefined || aUser === "") {
     aContext.actions.setUser(null);
     aContext.actions.setProfile(null);
@@ -166,30 +180,55 @@ async function fetchData(aUser, aContext) {
   if (aUser) {
     if (aUser.public_metadata) {
       aContext.actions.setAuthUser(aUser);
-      const rawUser = await axios.get(clientRoutes.users.base(`/${aUser.id}`));
+      const rawUser = await axios.get(clientRoutes.users.getOne(aUser.id));
       aUser = rawUser?.data?.user;
     } else {
       aUser = aUser.user;
     }
     try {
-      const rawProfile = await axios.get(clientRoutes.alumniProfiles.base(`/${aUser.id}`));
-      aContext.actions.setProfile(rawProfile?.data?.alumniProfile);
+      const profile = await axios.get(clientRoutes.users.getLatestAlumniProfile(aUser.id));
+      aContext.actions.setProfile(profile?.data?.alumniProfile);
     } catch (e) {
       // Ignore missing profile.
     }
 
     try {
-      const rawDegreePrograms = await axios.get(clientRoutes.users.getOneDegreePrograms(aUser.id));
-      aContext.actions.setDegreePrograms(rawDegreePrograms?.data?.degreePrograms);
+      const degreePrograms = await axios.get(clientRoutes.users.getOneDegreePrograms(aUser.id));
+      aContext.actions.setDegreePrograms(degreePrograms?.data?.degreePrograms);
     } catch (e) {
       // Ignore missing degree programs.
     }
 
-    try {
-      const rawDegreeProof = await axios.get(clientRoutes.photos.getDegreeProofJson(aUser.id));
-      aContext.actions.setDegreeProofUploaded(rawDegreeProof.status === httpStatus.OK);
-    } catch (e) {
-      // Ignore missing degree proof.
+    if (aIsMinimal) {
+      try {
+        const degreeProofJson = await axios.get(clientRoutes.photos.getDegreeProofJson(aUser.id));
+        aContext.actions.setDegreeProofUploaded(degreeProofJson.status === httpStatus.OK);
+      } catch (e) {
+        // Ignore missing degree proof.
+      }
+      aContext.actions.setDegreeProofUrl(null);
+      aContext.actions.setWorkExperiences(null);
+      aContext.actions.setOrganizationAffiliations(null);
+    } else {
+      try {
+        const degreeProof = await axios.get(clientRoutes.photos.getDegreeProof(aUser.id));
+        aContext.actions.setDegreeProofUploaded(degreeProof.status === httpStatus.OK);
+        aContext.actions.setDegreeProofUrl(degreeProof?.data?.photo);
+      } catch (e) {
+        // Ignore missing degree proof.
+      }
+      try {
+        const workExperiences = await axios.get(clientRoutes.users.getWorkExperiences(aUser.id));
+        aContext.actions.setWorkExperiences(workExperiences?.data?.work_experiences);
+      } catch (e) {
+        // Ignore missing work experiences.
+      }
+      try {
+        const affiliations = await axios.get(clientRoutes.users.getOrganizations(aUser.id));
+        aContext.actions.setOrganizationAffiliations(affiliations?.data?.affiliated_organizations);
+      } catch (e) {
+        // Ignore missing organization affiliations.
+      }
     }
     updateRoleProperties(aUser, aContext);
   }
@@ -204,28 +243,28 @@ async function fetchData(aUser, aContext) {
   aContext.actions.setInitialized(true);
 }
 
-function useRefetchUser(aContext, aUserId = null) {
+function useRefetchUser(aContext, aUserId = null, aIsMinimal = true) {
   const user = aUserId == null
     ? axios.get(clientRoutes.auth.signedInUser())
-    : axios.get(clientRoutes.users.base(`/${aUserId}`));
+    : axios.get(clientRoutes.users.getOne(aUserId));
 
   return user.then(function (aUser) {
-    return fetchData(aUser?.data, aContext);
+    return fetchData(aUser?.data, aContext, aIsMinimal);
   }).catch(function (e) {
     // User likely has a bad internet connection, has already signed
     // out from another tab, or something else.
   });
 }
 
-function UserFetcher({userId = null}) {
+function UserFetcher({userId = null, isMinimal = true}) {
   const context = useUser();
 
   useEffect(function () {
-    useRefetchUser(context, userId);
+    useRefetchUser(context, userId, isMinimal);
   }, []);
 }
 
-function SignedInUserFetcher() {
+function SignedInUserFetcher({isMinimal = true}) {
   const context = useSignedInUser();
 
   useEffect(function () {
