@@ -221,7 +221,12 @@ const createWorkExperience = async (req, res) => {
       company,
       year_started,
       year_ended,
-      salary
+      salary,
+      employment_type,
+      description,
+      location,
+      location_type,
+      is_current,
     } = req.body;
 
     if ((year_started && !isValidDate(year_started)) ||
@@ -249,7 +254,12 @@ const createWorkExperience = async (req, res) => {
       company,
       year_started,
       year_ended,
-      salary
+      salary,
+      employment_type,
+      description,
+      location,
+      location_type,
+      is_current,
     });
 
     if (error) {
@@ -308,7 +318,12 @@ const updateWorkExperience = async (req, res) => {
       company,
       year_started,
       year_ended ,
-      salary
+      salary,
+      employment_type,
+      description,
+      location,
+      location_type,
+      is_current,
     } = req.body;
 
     const updateData = {
@@ -318,7 +333,12 @@ const updateWorkExperience = async (req, res) => {
       company,
       year_started,
       year_ended,
-      salary
+      salary,
+      employment_type,
+      description,
+      location,
+      location_type,
+      is_current,
     };
 
     // Remove undefined values from updateData

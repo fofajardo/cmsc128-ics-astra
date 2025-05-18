@@ -31,13 +31,13 @@ function Tab({ label, active, notif, size, handleTabChange }) {
     >
       <button
         onClick={() => handleTabChange(label)}
-        className={`items-center flex ${size ? `${size} py-2` : "font-lb py-3"} bg-transparent w-full justify-center ${
+        className={`items-center flex ${size ? `md:${size} md:py-2 font-sb py-1`: "font-lb py-3"} bg-transparent w-full justify-center ${
           active ? "text-astradark" : "bg-astrawhite text-astradarkgray"
         }`}
       >
         {label}
         {notif > 0 && (
-          <span className="ml-2 bg-astrared font-s text-white px-2 py-1 rounded-sm">
+          <span className="ml-1 bg-astrared md:font-s text-xs text-white md:px-2 px-1 py-1 rounded-sm">
             {notif}
           </span>
         )}

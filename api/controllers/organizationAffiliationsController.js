@@ -54,6 +54,9 @@ const affiliateAlumnusToOrganization = async (req, res) => {
       org_id,
       role,
       joined_date,
+      end_date,
+      description,
+      is_current,
     } = req.body;
 
     // Check if affiliation already exists
@@ -78,6 +81,9 @@ const affiliateAlumnusToOrganization = async (req, res) => {
       alum_id: alumId,
       role: role,
       joined_date: joined_date,
+      end_date,
+      description,
+      is_current,
     };
 
     // Insert new user
@@ -107,7 +113,7 @@ const updateAffiliationData = async (req, res) => {
   try {
     const { alumId } = req.params;
     const { orgId } = req.params;
-    const { role, joined_date } = req.body;
+    const { role, joined_date, end_date, description, is_current, } = req.body;
 
     // Check if affiliation already exists
     const { data: existingAffiliations, error: checkError } = await organizationAffiliationsService.checkAffiliationIfExisting(req.supabase, orgId, alumId);
@@ -129,6 +135,9 @@ const updateAffiliationData = async (req, res) => {
     const updatedAffiliationData = {
       role: role,
       joined_date: joined_date,
+      end_date,
+      description,
+      is_current,
     };
 
     // Update the affiliation

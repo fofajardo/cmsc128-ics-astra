@@ -180,8 +180,8 @@ export default function Events() {
     try {
       const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/events-summary`);
       if (response.data.status === "OK") {
-        const { active_events, past_events, total_events } = response.data.list[0];
-        console.log("stats: ", response.data.list[0]);
+        const { active_events, past_events, total_events } = response.data.stats;
+        console.log("stats: ", response.data.stats);
         const counts = {
           past : past_events || 0,
           active : active_events || 0,
@@ -191,10 +191,12 @@ export default function Events() {
         return counts;
       } else {
         console.error("Failed to fetch event statistics:", response.data);
+        setEventCounts({ past: 0, active: 0, total: 0 });
         return { past: 0, active: 0, total: 0 };
       }
     } catch (error) {
       console.error("Failed to fetch event statistics:", error);
+      setEventCounts({ past: 0, active: 0, total: 0 });
       return { past: 0, active: 0, total: 0 };
     };
   };
@@ -267,6 +269,7 @@ export default function Events() {
   useEffect(() => {
     fetchEvents();
   }, []);
+
 //pagination.currPage, pagination.numToShow
   // useEffect(() => {
   //   const total = eventList.length; // Use actual length instead of pagination.total
@@ -361,6 +364,7 @@ export default function Events() {
     setEventToDelete({ id, name });
     setShowDeleteModal(true);
   };
+
   const handleDelete = async (id, name) => {
     try{
       const response = await axios
@@ -392,6 +396,7 @@ export default function Events() {
     }
     fetchEvents();
   };
+
   const handleAdd = async () => {   // add content -> get the newly created content_id -> add event
     try{
       let contentId;
@@ -591,7 +596,6 @@ export default function Events() {
     return <div className="p-10 text-center text-xl">FORBIDDEN</div>;
   }
 
-
   return (
     <div>
       {/* Add Event Modal */}
@@ -673,7 +677,6 @@ export default function Events() {
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
           />
-          <div> {`(${eventList.length})`} </div>
           <Table
             cols={cols}
             data={loading ? skeletonRows : createRows(currentPageData, confirmDelete, toggleEditModal, setAddFormData)}

@@ -109,6 +109,15 @@ const getAvatarUrl = async (supabase, id) => {
     .eq("type", PhotoType.PROFILE_PIC)
     .single();
   if (keyError) {
+    // Try fetching from user metadata provided by auth.
+    const { data: authData, error: authError } = await supabase
+      .auth
+      .admin
+      .getUserById(id);
+    const metaAvatarUrl = authData.user?.user_metadata?.avatar_url;
+    if (!authError && metaAvatarUrl) {
+      return { data: { signedUrl: metaAvatarUrl}, error: null };
+    }
     return { data: keyData, error: keyError };
   }
 

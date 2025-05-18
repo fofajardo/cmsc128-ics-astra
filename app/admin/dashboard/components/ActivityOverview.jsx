@@ -6,42 +6,10 @@ import { differenceInDays, parseISO, compareDesc } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { capitalizeName } from "@/utils/format.jsx";
 import axios from "axios";
-
-
-// const mockData = [
-//   { id: 10, name: "Benjamin K. Lee", email: "benjamin.lee@example.com", date: "2025-04-25T18:00:00Z" },
-//   { id: 9, name: "Isabella Rose Thomas", email: "isabella.thomas@example.com", date: "2025-04-25T09:30:00Z" },
-//   { id: 8, name: "James Anderson", email: "james.anderson@example.com", date: "2025-04-23T08:45:00Z" },
-//   { id: 7, name: "Sophia L. Garcia", email: "sophia.garcia@example.com", date: "2025-04-22T08:15:00Z" },
-//   { id: 6, name: "William J. Martinez", email: "william.martinez@example.com", date: "2025-04-21T07:50:00Z" },
-//   { id: 5, name: "Ava Wilson", email: "ava.wilson@example.com", date: "2025-04-20T07:00:00Z" },
-//   { id: 4, name: "Noah Z. Davis", email: "noah.davis@example.com", date: "2025-04-19T06:30:00Z" },
-//   { id: 3, name: "Olivia Mae Brown", email: "olivia.brown@example.com", date: "2025-04-18T06:00:00Z" },
-//   { id: 2, name: "Liam A. Smith", email: "liam.smith@example.com", date: "2025-04-17T05:45:00Z" },
-//   { id: 1, name: "Emma Johnson", email: "emma.johnson@example.com", date: "2025-04-16T05:30:00Z" },
-//   { id: 18, name: "Riggs Mikael Tomas", email: "rttomas@example.com", date: "2025-03-12T05:30:00Z" },
-
-//   // Inactive users
-//   { id: 11, name: "Lucas P. Bennett", email: "lucas.bennett@example.com", date: "2023-03-10T10:15:00Z" },
-//   { id: 12, name: "Grace Hughes", email: "grace.hughes@example.com", date: "2022-12-01T09:40:00Z" },
-//   { id: 13, name: "Ethan M. Kelly", email: "ethan.kelly@example.com", date: "2023-01-05T11:25:00Z" },
-//   { id: 14, name: "Hannah R. Moore", email: "hannah.moore@example.com", date: "2022-03-30T14:10:00Z" },
-//   { id: 15, name: "Jackson L. Foster", email: "jackson.foster@example.com", date: "2023-02-15T08:35:00Z" },
-//   { id: 16, name: "Zoey F. Thomas", email: "zoey.thomas@example.com", date: "2023-01-10T07:20:00Z" },
-//   { id: 17, name: "Nathan J. Ross", email: "nathan.ross@example.com", date: "2023-03-01T13:00:00Z" }
-// ];
+import { Eye } from "lucide-react";
 
 const today = new Date();
 
-// // recently registered: within 1 year
-// const recentlyRegistered = mockData
-//   .filter(item => differenceInDays(today, parseISO(item.date)) <= 365)
-//   .sort((a, b) => compareDesc(parseISO(a.date), parseISO(b.date))); // most recent first
-
-// // inactive: more than 1 year
-// const inactiveAccounts = mockData
-//   .filter(item => differenceInDays(today, parseISO(item.date)) > 365)
-//   .sort((a, b) => compareDesc(parseISO(a.date), parseISO(b.date))); // longest inactive first
 
 function getRelativeTime(dateString) {
   const now = new Date();
@@ -86,7 +54,7 @@ function AlumniItem({ alumni, router }) {
 
   return (
     <div className="flex items-center border-b py-2 min-h-[72px]">
-      <div className="mr-3 py-1 px-1">
+      <div className="mr-3 py-1 px-1 hidden sm:block">
         <Avatar>
           <AvatarImage src={profilePhoto} alt={alumni?.name || "User"} />
           <AvatarFallback>CN</AvatarFallback>
@@ -94,21 +62,32 @@ function AlumniItem({ alumni, router }) {
 
       </div>
       <div className="flex-1">
-        <p className="font-r"><span style={{ color: alumni?.name === null ? "red" : "inherit" }}>
+        <p className="font-r line-clamp-1"><span style={{ color: alumni?.name === null ? "red" : "inherit" }}>
           {alumni?.name === null ? "No profile" : alumni?.name}
         </span></p>
-        <p className="font-s text-astradarkgray">{alumni?.email || ""}</p>
+        <p className="font-s text-astradarkgray line-clamp-1">{alumni?.email || ""}</p>
       </div>
       <div className="text-right">
-        {alumni && (
-          <a
-            onClick={() => router.push(`/admin/alumni/search/${alumni.id}`)}
-            className="text-astraprimary font-s hover:underline text-sm cursor-pointer"
-          >
-            See Details
-          </a>
+        {alumni?.name !== null && (
+          <>
+            {/* Show text on small screens, hide on md+ */}
+            <button
+              onClick={() => router.push(`/admin/alumni/search/${alumni.id}`)}
+              aria-label="See Details"
+              className="block sm:hidden rounded-md p-2 bg-astratintedwhite hover:bg-astraprimary/10 transition-colors focus:outline-none focus:ring-2 focus:ring-astraprimary"
+              title="See Details"
+            >
+              <Eye size={18} className="text-astraprimary" />
+            </button>
+            <a
+              onClick={() => router.push(`/admin/alumni/search/${alumni.id}`)}
+              className="text-astraprimary font-s hover:underline text-sm cursor-pointer hidden sm:inline-flex items-center"
+            >
+              See Details
+            </a>
+          </>
         )}
-        <p className="text-sm text-astradarkgray">{getRelativeTime(alumni.date)}</p>
+        <p className="font-s text-astradarkgray hidden sm:block">{getRelativeTime(alumni.date)}</p>
       </div>
     </div>
   );
@@ -253,7 +232,7 @@ export default function ActivityOverview() {
           `${process.env.NEXT_PUBLIC_API_URL}/v1/users/inactive-alumni`,
         );
 
-        console.log(response.data);
+        // console.log(response.data);
 
         if (response.data.status === "OK") {
           const updatedInactiveAccounts = await Promise.all(
@@ -314,7 +293,7 @@ export default function ActivityOverview() {
             See All
           </a>
         </div>
-        <div className="flex-1 px-4">
+        <div className="flex-1 md:px-4 px-0">
           <AdminTabs tabs={tabs} currTab={currTab} size={"font-rb"} handleTabChange={handleTabChange} />
           {currTab === "Recent Registrations" && (
             <div>

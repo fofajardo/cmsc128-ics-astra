@@ -267,8 +267,8 @@ export default function EventAdminDetailPage() {
     try {
       const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/events-summary`);
       if (response.data.status === "OK") {
-        const { active_events, past_events, total_events } = response.data.list[0];
-        console.log("stats: ", response.data.list[0]);
+        const { active_events, past_events, total_events } = response.data.stats;
+        console.log("stats: ", response.data.stats);
         const counts = {
           past : past_events || 0,
           active : active_events || 0,
@@ -278,10 +278,12 @@ export default function EventAdminDetailPage() {
         return counts;
       } else {
         console.error("Failed to fetch event statistics:", response.data);
+        setEventCounts({ past: 0, active: 0, total: 0 });
         return { past: 0, active: 0, total: 0 };
       }
     } catch (error) {
       console.error("Failed to fetch event statistics:", error);
+      setEventCounts({ past: 0, active: 0, total: 0 });
       return { past: 0, active: 0, total: 0 };
     }
   };
