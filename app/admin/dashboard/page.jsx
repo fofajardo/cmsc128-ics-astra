@@ -83,6 +83,7 @@ export default function Dashboard() {
         ] = await Promise.allSettled(urls);
 
         if (alumniRes.status === "fulfilled") setActiveAlumniStats(alumniRes.value.data.stats);
+        console.log("alumniRes", alumniRes.value.data.stats);
         if (jobsRes.status === "fulfilled") setActiveJobsStats(jobsRes.value.data.stats);
         if (eventsRes.status === "fulfilled") setActiveEventsStats(eventsRes.value.data.stats);
         if (fundsRes.status === "fulfilled") setFundsRaisedStats(fundsRes.value.data.stats);
@@ -416,6 +417,91 @@ export default function Dashboard() {
           <LineChartComponent alumniBatchStats={alumniBatchStats}/>
         </TransitionSlide>
 
+      );
+    }
+
+    case "degree": {
+      const colorConfig = [
+        // "var(--color-astraprimary)",
+        "var(--color-pieastra-primary-80)",
+        "var(--color-astradark)",
+        "var(--color-pieastra-primary-60)",
+        "var(--color-pieastra-primary-40)",
+        "#a3a3a3"
+      ];
+      const pieDegreeStats = alumniHighestDegreeStats.map((item, idx) => ({
+        name: item.level,
+        value: item.count,
+        fill: colorConfig[idx % colorConfig.length],
+      }));
+
+      const config = {};
+      alumniHighestDegreeStats.forEach((item, idx) => {
+        config[item.level] = { label: item.level, color: colorConfig[idx % colorConfig.length] };
+      });
+
+      return (
+        <TransitionSlide>
+          <ReusablePieChart
+            data={pieDegreeStats}
+            config={config}
+            title="Alumni Highest Degree"
+            description="Distribution of highest degrees obtained by alumni"
+            dataKey="value"
+            nameKey="name"
+            maxHeight={300}
+          />
+        </TransitionSlide>
+      );
+    }
+
+    case "alumni": {
+      // Prepare your data and config
+      const pieAlumniStatus = [
+        { name: "Active", value: activeAlumniStats?.active_alumni_count ?? 0, fill: "var(--color-astraprimary)" },
+        { name: "Inactive", value: activeAlumniStats?.inactive_alumni_count ?? 0, fill: "#a3a3a3" },
+      ];
+      const pieAlumniApproval = [
+        { name: "Approved", value: activeAlumniStats?.approved_alumni_count ?? 0, fill: "var(--color-astradark)" },
+        { name: "Pending", value: activeAlumniStats?.pending_alumni_count ?? 0, fill: "var(--color-pieastra-primary-80)" },
+      ];
+
+      const alumniPieSelectOptions = {
+        options: [
+          { label: "Status", value: "status" },
+          { label: "Approval", value: "approval" },
+        ],
+        dataMap: {
+          status: {
+            data: pieAlumniStatus,
+            config: {
+              Active: { label: "Active", color: "var(--color-astraprimary)" },
+              Inactive: { label: "Inactive", color: "#a3a3a3" },
+            },
+          },
+          approval: {
+            data: pieAlumniApproval,
+            config: {
+              Approved: { label: "Approved", color: "var(--color-astradark)" },
+              Pending: { label: "Pending", color: "var(--color-pieastra-primary-80)" },
+            },
+          },
+        },
+        defaultValue: "status",
+      };
+
+      return (
+        <TransitionSlide>
+          <ReusablePieChart
+            data={pieAlumniStatus}
+            selectOptions={alumniPieSelectOptions}
+            title="Alumni Status/Approval"
+            description="alumni breakdown"
+            dataKey="value"
+            nameKey="name"
+            maxHeight={300}
+          />
+        </TransitionSlide>
       );
     }
 
