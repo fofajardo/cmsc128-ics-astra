@@ -142,7 +142,7 @@ export default function SearchFilter({onClose, onApply, filter}) {
             className="flex-grow px-4 py-2.5 rounded-xl border border-gray-300 bg-white font-r"
           >
             <option value="">Select Category</option>
-            <option value="year">Company Name</option>
+            <option value="company">Company Name</option>
             <option value="location">Location</option>
             <option value="date">Date Posted</option>
           </select>

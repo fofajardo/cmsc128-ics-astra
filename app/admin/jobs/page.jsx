@@ -40,7 +40,7 @@ export default function Jobs() {
   const [filter, setFilter] = useState(initialFilters);
 
   const toggleFilter = () => {
-    console.log("Toggling filter modal:", !showFilter);
+    // console.log("Toggling filter modal:", !showFilter);
     setShowFilter((prev) => !prev);
   };
 
@@ -122,6 +122,22 @@ export default function Jobs() {
     setJobCounts({ active:active, expired: expired, total: total_count });
   };
 
+  const sort = (filtered, sortBy, asc) => {
+    asc = asc === "asc" ? true : false;
+    switch (sortBy) {
+      case "company":
+        return filtered.sort((a, b) => a.company_name.toLowerCase().localeCompare(b.company_name.toLowerCase())
+          * (asc ? 1 : -1));
+      case "location":
+        return filtered.sort((a, b) => a.location.toLowerCase().localeCompare(b.location.toLowerCase())
+          * (asc ? 1 : -1));
+      case "date":
+          return filtered.sort((a, b) => (new Date(a.created_at) - new Date(b.created_at)) * (asc ? 1 : -1));
+      default:
+        return filtered;
+    }
+  };
+
   const handleApply = (filters = {}) => {
     setFilter(filters);
     const {
@@ -130,6 +146,8 @@ export default function Jobs() {
       jobType = "",
       fromDate = "",
       toDate = "",
+      sortCategory = "",
+      sortOrder = ""
     } = filters;
 
     const lowerCompany = companyName.toLowerCase();
@@ -158,7 +176,7 @@ export default function Jobs() {
       );
     });
 
-    setFilteredJobs(filtered);
+    setFilteredJobs(sort(filtered, sortCategory, sortOrder));
   };
 
   const handleDelete = async () => {
@@ -170,7 +188,7 @@ export default function Jobs() {
     try {
       const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs/${jobToDelete.id}`);
       if (response.data.status === "DELETED") {
-        console.log("Successfully deleted");
+        // console.log("Successfully deleted");
         fetchJobs();
         setPrompt(false);
         setJobToDelete(null);
