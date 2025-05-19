@@ -144,10 +144,17 @@ const updatePhoto = async (req, res) => {
       // Generate a unique filename for the new file
       const uniqueFilename = `${Date.now()}-${file.originalname}`;
 
-      // Upload directly from buffer
+      // Get the file from disk since we're using diskStorage
+      const oldPath = path.join(file.destination, file.filename);
+
+      // Read the file content
+      const fileContent = fs.readFileSync(oldPath);
+
+
+      // Upload the file content
       const { data: storageData, error: storageError } = await req.supabase.storage
         .from("user-photos-bucket")
-        .upload(uniqueFilename, file.buffer, {
+        .upload(uniqueFilename, fileContent, {
           contentType: file.mimetype,
         });
 
@@ -183,6 +190,7 @@ const updatePhoto = async (req, res) => {
       photo: data[0],
     });
   } catch (error) {
+    // console.error("Error in updatePhoto:", error);
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: "FAILED",
       message: error.message,

@@ -48,59 +48,63 @@ export const PersonalInfo = ({
         photo => photo.user_id === userId && photo.type === PhotoType.PROFILE_PIC
       );
 
-      // If user already has a profile picture, delete it first
-      if (userPhoto && userPhoto.id) {
-        // console.log("Deleting existing photo with ID:", userPhoto.id);
+      let response;
 
-        // Delete the existing photo
-        const deleteResponse = await axios.delete(
-          `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/${userPhoto.id}`
+      if (userPhoto && userPhoto.id) {
+        // User already has a profile picture - UPDATE it using PUT
+        // console.log("Updating existing photo with ID:", userPhoto.id);
+
+        response = await axios.put(
+          `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/${userPhoto.id}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
         );
 
-        if (deleteResponse.data.status !== "DELETED") {
-          console.warn("Warning: Failed to delete existing photo before upload");
-          // Continue anyway - we'll just create a new photo
-        } else {
-          // console.log("Successfully deleted existing photo");
-        }
+        // console.log("Updated photo response:", response.data);
+      } else {
+        // User doesn't have a profile picture yet - CREATE a new one using POST
+        console.log("Creating new profile photo");
+
+        response = await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/v1/photos`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        // console.log("Created new photo response:", response.data);
       }
 
-      // Now upload the new photo (always using POST since we deleted any existing photo)
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/v1/photos`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      // console.log("Created new photo:", response.data);
-
-      // Inside handleFileChange function, after successful upload:
-      if (response.data.status === "CREATED" || response.data.status === "OK") {
+      // Check for success status (both create and update operations)
+      if (response.data.status === "CREATED" || response.data.status === "UPDATED" || response.data.status === "OK") {
         onUpdateProfilePicture();
-
         window.dispatchEvent(new Event("profilePictureUpdated"));
       } else {
-        alert("Failed to upload profile picture");
+        alert("Failed to update profile picture");
       }
     } catch (error) {
-      console.error("Error uploading profile picture:", error);
-      // Let's provide more detailed error information
+      console.error("Error updating profile picture:", error);
+
+      // Provide detailed error information
       if (error.response) {
         console.error("Error details:", error.response.data);
         console.error("Status code:", error.response.status);
 
         // Show specific error message based on status code
         if (error.response.status === 404) {
-          alert("Profile picture upload failed: API endpoint not found. Please contact support.");
+          alert("Profile picture update failed: API endpoint not found. Please contact support.");
         } else {
-          alert(`Failed to upload profile picture: ${error.response.data.message || "Unknown error"}`);
+          alert(`Failed to update profile picture: ${error.response.data.message || "Unknown error"}`);
         }
       } else {
-        alert("Failed to upload profile picture. Please try again.");
+        alert("Failed to update profile picture. Please try again.");
       }
     } finally {
       setIsUploading(false);
