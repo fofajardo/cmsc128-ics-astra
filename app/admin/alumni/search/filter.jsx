@@ -71,23 +71,22 @@ export default function SearchFilter({ onClose, initialFilters, updateFilters })
       skills: [],
       sortCategory: "",
       sortOrder: "asc",
-    }); // Update parent state
+    });
     setFieldSearch("");
     setShowDropdown(false);
     setFilteredFields(defaultFieldOptions);
-    onClose(); // Close modal
+    onClose();
   };
 
   const handleApply = () => {
-    updateFilters(filters); // Update parent state with current filters
-    onClose(); // Close modal
+    updateFilters(filters);
+    onClose();
   };
 
   const closeModal = () => {
     setFilters(initialFilters);
     onClose();
   };
-
 
   useEffect(() => {
     const handleClickOutside = (e) => {

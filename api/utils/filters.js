@@ -126,6 +126,44 @@ const applyArrayFilter = (data, filters) => {
   return filteredData;
 };
 
+const applyOrganizationFilter = (data, filters) => {
+  let filteredData = data;
+
+  if (filters.orgName) {
+    filteredData = filteredData.filter(org =>
+      org.name && org.name.toLowerCase().includes(filters.orgName.toLowerCase())
+    );
+  }
+
+  if (filters.fromDate) {
+    filteredData = filteredData.filter(org =>
+      org.founded_date && org.founded_date >= filters.fromDate
+    );
+  }
+
+  if (filters.toDate) {
+    filteredData = filteredData.filter(org =>
+      org.founded_date && org.founded_date <= filters.toDate
+    );
+  }
+
+  if (filters.sortCategory && filters.sortOrder) {
+    const sortMapping = {
+      founded_date: (a, b) => (a.founded_date || "").localeCompare(b.founded_date || ""),
+      name: (a, b) => a.name.localeCompare(b.name)
+    };
+
+    const sortFn = sortMapping[filters.sortCategory] || sortMapping.name;
+    filteredData.sort(sortFn);
+
+    if (filters.sortOrder === "desc") {
+      filteredData.reverse();
+    }
+  }
+
+  return filteredData;
+};
+
 const applyArraySearch = (data, search, fuseOptions) => {
   let filteredData = data;
 
@@ -149,6 +187,7 @@ const applyPagination = (data, page, limit) => {
 export {
   applyFilter,
   applyArrayFilter,
+  applyOrganizationFilter,
   applyArraySearch,
   applyPagination
 };
