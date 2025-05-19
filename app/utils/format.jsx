@@ -17,9 +17,13 @@ export function capitalizeTitle(title) {
     .join(" ");
 }
 
-export function formatDate(date, format) {
+export function formatDate(date, format, country = "en-PH") {
   if (date === null) {
     return "N/A";
+  }
+
+  if (country === null){
+    country = "en-PH";
   }
 
   const formatOptions = {
@@ -43,12 +47,17 @@ export function formatDate(date, format) {
 
   const options = formatOptions[format] || {};
 
-  return new Date(date).toLocaleDateString("en-PH", options);
+  return new Date(date).toLocaleDateString(country, options);
 }
 
 export function formatSalary(salary) {
   if (salary === null) {
     return "N/A";
+  }
+  const cap = 1_000_000_000;
+  if (salary > cap) {
+    // Convert number to string and slice first 12 characters
+    return `₱${salary.toLocaleString("en-US").slice(0, 13)}...`;
   }
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "PHP" }).format(salary);
 }

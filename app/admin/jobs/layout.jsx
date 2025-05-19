@@ -25,9 +25,9 @@ export default function AdminJobsLayout({ children }) {
     total: <Skeleton className="h-7 w-12 my-2" />,
     companies: <Skeleton className="h-7 w-12 my-2" />,
   });
-
+  // TODO: make database view for all and reported jobs
   const tabs = {
-    All: 3,
+    All: 0,
     Reported: 0,
   };
 
@@ -116,7 +116,7 @@ export default function AdminJobsLayout({ children }) {
       </div>
 
       {/* Tabs + children context */}
-      <TabContext.Provider value={{ info, setInfo, setJobCounts }}>
+      <TabContext.Provider value={{ currTab, info, setInfo, setJobCounts }}>
         <AdminTabs tabs={tabs} currTab={currTab} handleTabChange={dynamicTabClick} />
         {children}
       </TabContext.Provider>

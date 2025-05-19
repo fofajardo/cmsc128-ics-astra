@@ -5,6 +5,7 @@ import { Clock } from "lucide-react";
 import JobMap from "../map";
 import { JobsStatus } from "../../../../common/scopes";
 import { ReportButton } from "@/components/Buttons";
+import { formatSalary, formatDate } from "@/utils/format";
 
 export default function SmallJobCard({job, showApply, canReport}) {
   const isOpen = (date) => {
@@ -15,18 +16,6 @@ export default function SmallJobCard({job, showApply, canReport}) {
       if (dateToday - date < 0) return true;
     }
     return false;
-  };
-
-  const formatSalary = (num) => {
-    return `₱${num.toLocaleString("en-US")}`;
-  };
-
-  const formatDate = (date) => {
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
   };
 
   return (
@@ -49,7 +38,7 @@ export default function SmallJobCard({job, showApply, canReport}) {
 
         <div className="flex gap-2 items-center">
           <Clock size="20" className="shrink-0"/>
-          <p className="text-black text-sm">{formatDate(job.expires_at)}</p>
+          <p className="text-black text-sm">{formatDate(job.expires_at, "long")}</p>
         </div>
         {/* Tags */}
         <div className="flex flex-wrap gap-2 my-3">
@@ -83,7 +72,7 @@ export default function SmallJobCard({job, showApply, canReport}) {
         </div>
         {canReport &&
         <div className="self-end mr-2">
-          <ReportButton contentType={"Job"}/>
+          <ReportButton contentType={"Job"} id={job.job_id}/>
         </div>}
       </div>
     </div>
