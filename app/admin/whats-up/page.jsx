@@ -23,6 +23,8 @@ export default function CommunicationPage() {
   const [contentPhotos, setContentPhotos] = useState({});
   const [photoTypesMap, setPhotoTypesMap] = useState({});
   const [isLoadingPhotos, setIsLoadingPhotos] = useState(true);
+  const [newsletters, setNewsletters] = useState([]);
+  const [loadingNewsletters, setLoadingNewsletters] = useState(false);
 
   const [info, setInfo] = useState({
     title: currTab === "Newsletters" ? "Newsletters" : "Announcements",
@@ -259,6 +261,43 @@ export default function CommunicationPage() {
     router.push(path);
   };
 
+  useEffect(() => {
+    const fetchNewsletters = async () => {
+      if (currTab !== "Newsletters") return;
+      
+      setLoadingNewsletters(true);
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/v1/contents`,
+          {
+            params: {
+              tags: "{newsletter}",
+              page: pagination.currPage,
+              limit: pagination.numToShow,
+              sort_by: "created_at",
+              order: "desc"
+            }
+          }
+        );
+
+        if (response.data.status === "OK") {
+          setNewsletters(response.data.list || []);
+          setPagination(prev => ({
+            ...prev,
+            total: response.data.total || 0
+          }));
+        }
+      } catch (error) {
+        console.error("Failed to fetch newsletters:", error);
+        setNewsletters([]);
+      } finally {
+        setLoadingNewsletters(false);
+      }
+    };
+
+    fetchNewsletters();
+  }, [currTab, pagination.currPage, pagination.numToShow]);
+
   return (
     <div>
       {showFilter && (
@@ -388,40 +427,40 @@ export default function CommunicationPage() {
           {currTab === "Newsletters" && (
             <div className="bg-astrawhite p-6 rounded-xl shadow-sm">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-8">
-                {Array(12).fill().map((_, index) => (
-                  <Link
-                    href="https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
-                    key={index}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group relative max-w-[280px] mx-auto w-full"
-                  >
-                    <div className="aspect-[3/4] relative bg-black rounded-lg overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
-                      <img
-                        src="https://marketplace.canva.com/EAGWT7FdhOk/1/0/1131w/canva-black-and-grey-modern-business-company-email-newsletter-R_dH5ll-SAs.jpg"
-                        alt={`Volume ${index + 1}`}
-                        className="w-full h-full object-cover opacity-90"
-                      />
-                      <div className="absolute inset-0 bg-astradarkgray/50 group-hover:bg-astradarkgray/70 transition-colors" />
-                      {/* Delete Button */}
-                      <button
-                        onClick={(e) => handleDeleteNewsletter(index, e)}
-                        className="absolute top-2 right-2 p-2 bg-astrared text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-astrared/90"
-                        title="Delete newsletter"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                      <div className="absolute bottom-0 left-0 right-0 p-4 text-center">
-                        <h3 className="text-astrawhite font-rb text-lg mb-1">
-                          Volume {index + 1}
-                        </h3>
-                        <p className="text-astrawhite/80 font-s">
-                          Newsletter.pdf
-                        </p>
+                {loadingNewsletters ? (
+                  Array(pagination.numToShow).fill().map((_, index) => (
+                    <div key={`skeleton-${index}`} className="aspect-[3/4] bg-astralightgray animate-pulse rounded-lg" />
+                  ))
+                ) : newsletters.length > 0 ? (
+                  newsletters.map((newsletter) => (
+                    <Link
+                      href={`/admin/whats-up/newsletters/${newsletter.id}`}
+                      key={newsletter.id}
+                      className="group relative max-w-[280px] mx-auto w-full"
+                    >
+                      <div className="aspect-[3/4] relative bg-black rounded-lg overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+                        <img
+                          src={newsletter.image_url || "https://marketplace.canva.com/EAGWT7FdhOk/1/0/1131w/canva-black-and-grey-modern-business-company-email-newsletter-R_dH5ll-SAs.jpg"}
+                          alt={newsletter.title}
+                          className="w-full h-full object-cover opacity-90"
+                        />
+                        <div className="absolute inset-0 bg-astradarkgray/50 group-hover:bg-astradarkgray/70 transition-colors" />
+                        <div className="absolute bottom-0 left-0 right-0 p-4 text-center">
+                          <h3 className="text-astrawhite font-rb text-lg mb-1">
+                            {newsletter.title}
+                          </h3>
+                          <p className="text-astrawhite/80 font-s">
+                            {new Date(newsletter.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  </Link>
-                ))}
+                    </Link>
+                  ))
+                ) : (
+                  <div className="col-span-full text-center py-8 text-astragray">
+                    No newsletters available.
+                  </div>
+                )}
               </div>
             </div>
           )}

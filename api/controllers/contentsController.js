@@ -88,78 +88,32 @@ const getContentById = async (req, res) => {
 
 const createContent = async (req, res) => {
   try {
-    const allowedFields = ["id", "user_id", "title", "details", "views", "created_at", "updated_at", "tags"];
-    const providedFields = Object.keys(req.body);
-
-    // Check for unexpected fields
-    const unexpectedFields = providedFields.filter((field) => !allowedFields.includes(field));
-    if (unexpectedFields.length > 0) {
-      return res.status(httpStatus.BAD_REQUEST).json({
-        status: "FAILED",
-        message: `Unexpected fields: ${unexpectedFields.join(", ")}`,
-      });
-    }
-
-    const requiredFields = [
-      "title",
-      "details",
-      "views"
-    ];
-
-    const missingFields = requiredFields.filter(
-      field => req.body[field] === undefined || req.body[field] === null
-    );
-
-    if (missingFields.length > 0) {
-      return res.status(httpStatus.BAD_REQUEST).json({
-        status: "FAILED",
-        message: `Missing required fields: ${missingFields.join(", ")}`
-      });
-    }
-
     const {
       user_id,
       title,
       details,
-      created_at = new Date().toISOString(),  // Default to current date if not provided
-      updated_at = new Date().toISOString(),  // Default to current date if not provided
-      views,
-      tags
+      views = 0,
+      tags = []
     } = req.body;
 
-    console.log(user_id);
-    // Validate user_id format
-    const isValidUUID = /^[0-9a-fA-F-]{36}$/.test(user_id);
-    if (!isValidUUID) {
-      return res.status(httpStatus.BAD_REQUEST).json({
-        status: "FAILED",
-        message: "Invalid user_id format",
-      });
-    }
-
-    const { data: existingContents, error: checkError } = await contentsService.checkExistingContent(req.supabase);
-
-    if (checkError) {
-      console.error("Create Content Error:", checkError);
-      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-        status: "FAILED",
-        message: checkError
-      });
-    }
-
-    if (existingContents?.length > 0) {
-      return res.status(httpStatus.CONFLICT).json({
-        status: "FAILED",
-        message: "Content already exists"
-      });
+    // Skip duplicate check for newsletters
+    if (!tags.includes("newsletter")) {
+      const { data: existingContent, error: checkError } = await contentsService.checkExistingContent(req.supabase, title);
+      
+      if (existingContent) {
+        return res.status(httpStatus.CONFLICT).json({
+          status: "FAILED",
+          message: "A content with this title already exists"
+        });
+      }
     }
 
     const { data, error } = await contentsService.insertContent(req.supabase, {
       user_id,
       title,
       details,
-      created_at,
-      updated_at,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
       views,
       tags,
     });
@@ -175,16 +129,11 @@ const createContent = async (req, res) => {
     return res.status(httpStatus.CREATED).json({
       status: "CREATED",
       message: "Content successfully created",
-      content: {
-        ...data,
-        created_at: new Date(data.created_at).toISOString(),
-        updated_at: new Date(data.updated_at).toISOString(),
-        views: data.views
-      }
+      content: data
     });
 
   } catch (error) {
-    console.error("Error here:", error);
+    console.error("Create Content Error:", error);
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: "FAILED",
       message: error.message || error
