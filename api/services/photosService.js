@@ -127,6 +127,15 @@ const getAvatarUrl = async (supabase, id) => {
     .createSignedUrl(keyData.image_key, 60 * 60);
 };
 
+const fetchDonationReceipt = async (supabase, userId, projectId) => {
+  return await supabase
+    .from("photos")
+    .select("*")
+    .eq("user_id", userId)
+    .eq("content_id", projectId)
+    .eq("type", PhotoType.PROOF_OF_PAYMENT);
+};
+
 const photosService = {
   fetchAllPhotos,
   fetchPhotoById,
@@ -142,6 +151,7 @@ const photosService = {
   fetchPhotoTypesByContentIds,
   fetchPhotosByContentId,
   getAvatarUrl,
+  fetchDonationReceipt,
 };
 
 export default photosService;

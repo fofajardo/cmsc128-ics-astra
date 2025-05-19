@@ -25,6 +25,7 @@ const photosRouter = () => {
   router.get("/jobs/:job_id", photosController.getJobPhotoByContentId);
   router.get("/content-types", photosController.getContentPhotoTypes);
   router.get("/by-content-id/:contentId", photosController.getPhotosByContentId);
+  router.get("/donation-receipt", photosController.getDonationReceipt);
 
   router.use(RequireAuthenticated);
 
