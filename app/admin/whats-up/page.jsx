@@ -1,7 +1,8 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { TabContext } from "@/components/TabContext";
 import { TableHeader, PageTool } from "@/components/TableBuilder";
-import { Filter, Plus, Trash2, Edit2 } from "lucide-react";
+import { Filter, Plus, Trash2, Edit2, Loader } from "lucide-react";
 import { useTab } from "@/components/TabContext";
 import ToastNotification from "@/components/ToastNotification";
 import { useRouter } from "next/navigation";
@@ -12,6 +13,7 @@ import { PhotoType } from "../../../common/scopes.js";
 export default function CommunicationPage() {
   const router = useRouter();
   const { currTab } = useTab();
+  const { setDashboard } = useContext(TabContext);
   const [toast, setToast] = useState(null);
   const [showFilter, setShowFilter] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -20,6 +22,7 @@ export default function CommunicationPage() {
   const [announcements, setAnnouncements] = useState([]);
   const [contentPhotos, setContentPhotos] = useState({});
   const [photoTypesMap, setPhotoTypesMap] = useState({});
+  const [isLoadingPhotos, setIsLoadingPhotos] = useState(true);
 
   const [info, setInfo] = useState({
     title: currTab === "Newsletters" ? "Newsletters" : "Announcements",
@@ -75,7 +78,16 @@ export default function CommunicationPage() {
     return "/jobs/assets/default-job.jpg";
   };
 
-  // Modified function to fetch content photos
+  // Save photos to localStorage
+  const savePhotosToLocalStorage = (photos, typesMap) => {
+    try {
+      localStorage.setItem("announcementPhotos", JSON.stringify(photos));
+      localStorage.setItem("photoTypesMap", JSON.stringify(typesMap));
+    } catch (error) {
+      console.error("Error saving photos to localStorage:", error);
+    }
+  };
+
   // Modified function to fetch content photos
   const fetchContentPhotos = async (contentIds) => {
     try {
@@ -121,6 +133,10 @@ export default function CommunicationPage() {
 
       // Wait for all photo fetch operations to complete
       await Promise.all(photoPromises);
+
+      // Always save to localStorage for future use
+      savePhotosToLocalStorage(photoMap, photoTypesMap);
+
       // Return the correct structure
       return { photos: photoMap, typesMap: photoTypesMap };
     } catch (error) {
@@ -132,8 +148,9 @@ export default function CommunicationPage() {
 
   useEffect(() => {
     const fetchContents = async () => {
+      setIsLoadingPhotos(true);
       try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents`);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents?tag=announcement`);
         if (response.data.status === "OK") {
           const list = response.data.list || response.data.data?.list || [];
           setAnnouncements(list);
@@ -154,43 +171,50 @@ export default function CommunicationPage() {
       } catch (error) {
         console.error("Failed to fetch contents:", error);
         setAnnouncements([]);
+      } finally {
+        setIsLoadingPhotos(false);
       }
     };
 
     fetchContents();
   }, []);
 
-  // Main function to determine image based on content type
-  const getDefaultImageByType = (type) => {
-    if (!type) return getDefaultEventImage();
+  // // Main function to determine image based on content type
+  // const getDefaultImageByType = (type) => {
+  //   if (!type) return getDefaultEventImage();
 
-    // Check if type is a string and normalize it
-    const contentType = typeof type === "string" ? type.toLowerCase() : null;
+  //   // Check if type is a string and normalize it
+  //   const contentType = typeof type === "string" ? type.toLowerCase() : null;
 
-    switch (contentType) {
-    case "event":
-      return getDefaultEventImage();
-    case "project":
-    case "donation_drive":
-    case "fundraising":
-    case "scholarship":
-      return getDefaultProjectImage();
-    case "job":
-      return getDefaultJobImage();
-    default:
-      return getDefaultEventImage();
-    }
-  };
+  //   switch (contentType) {
+  //   case "event":
+  //     return getDefaultEventImage();
+  //   case "project":
+  //   case "donation_drive":
+  //   case "fundraising":
+  //   case "scholarship":
+  //     return getDefaultProjectImage();
+  //   case "job":
+  //     return getDefaultJobImage();
+  //   default:
+  //     return getDefaultEventImage();
+  //   }
+  // };
 
   const filteredAnnouncements = announcements.filter((announcement) => {
+    const hasAnnouncementTag = announcement.tags?.includes("announcement");
     const matchesType = selectedType === "All" || announcement.type === selectedType;
     const matchesSearch = announcement.title.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesType && matchesSearch;
+    return hasAnnouncementTag && matchesType && matchesSearch;
   });
 
   useEffect(() => {
     const total = filteredAnnouncements.length;
     const lastPage = Math.ceil(total / pagination.numToShow) || 1; // Ensure minimum 1 page
+    setDashboard((prev) => ({
+      ...prev,
+      announcements: total,
+    }));
 
     // Calculate the current range
     const startIndex = (pagination.currPage - 1) * pagination.numToShow;
@@ -303,49 +327,60 @@ export default function CommunicationPage() {
           {currTab === "Announcements" && (
             <div className="bg-astrawhite p-6 rounded-xl shadow-sm">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
-                {currentItems.map((announcement) => (
-                  <div key={announcement.id} className="group relative">
-                    <Link href={`/admin/whats-up/announcements/${announcement.id}`}>
-                      <div className="relative aspect-[4/3] rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer">
-                        <img
-                          src={contentPhotos[announcement.id] ||
-                               getDefaultImageByPhotoType(photoTypesMap[announcement.id] || PhotoType.EVENT_PIC)}
-                          className="w-full h-full object-cover"
-                          alt={announcement.title}
-                        />
-                        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-astraprimary to-transparent/0 text-astrawhite p-4">
-                          <h1 className="text-lg font-bold text-astrawhite line-clamp-1">
-                            {announcement.title}
-                          </h1>
-                          <div className="flex items-center gap-2 mt-1">
-                            <i className="fas fa-calendar-alt text-astrawhite text-sm"></i>
-                            <span className="text-sm text-astrawhite/90">
-                              {announcement.updated_at
-                                ? new Date(announcement.updated_at).toLocaleDateString("en-US", {
-                                  month: "short",
-                                  day: "2-digit",
-                                  year: "numeric",
-                                })
-                                : "No date"}
-                            </span>
-                          </div>
-                          <p className="text-sm text-astrawhite/80 mt-2 line-clamp-2">
-                            {announcement.details}
-                          </p>
-                        </div>
+                {isLoadingPhotos ? (
+                  // Loading skeleton for photos
+                  Array(pagination.numToShow).fill().map((_, index) => (
+                    <div key={`skeleton-${index}`} className="relative aspect-[4/3] rounded-lg overflow-hidden shadow-lg bg-astralightgray animate-pulse">
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <Loader className="w-8 h-8 text-astragray animate-spin" />
                       </div>
-                    </Link>
-                    <button
-                      onClick={() =>
-                        router.push(`/admin/whats-up/announcements/${announcement.id}`)
-                      }
-                      className="absolute top-2 right-2 p-2 bg-astraprimary text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-astradark"
-                      title="Edit announcement"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
+                    </div>
+                  ))
+                ) : (
+                  currentItems.map((announcement) => (
+                    <div key={announcement.id} className="group relative">
+                      <Link href={`/admin/whats-up/announcements/${announcement.id}`}>
+                        <div className="relative aspect-[4/3] rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer">
+                          <img
+                            src={contentPhotos[announcement.id] ||
+                                getDefaultImageByPhotoType(photoTypesMap[announcement.id] || PhotoType.EVENT_PIC)}
+                            className="w-full h-full object-cover"
+                            alt={announcement.title}
+                          />
+                          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-astraprimary to-transparent/0 text-astrawhite p-4">
+                            <h1 className="text-lg font-bold text-astrawhite line-clamp-1">
+                              {announcement.title}
+                            </h1>
+                            <div className="flex items-center gap-2 mt-1">
+                              <i className="fas fa-calendar-alt text-astrawhite text-sm"></i>
+                              <span className="text-sm text-astrawhite/90">
+                                {announcement.updated_at
+                                  ? new Date(announcement.updated_at).toLocaleDateString("en-US", {
+                                    month: "short",
+                                    day: "2-digit",
+                                    year: "numeric",
+                                  })
+                                  : "No date"}
+                              </span>
+                            </div>
+                            <p className="text-sm text-astrawhite/80 mt-2 line-clamp-2">
+                              {announcement.details}
+                            </p>
+                          </div>
+                        </div>
+                      </Link>
+                      <button
+                        onClick={() =>
+                          router.push(`/admin/whats-up/announcements/${announcement.id}`)
+                        }
+                        className="absolute top-2 right-2 p-2 bg-astraprimary text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-astradark"
+                        title="Edit announcement"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           )}

@@ -5,6 +5,37 @@ const getContents = async (req, res) => {
   try {
     const filters = req.query;
 
+    const { data, count, error } = await contentsService.fetchContents(req.supabase, filters);
+
+    if (error) {
+      console.log(error);
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error.message
+      });
+    }
+
+    return res.status(httpStatus.OK).json({
+      status: "OK",
+      list: data || [],
+      total: count || 0,
+      page: parseInt(filters.page) || 1,
+      limit: parseInt(filters.limit) || 10
+    });
+
+  } catch (error) {
+    console.log(error);
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
+
+const getAnnouncements = async (req, res) => {
+  try {
+    const filters = req.query;
+
     const { data, error } = await contentsService.fetchContents(req.supabase);
 
     if (error) {
@@ -70,7 +101,6 @@ const createContent = async (req, res) => {
     }
 
     const requiredFields = [
-      "user_id",
       "title",
       "details",
       "views"
@@ -97,6 +127,7 @@ const createContent = async (req, res) => {
       tags
     } = req.body;
 
+    console.log(user_id);
     // Validate user_id format
     const isValidUUID = /^[0-9a-fA-F-]{36}$/.test(user_id);
     if (!isValidUUID) {
@@ -292,6 +323,7 @@ const deleteContent = async (req, res) => {
 };
 
 const contentsController = {
+  getAnnouncements,
   getContents,
   getContentById,
   createContent,

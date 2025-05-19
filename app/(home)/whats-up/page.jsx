@@ -166,6 +166,7 @@ function renderNewsItems(newsItems, loading) {
 }
 
 function newsItemBuilder(item) {
+  const router = useRouter();
   return (
     <div
       key={item.id}
@@ -182,7 +183,7 @@ function newsItemBuilder(item) {
         <h3 className="text-2xl font-bold text-slate-900 max-md:text-xl">
           {item.title}
         </h3>
-        <p className="mt-3 text-base text-slate-500">{item.description}</p>
+        <p className="mt-3 text-base text-slate-500 line-clamp-3">{item.details}</p>
         <div className="mt-4">
           <button
             // TODO: UNDEFINED ROUTER
