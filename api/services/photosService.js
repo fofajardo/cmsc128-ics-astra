@@ -13,7 +13,26 @@ const fetchPhotoById = async (supabase, id) => {
     .single();
 };
 
-const insertPhoto = async (supabase, photoData) => {
+const ALLOWED_MIME_TYPES = {
+  'image/jpeg': true,
+  'image/png': true,
+  'image/gif': true,
+  'application/pdf': true
+};
+
+const validateFileType = (fileType) => {
+  if (!ALLOWED_MIME_TYPES[fileType]) {
+    throw new Error(`Unsupported file type: ${fileType}`);
+  }
+  return true;
+};
+
+const insertPhoto = async (supabase, photoData, file) => {
+  // Validate file type if provided
+  if (file) {
+    validateFileType(file.mimetype);
+  }
+
   return await supabase
     .from("photos")
     .insert(photoData)
@@ -142,6 +161,7 @@ const photosService = {
   fetchPhotoTypesByContentIds,
   fetchPhotosByContentId,
   getAvatarUrl,
+  validateFileType,
 };
 
 export default photosService;

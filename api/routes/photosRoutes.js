@@ -28,6 +28,7 @@ const photosRouter = () => {
 
   router.use(RequireAuthenticated);
 
+  router.post("/validate", upload.single("File"), photosController.validatePhoto); // Add this line
   router.get("/profile-pics", photosController.getAllProfilePics);
   router.get("/", photosController.getAllPhotos);
   router.get("/:id", photosController.getPhotoById);

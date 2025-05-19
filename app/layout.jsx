@@ -19,6 +19,7 @@ export default function RootLayout({ children }) {
           name="viewport"
           content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no"
         />
+        <script src="//cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
       </head>
       <body>
         <SignedInUserProvider>

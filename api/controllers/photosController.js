@@ -64,7 +64,6 @@ const uploadPhoto = async (req, res) => {
     const { user_id, content_id, type } = req.body;
     const file = req.file;
 
-    // Validate that at least one of user_id or content_id exists, and file is provided
     if (!file || (!user_id && !content_id) || type === undefined) {
       return res.status(httpStatus.BAD_REQUEST).json({
         status: "FAILED",
@@ -75,15 +74,20 @@ const uploadPhoto = async (req, res) => {
     // Generate a unique filename
     const uniqueFilename = `${Date.now()}-${file.originalname}`;
     const oldPath = path.join(file.destination, file.filename);
-
-    // Read the file content
     const fileContent = fs.readFileSync(oldPath);
 
+    // Set up upload options based on file type
+    const uploadOptions = {
+      contentType: file.mimetype,
+      upsert: false
+    };
+
+    // If it's a PDF, use a different bucket or handle it differently
+    const bucketName = file.mimetype === 'application/pdf' ? 'documents-bucket' : 'user-photos-bucket';
+
     const { data: storageData, error: storageError } = await req.supabase.storage
-      .from("user-photos-bucket")
-      .upload(uniqueFilename, fileContent, {
-        contentType: file.mimetype,
-      });
+      .from(bucketName)
+      .upload(uniqueFilename, fileContent, uploadOptions);
 
     if (storageError) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -92,32 +96,32 @@ const uploadPhoto = async (req, res) => {
       });
     }
 
-    // Save the file path and metadata to the database
     const photoData = {
       user_id: user_id || null,
       content_id: content_id || null,
-      type, // Include the new 'type' column
-      image_key: storageData.path, // Save the new unique file path
+      type,
+      image_key: storageData.path,
+      bucket_name: bucketName // Save which bucket we used
     };
 
     const { data, error } = await photosService.insertPhoto(req.supabase, photoData);
 
     if (error) {
-      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-        status: "FAILED",
-        message: error.message,
-      });
+      // If database insert fails, clean up the uploaded file
+      await req.supabase.storage.from(bucketName).remove([storageData.path]);
+      throw error;
     }
 
     return res.status(httpStatus.CREATED).json({
       status: "CREATED",
-      message: "Photo uploaded successfully",
-      photo: data[0],
+      message: "File uploaded successfully",
+      photo: data[0]
     });
+
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: "FAILED",
-      message: error.message,
+      message: error.message
     });
   }
 };
@@ -647,6 +651,44 @@ const getPhotosByContentId = async (req, res) => {
   }
 };
 
+const validatePhoto = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "No file provided"
+      });
+    }
+
+    if (req.file.mimetype !== 'application/pdf') {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "Invalid file type. Only PDF files are allowed"
+      });
+    }
+
+    // Validate file size (10MB max)
+    const maxSize = 10 * 1024 * 1024;
+    if (req.file.size > maxSize) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "File size too large. Maximum size is 10MB"
+      });
+    }
+
+    return res.status(httpStatus.OK).json({
+      status: "OK",
+      message: "File validation successful"
+    });
+
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
+
 const photosController = {
   getAllPhotos,
   getPhotoById,
@@ -662,6 +704,7 @@ const photosController = {
   getJobPhotoByContentId,
   getContentPhotoTypes,
   getPhotosByContentId,
+  validatePhoto
 };
 
 export default photosController;
