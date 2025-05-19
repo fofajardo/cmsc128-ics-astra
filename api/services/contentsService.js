@@ -11,8 +11,8 @@ const fetchContents = async (supabase, filters = {}) => {
     .select("*", { count: "exact" });
 
   // Filter for announcements if specified
-  if (filters.tag === 'announcement') {
-    query = query.contains('tags', ['announcement']);
+  if (filters.tag === "announcement") {
+    query = query.contains("tags", ["announcement"]);
   }
 
   // Apply filters if any

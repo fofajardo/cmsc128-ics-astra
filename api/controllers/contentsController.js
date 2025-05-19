@@ -48,7 +48,7 @@ const getAnnouncements = async (req, res) => {
 
     return res.status(httpStatus.OK).json({
       status: "OK",
-      list: announcements || [],
+      list: data || [],
     });
 
   } catch (error) {
@@ -127,7 +127,7 @@ const createContent = async (req, res) => {
       tags
     } = req.body;
 
-    console.log(user_id)
+    console.log(user_id);
     // Validate user_id format
     const isValidUUID = /^[0-9a-fA-F-]{36}$/.test(user_id);
     if (!isValidUUID) {
