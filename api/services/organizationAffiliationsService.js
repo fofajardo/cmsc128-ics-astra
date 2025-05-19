@@ -7,8 +7,12 @@ const fetchAffiliations = async (supabase, page, limit, alumId) => {
     .select(`
             role,
             joined_date,
+            end_date,
+            description,
+            is_current,
             organizations (
-                name
+                name,
+                location
             )
         `)
     .eq("user_id", alumId)

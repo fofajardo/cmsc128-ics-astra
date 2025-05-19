@@ -1,15 +1,44 @@
-import { applyFilter } from "../utils/applyFilter.js";
+import { applyFilter } from "../utils/filters.js";
 
-const fetchContents = async (supabase) => {
-  return await supabase
+const fetchContents = async (supabase, filters = {}) => {
+  const page = parseInt(filters.page) || 1;
+  const limit = parseInt(filters.limit) || 10;
+  const startIndex = (page - 1) * limit;
+  const endIndex = startIndex + limit - 1;
+
+  let query = supabase
     .from("contents")
-    .select();
+    .select("*", { count: "exact" });
 
+  // Filter for announcements if specified
+  if (filters.tag === "announcement") {
+    query = query.contains("tags", ["announcement"]);
+  }
+
+  // Apply filters if any
+  query = applyFilter(query, filters, {
+    ilike: ["title", "details"],
+    range: {
+      created_at: [filters.created_at_from, filters.created_at_to]
+    },
+    sortBy: filters.sort_by || "created_at",
+    defaultOrder: filters.order || "desc",
+    specialKeys: [
+      "page",
+      "limit",
+      "created_at_from",
+      "created_at_to",
+      "sort_by",
+      "order",
+      "tag"
+    ]
+  });
+
+  // Add pagination
+  query = query.range(startIndex, endIndex);
+
+  return await query;
 };
-
-
-
-
 
 const fetchContentById = async (supabase, contentId) => {
   return await supabase
@@ -17,6 +46,22 @@ const fetchContentById = async (supabase, contentId) => {
     .select("*")
     .eq("id", contentId)
     .single();
+};
+
+const fetchContentByFilter = async (supabase, filters) => {
+  let query = supabase
+    .from("contents")
+    .select("*");
+
+  query = applyFilter(query, filters, {
+    ilike: [],
+    range: {},
+    sortBy: "created_at",
+    defaultOrder: "desc",
+    specialKeys: []
+  });
+
+  return await query;
 };
 
 const checkExistingContent = async (supabase,title) => {
@@ -59,6 +104,7 @@ const deleteContentData = async (supabase, contentId) => {
 const contentsService = {
   fetchContents,
   fetchContentById,
+  fetchContentByFilter,
   checkExistingContent,
   insertContent,
   findContent,

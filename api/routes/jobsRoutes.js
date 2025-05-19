@@ -5,6 +5,7 @@ const jobsRouter = () => {
   const router = express.Router();
 
   router.get("/", jobsController.getJobs);
+  router.get("/reported", jobsController.getReportedJobs);
   router.get("/:jobId", jobsController.getJobById);
   router.post("/", jobsController.createJob);
   router.put("/:jobId", jobsController.updateJob);

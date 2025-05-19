@@ -33,6 +33,7 @@ export default function EventFormFields({
                 dateFormat="yyyy-MM-dd"
                 className="w-full border rounded-md p-2 pr-10 cursor-pointer"
                 placeholderText="Select date"
+                minDate={new Date()}
               />
               <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-astraprimary pointer-events-none" />
             </div>
@@ -59,7 +60,7 @@ export default function EventFormFields({
             >
               <option value="Open">Open</option>
               <option value="Closed">Closed</option>
-              <option value="Postponed">Postponed</option>
+              <option value="Canceled">Canceled</option>
             </select>
           </div>
         </div>

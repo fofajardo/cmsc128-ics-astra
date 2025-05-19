@@ -1,8 +1,42 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function SearchFilter({ onClose, initialFilters, updateFilters }) {
+  const defaultFieldOptions = [
+    "Frontend Developer",
+    "Backend Developer",
+    "Database Developer",
+    "Game Designer",
+    "Cybersecurity Analyst",
+    "Data Scientist",
+    "DevOps",
+    "Systems Analyst",
+  ];
+  const [allFields, setAllFields] = useState([]);
+
+  useEffect(() => {
+    const fetchFields = async () => {
+      try {
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/work-experiences/distinct-fields`);
+        const fetchedFields = res.data?.list?.map(item => item.field) || [];
+
+        const combined = Array.from(new Set([...defaultFieldOptions, ...fetchedFields]));
+
+        setAllFields(combined);
+      } catch (err) {
+        console.error("Failed to fetch fields:", err);
+      }
+    };
+
+    fetchFields();
+  }, []);
+
   const [filters, setFilters] = useState(initialFilters);
   const [skillInput, setSkillInput] = useState("");
+
+  const [fieldSearch, setFieldSearch] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [filteredFields, setFilteredFields] = useState(defaultFieldOptions);
 
   const handleSkillAdd = (e) => {
     if (e.key === "Enter" && skillInput.trim() !== "") {
@@ -37,19 +71,45 @@ export default function SearchFilter({ onClose, initialFilters, updateFilters })
       skills: [],
       sortCategory: "",
       sortOrder: "asc",
-    }); // Update parent state
-    onClose(); // Close modal
+    });
+    setFieldSearch("");
+    setShowDropdown(false);
+    setFilteredFields(defaultFieldOptions);
+    onClose();
   };
 
   const handleApply = () => {
-    updateFilters(filters); // Update parent state with current filters
-    onClose(); // Close modal
+    updateFilters(filters);
+    onClose();
   };
 
   const closeModal = () => {
     setFilters(initialFilters);
     onClose();
   };
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (!e.target.closest("#field-dropdown-container")) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    const query = fieldSearch.trim().toLowerCase();
+    if (query === "") {
+      setFilteredFields(defaultFieldOptions);
+    } else {
+      const filtered = allFields.filter(field =>
+        field.toLowerCase().startsWith(query)
+      );
+      setFilteredFields(filtered.slice(0, 10)); // limit to 10 rows
+    }
+  }, [fieldSearch, allFields]);
 
   return (
     <div className="flex flex-col bg-astrawhite p-6 max-w-screen rounded-2xl shadow-lg space-y-4">
@@ -108,31 +168,48 @@ export default function SearchFilter({ onClose, initialFilters, updateFilters })
       </div>
 
       {/* Field of Work */}
-      <div>
+      <div className="relative" id="field-dropdown-container">
         <div className="flex justify-between items-center mb-1">
           <div className="font-rb">Field of Work</div>
           <button
-            onClick={() => setFilters({ ...filters, field: "" })}
+            onClick={() => {
+              setFilters({ ...filters, field: "" });
+              setFieldSearch("");
+            }}
             className="text-astraprimary font-sb text-sm"
           >
             Reset
           </button>
         </div>
-        <select
-          value={filters.field}
-          onChange={(e) => setFilters({ ...filters, field: e.target.value })}
+        <input
+          type="text"
+          placeholder="Search field of work"
+          value={fieldSearch}
+          onChange={(e) => {
+            const value = e.target.value;
+            setFieldSearch(value);
+            setShowDropdown(true);
+          }}
+          onFocus={() => setShowDropdown(true)}
           className="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white font-r"
-        >
-          <option value="">Select alumni&apos;s field of work</option>
-          <option>Frontend Developer</option>
-          <option>Backend Developer</option>
-          <option>Database Developer</option>
-          <option>Game Designer</option>
-          <option>Cybersecurity Analyst</option>
-          <option>Data Scientist</option>
-          <option>DevOps</option>
-          <option>Systems Analyst</option>
-        </select>
+        />
+        {showDropdown && filteredFields.length > 0 && (
+          <ul className="absolute z-10 w-full max-h-60 overflow-auto bg-white border border-gray-300 rounded-xl mt-1 shadow-lg">
+            {filteredFields.map((field, idx) => (
+              <li
+                key={idx}
+                onClick={() => {
+                  setFieldSearch(field);
+                  setFilters({ ...filters, field });
+                  setShowDropdown(false);
+                }}
+                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+              >
+                {field}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       {/* Skills */}

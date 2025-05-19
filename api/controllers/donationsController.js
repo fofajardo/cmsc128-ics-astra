@@ -5,6 +5,7 @@ import {Actions, Subjects} from "../../common/scopes.js";
 import alumniService from "../services/alumniProfilesService.js";
 import usersService from "../services/usersService.js";
 import projectsService from "../services/projectsService.js";
+import contentsService from "../services/contentsService.js";
 
 const getDonations = async (req, res) => {
   if (req.you.cannot(Actions.READ, Subjects.DONATION)) {
@@ -15,8 +16,27 @@ const getDonations = async (req, res) => {
   }
 
   try {
-    const filters = req.query;
-    const { data, error } = await donationsService.fetchDonations(req.supabase, filters);
+    const { requester_id = null, ...filters } = req.query;
+
+    let isAdmin = false;
+
+    if (requester_id) {
+      const { data: requesterData, requesterError } = await usersService.fetchUserById(req.supabase, requester_id);
+
+      if (requesterError || !requesterData) {
+        // console.log(requesterError.message);
+        isAdmin = false;
+      } else {
+        if (requesterData.role === "admin") isAdmin = true;
+        console.log("Admin perms");
+      }
+    }
+
+    const completeFilters = {
+      ...filters,
+      page: -1, // Get all donations
+    };
+    const { data, error } = await donationsService.fetchDonations(req.supabase, completeFilters);
 
     if (error) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -25,14 +45,18 @@ const getDonations = async (req, res) => {
       });
     }
 
-    const userIds = data.map(donation => donation.user_id);
-    const { data: alumniData, error: alumniError } = await alumniService.fetchAlumniProfilesByFilter(req.supabase, { alum_id: userIds });
+    const projectIds = data.map(donation => donation.project_id);
+    const { data: contentData, error: contentError } = await contentsService.fetchContentByFilter(req.supabase, { id: projectIds, page: -1 });
 
-    const { data: userData, error: userError } = await usersService.fetchUsersByFilter(req.supabase, { id: userIds });
+    const userIds = data.map(donation => donation.user_id);
+    const { data: alumniData, error: alumniError } = await alumniService.fetchAlumniProfilesByFilter(req.supabase, { alum_id: userIds, page: -1 });
+
+    const { data: userData, error: userError } = await usersService.fetchUsersByFilter(req.supabase, { id: userIds, page: -1 });
 
     const donationsWithDonors = data.map(donation => {
       const alum = alumniData.find(a => a.alum_id === donation.user_id);
       const user = userData.find(u => u.id === donation.user_id);
+      const content = contentData.find(c => c.id === donation.project_id);
 
       let full_name;
       if (user.role === "moderator") {    // TODO: Clarify if moderator/admin users will have profiles (and names)
@@ -42,14 +66,15 @@ const getDonations = async (req, res) => {
       } else if (!alum) {
         full_name = "Deleted user";
       } else {
-        full_name = [alum.first_name, alum.middle_name, alum.last_name]
+        full_name = [alum.first_name, alum.last_name]
           .filter(Boolean) // remove undefined/null/empty values
           .join(" ");
       };
 
       return {
         ...donation,
-        donor: donation.is_anonymous ? "Anonymous" : full_name,
+        project_title: content ? content.title : "Deleted Project",
+        donor: donation.is_anonymous ? (isAdmin ? full_name : "Anonymous") : full_name,
       };
     });
 
@@ -382,7 +407,9 @@ const updateDonation = async (req, res) => {
       mode_of_payment,
       amount,
       comment,
-      is_anonymous
+      is_anonymous,
+      is_verified,
+      verified_by_user_id
     } = req.body;
 
     const updateData = {
@@ -393,7 +420,10 @@ const updateDonation = async (req, res) => {
       mode_of_payment,
       amount,
       comment,
-      is_anonymous
+      is_anonymous,
+      is_verified,
+      verified_by_user_id,
+      updated_at: new Date().toISOString()
     };
 
     // Remove undefined fields to avoid overwriting with nulls
@@ -404,7 +434,7 @@ const updateDonation = async (req, res) => {
     });
 
     // Validate request body
-    const allowedFields = ["user_id", "project_id", "donation_date", "reference_num", "mode_of_payment", "amount", "comment", "is_anonymous"];
+    const allowedFields = ["user_id", "project_id", "donation_date", "reference_num", "mode_of_payment", "amount", "comment", "is_anonymous", "is_verified", "verified_by_user_id"];
 
     allowedFields.forEach(field => {
       if (!(field in req.body)) {

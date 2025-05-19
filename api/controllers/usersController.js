@@ -1,6 +1,7 @@
 import httpStatus from "http-status-codes";
 import usersService from "../services/usersService.js";
 import { Actions, Subjects } from "../../common/scopes.js";
+import PhotosService from "../services/photosService.js";
 
 const getUsers = async (req, res) => {
   if (req.you.cannot(Actions.READ, Subjects.USER)) {
@@ -45,8 +46,20 @@ const getInactiveAlumni = async (req, res) => {
   }
 
   try {
-    const { page = 1, limit = 10} = req.query;
-    const { data, error } = await usersService.fetchInactiveAlumni(req.supabase, page, limit);
+    const {
+      page = 1,
+      limit = 10,
+      search = "",
+      filters = {}
+    } = req.query;
+
+    const { data, total, error } = await usersService.fetchInactiveAlumni(
+      req.supabase,
+      page,
+      limit,
+      search,
+      filters
+    );
 
     if (error) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -58,6 +71,97 @@ const getInactiveAlumni = async (req, res) => {
     return res.status(httpStatus.OK).json({
       status: "OK",
       list: data || [],
+      total: total
+    });
+
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
+
+const getApprovedAlumni = async (req, res) => {
+  if (req.you.cannot(Actions.READ, Subjects.USER)) {
+    return res.status(httpStatus.FORBIDDEN).json({
+      status: "FORBIDDEN",
+      message: "You are not allowed to access this resource."
+    });
+  }
+
+  try {
+    const {
+      page = 1,
+      limit = 10,
+      search = "",
+      filters = {}
+    } = req.query;
+
+    const { data, total, error } = await usersService.fetchApprovedAlumni(
+      req.supabase,
+      page,
+      limit,
+      search,
+      filters
+    );
+
+    if (error) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error.message
+      });
+    }
+
+    return res.status(httpStatus.OK).json({
+      status: "OK",
+      list: data || [],
+      total: total
+    });
+
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
+
+const getPendingAlumni = async (req, res) => {
+  if (req.you.cannot(Actions.READ, Subjects.USER)) {
+    return res.status(httpStatus.FORBIDDEN).json({
+      status: "FORBIDDEN",
+      message: "You are not allowed to access this resource."
+    });
+  }
+
+  try {
+    const {
+      page = 1,
+      limit = 10,
+      search = "",
+      filters = {}
+    } = req.query;
+
+    const { data, total, error } = await usersService.fetchPendingAlumni(
+      req.supabase,
+      page,
+      limit,
+      search,
+      filters
+    );
+
+    if (error) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error.message
+      });
+    }
+
+    return res.status(httpStatus.OK).json({
+      status: "OK",
+      list: data || [],
+      total: total
     });
 
   } catch (error) {
@@ -87,6 +191,15 @@ const getUserById = async (req, res) => {
         message: "You are not allowed to access this resource."
       });
     }
+
+    // FIXME: commit this image to the repository, don't reference externally!
+    let avatarUrl = "https://cdn-icons-png.flaticon.com/512/145/145974.png";
+    const {data: avatarData, error: avatarError} =
+      await PhotosService.getAvatarUrl(req.supabase, userId);
+    if (!avatarError) {
+      avatarUrl = avatarData?.signedUrl;
+    }
+    data.avatar_url = avatarUrl;
 
     return res.status(httpStatus.OK).json({
       status: "OK",
@@ -305,6 +418,8 @@ const deleteUser = async (req, res) => {
 const usersController = {
   getUsers,
   getInactiveAlumni,
+  getApprovedAlumni,
+  getPendingAlumni,
   getUserById,
   createUser,
   updateUser,

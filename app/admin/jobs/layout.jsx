@@ -7,6 +7,8 @@ import AdminTabs from "@/components/AdminTabs";
 import { BriefcaseBusiness } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TabContext } from "@/components/TabContext";
+import {NavMenuItemId} from "../../../common/scopes.js";
+import {ActiveNavItemMarker} from "@/components/Header.jsx";
 
 export default function AdminJobsLayout({ children }) {
   const router = useRouter();
@@ -23,9 +25,9 @@ export default function AdminJobsLayout({ children }) {
     total: <Skeleton className="h-7 w-12 my-2" />,
     companies: <Skeleton className="h-7 w-12 my-2" />,
   });
-
+  // TODO: make database view for all and reported jobs
   const tabs = {
-    All: 3,
+    All: 0,
     Reported: 0,
   };
 
@@ -60,6 +62,7 @@ export default function AdminJobsLayout({ children }) {
   return (
     <>
       {/* Header with background */}
+      <ActiveNavItemMarker id={NavMenuItemId.JOBS}/>
       <div className="relative">
         <img
           src="/blue-bg.png"
@@ -113,7 +116,7 @@ export default function AdminJobsLayout({ children }) {
       </div>
 
       {/* Tabs + children context */}
-      <TabContext.Provider value={{ info, setInfo, setJobCounts }}>
+      <TabContext.Provider value={{ currTab, info, setInfo, setJobCounts }}>
         <AdminTabs tabs={tabs} currTab={currTab} handleTabChange={dynamicTabClick} />
         {children}
       </TabContext.Provider>

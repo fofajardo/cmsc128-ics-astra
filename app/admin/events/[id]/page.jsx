@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useState,useEffect, useContext } from "react";
-import eventList from "../eventDummy";
+// import eventList from "../eventDummy";
 
 import BackButton from "@/components/events/IndividualEvent/BackButton";
 import HeaderEvent from "@/components/events/IndividualEvent/HeaderEvent";
@@ -16,6 +16,7 @@ import EventDetailsCard from "./EventDetails.Card";
 import SendEventCard from "./SendEventCard";
 import AttendeesTabs from "./AttendeesTabs";
 import AttendeesList from "./AttendeesList";
+import venue1 from "../../../assets/venue1.jpeg";
 import venue2 from "../../../assets/venue2.jpeg";
 
 export default function EventAdminDetailPage() {
@@ -33,14 +34,14 @@ export default function EventAdminDetailPage() {
   const itemsPerPage = 5;
 
   const handleSave = (updatedEvent) => {
-    setEvent((prevEvent) => ({
-      ...prevEvent,
-      ...updatedEvent
-    }));
-    setShowEditModal(false);
-    setToastData({ type: "success", message: "Event updated successfully!" });
+    handleEdit(updatedEvent);
+    // setEvent((prevEvent) => ({
+    //   ...prevEvent,
+    //   ...updatedEvent
+    // }));
+    // setShowEditModal(false);
+    // setToastData({ type: "success", message: "Event updated successfully!" });
   };
-
 
   const handleDeleteContent = async (id) => {
     try{
@@ -245,34 +246,66 @@ export default function EventAdminDetailPage() {
       );
 
       if (response.data.status === "OK" && response.data.photo) {
+        if (response.data.photo.includes("default")) {
+          if (response.data.photo.includes("default")) {
+            const venue = Math.random() < 0.5 ? 1 : 2;
+            if (venue === 1) {
+              return venue1.src;
+            } else {
+              return venue2.src;
+            }
+          }
+        }
         return response.data.photo;
       }
     } catch (error) {
       console.log(`Failed to fetch photo for event_id ${contentId}:`, error);
     }
-    return venue2.src;
+  };
+
+  const updateStats = async () => {
+    try {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/events-summary`);
+      if (response.data.status === "OK") {
+        const { active_events, past_events, total_events } = response.data.stats;
+        console.log("stats: ", response.data.stats);
+        const counts = {
+          past : past_events || 0,
+          active : active_events || 0,
+          total : total_events || 0,
+        };
+        setEventCounts(counts);
+        return counts;
+      } else {
+        console.error("Failed to fetch event statistics:", response.data);
+        setEventCounts({ past: 0, active: 0, total: 0 });
+        return { past: 0, active: 0, total: 0 };
+      }
+    } catch (error) {
+      console.error("Failed to fetch event statistics:", error);
+      setEventCounts({ past: 0, active: 0, total: 0 });
+      return { past: 0, active: 0, total: 0 };
+    }
   };
 
   const fetchEvent = async () =>{
     try {
       console.log("id: ", id);
-      const [eventRes, contentRes,interestStatsRes,interestRes,eventsResponse,actResponse] = await Promise.all([
+      const [eventRes, contentRes,interestStatsRes,interestRes,eventsResponse,actResponse, stats] = await Promise.all([
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/${id}`),
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`),
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/${id}`),
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/content/${id}`),
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events`),
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/active-events`),
+        updateStats(),
         //TODO: fetch the photo
 
       ]);
       if(eventsResponse.data.status === "OK" && actResponse.data.status === "OK") {
         console.log("events responses: ",eventsResponse);
         console.log("acts responses: ",actResponse);
-        setEventCounts({active:actResponse.data.list.active_events_count,
-          past: eventsResponse.data.list.length- actResponse.data.list.active_events_count,
-          total:eventsResponse.data.list.length
-        });
+
       }
       console.log("eventResponse:",eventRes);
       if (eventRes.data.status === "OK" && contentRes.data.status === "OK" ) {
@@ -304,17 +337,22 @@ export default function EventAdminDetailPage() {
         const mergedEvent = {
           id: eventResponse.event.event_id,
           event_id: eventResponse.event.event_id,
-          imageSrc: photoUrl || venue2, // fetch this on photo entity;
+          imageSrc: photoUrl, // fetch this on photo entity;
           title: contentResponse.content.title || "Untitled",
           description: contentResponse?.content.details || "No description",
           date: new Date(eventResponse.event.event_date).toDateString(),
           location: eventResponse.event.venue,
           attendees: interestedUsers, //
-          status: eventResponse.online ? "Online" : "Offline",
-          avatars: [],
+          status: eventResponse.event.status
         };
         console.log("mergedEvent", mergedEvent);
         setEvent(mergedEvent);
+
+
+      }
+
+      if (stats) {
+        setEventCounts(stats);
       }
     } catch (error) {
       console.error("Failed fetching event, content, or interests:", error);
@@ -346,8 +384,8 @@ export default function EventAdminDetailPage() {
         <div className="flex-1 flex flex-col">
           <HeaderEvent
             event={event}
-            onSave={handleSave}
-            onDelete={handleDelete}
+            // onSave={handleSave}
+            // onDelete={handleDelete}
             className="h-full"
           />
         </div>
@@ -390,8 +428,11 @@ export default function EventAdminDetailPage() {
       {showEditModal && (
         <EditEventModal
           event={event}
-          onClose={() => setShowEditModal(false)}
-          onSave={handleEdit}
+          onClose={() => {
+            setShowEditModal(false);}}
+          onSave={
+            handleEdit
+          }
         />
       )}
       {showDeleteModal && (

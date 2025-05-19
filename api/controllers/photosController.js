@@ -125,8 +125,7 @@ const uploadPhoto = async (req, res) => {
 const updatePhoto = async (req, res) => {
   try {
     const { id } = req.params;
-    const { user_id, content_id, type } = req.body;
-    const file = req.file;
+    const { user_id, content_id, type, file } = req.body;
 
     if (!id) {
       return res.status(httpStatus.BAD_REQUEST).json({
@@ -281,13 +280,13 @@ const getAllProfilePics = async (req, res) => {
 const getPhotoByAlumId = async (req, res) => {
   try {
     const { alum_id } = req.params;
-    console.log("Alum ID:", alum_id);
+    // console.log("Alum ID:", alum_id);
 
     // Fetch the photo record from the database
     const { data, error } = await photosService.fetchPhotoIdbyAlum(req.supabase, alum_id);
 
     if (error || !data) {
-      return res.status(404).json({
+      return res.status(httpStatus.OK).json({
         status: "OK",
         photo: "https://cdn-icons-png.flaticon.com/512/145/145974.png"
       });
@@ -311,32 +310,32 @@ const getPhotoByAlumId = async (req, res) => {
 
         if (publicUrlData && publicUrlData.publicUrl) {
           console.log("Public URL generated successfully.", publicUrlData.publicUrl);
-          return res.status(200).json({
+          return res.status(httpStatus.OK).json({
             status: "OK",
             photo: publicUrlData.publicUrl
           });
         } else {
-          return res.status(200).json({
+          return res.status(httpStatus.OK).json({
             status: "OK",
             photo: "https://cdn-icons-png.flaticon.com/512/145/145974.png"
           });
         }
       }
 
-      return res.status(200).json({
+      return res.status(httpStatus.OK).json({
         status: "OK",
         photo: signedUrlData.signedUrl,
       });
     } catch (urlError) {
       console.error("Error generating URL:", urlError);
-      return res.status(200).json({
+      return res.status(httpStatus.OK).json({
         status: "OK",
         photo: "https://cdn-icons-png.flaticon.com/512/145/145974.png"
       });
     }
   } catch (error) {
     console.error("Error in getPhotoByAlumId:", error);
-    return res.status(200).json({
+    return res.status(httpStatus.OK).json({
       status: "OK",
       photo: "https://cdn-icons-png.flaticon.com/512/145/145974.png"
     });
@@ -346,13 +345,13 @@ const getPhotoByAlumId = async (req, res) => {
 const getDegreeProofPhotoByAlumId = async (req, res) => {
   try {
     const { alum_id } = req.params;
-    console.log("Alum ID:", alum_id);
+    // console.log("Alum ID:", alum_id);
 
     // Fetch the photo record from the database
     const { data, error } = await photosService.fetchDegreeProofPhoto(req.supabase, alum_id);
 
     if (error || !data) {
-      return res.status(404).json({
+      return res.status(httpStatus.NOT_FOUND).json({
         status: "FAILED",
         message: "Photo not found for the given Alum ID",
       });
@@ -362,21 +361,21 @@ const getDegreeProofPhotoByAlumId = async (req, res) => {
     const { data: signedUrlData, error: signedUrlError } = await req.supabase
       .storage
       .from("user-photos-bucket")
-      .createSignedUrl(data.image_key, 60 * 60); // URL valid for 1 hour
+      .createSignedUrl(data, 60 * 60); // URL valid for 1 hour
 
     if (signedUrlError) {
-      return res.status(500).json({
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
         status: "FAILED",
         message: "Failed to generate signed URL",
       });
     }
 
-    return res.status(200).json({
+    return res.status(httpStatus.OK).json({
       status: "OK",
       photo: signedUrlData.signedUrl,
     });
   } catch (error) {
-    return res.status(500).json({
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: "FAILED",
       message: error.message,
     });
@@ -386,24 +385,24 @@ const getDegreeProofPhotoByAlumId = async (req, res) => {
 const getJsonOfDegreeProofPhotoByAlumId = async (req, res) => {
   try {
     const { alum_id } = req.params;
-    console.log("Alum ID:", alum_id);
+    // console.log("Alum ID:", alum_id);
 
     // Fetch the photo record from the database
     const { data, error } = await photosService.fetchDegreeProofPhoto(req.supabase, alum_id);
 
     if (error || !data) {
-      return res.status(404).json({
+      return res.status(httpStatus.NOT_FOUND).json({
         status: "FAILED",
         message: "Photo not found for the given Alum ID",
       });
     }
 
-    return res.status(200).json({
+    return res.status(httpStatus.OK).json({
       status: "OK",
-      ...data,
+      data,
     });
   } catch (error) {
-    return res.status(500).json({
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: "FAILED",
       message: error.message,
     });
@@ -423,8 +422,8 @@ const getEventPhotoByContentId = async (req, res) => {
     // console.log("Response error:", error);
 
     if (error || !data) {
-      console.log("Photo not found for content_id:", content_id, "Error:", error);
-      return res.status(200).json({
+      // console.log("Photo not found for content_id:", content_id, "Error:", error);
+      return res.status(httpStatus.OK).json({
         status: "OK",
         photo: "/events/default-event.jpg" // Default event image
       });
@@ -448,32 +447,32 @@ const getEventPhotoByContentId = async (req, res) => {
 
         if (publicUrlData && publicUrlData.publicUrl) {
           // console.log("Public URL generated successfully for event.", publicUrlData.publicUrl);
-          return res.status(200).json({
+          return res.status(httpStatus.OK).json({
             status: "OK",
             photo: publicUrlData.publicUrl
           });
         } else {
-          return res.status(200).json({
+          return res.status(httpStatus.OK).json({
             status: "OK",
             photo: "/events/default-event.jpg" // Default event image
           });
         }
       }
 
-      return res.status(200).json({
+      return res.status(httpStatus.OK).json({
         status: "OK",
         photo: signedUrlData.signedUrl,
       });
     } catch (urlError) {
       console.error("Error generating URL for event:", urlError);
-      return res.status(200).json({
+      return res.status(httpStatus.OK).json({
         status: "OK",
         photo: "/events/default-event.jpg" // Default event image
       });
     }
   } catch (error) {
     console.error("Error in getEventPhotoByContentId:", error);
-    return res.status(200).json({
+    return res.status(httpStatus.OK).json({
       status: "OK",
       photo: "/events/default-event.jpg" // Default event image
     });
@@ -493,8 +492,8 @@ const getProjectPhotoByContentId = async (req, res) => {
     // console.log("Response error:", error);
 
     if (error || !data) {
-      console.log("Photo not found for project_id:", project_id, "Error:", error);
-      return res.status(200).json({
+      // console.log("Photo not found for project_id:", project_id, "Error:", error);
+      return res.status(httpStatus.OK).json({
         status: "OK",
         photo: "/projects/assets/Donation.jpg" // Default project image
       });
@@ -518,34 +517,217 @@ const getProjectPhotoByContentId = async (req, res) => {
 
         if (publicUrlData && publicUrlData.publicUrl) {
           // console.log("Public URL generated successfully for project.", publicUrlData.publicUrl);
-          return res.status(200).json({
+          return res.status(httpStatus.OK).json({
             status: "OK",
             photo: publicUrlData.publicUrl
           });
         } else {
-          return res.status(200).json({
+          return res.status(httpStatus.OK).json({
             status: "OK",
             photo: "/projects/assets/Donation.jpg" // Default project image
           });
         }
       }
 
-      return res.status(200).json({
+      return res.status(httpStatus.OK).json({
         status: "OK",
         photo: signedUrlData.signedUrl,
       });
     } catch (urlError) {
       console.error("Error generating URL for project:", urlError);
-      return res.status(200).json({
+      return res.status(httpStatus.OK).json({
         status: "OK",
         photo: "/projects/assets/Donation.jpg" // Default project image
       });
     }
   } catch (error) {
     console.error("Error in getProjectPhotoByContentId:", error);
-    return res.status(200).json({
+    return res.status(httpStatus.OK).json({
       status: "OK",
       photo: "/projects/assets/Donation.jpg" // Default project image
+    });
+  }
+};
+
+const getJobPhotoByContentId = async (req, res) => {
+  try {
+    const { job_id } = req.params;
+    // console.log("Job ID:", job_id);
+    // console.log("Looking for photo with content_id:", job_id, "and type: 4");
+
+    // Fetch the photo record from the database
+    const { data, error } = await photosService.fetchJobPhotos(req.supabase, job_id);
+
+    if (error || !data) {
+      // console.log("Photo not found for job_id:", job_id, "Error:", error);
+      return res.status(200).json({
+        status: "OK",
+        photo: "/jobs/assets/default-job.jpg" // Default job image
+      });
+    }
+
+    return res.status(200).json({
+      status: "OK",
+      photo: data.image_key,
+    });
+  } catch (error) {
+    console.error("Error in getJobPhotoByContentId:", error);
+    return res.status(200).json({
+      status: "OK",
+      photo: "/jobs/assets/default-job.jpg" // Default job image
+    });
+  }
+};
+
+const getContentPhotoTypes = async (req, res) => {
+  try {
+    const { content_ids } = req.query;
+
+    if (!content_ids) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "Content IDs are required"
+      });
+    }
+
+    // Split the comma-separated IDs and create an array
+    const contentIdArray = content_ids.split(",");
+
+    const { data, error } = await photosService.fetchPhotoTypesByContentIds(req.supabase, contentIdArray);
+
+    if (error) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error.message
+      });
+    }
+
+    return res.status(httpStatus.OK).json({
+      status: "OK",
+      types: data
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
+
+const getPhotosByContentId = async (req, res) => {
+  try {
+    const { contentId } = req.params;
+
+    if (!contentId) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "Content ID is required"
+      });
+    }
+
+    const { data, error } = await photosService.fetchPhotosByContentId(req.supabase, contentId);
+
+    if (error) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error.message
+      });
+    }
+
+    return res.status(httpStatus.OK).json({
+      status: "OK",
+      photos: data || []
+    });
+
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
+
+const getDonationReceipt = async (req, res) => {
+  try {
+    const { user_id, project_id } = req.query;
+
+    if (!user_id || !project_id) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "Both user_id and project_id are required"
+      });
+    }
+
+    // Fetch the receipt photo matching both user_id and project_id
+    const { data, error } = await photosService.fetchDonationReceipt(req.supabase, user_id, project_id);
+
+    if (error) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error.message
+      });
+    }
+
+    // If no receipt photo found
+    if (!data || data.length === 0) {
+      return res.status(httpStatus.OK).json({
+        status: "OK",
+        message: "No receipt photo found for this donation",
+        photo: null
+      });
+    }
+
+    // Found receipt photo - generate a signed URL
+    const receiptPhoto = data[0];
+
+    try {
+      const { data: signedUrlData, error: signedUrlError } = await req.supabase
+        .storage
+        .from("user-photos-bucket")
+        .createSignedUrl(receiptPhoto.image_key, 60 * 60); // URL valid for 1 hour
+
+      if (signedUrlError) {
+        // Try public URL as fallback
+        const { data: publicUrlData } = req.supabase
+          .storage
+          .from("user-photos-bucket")
+          .getPublicUrl(receiptPhoto.image_key);
+
+        if (publicUrlData && publicUrlData.publicUrl) {
+          return res.status(httpStatus.OK).json({
+            status: "OK",
+            photo: receiptPhoto,
+            url: publicUrlData.publicUrl
+          });
+        } else {
+          return res.status(httpStatus.OK).json({
+            status: "OK",
+            photo: receiptPhoto,
+            url: null,
+            message: "Could not generate URL for receipt photo"
+          });
+        }
+      }
+
+      return res.status(httpStatus.OK).json({
+        status: "OK",
+        photo: receiptPhoto,
+        url: signedUrlData.signedUrl
+      });
+    } catch (urlError) {
+      console.error("Error generating URL for receipt photo:", urlError);
+      return res.status(httpStatus.OK).json({
+        status: "OK",
+        photo: receiptPhoto,
+        url: null,
+        message: "Error generating URL for receipt photo"
+      });
+    }
+  } catch (error) {
+    console.error("Error in getDonationReceipt:", error);
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
     });
   }
 };
@@ -562,6 +744,10 @@ const photosController = {
   getProjectPhotoByContentId,
   getDegreeProofPhotoByAlumId,
   getJsonOfDegreeProofPhotoByAlumId,
+  getJobPhotoByContentId,
+  getContentPhotoTypes,
+  getPhotosByContentId,
+  getDonationReceipt,
 };
 
 export default photosController;

@@ -33,6 +33,34 @@ const getJobs = async (req, res) => {
   }
 };
 
+const getReportedJobs = async (req, res) => {
+  try {
+    const filters = req.query;
+
+    const { data, error } = await jobsService.fetchReportedJobs(req.supabase, filters);
+
+    if (error) {
+      console.log(error);
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error.message
+      });
+    }
+
+    return res.status(httpStatus.OK).json({
+      status: "OK",
+      list: data || [],
+    });
+
+  } catch (error) {
+    console.log(error);
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
+
 const getJobById  = async (req, res) => {
   try {
     const { jobId } = req.params;
@@ -133,6 +161,22 @@ const createJob = async (req, res) => {
       });
     }
 
+    // check description character count
+    if (details.length > 3000) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "Exceeded job description maximum character count"
+      });
+    }
+
+    // validate requirements character count
+    if (requirements.length > 1500) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "Exceeded job requirements maximum character count"
+      });
+    }
+
     // 1. Check if job already exists
     const { data: existingJobs, error: checkError } = await jobsService.checkExistingJob(
       req.supabase, job_title, company_name, location
@@ -219,9 +263,6 @@ const createJob = async (req, res) => {
   }
 };
 
-
-
-
 const updateJob =  async (req, res) => {
   const jobId = req.params.jobId;
   try {
@@ -254,6 +295,7 @@ const updateJob =  async (req, res) => {
       location_type,
       employment_type,
       requirements,
+      status,
       expires_at
     } = req.body;
 
@@ -267,6 +309,7 @@ const updateJob =  async (req, res) => {
       validateField(location, "Location"),
       validateField(location_type, "Location type"),
       validateField(employment_type, "Employment type"),
+      validateField(status, "Status"),
     ].filter(Boolean);
 
     // Check if there are validation errors
@@ -294,7 +337,7 @@ const updateJob =  async (req, res) => {
     }
 
     // Prepare update data
-    const allowedUpdates = ["job_title", "hiring_manager", "company_name", "salary", "apply_link", "location", "location_type", "employment_type", "expires_at", "requirements"];
+    const allowedUpdates = ["job_title", "hiring_manager", "company_name", "salary", "apply_link", "location", "location_type", "employment_type", "expires_at", "requirements", "status"];
     const updateData = {};
 
     allowedUpdates.forEach(field => {
@@ -309,6 +352,16 @@ const updateJob =  async (req, res) => {
         status: "FAILED",
         message: "No valid fields to update"
       });
+    }
+
+    // validate requirements character count
+    if (requirements){
+      if (requirements.length > 1500) {
+        return res.status(httpStatus.BAD_REQUEST).json({
+          status: "FAILED",
+          message: "Exceeded job requirements maximum character count"
+        });
+      }
     }
 
     const { error: updateError } = await jobsService.updateJobData(req.supabase, jobId, updateData);
@@ -396,6 +449,7 @@ const deleteJob = async (req, res) => {
 
 const jobsController = {
   getJobs,
+  getReportedJobs,
   getJobById,
   createJob,
   updateJob,

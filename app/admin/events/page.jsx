@@ -18,14 +18,26 @@ export default function Events() {
   const user = useSignedInUser();
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [selectedIds, setSelectedIds] = useState([]);
   const { currTab, info } = useTab();
   const [toast, setToast] = useState(null);
   const [eventList, setEvents] = useState([]);
-  const [contentList, setContents] = useState([]);
+  const [contentMap, setContents] = useState({});
+  const [eventInterests, setEventInterests] = useState({});
   const [selectedContentId, setSelectedContentId] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [loading, setloading] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [currEvent, setCurrEvent] = useState({
+    title: "",
+    venue: "",
+    event_type: "",
+    online: false,
+    event_date: "",
+    max_slots: "",
+    status: "open",
+    external_link: "",
+    access_link: "",
+    description: "",
+  });
+
   // const [searchQuery, setSearchQuery] = useState("");
 
   const cols = [
@@ -49,27 +61,25 @@ export default function Events() {
     title: "",
     venue: "",
     event_type: "",
-    online: false,
     event_date: "",
     max_slots: "",
     status: "open",
     external_link: "",
     access_link: "",
     description: "",
-    tags : [],
+    imageFile: null,
   });
+
   const defaultFormData = {
     title: "",
     venue: "",
     event_type: "",
-    online: false,
     event_date: "",
     max_slots: "",
     status: "open",
     external_link: "",
     access_link: "",
     description: "",
-    tags: [],
   };
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredEvents, setFilteredEvents] = useState([]);
@@ -79,97 +89,190 @@ export default function Events() {
   const [filters, setFilters] = useState(null);
   const [editId,setEditId] = useState(false);
 
-
   const resetForm = () => {
     setAddFormData(defaultFormData);
     setSelectedContentId("");
 
   };
 
-  const getChangedFields = (current, defaults) => {
-    const changed = {};
-    for (const key in current) {
-      const currentValue = current[key];
-      const defaultValue = defaults[key];
+  function getChangedFields(currentData, defaultData) {
+    const updatedFields = {};
+    for (const key in currentData) {
+      const currentValue = currentData[key];
+      const defaultValue = defaultData[key];
 
-      const isArray = Array.isArray(currentValue);
-      const isString = typeof currentValue === "string";
-
-      let isDifferent;
-
-      if (isArray) {
-        isDifferent = JSON.stringify(currentValue) !== JSON.stringify(defaultValue);
-      } else if (isString) {
+      if (Array.isArray(currentValue)) {
+        if (JSON.stringify(currentValue) !== JSON.stringify(defaultValue)) {
+          updatedFields[key] = currentValue;
+        }
+      } else if (typeof currentValue === "string" && typeof defaultValue === "string") {
         const trimmed = currentValue.trim();
-        isDifferent = trimmed !== defaultValue.trim();
-        if (trimmed === "") continue;
-      } else {
-        isDifferent = currentValue !== defaultValue;
-      }
-
-      if (isDifferent) {
-        changed[key] = currentValue;
+        if (trimmed !== defaultValue.trim()) {
+          updatedFields[key] = trimmed;
+        }
+      } else if (typeof currentValue === "boolean") {
+        if (currentValue !== defaultValue) {
+          updatedFields[key] = currentValue;
+        }
+      } else if (currentValue !== defaultValue) {
+        updatedFields[key] = currentValue;
       }
     }
-    return changed;
+    return updatedFields;
+  }
+
+  const fetchEventInterests = async (events) => {
+    const interestMap = {};
+    const interestPromises = events.map(async (event) => {
+      try {
+        const interestResponse = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/${event.event_id}`
+        );
+        if (interestResponse.data.status === "OK") {
+          interestMap[event.event_id] = interestResponse.data.list.interest_count || 0;
+        } else {
+          console.error("Failed to fetch interests:", interestResponse.data);
+          interestMap[event.event_id] = 0; // Fallback
+        }
+      } catch (error) {
+        console.error(`Failed to fetch interests for event_id ${event.event_id}:`, error);
+        interestMap[event.event_id] = 0; // Fallback
+      }
+    });
+    await Promise.all(interestPromises);
+    return interestMap;
+  };
+
+  const updateStats = async () => {
+    try {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/events-summary`);
+      if (response.data.status === "OK") {
+        const { active_events, past_events, total_events } = response.data.stats;
+        const counts = {
+          past : past_events || 0,
+          active : active_events || 0,
+          total : total_events || 0,
+        };
+        setEventCounts(counts);
+        return counts;
+      } else {
+        console.error("Failed to fetch event statistics:", response.data);
+        setEventCounts({ past: 0, active: 0, total: 0 });
+        return { past: 0, active: 0, total: 0 };
+      }
+    } catch (error) {
+      console.error("Failed to fetch event statistics:", error);
+      setEventCounts({ past: 0, active: 0, total: 0 });
+      return { past: 0, active: 0, total: 0 };
+    };
+  };
+
+  const fetchEvents = async () => {
+    try {
+      setLoading(true);
+
+      const params = new URLSearchParams({
+        page: pagination.currPage,
+        limit: pagination.numToShow
+      });
+
+      // Add search query if present
+      if (searchQuery && searchQuery.trim() !== "") {
+        params.append("searchQuery", searchQuery);
+      }
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events`, {params});
+      const eventData = response.data;
+
+      if (eventData.status === "OK") {
+        const events = eventData.list;
+        const total = eventData.total;
+        const totalPages = eventData.totalPages;
+
+        // Fetch photos, and interests concurrently
+        const [interests, stats] = await Promise.all([
+          fetchEventInterests(events),
+          updateStats()
+        ]);
+
+        // Update state
+        setEventInterests(interests);
+        setEventCounts(stats);
+
+        const eventList = await Promise.all(
+          events.map((event) => ({
+            id: event.event_id,
+            event_id: event.event_id,
+            content_id: event.event_id,
+            event_name: event.title || "Unknown",
+            location: event.venue || "Unknown Location",
+            type: event.online ? "Online" : "In-Person",
+            date: new Date(event.event_date).toDateString(),
+            max_slot : event.slots,
+            status: event.status,
+            external_link: event.external_link,
+            access_link: event.access_link,
+            description: event.details || "No Description",
+            interested: interests[event.event_id] || 0,
+          }))
+        );
+        // Set events using the fetched data
+        setEvents(eventList);
+        setPagination((prev) => ({
+          ...prev,
+          lastPage: totalPages,
+          total: total,
+          display: [
+            total === 0 ? 0 : (pagination.currPage - 1) * pagination.numToShow + 1,
+            Math.min(pagination.currPage * pagination.numToShow, total),
+          ],
+        }));
+
+      } else {
+        throw new Error("Failed to fetch events");
+      }
+    } catch (error) {
+      console.error("Failed to fetch events:", error);
+      setToast({
+        type: "error",
+        message: error.response
+          ? `Server error: ${error.response.status} - ${error.response.data.message || "Unknown error"}`
+          : error.code === "ERR_NETWORK"
+            ? "Network error: Cannot connect to the server. Please check your connection."
+            : "An unexpected error occurred. Please try again later.",
+      });
+      setEvents([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // FOR BACKEND PEEPS
   useEffect(() => {
     fetchEvents();
-    //fetchContents();
-    console.log(eventList);
   }, []);
 
-
-
+  // Debounce search input to prevent too many API calls
   useEffect(() => {
-    if (!Array.isArray(eventList)) return;
+    const handler = setTimeout(() => {
+      fetchEvents();
+    }, 200); // Wait 500ms after typing stops
 
-    const filtered = eventList.filter(event =>
-      event?.event_name?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
 
-    setFilteredEvents(filtered);
-    setPagination((prev) => ({ ...prev, currPage: 1 }));
-  }, [searchQuery, eventList]);
-
+  // Fetch events when pagination changes
   useEffect(() => {
-    const total = filteredEvents.length;
-    const lastPage = Math.max(1, Math.ceil(total / pagination.numToShow));
-
-    setPagination((prev) => ({
-      ...prev,
-      currPage: Math.min(prev.currPage, lastPage),
-      total,
-      lastPage,
-      display: [
-        total === 0 ? 0 : (prev.currPage - 1) * pagination.numToShow + 1,
-        Math.min(prev.currPage * pagination.numToShow, total),
-      ],
-    }));
-  }, [filteredEvents,pagination.numToShow]);
-
-
-  const currentPageData = useMemo(() => {
-    const startIndex = (pagination.currPage - 1) * pagination.numToShow;
-    const endIndex = startIndex + pagination.numToShow;
-    return filteredEvents.slice(startIndex, endIndex);
-  }, [filteredEvents, pagination.currPage, pagination.numToShow]);
-
-  useEffect(() => {
-    if (eventList && Array.isArray(eventList)) {
-      setFilteredEvents(eventList);
-    }
-  }, [eventList]);
+    fetchEvents();
+  }, [pagination.currPage, pagination.numToShow]);
 
   const toggleAddModal = () => {
     setShowAddModal((prev) => !prev);
+    resetForm();
   };
 
   const toggleEditModal = (event) => {
-    console.log("event:", event);
-    console.log("eventid:", event?.id);
     setEditId(event?.id);
     setShowEditModal((prev) => !prev);
 
@@ -184,117 +287,11 @@ export default function Events() {
 
   };
 
-  const getActivePastEvents = (listOfEvents, totalEvents) =>{
-    const result = listOfEvents.filter((event) => new Date(event.date) < new Date());
-    setEventCounts({
-      past: result.length,
-      active: totalEvents - result.length,
-      total: totalEvents
-    });
-  };
-
-  const fetchInterest = async (id) => {
-    try{
-      const interest = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/${id}`);
-      if (interest.data.status === "OK") {
-        const selectEventName = interest.data.list.interest_count;
-        console.log("select event name:",selectEventName, "type", typeof(selectEventName));
-        return selectEventName;
-      } else {
-        console.error("Unexpected interest:", interest.data);
-      }
-    }catch(error){
-      console.log(error);
-    }
-  };
-  const fetchContentName = async (id) => {
-    try {
-      const response = await axios
-        .get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`);
-
-      console.log(response);
-      if (response.data.status === "OK") {
-
-        const selectEventName = response.data.content.title;
-        console.log("select event name:",selectEventName, "type", typeof(selectEventName));
-        return selectEventName;
-      } else {
-        console.error("Unexpected response:", response.data);
-      }
-    }catch(error){
-      console.error("Failed to get content:", error);
-    }
-    return "unknown";
-  };
-
-  const fetchEvents = async () => {
-    try {
-      if (!process.env.NEXT_PUBLIC_API_URL) {
-        console.error("API URL is not defined in environment variables");
-        setEvents([]);
-        return;
-      }
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events`
-        , {
-          params: {
-            page: pagination.currPage,
-            limit: pagination.numToShow
-          }
-        }
-      );
-      console.log("Fetched events:", response.data);
-
-      if (response.data.status === "OK") {
-        console.log("First event object:", response.data.list[0]);
-
-        const eventList = await Promise.all(
-          response.data.list.map(async (event) => ({
-            id: event.event_id,
-            event_id: event.event_id,
-            content_id: event.event_id,
-            event_name: await fetchContentName(event.event_id),
-            location: event.venue,
-            type: event.online === true ? "Online" : "In-Person",
-            date: new Date(event.event_date).toDateString(),
-            going: event.going ?? 10, // TODO: implement the
-            interested:await fetchInterest(event.event_id)
-          }))
-        );
-
-        setEvents(eventList);
-        console.log("list: ", response.data.list.length);
-
-        getActivePastEvents(eventList,response.data.total);
-        setloading(false);
-      } else {
-        console.error("Unexpected response:", response.data);
-      }
-    } catch (error) {
-      console.error("Failed to fetch events:", error);
-      if (error.code === "ERR_NETWORK") {
-        setToast({
-          type: "error",
-          message: "Network error: Cannot connect to the server. Please check your connection."
-        });
-      } else if (error.response) {
-        setToast({
-          type: "error",
-          message: `Server error: ${error.response.status} - ${error.response.data.message || "Unknown error"}`
-        });
-      } else {
-        setToast({
-          type: "error",
-          message: "An unexpected error occurred. Please try again later."
-        });
-      }
-      setEvents([]);
-    }
-  };
-
   const confirmDelete = (id, name) => {
     setEventToDelete({ id, name });
     setShowDeleteModal(true);
   };
+
   const handleDelete = async (id, name) => {
     try{
       const response = await axios
@@ -326,22 +323,22 @@ export default function Events() {
     }
     fetchEvents();
   };
+
   const handleAdd = async () => {   // add content -> get the newly created content_id -> add event
     try{
       let contentId;
 
-      let user_id = user?.state?.user.id;  //manually added; TODO: change after user auth implemented
-      console.log("event_id: ",selectedContentId);
+      let user_id = user?.state?.user.id;
+
       if(!isValidDate(addFormData.event_date)){
-        console.log("invalid date format");
+        setToast({type: "error", message:"invalid date format"});
       }
       const isOnline = addFormData.event_type === "Online";
       if (!isValidUUID(user_id)){
-        console.log("invalid user id: ", user_id);
         setToast({ type: "error", message: "Failed to create event." });
         return -1;
       }
-      console.log("form:",addFormData);
+
       const contentToAdd = {
         user_id: user_id,
         title: addFormData.title,
@@ -356,12 +353,7 @@ export default function Events() {
         contentToAdd
       );
 
-      console.log("content created: ", contentResponse.data.status);
-      console.log("content id: ",contentResponse.data.id);
-      console.log("content id1: ",contentResponse.data.content.id);
-
       if (contentResponse.data.status === "CREATED" && contentResponse.data.content.id) {
-        console.log("creating event...");
         contentId = contentResponse.data.content.id;
 
         const eventToAdd = {
@@ -371,12 +363,38 @@ export default function Events() {
           external_link: addFormData.external_link || "",
           access_link: addFormData.access_link || "",
           online: isOnline,
+          slots: Number(addFormData.max_slots) || 0,
+          status: addFormData.status
         };
         try{
           const eventResponse = await axios.post(
             `${process.env.NEXT_PUBLIC_API_URL}/v1/events`,
             eventToAdd
           );
+
+          // If we have an image file, upload it
+          if (addFormData.imageFile) {
+            const formData = new FormData();
+            formData.append("File", addFormData.imageFile);
+            formData.append("content_id", contentId);
+            formData.append("type", 3); // Type 3 is for event_pic as defined in the API
+
+            // Upload the image
+            const photoResponse = await axios.post(
+              `${process.env.NEXT_PUBLIC_API_URL}/v1/photos`,
+              formData,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                },
+              }
+            );
+
+            if (photoResponse.data.status === "CREATED") {
+              console.log("Event photo uploaded successfully");
+            }
+          }
+
           if (eventResponse.data.status === "CREATED") {
             setToast({ type: "success", message: "Event published successfully!" });
             toggleAddModal();
@@ -401,76 +419,56 @@ export default function Events() {
 
       const toEditId = editId;
 
-      console.log("event id in ", toEditId);
-
-      console.log("add form: ", addFormData);
-
       const eventDefaults = {
         event_date: "",
         venue: "",
         external_link: "",
         access_link: "",
-        online: false,
+        online: true,
+        slots: 0,
+        status: "Open"
       };
 
       const contentDefaults = {
         title: "",
         details: "",
-        tags: [],
       };
 
-      console.log("inside handle edit");
       const eventUpdateData = getChangedFields({
         event_date: addFormData.event_date,
         venue: addFormData.venue,
         external_link: addFormData.external_link,
         access_link: addFormData.access_link,
-        online: addFormData.event_type==="Online",
+        online: addFormData.event_type==="Online" ? true : false,
+        status: addFormData.status,
+        slots: addFormData.max_slots
       }, eventDefaults);
 
       const contentUpdateData = getChangedFields({
         title: addFormData.title,
         details: addFormData.description,
-        tags: addFormData.tags,
       }, contentDefaults);
-
-      console.log("event  to update:", eventUpdateData);
-      console.log("content to update: ", contentUpdateData);
 
       let eventRes, contentRes, eventOnly = 0;
       if (Object.keys(eventUpdateData).length > 0) {
         eventRes = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/${toEditId}`, eventUpdateData);
         eventOnly += 1;
-        console.log("entered event update");
       }
 
       if (Object.keys(contentUpdateData).length > 0) {
         contentRes = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${toEditId}`,contentUpdateData);
         eventOnly += 1; // 2 -> event,content updated; 1->onlyevent
-        console.log("entered content update");
       }
-
-      console.log("eventOnly: ", eventOnly);
-      console.log(eventRes);
-      console.log(contentRes);
-      console.log(contentRes?.data.status);
-      console.log(eventRes?.data);
-
 
       if (eventRes?.data?.status ==="UPDATED"  && contentRes?.data?.status === "UPDATED" && eventOnly===2){
         setToast({ type: "success", message: "Event edited successfully!" });
-        console.log("here at 1dtcondition");
-
       } else if ((eventRes?.data?.status ==="UPDATED" && eventOnly===1) || (contentRes?.data?.status === "UPDATED" && eventOnly===1)){
         setToast({ type: "success", message: "Event edited successfully!" });
-        console.log("here at 2nd condition");
-
       } else if (
         ((eventRes?.data?.status === "FAILED" || eventRes?.data?.status === "FORBIDDEN") && eventOnly === 2) ||
         ((contentRes?.data?.status === "FAILED" || contentRes?.data?.status === "FORBIDDEN") && eventOnly === 2)
       ) {
         setToast({ type: "error", message: "Failed to edit event." });
-        console.log("here at 3rd condition");
       }
 
     }catch(error){
@@ -478,7 +476,7 @@ export default function Events() {
       setToast({ type: "error", message: "Failed to edit event." });
     } finally{
       setShowEditModal(false);
-      resetForm;
+      resetForm();
       fetchEvents();
     }
   };
@@ -489,7 +487,6 @@ export default function Events() {
   if (!isAllowed) {
     return <div className="p-10 text-center text-xl">FORBIDDEN</div>;
   }
-
 
   return (
     <div>
@@ -504,6 +501,7 @@ export default function Events() {
             handleAdd(editId);
           }}
           toggleModal={toggleAddModal}
+          reset = {resetForm}
         />
       )}
 
@@ -515,10 +513,10 @@ export default function Events() {
           formData={addFormData}
           handleChange={handleInputChange}
           handleSubmit={(id) => {
-            console.log("id",id);
             handleEdit(id);
           }}
           toggleModal={() => setShowEditModal(false)}
+          reset = {resetForm}
         />
       )}
 
@@ -572,7 +570,7 @@ export default function Events() {
           />
           <Table
             cols={cols}
-            data={loading ? skeletonRows : createRows(currentPageData, confirmDelete, toggleEditModal)}
+            data={loading ? skeletonRows : createRows(eventList, confirmDelete, toggleEditModal, setAddFormData)}
           />
           <PageTool pagination={pagination} setPagination={setPagination} />
         </div>
@@ -591,14 +589,14 @@ const skeletonRows = Array(10).fill({
   Actions: <CenteredSkeleton className="h-4 w-18"/>
 });
 
-function createRows(events, confirmDelete, toggleEditModal) {
+function createRows(events, confirmDelete, toggleEditModal,setAddFormData) {
   return events.map((event) => ({
     Event: renderTitle(event.event_name),
     Location: renderText(event.location),
     Type: renderText(event.type),
     Date: renderText(event.date),
     Interested: renderText(event.interested),
-    Actions: renderActions(event, confirmDelete, toggleEditModal),
+    Actions: renderActions(event, confirmDelete, toggleEditModal, setAddFormData),
   }));
 }
 
@@ -610,9 +608,8 @@ function renderText(text) {
   return <div className="text-center text-astradarkgray font-s">{text}</div>;
 }
 
-function renderActions(event, confirmDelete, toggleEditModal) {
+function renderActions(event, confirmDelete, toggleEditModal,setAddFormData) {
   const { id, event_name } = event;
-  // console.log("event in renderaction:",event);
   return (
     <div className="flex justify-center items-center gap-3 py-4">
       <div className="hidden md:flex gap-2">
@@ -623,8 +620,21 @@ function renderActions(event, confirmDelete, toggleEditModal) {
           View
         </a>
         <button
-          onClick={() =>
-            toggleEditModal(event)}
+          onClick={() =>{
+            setAddFormData({
+              title: event.event_name || "",
+              venue: event.location || "",
+              event_type: event.type || "",
+              event_date: event.date || "",
+              max_slots: event.max_slot,
+              status: event.status || "open",
+              external_link: event.external_link || "",
+              access_link: event.access_link || "",
+              description: event.description || "",
+            });
+
+            toggleEditModal(event);
+          }}
           className="bg-astraprimary text-astrawhite px-4 py-2 rounded-md text-sm font-semibold hover:bg-[#0062cc]"
         >
           Edit
@@ -644,8 +654,22 @@ function renderActions(event, confirmDelete, toggleEditModal) {
           <Eye size={20} />
         </a>
         <button
-          onClick={() =>
-            toggleEditModal(event)}
+          onClick={() => {
+            setAddFormData({
+              title: event.event_name || "",
+              venue: event.location || "",
+              event_type: event.type || "",
+              event_date: event.date || "",
+              max_slots: event.max_slot,
+              status: event.status || "open",
+              external_link: event.external_link || "",
+              access_link: event.access_link || "",
+              description: event.description || "",
+            });
+
+            toggleEditModal(event);
+
+          }}
           className="bg-astraprimary text-astrawhite p-2 rounded-md"
         >
           <Pencil size={20} />

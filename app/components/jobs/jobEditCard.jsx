@@ -5,8 +5,9 @@ import ConfirmationPrompt from "./edit/confirmation";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { jobTypeMap, locationTypeMap } from "@/components/jobs/mappings";
+import { formatDate, formatSalary } from "@/utils/format";
 
-export default function JobEditCard({job}) {
+export default function JobEditCard({ job }) {
   const [showPrompt, setPrompt] = useState(false);
   const router = useRouter();
 
@@ -25,66 +26,107 @@ export default function JobEditCard({job}) {
     router.push(`/jobs/${job.job_id}/edit`);
   };
 
-  const formatSalary = (num) => {
-    return `₱${num.toLocaleString("en-US")}`;
-  };
-
-  const formatDate = (date) => {
-    const parsedDate = new Date(date);
-    if (isNaN(parsedDate)) return "Invalid date"; // fallback for bad values
-
-    return parsedDate.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
-
   const handleRenew = () => {
-    // add renew logic here
-
     setPrompt(false);
   };
 
-  return (<>
-    <div className="relative bg-astrawhite w-[351px] h-[308px] rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] p-6 hover:-translate-y-0.5 transition-all duration-100ms ease-in">
-
-      <h1 className="text-astrablack text-2xl font-bold">{formatSalary(job.salary)}<span className="text-xl font-normal">/month</span></h1>
-
-      <h2 className="font-bold text-lg mt-2 leading-6 truncate">{job.job_title}</h2>
-      <h2 className="text-md">{job.company_name}</h2>
-
-      <div className="flex gap-2 items-center pt-3 pb-2">
-        <Image src="/icons/marker.svg" width={20} height={28.5} alt='loc' className="shrink-0"></Image>
-        <p className="text-black text-sm truncate">{job.location}</p>
-      </div>
-
-      <div className="flex gap-2 items-center">
-        <Clock size="20"/>
-        <p className="text-black text-sm">{formatDate(job.expires_at)}</p>
-      </div>
-
-      <div className="flex gap-2 items-center py-3">
-        <div className="border-1 border-astradarkgray bg-astratintedwhite rounded-3xl py-0.5 px-3"><p className="text-astrablack text-sm">{jobTypeMap[job.employment_type]}</p></div>
-        <div className="border-1 border-astradarkgray bg-astratintedwhite rounded-3xl py-0.5 px-3"><p className="text-astrablack text-sm">{locationTypeMap[job.location_type]}</p></div>
-      </div>
-
-      <div className="flex gap-2 items-center py-2.5 justify-center">
-        <button onClick={viewPost} className="hover:bg-astradark hover:scale-none !cursor-pointer text-astrawhite border-1 border-astraprimary bg-astraprimary font-semibold w-7/10 py-3 rounded-lg">View Post</button>
-        <button onClick={editPost} className="hover:scale-none hover:opacity-70 !cursor-pointer text-astraprimary border-1 border-astraprimary font-semibold w-3/10 py-3 rounded-lg">Edit</button>
-      </div>
-
-      {isExpired() ?
-        <div className="absolute top-0 left-0 bg-astradirtywhite/50 backdrop-blur-[2px] w-full h-full rounded-2xl">
-          <div className="flex flex-col items-center h-full w-full">
-            <OctagonAlert size={50} className="text-astrared mt-15" strokeWidth={2.5}/>
-            <h1 className="text-center mt-3">This post has expired!<br/>Would you like to renew this job posting?</h1>
-            <button onClick={()=>{setPrompt(true);}} className="mt-3 hover:scale-none hover:translate-y-1 !cursor-pointer bg-astrawhite text-astraprimary  font-semibold w-[75px] py-2 rounded-3xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] hover:shadow-[0_2px_2px_rgba(0,0,0,0.25)]">Yes</button>
+  return (
+    <>
+      <div className="relative bg-astrawhite w-[340px] h-[290px] rounded-2xl shadow-md hover:-translate-y-0.5 p-5 transition-all duration-100 ease-in overflow-hidden flex flex-col justify-between">
+        {/* Content Section */}
+        <div className="overflow-hidden space-y-2">
+          {/* Salary */}
+          <div className="flex items-baseline gap-1">
+            <h1 className="text-astrablack text-lg font-bold truncate">
+              {formatSalary(job.salary)}
+            </h1>
+            <span className="text-sm text-astrablack">/month</span>
           </div>
-        </div> : <></>
-      }
-    </div>
-    {showPrompt ? <ConfirmationPrompt prompt={`Are you sure you want to renew this job posting for a ${job.job_title} position?`} close={()=>setPrompt(false)} handleConfirm={handleRenew}/> : <></>}
-  </>
-  );}
+
+          {/* Job Title & Company */}
+          <div className="mt-1">
+            <h2 className="font-bold text-base leading-tight line-clamp-2 h-10">
+              {job.job_title}
+            </h2>
+            <p className="text-sm text-astrablack truncate mt-1">{job.company_name}</p>
+          </div>
+
+          {/* Location & Date */}
+          <div className="space-y-1 mt-2">
+            <div className="flex items-center gap-2">
+              <Image
+                src="/icons/marker.svg"
+                width={14}
+                height={14}
+                alt="location"
+                className="flex-shrink-0"
+              />
+              <p className="text-sm text-astrablack truncate">{job.location}</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Clock size={14} className="flex-shrink-0" />
+              <p className="text-sm text-astrablack truncate">
+                {formatDate(job.expires_at, "short-month", "en-US")}
+              </p>
+            </div>
+          </div>
+
+          {/* Tags */}
+          <div className="flex flex-wrap gap-2 mt-2">
+            <div className="border border-astradarkgray bg-astratintedwhite rounded-full px-2 py-0.5">
+              <p className="text-sm text-astrablack truncate">
+                {jobTypeMap[job.employment_type]}
+              </p>
+            </div>
+            <div className="border border-astradarkgray bg-astratintedwhite rounded-full px-2 py-0.5">
+              <p className="text-sm text-astrablack truncate">
+                {locationTypeMap[job.location_type]}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Buttons */}
+        <div className="flex gap-2 mt-3">
+          <button
+            onClick={viewPost}
+            className="flex-1 bg-astraprimary hover:bg-astradark text-white text-sm md:text-md font-medium text-center py-2 rounded-lg transition-colors"
+          >
+            View Post
+          </button>
+          <button
+            onClick={editPost}
+            className="flex-1 border border-astraprimary text-astraprimary hover:bg-astraprimary/10 text-sm md:text-md font-medium py-2 rounded-lg transition-colors"
+          >
+            Edit
+          </button>
+        </div>
+
+        {isExpired() && (
+          <div className="absolute top-0 left-0 bg-astradirtywhite/50 backdrop-blur-[2px] w-full h-full rounded-2xl z-10 flex items-center justify-center">
+            <div className="flex flex-col items-center px-4 text-center">
+              <OctagonAlert size={40} className="text-astrared mb-2" strokeWidth={2} />
+              <h1 className="text-sm font-medium">
+                This post has expired!<br />Would you like to renew this job posting?
+              </h1>
+              <button
+                onClick={() => setPrompt(true)}
+                className="mt-3 bg-astrawhite text-astraprimary font-medium text-sm w-[80px] py-1.5 rounded-3xl shadow-sm hover:shadow transition-all"
+              >
+                Yes
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {showPrompt && (
+        <ConfirmationPrompt
+          prompt={`Are you sure you want to renew this job posting for a ${job.job_title} position?`}
+          close={() => setPrompt(false)}
+          handleConfirm={handleRenew}
+        />
+      )}
+    </>
+  );
+}

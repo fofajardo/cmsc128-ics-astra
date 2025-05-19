@@ -6,7 +6,9 @@ import { TabContext } from "@/components/TabContext";
 import { useRouter, usePathname } from "next/navigation";
 import { School2 } from "lucide-react";
 import { Building } from "lucide-react";
-import axios from "axios"; // Make sure axios is installed
+import axios from "axios";
+import {NavMenuItemId} from "../../../common/scopes.js";
+import {ActiveNavItemMarker} from "@/components/Header.jsx"; // Make sure axios is installed
 
 export default function AdminAlumniLayout({ children }) {
   const router = useRouter();
@@ -23,43 +25,46 @@ export default function AdminAlumniLayout({ children }) {
     title: "Organizations",
     search: "Search for an organization",
   });
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const fetchStatistics = async () => {
+    try {
+      console.log(`${process.env.NEXT_PUBLIC_API_URL}/v1/organizations/statistics`);
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/organizations/stats`);
+
+      if (response.data.status === "OK") {
+        // Update state with the statistics data
+        const { total_organizations, universities, outside } = response.data.statistics;
+        setStats({
+          total_organizations,
+          universities,
+          outside,
+        });
+      } else {
+        console.error("Failed to fetch statistics");
+      }
+    } catch (error) {
+      console.error("Error fetching statistics:", error);
+    }
+  };
 
   useEffect(() => {
     // Fetch statistics from the API
-    const fetchStatistics = async () => {
-      try {
-        console.log(`${process.env.NEXT_PUBLIC_API_URL}/v1/organizations/statistics`);
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/organizations/stats`);
-
-        if (response.data.status === "OK") {
-          // Update state with the statistics data
-          const { total_organizations, universities, outside } = response.data.statistics;
-          setStats({
-            total_organizations,
-            universities,
-            outside,
-          });
-        } else {
-          console.error("Failed to fetch statistics");
-        }
-      } catch (error) {
-        console.error("Error fetching statistics:", error);
-      }
-    };
 
     fetchStatistics();
-  }, []); // Empty dependency array means this runs only once when the component mounts
+  }, [refreshTrigger]); // Empty dependency array means this runs only once when the component mounts
 
   const statData = stats;
 
   return (
     <>
       {/* Header with background */}
+      <ActiveNavItemMarker id={NavMenuItemId.ORGANIZATIONS}/>
       <div className="relative">
         <img
           src="/blue-bg.png"
           alt="Background"
-          className="h-80 w-full object-cover"
+          className="h-80 w-full object-cEVENTSover"
         />
         <div className="absolute inset-2 flex flex-col items-center justify-evenly text-astrawhite z-20">
           <div className="text-center pt-6">
@@ -97,7 +102,7 @@ export default function AdminAlumniLayout({ children }) {
         </div>
       </div>
       {/* pass the value of currTab and info to the children */}
-      <TabContext.Provider value={{ info, setInfo }}>
+      <TabContext.Provider value={{ info, setRefreshTrigger }}>
         {children}
       </TabContext.Provider>
     </>

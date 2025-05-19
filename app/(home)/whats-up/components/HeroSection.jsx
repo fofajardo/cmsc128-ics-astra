@@ -36,21 +36,24 @@ export function HeroSection() {
     }
   }, []);
 
-
-
   return (
     <div className="w-full bg-astradirtywhite">
-
       <div
-        className="relative w-full bg-cover bg-center overflow-hidden"
+        className="relative w-full bg-cover bg-center"
         style={{ backgroundImage: "url('/blue-bg.png')" }}
       >
         <div className={`${styles.particles} ${animations.fadeSlideUp}`} id="particles" />
-
         <div className="max-w-[1440px] mx-auto px-12 py-20 flex flex-col lg:flex-row items-center justify-between text-astrawhite gap-10">
-          {/* Image Section - Now First */}
-          <div className={`w-full lg:w-[550px] flex justify-center order-2 lg:order-1 ${animations.floatAnimation}`}>
-            <div className="relative w-full h-auto max-w-[550px] animate-float">
+          <div className="max-w-[600px] space-y-6 text-center lg:text-left animate-hero-text">
+            <h1 className="text-[60px] font-extrabold leading-[1.1]">
+              ICS Bulletin Board
+            </h1>
+            <p className="text-lg font-medium">
+              Discover upcoming events, celebrate student successes, and find out what&apos;s ongoing in ICS. From hackathons to career fairs - never miss out on campus life.
+            </p>
+          </div>
+          <div className="w-full lg:w-[550px] flex justify-center">
+            <div className="relative w-full h-auto max-w-[550px] animate-natural-float">
               <Image
                 src={heroImage}
                 alt="What's Up Illustration"
@@ -59,19 +62,29 @@ export function HeroSection() {
               />
             </div>
           </div>
-
-          {/* Text Section - Now Second */}
-          <div className={`max-w-[600px] space-y-6 text-center lg:text-right order-1 lg:order-2 ${animations.fadeSlideUp}`}>
-            <h1 className="text-[60px] font-extrabold leading-[1.1] hover:scale-105 transition-transform">
-              What&apos;s Up
-            </h1>
-            <p className="text-lg font-medium hover:text-blue-200 transition-colors">
-              Stay connected and informed with the latest updates and stories.
-            </p>
-
-          </div>
         </div>
       </div>
+      <style jsx global>{`
+        @keyframes naturalFloat {
+          0% { transform: translate(0px, 0px) rotate(0deg); }
+          25% { transform: translate(8px, -10px) rotate(1deg); }
+          50% { transform: translate(0px, -20px) rotate(0deg); }
+          75% { transform: translate(-8px, -10px) rotate(-1deg); }
+          100% { transform: translate(0px, 0px) rotate(0deg); }
+        }
+        @keyframes fadeBounce {
+          0% { opacity: 0; transform: translateY(-10px); }
+          50% { opacity: 1; transform: translateY(5px); }
+          100% { transform: translateY(0px); }
+        }
+        @keyframes particles {
+          0% { background-position: 0 0; }
+          100% { background-position: 1000px 0; }
+        }
+        .animate-natural-float { animation: naturalFloat 8s ease-in-out infinite; }
+        .animate-fade-bounce { animation: fadeBounce 1.5s ease forwards; }
+        .animate-hero-text { animation: fadeBounce 2s ease-in-out; }
+      `}</style>
     </div>
   );
 }

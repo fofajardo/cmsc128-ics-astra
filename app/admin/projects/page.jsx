@@ -9,9 +9,9 @@ import AdminTabs from "@/components/AdminTabs";
 import ToastNotification from "@/components/ToastNotification";
 import ProjectCardPending from "@/components/ProjectCardPending";
 import ProjectCardActive from "@/components/ProjectCardActive";
-import { formatCurrency, capitalizeName } from "@/utils/format";
-import { REQUEST_STATUS } from "@/constants/requestConsts";
-import { PROJECT_STATUS, PROJECT_TYPE } from "@/constants/projectConsts";
+import { formatCurrency, capitalizeName, formatDate } from "@/utils/format";
+import { PROJECT_STATUS, PROJECT_TYPE, REQUEST_STATUS } from "../../../common/scopes";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 import DeclineModal from "@/components/projects/DeclineModal";
 import Link from "next/link";
 import axios from "axios";
@@ -25,6 +25,12 @@ export default function ProjectsAdmin() {
   const [tempSelectedType, setTempSelectedType] = useState(selectedType);
 
   const [projects, setProjects] = useState([]);
+  const [filteredProjects, setFilteredProjects] = useState([]);
+  const [paginatedProjects, setPaginatedProjects] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  //this is for the current showed tab
+  const [currTab, setCurrTab] = useState("Pending");
+
   const [donationsSummary, setDonationsSummary] = useState({});
   const [loading, setLoading] = useState(true);
 
@@ -33,97 +39,225 @@ export default function ProjectsAdmin() {
   const [showDeclineModal, setShowDeclineModal] = useState(false);
   const [declineReason, setDeclineReason] = useState("");
   const [declineRequestData, setDeclineRequestData] = useState({});
+  const itemsPerPage = 4;
+
+  const toggleFilter = () => {
+    setTempSelectedType(selectedType); // reset modal input to current selection
+    setShowFilter((prev) => !prev);
+  };
+
+  //this is the one beside the pending/active/inactive projects
+  //must change lastPage and total to what is in the database
+  const [pagination, setPagination] = useState({
+    display: [1, itemsPerPage],
+    currPage: 1,
+    lastPage: 1,
+    numToShow: itemsPerPage,
+    total: 0,
+    itemsPerPage
+  });
+
+  const fetchProjectRequests = async function () {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/requests/projects`);
+      const projectData = response.data;
+      if (projectData.status === "OK") {
+        console.log("Fetched projects:", projectData);
+
+        // extract project id's
+        const projectIds = projectData.list.map(project => project.projectData.project_id);
+        // console.log(projectIds);
+
+        // map for photos initialization
+        const photoMap = {};
+
+        // fetch individual project photos
+        const photoPromises = projectIds.map(async (projectId) => {
+          try {
+            const photoResponse = await axios.get(
+              `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/project/${projectId}`
+            );
+
+            if (photoResponse.data.status === "OK" && photoResponse.data.photo) {
+              photoMap[projectId] = photoResponse.data.photo;
+            }
+          } catch (error) {
+            console.log(`Failed to fetch photo for project_id ${projectId}:`, error);
+          }
+        });
+
+        await Promise.all(photoPromises);
+        setProjectPhotos(photoMap);
+
+        // Check due dates and update project status to finished if past due date
+        const originalProjects = projectData.list;
+
+        // Check each project and update status if necessary
+        const updatedProjects = originalProjects.map((project) => ({
+          ...project,
+          projectData: {
+            ...project.projectData,
+            project_status: checkProjectStatus(project),
+          }
+        }));
+
+        console.log(updatedProjects);
+
+        // Get the list of updated projects (those whose status has changed)
+        const changedProjects = getUpdatedProjects(originalProjects, updatedProjects);
+        console.log("Project past their due dates (updated project_status to finished): ", changedProjects);
+        if (changedProjects.length > 0) {
+          const projectIdsToUpdate = changedProjects.map(project => project.projectData.project_id);
+          console.log("Project IDs to update in DB", projectIdsToUpdate);
+          await updateProjectsStatus(projectIdsToUpdate); // Update status in backend
+        }
+
+        setProjects(
+          updatedProjects.map(
+            project => ({
+              status: project.projectData.project_status === PROJECT_STATUS.FINISHED ? REQUEST_STATUS.REJECTED : project.status,  // set project as inactive if project status finished or request rejected
+              request_id: project.request_id,
+              id: project.projectData.project_id,
+              image: photoMap[project.projectData.project_id] || "/projects/assets/Donation.jpg",
+              project_status: project.projectData.project_status,
+              title: project.projectData.title,
+              description: project.projectData.details,
+              goal: project.projectData.goal_amount.toString(),
+              raised: project.projectData.total_donations.toString(),
+              donors: project.projectData.number_of_donors,
+              type: project.projectData.type,
+              endDate: project.projectData.due_date,
+              dateCompleted: project.projectData.date_complete,
+              donationLink: project.projectData.donation_link,
+              requester: project.requesterData?.full_name !== ""
+                ? capitalizeName(project.requesterData?.full_name)
+                : project.requesterData?.role === "unlinked"
+                  ? "Deleted User"
+                  : capitalizeName(project.requesterData?.role)
+              ,
+            })
+          )
+        );
+      } else {
+        console.error("Unexpected response:", projectData);
+      }
+    } catch (error) {
+      console.error("Failed to fetch projects:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchDonationsSummary = async function () {
+    try {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations/summary`);
+      const donationSummaryData = response.data;
+      if (donationSummaryData.status === "OK") {
+        console.log("Fetched donation summary:", donationSummaryData);
+        setDonationsSummary({
+          total_raised: donationSummaryData.summary.total_raised,
+          contributors: donationSummaryData.summary.contributors
+        });
+      } else {
+        console.error("Unexpected response:", donationSummaryData);
+      }
+    } catch (error) {
+      console.error("Failed to fetch donation summary:", error);
+    }
+  };
+
+  // Function to check project status based on today's date
+  const checkProjectStatus = (project) => {
+    const today = new Date();
+    return new Date(project.projectData.due_date) < today
+      ? project.status === REQUEST_STATUS.APPROVED ? PROJECT_STATUS.FINISHED
+        : project.projectData.project_status : project.projectData.project_status;
+  };
+
+  // Function to compare the current project with the updated project
+  const getUpdatedProjects = (originalProjects, updatedProjects) => {
+    return updatedProjects.filter(updatedProject => {
+      const originalProject = originalProjects.find(project => project.projectData.project_id === updatedProject.projectData.project_id);
+      if (!originalProject) return false; // Skip if no original project is found
+
+      // Check if there's a difference (e.g., status, due_date, etc.)
+      return originalProject.projectData.project_status !== updatedProject.projectData.project_status;
+    });
+  };
+
+  // Function to update the project status in the backend
+  const updateProjectsStatus = async (projectIds) => {
+    try {
+      // Send the project IDs to the backend for updating status
+      const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/projects/status`, { projectIds: projectIds, project_status: PROJECT_STATUS.FINISHED });
+      const updateData = response.data;
+      if (updateData.status === "UPDATED") {
+        console.log("Successfully updated! ", updateData);
+      } else {
+        console.error("Unexpected response:", updateData);
+      }
+    } catch (error) {
+      console.error("Error updating projects:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchProjectRequests = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/requests/projects`);
-        const projectData = response.data;
-        if (projectData.status === "OK") {
-          console.log("Fetched projects:", projectData);
-
-          // extract project id's
-          const projectIds = projectData.list.map(project => project.projectData.project_id);
-
-          // map for photos initialization
-          const photoMap = {};
-
-          // fetch individual project photos
-          const photoPromises = projectIds.map(async (projectId) => {
-            try {
-              const photoResponse = await axios.get(
-                `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/project/${projectId}`
-              );
-
-              if (photoResponse.data.status === "OK" && photoResponse.data.photo) {
-                photoMap[projectId] = photoResponse.data.photo;
-              }
-            } catch (error) {
-              console.log(`Failed to fetch photo for project_id ${projectId}:`, error);
-            }
-          });
-
-          await Promise.all(photoPromises);
-          setProjectPhotos(photoMap);
-
-          setProjects(
-            projectData.list.map(
-              project => ({
-                status: project.projectData.project_status === PROJECT_STATUS.FINISHED ? REQUEST_STATUS.REJECTED : project.status,
-                request_id: project.request_id,
-                id: project.projectData.project_id,
-                image: photoMap[project.projectData.project_id] || "/projects/assets/Donation.jpg",
-                project_status: project.projectData.project_status,
-                title: project.projectData.title,
-                description: project.projectData.details,
-                goal: project.projectData.goal_amount.toString(),
-                raised: project.projectData.total_donations.toString(),
-                donors: project.projectData.number_of_donors,
-                type: project.projectData.type,
-                endDate: project.projectData.due_date,
-                dateCompleted: project.projectData.date_complete,
-                donationLink: project.projectData.donation_link,
-                requester: project.requesterData?.full_name !== ""
-                  ? capitalizeName(project.requesterData?.full_name)
-                  : project.requesterData?.role === "unlinked"
-                    ? "Deleted User"
-                    : capitalizeName(project.requesterData?.role)
-                ,
-              })
-            )
-          );
-        } else {
-          console.error("Unexpected response:", projectData);
-        }
-      } catch (error) {
-        console.error("Failed to fetch projects:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const fetchDonationsSummary = async () => {
-      try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations/summary`);
-        const donationSummaryData = response.data;
-        if (donationSummaryData.status === "OK") {
-          console.log("Fetched donation summary:", donationSummaryData);
-          setDonationsSummary({
-            total_raised: donationSummaryData.summary.total_raised,
-            contributors: donationSummaryData.summary.contributors
-          });
-        } else {
-          console.error("Unexpected response:", donationSummaryData);
-        }
-      } catch (error) {
-        console.error("Failed to fetch donation summary:", error);
-      }
-    };
-
     fetchDonationsSummary();
     fetchProjectRequests();
   }, []);
+
+  useEffect(() => {
+
+    setFilteredProjects(projects);
+  }, [projects]);
+
+  useEffect(() => {
+    const filteredProjectsByType = selectedType === "All"
+      ? projects
+      : projects.filter((project) => project.type === selectedType.toLowerCase());
+    const filteredProjectsByStatusTab = filteredProjectsByType.filter(
+      (project) => statusToTab[project.status].toLowerCase() === currTab.toLowerCase()
+    );
+    const lower = (searchQuery || "").toLowerCase();
+    const filtered = filteredProjectsByStatusTab.filter(project =>
+      (project.title || "").toLowerCase().includes(lower)
+    );
+    setFilteredProjects(filtered);
+  }, [projects, selectedType, currTab]);
+
+  useEffect(() => {
+    const total = filteredProjects.length;
+    const lastPage = Math.max(1, Math.ceil(total / itemsPerPage));
+
+    setPagination({
+      display: [1, Math.min(itemsPerPage, total)],
+      currPage: 1,
+      lastPage,
+      numToShow: itemsPerPage,
+      total,
+      itemsPerPage
+    });
+  }, [filteredProjects, searchQuery]);
+
+  useEffect(() => {
+    const start = (pagination.currPage - 1) * pagination.itemsPerPage;
+    const end = start + pagination.itemsPerPage;
+    setPaginatedProjects(filteredProjects.slice(start, end));
+  }, [filteredProjects, pagination.currPage, pagination.itemsPerPage]);
+
+  const handleSearch = (searchInput) => {
+    const lower = (searchInput || "").toLowerCase();
+    const filtered = projects.filter(project =>
+      (project.title || "").toLowerCase().includes(lower)
+    );
+    const filteredByStatusTab = filtered.filter(
+      (project) => statusToTab[project.status].toLowerCase() === currTab.toLowerCase()
+    );
+
+    setSearchQuery(searchInput);
+    setFilteredProjects(filteredByStatusTab);
+  };
 
   const updateProjectRequest = async (updatedStatus, requestId, requestResponse="") => {
     try {
@@ -160,16 +294,23 @@ export default function ProjectsAdmin() {
     );
   };
 
-  const handleApprove = (id, title) => (e) => {
+  const handleApprove = (id, title, endDate) => (e) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log(id);
-    console.log(title);
-    updateProjectRequest(REQUEST_STATUS.APPROVED, id);
-    setToast({
-      type: "success",
-      message: `${title} has been approved!`
-    });
+    if (new Date(endDate) < new Date()) {
+      setToast({
+        type: "fail",
+        message: `${title} is already past its due date (${formatDate(endDate, "short-month")})`
+      });
+    } else {
+      console.log(id);
+      console.log(title);
+      // updateProjectRequest(REQUEST_STATUS.APPROVED, id);
+      setToast({
+        type: "success",
+        message: `${title} has been approved!`
+      });
+    }
   };
 
   const handleDecline = (id, title) => (e) => {
@@ -190,8 +331,6 @@ export default function ProjectsAdmin() {
     setTimeout(() => router.push("/admin/projects"), 2000);
   };
 
-  const projectsData = projects;
-
   const statusToTab = {
     0: "Pending",
     1: "Active",
@@ -205,15 +344,12 @@ export default function ProjectsAdmin() {
   });
 
   //tabs for different projects
-  const tabs = Object.values(projectsData).reduce((acc, project) => {
+  const tabs = Object.values(projects).reduce((acc, project) => {
     if (project.status === 0) acc.Pending++;
     else if (project.status === 1) acc.Active++;
     else if (project.status === 2) acc.Inactive++;
     return acc;
   }, { Pending: 0, Active: 0, Inactive: 0 });
-
-  //this is for the current showed tab
-  const [currTab, setCurrTab] = useState("Pending");
 
   //function for changing the tab
   const handleTabChange = (newTab) => {
@@ -228,58 +364,6 @@ export default function ProjectsAdmin() {
     //reset Filters and Pagination
     setSelectedType("All");
   };
-
-  const toggleFilter = () => {
-    setTempSelectedType(selectedType); // reset modal input to current selection
-    setShowFilter((prev) => !prev);
-  };
-
-  //this is the one beside the pending/active/inactive projects
-  //must change lastPage and total to what is in the database
-  const [pagination, setPagination] = useState({
-    display: [1, 8],
-    currPage: 1,
-    lastPage: 2,
-    numToShow: 8,
-    total: 16,
-  });
-
-  //for filtering projects by type
-  //scholarship
-  //fundraiser
-  const filteredProjects =
-    selectedType === "All"
-      ? projectsData
-      : projectsData.filter((project) => project.type === selectedType.toLowerCase());
-
-  //for filtering projects by status
-  const filteredByTabProjects = filteredProjects.filter(
-    (project) => statusToTab[project.status].toLowerCase() === currTab.toLowerCase()
-  );
-
-  // Update pagination total and lastPage
-  useEffect(() => {
-    const totalItems = filteredByTabProjects.length;
-    const lastPage = Math.max(1, Math.ceil(totalItems / pagination.numToShow));
-    setPagination((prev) => ({
-      ...prev,
-      total: totalItems,
-      lastPage: lastPage,
-      currPage: Math.min(prev.currPage, lastPage), // Avoid invalid page
-      display: [
-        (Math.min(prev.currPage, lastPage) - 1) * prev.numToShow + 1,
-        Math.min(totalItems, Math.min(prev.currPage, lastPage) * prev.numToShow),
-      ],
-    }));
-  }, [filteredProjects, currTab, pagination.numToShow]);
-
-  //this is for getting the projects for current page and handling the tab status
-  const currentProjects = filteredProjects
-    .filter((project) => statusToTab[project.status].toLowerCase() === currTab.toLowerCase())
-    .slice(
-      (pagination.currPage - 1) * pagination.numToShow,
-      pagination.currPage * pagination.numToShow
-    );
 
   return (
     <div>
@@ -327,11 +411,6 @@ export default function ProjectsAdmin() {
                   className="blue-button"
                   onClick={() => {
                     setSelectedType(tempSelectedType); // apply the filter
-                    setPagination((prev) => ({
-                      ...prev,
-                      currPage: 1,
-                      display: [1, prev.numToShow],
-                    }));
                     toggleFilter();
                   }}
                 >
@@ -348,9 +427,9 @@ export default function ProjectsAdmin() {
         <img
           src="/blue-bg.png"
           alt="Background"
-          className="h-100 w-full object-cover"
+          className="h-[500px] w-full object-cover"
         />
-        <div className="absolute inset-2 flex flex-col items-center justify-evenly text-astrawhite z-20">
+        <div className="absolute inset-2 flex flex-col items-center justify-between text-astrawhite z-20 min-h-[500px]">
           <div className="text-center pt-6">
             <h1 className="font-h1">Projects</h1>
             <p className="font-s mt-2">Fueling futures, making a difference.</p>
@@ -402,12 +481,21 @@ export default function ProjectsAdmin() {
             </div>
           </div>
 
-          {/* Create a project button */}
-          <Link href="/projects/request/goal" passHref>
-            <button className="mt-2 border-2 border-astrawhite text-astrawhite hover:bg-astrawhite hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-[200px] h-[60px]">
-              Create a Project
-            </button>
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 px-4 w-full max-w-2xl pb-12 items-center justify-center">
+            {/* Create a project button */}
+            <Link href="/projects/request/goal" passHref className="w-full sm:w-auto">
+              <button className="mt-2 border-2 border-astrawhite text-astrawhite hover:bg-astrawhite hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-full sm:w-[200px] h-[60px]">
+                Create a Project
+              </button>
+            </Link>
+
+            {/* Manage donations button */}
+            <Link href="/admin/donations" passHref className="w-full sm:w-auto">
+              <button className="mt-2 border-2 border-astrawhite text-astrawhite hover:bg-astrawhite hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-full sm:w-[200px] h-[60px]">
+                Manage Donations
+              </button>
+            </Link>
+          </div>
         </div>
       </div>
 
@@ -423,58 +511,68 @@ export default function ProjectsAdmin() {
           <TableHeader
             info={info}
             pagination={pagination}
+            setPagination={setPagination}
             toggleFilter={toggleFilter}
+            setSearchQuery={handleSearch}
+            searchQuery={searchQuery}
+            optionValues={["4","8","12","16","20"]}
           />
 
           {/* Projects Grid */}
-          <div className="bg-astrawhite shadow-md p-6 rounded-b-xl">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {currTab === "Pending" &&
-                currentProjects.map((project) => (
-                  <ProjectCardPending
-                    key={project.id}
-                    id={project.request_id}
-                    image={project.image}
-                    title={project.title}
-                    type={project.type}
-                    requester={project.requester}
-                    goal={project.goal}
-                    description={project.description}
-                    onApprove={handleApprove(project.request_id, project.title)}
-                    onTriggerDeclineModal={handleDecline(project.request_id, project.title)}
-                  />
-                ))}
-
-              {(currTab === "Active" || currTab === "Inactive") &&
-                currentProjects.map((project) => (
-                  <ProjectCardActive
-                    key={project.id}
-                    id={project.request_id}
-                    image={project.image}
-                    title={project.title}
-                    type={project.type}
-                    goal={project.goal}
-                    raised={project.raised}
-                    donors={project.donors}
-                    endDate={project.endDate}
-                    isActive={currTab === "Active"}
-                  />
-                ))}
+          {loading ? (
+            <div className="bg-astrawhite p-6 rounded-b-xl flex items-center justify-center">
+              <LoadingSpinner className="h-10 w-10" />
             </div>
+          ) : (
+            <div className="bg-astrawhite shadow-md p-6 rounded-b-xl">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {currTab === "Pending" &&
+                  paginatedProjects.map((project) => (
+                    <ProjectCardPending
+                      key={project.id}
+                      id={project.request_id}
+                      image={project.image}
+                      title={project.title}
+                      type={project.type}
+                      requester={project.requester}
+                      goal={project.goal}
+                      description={project.description}
+                      onApprove={handleApprove(project.request_id, project.title, project.endDate)}
+                      onTriggerDeclineModal={handleDecline(project.request_id, project.title)}
+                    />
+                  ))}
 
-            {/* If no projects match the filter */}
-            {currentProjects.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-astradarkgray font-s">
-                  No{" "}
-                  {selectedType.toLowerCase() !== "all"
-                    ? selectedType.toLowerCase()
-                    : ""}{" "}
-                  projects found.
-                </p>
+                {(currTab === "Active" || currTab === "Inactive") &&
+                  paginatedProjects.map((project) => (
+                    <ProjectCardActive
+                      key={project.id}
+                      id={project.request_id}
+                      image={project.image}
+                      title={project.title}
+                      type={project.type}
+                      goal={project.goal}
+                      raised={project.raised}
+                      donors={project.donors}
+                      endDate={project.endDate}
+                      isActive={currTab === "Active"}
+                    />
+                  ))}
               </div>
-            )}
-          </div>
+
+              {/* If no projects match the filter */}
+              {paginatedProjects.length === 0 && (
+                <div className="text-center py-12">
+                  <p className="text-astradarkgray font-s">
+                    No{" "}
+                    {selectedType.toLowerCase() !== "all"
+                      ? selectedType.toLowerCase()
+                      : ""}{" "}
+                    projects found.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Pagination for projects */}
           <PageTool pagination={pagination} setPagination={setPagination} />

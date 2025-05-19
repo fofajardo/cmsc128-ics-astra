@@ -1,5 +1,37 @@
-import { applyFilter } from "../utils/applyFilter.js";
+import { applyFilter, applyArrayFilter, applyArraySearch, applyPagination } from "../utils/filters.js";
 import { RoleName } from "../../common/scopes.js";
+
+const alumniStatusViewFields = `
+  email,
+  alum_id,
+  first_name,
+  middle_name,
+  last_name,
+  full_name,
+  year_graduated,
+  location,
+  skills,
+  created_at,
+  student_num,
+  course,
+  profile_created_at,
+  field
+`;
+const fuseThreshold = 0.3; // Adjust this value (0-1) for more/less strict matching
+const fuseOptions = {
+  keys: [
+    "first_name",
+    "middle_name",
+    "last_name",
+    "full_name",
+    "email",
+    "student_num"
+  ],
+  threshold: fuseThreshold,
+  includeScore: true,
+  ignoreLocation: true,
+  minMatchCharLength: 2
+};
 
 const fetchUsers = async (supabase, page = 1, limit = 10, isRecent = false, isAlumni = false) => {
   const startIndex = (page - 1) * limit;
@@ -7,7 +39,7 @@ const fetchUsers = async (supabase, page = 1, limit = 10, isRecent = false, isAl
 
   let query = supabase
     .from("users")
-    .select("*, alumni_profiles(*)") // we always need alumni_profiles if we're filtering by it
+    .select("*, alumni_profiles(*)") // we always need alumni_profiles if we"re filtering by it
     .order("created_at", { ascending: false });
 
   // Apply role filter for alumni
@@ -48,18 +80,64 @@ const fetchUsers = async (supabase, page = 1, limit = 10, isRecent = false, isAl
   return { data: paginatedData };
 };
 
-const fetchInactiveAlumni = async (supabase, page = 1, limit = 10) => {
-  const startIndex = (page - 1) * limit;
-  const endIndex = startIndex + Number(limit) - 1;
-
+const fetchInactiveAlumni = async (supabase, page = 1, limit = 10, search = "", filters = {}) => {
   const { data, error } = await supabase
     .from("inactive_alumni_view")
-    .select("*")
-    .range(startIndex, endIndex + 1);
+    .select(alumniStatusViewFields);
 
-  if (error) return { error };
+  if (error) throw error;
 
-  return { data };
+  let filteredData = data;
+  filteredData = applyArraySearch(filteredData, search, fuseOptions);
+  filteredData = applyArrayFilter(filteredData, filters);
+  const paginatedData = applyPagination(filteredData, page, limit);
+
+  return {
+    data: paginatedData,
+    total: filteredData.length,
+    page,
+    totalPages: Math.ceil(filteredData.length / limit)
+  };
+};
+
+const fetchApprovedAlumni = async (supabase, page = 1, limit = 10, search = "", filters = {}) => {
+  const { data, error } = await supabase
+    .from("approved_alumni_view")
+    .select(alumniStatusViewFields);
+
+  if (error) throw error;
+
+  let filteredData = data;
+  filteredData = applyArraySearch(filteredData, search, fuseOptions);
+  filteredData = applyArrayFilter(filteredData, filters);
+  const paginatedData = applyPagination(filteredData, page, limit);
+
+  return {
+    data: paginatedData,
+    total: filteredData.length,
+    page,
+    totalPages: Math.ceil(filteredData.length / limit)
+  };
+};
+
+const fetchPendingAlumni = async (supabase, page = 1, limit = 10, search = "", filters = {}) => {
+  const { data, error } = await supabase
+    .from("pending_alumni_view")
+    .select(alumniStatusViewFields);
+
+  if (error) throw error;
+
+  let filteredData = data;
+  filteredData = applyArraySearch(filteredData, search, fuseOptions);
+  filteredData = applyArrayFilter(filteredData, filters);
+  const paginatedData = applyPagination(filteredData, page, limit);
+
+  return {
+    data: paginatedData,
+    total: filteredData.length,
+    page,
+    totalPages: Math.ceil(filteredData.length / limit)
+  };
 };
 
 const fetchUserById = async (supabase, userId) => {
@@ -125,6 +203,8 @@ const hardDeleteUser = async (supabase, userId) => {
 const usersService = {
   fetchUsers,
   fetchInactiveAlumni,
+  fetchApprovedAlumni,
+  fetchPendingAlumni,
   fetchUserById,
   fetchUsersByFilter,
   checkExistingUser,
