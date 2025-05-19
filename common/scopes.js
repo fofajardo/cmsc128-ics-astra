@@ -96,7 +96,7 @@ const PhotoType = Object.freeze({
     }
     return parseInt(aValue);
   },
-})
+});
 
 const EmploymentStatus = Object.freeze({
   UNEMPLOYED: 0,
@@ -299,11 +299,38 @@ export const REQUEST_TYPE = {
   OTHERS: 2,
 };
 
+const EventStatus = Object.freeze({
+  OPEN: "open",
+  CLOSED: "closed",
+  CANCELLED: "cancelled",
+  isDefined: function(aValue) {
+    if (typeof aValue === "string" || aValue instanceof String) {
+      const value = aValue.toLowerCase().trim();
+      switch (value) {
+      case EventStatus.OPEN:
+      case EventStatus.CLOSED:
+      case EventStatus.CANCELLED:
+        return true;
+      default:
+        break;
+      }
+    }
+    return false;
+  },
+  parse: function(aValue) {
+    if (!this.isDefined(aValue)) {
+      return null;
+    }
+    return parseInt(aValue);
+  },
+});
+
 export {
   RoleName,
   Subjects,
   Actions,
   PhotoType,
   EmploymentStatus,
+  EventStatus,
   JobsStatus,
 };
