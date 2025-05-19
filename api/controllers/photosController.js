@@ -125,8 +125,7 @@ const uploadPhoto = async (req, res) => {
 const updatePhoto = async (req, res) => {
   try {
     const { id } = req.params;
-    const { user_id, content_id, type } = req.body;
-    const file = req.file;
+    const { user_id, content_id, type, file } = req.body;
 
     if (!id) {
       return res.status(httpStatus.BAD_REQUEST).json({

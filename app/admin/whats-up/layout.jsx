@@ -19,7 +19,6 @@ export default function AdminAlumniLayout({ children }) {
   const [dashboard, setDashboard] = useState({
     announcements: 0,
     newsletters: 0,
-    events: 0,
   });
 
   const tabs = {
@@ -81,7 +80,6 @@ export default function AdminAlumniLayout({ children }) {
             <div className="flex flex-row gap-3 min-w-max px-4 justify-center">
               <AdminStatCard title='Announcements' value = {dashboard.announcements} icon={<Megaphone className='size-13 text-astrawhite/>' strokeWidth={1.5} />} route = {false} onClick={() => dynamicTabClick("Announcements")}/>
               <AdminStatCard title='Newsletters' value = {dashboard.newsletters} icon={<Newspaper className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={false} onClick={() => dynamicTabClick("Newsletters")}/>
-              <AdminStatCard title='Active Events' value = {dashboard.events} icon={<CalendarDays className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={"/admin/events"}/>
             </div>
           </div>
           {currTab === "Announcements" && (
