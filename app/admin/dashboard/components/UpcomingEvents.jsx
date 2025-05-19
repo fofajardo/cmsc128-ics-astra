@@ -181,7 +181,7 @@ export default function UpcomingEvents() {
             See All
           </a>
         </div>
-        <div className="flex-1 px-4">
+        <div className="flex-1 px-0 md:px-4">
           {displayEvents.map((event, index) => (
             <EventItem key={index} event={event} router={router} />
           ))}

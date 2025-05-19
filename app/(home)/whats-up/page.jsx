@@ -86,7 +86,7 @@ export default function WhatsUpPage() {
 
           <p className="mt-6 text-lg leading-7 text-slate-500 max-md:mt-4 max-md:mr-2.5 max-md:max-w-full">
             Stay updated with the latest happenings, announcements, and
-            achievements from our vibrant community. From academic milestones to
+            achievements from the ICS community. From academic milestones to
             student success stories, discover what&apos;s making headlines.
           </p>
 
@@ -185,11 +185,13 @@ function newsItemBuilder(item) {
         </h3>
         <p className="mt-3 text-base text-slate-500 line-clamp-3">{item.details}</p>
         <div className="mt-4">
-          <Link href={`/whats-up/article/${item.id}`}>
-            <button className="px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-800">
-              Read more →
-            </button>
-          </Link>
+          <button
+            // TODO: UNDEFINED ROUTER
+            // onClick={() => router.push(`/whats-up/article/${item.id}`)} // Navigate to article page
+            className="py-2 text-sm font-medium text-blue-600 hover:text-blue-800"
+          >
+            Read more →
+          </button>
         </div>
       </div>
     </div>

@@ -125,6 +125,55 @@ const EmploymentStatus = Object.freeze({
   },
 });
 
+export const EmploymentType = Object.freeze({
+  FULL_TIME: 0,
+  PART_TIME: 1,
+  SELF_EMPLOYED: 2,
+  FREELANCE: 3,
+  CONTRACT: 4,
+  INTERNSHIP: 5,
+  APPRENTICESHIP: 6,
+  SEASONAL: 7,
+  isDefined: function(aValue) {
+    return Object.values(this).includes(aValue);
+  },
+  parse: function(aValue) {
+    if (!this.isDefined(aValue)) {
+      return null;
+    }
+    return parseInt(aValue);
+  },
+});
+
+export const EMPLOYMENT_STATUS_LABELS = {
+  [EmploymentType.FULL_TIME]: "Full-time",
+  [EmploymentType.PART_TIME]: "Part-time",
+  [EmploymentType.SELF_EMPLOYED]: "Self-employed",
+  [EmploymentType.FREELANCE]: "Freelance",
+  [EmploymentType.CONTRACT]: "Contract",
+  [EmploymentType.INTERNSHIP]: "Internship",
+  [EmploymentType.APPRENTICESHIP]: "Apprenticeship",
+  [EmploymentType.SEASONAL]: "Seasonal",
+};
+
+export const LocationType = Object.freeze({
+  ON_SITE: 0,
+  HYBRID: 1,
+  REMOTE: 2,
+  isDefined: function(aValue) {
+    return Object.values(LocationType).includes(aValue);
+  },
+  parse: function(aValue) {
+    return this.isDefined(aValue) ? aValue : null;
+  },
+});
+
+export const LOCATION_TYPE_LABELS = {
+  [LocationType.ON_SITE]: "On-site",
+  [LocationType.HYBRID]: "Hybrid",
+  [LocationType.REMOTE]: "Remote",
+};
+
 const JobsStatus = Object.freeze({
   OPEN_INDEFINITE: 0,
   OPEN_UNTIL_EXPIRED: 1,
@@ -217,6 +266,32 @@ export const REQUEST_STATUS_LABELS = {
   [REQUEST_STATUS.SENT]: "Sent",
   [REQUEST_STATUS.APPROVED]: "Approved",
   [REQUEST_STATUS.REJECTED]: "Rejected",
+};
+
+export const SEX = {
+  MALE: 1,
+  FEMALE: 2,
+};
+
+export const SEX_LABELS = {
+  [SEX.MALE]: "Male",
+  [SEX.FEMALE]: "Female",
+};
+
+export const CIVIL_STATUS = {
+  SINGLE: 0,
+  MARRIED: 1,
+  DIVORCED: 2,
+  SEPARATED: 3,
+  WIDOWED: 4,
+};
+
+export const CIVIL_STATUS_LABELS = {
+  [CIVIL_STATUS.SINGLE]: "Single",
+  [CIVIL_STATUS.MARRIED]: "Married",
+  [CIVIL_STATUS.DIVORCED]: "Divorced",
+  [CIVIL_STATUS.SEPARATED]: "Separated",
+  [CIVIL_STATUS.WIDOWED]: "Widowed",
 };
 
 export const REQUEST_TYPE = {

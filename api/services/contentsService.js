@@ -1,4 +1,4 @@
-import { applyFilter } from "../utils/applyFilter.js";
+import { applyFilter } from "../utils/filters.js";
 
 const fetchContents = async (supabase, filters = {}) => {
   const page = parseInt(filters.page) || 1;

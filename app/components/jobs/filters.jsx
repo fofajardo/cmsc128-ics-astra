@@ -75,7 +75,7 @@ export default function Filter({ onApply }) {
       </div>
 
       {/* Location Type */}
-      <Select unstyled options={locationTypeOptions} placeholder="Location Type" onChange={handleSelectChange} value={select.location_type} name={"location_type"} instanceId="locationType"
+      <Select unstyled options={locationTypeOptions} placeholder=" Type" onChange={handleSelectChange} value={select.location_type} name={"location_type"} instanceId="locationType"
         classNames={{...selectStyles, control: (state) => `!cursor-pointer m-0 p-0 text-[var(--color-astrablack)] outline-none bg-[var(--color-astrawhite)] border border-[var(--color-astraprimary)] font-normal pl-4 w-[155px] h-[45px] rounded-lg hover:-translate-y-1 hover:shadow-[0_2px_4px_rgba(0,0,0,0.25)] ${state.isFocused ? "-translate-y-1 shadow-[0_2px_6px_rgba(0,0,0,0.25)]" : "-translate-y-0"}`}}/>
 
       {/* Salary Range */}

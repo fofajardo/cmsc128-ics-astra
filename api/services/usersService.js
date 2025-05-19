@@ -1,8 +1,19 @@
-import { applyFilter } from "../utils/applyFilter.js";
+import { applyFilter, applyArrayFilter, applyArraySearch, applyPagination } from "../utils/filters.js";
 import { RoleName } from "../../common/scopes.js";
-import Fuse from "fuse.js";
 
 const fuseThreshold = 0.3;
+const fuseOptions = {
+  keys: [
+    "first_name",
+    "middle_name",
+    "last_name",
+    "full_name"
+  ],
+  threshold: fuseThreshold, // Adjust this value (0-1) for more/less strict matching
+  includeScore: true,
+  ignoreLocation: true,
+  minMatchCharLength: 2 // Minimum characters required for matching
+};
 
 const fetchUsers = async (supabase, page = 1, limit = 10, isRecent = false, isAlumni = false) => {
   const startIndex = (page - 1) * limit;
@@ -55,6 +66,7 @@ const fetchInactiveAlumni = async (supabase, page = 1, limit = 10, search = "", 
   const { data: alumniProfiles, error: profilesError } = await supabase
     .from("inactive_alumni_view")
     .select(`
+      email,
       alum_id,
       first_name,
       middle_name,
@@ -66,12 +78,12 @@ const fetchInactiveAlumni = async (supabase, page = 1, limit = 10, search = "", 
         field
       ),
       student_num,
-      course
+      course,
+      profile_created_at
     `);
 
   if (profilesError) throw profilesError;
 
-  // Get all degree programs for these alumni
   const { data: degreePrograms, error: degreesError } = await supabase
     .from("degree_programs")
     .select("user_id, year_graduated")
@@ -79,7 +91,6 @@ const fetchInactiveAlumni = async (supabase, page = 1, limit = 10, search = "", 
 
   if (degreesError) throw degreesError;
 
-  // Combine the data manually
   const combinedData = alumniProfiles.map(alum => {
     const degrees = degreePrograms.filter(d => d.user_id === alum.alum_id);
 
@@ -91,83 +102,10 @@ const fetchInactiveAlumni = async (supabase, page = 1, limit = 10, search = "", 
     };
   });
 
-  // Apply search filter
-  const fuseOptions = {
-    keys: [
-      "first_name",
-      "middle_name",
-      "last_name",
-      "full_name",
-      // "location",
-      // "field",
-      // "skills",
-    ],
-    threshold: fuseThreshold, // Adjust this value (0-1) for more/less strict matching
-    includeScore: true,
-    ignoreLocation: true,
-    minMatchCharLength: 2 // Minimum characters required for matching
-  };
-
-  // Apply fuzzy search if search term exists
   let filteredData = combinedData;
-  if (search) {
-    const fuse = new Fuse(combinedData, fuseOptions);
-    const results = fuse.search(search);
-    filteredData = results.map(result => result.item);
-  }
-
-  // Apply other filters
-  if (filters.yearFrom) {
-    filteredData = filteredData.filter(alum =>
-      alum.year_graduated && alum.year_graduated >= filters.yearFrom
-    );
-  }
-
-  if (filters.yearTo) {
-    filteredData = filteredData.filter(alum =>
-      alum.year_graduated && alum.year_graduated <= filters.yearTo
-    );
-  }
-
-  if (filters.location) {
-    filteredData = filteredData.filter(alum =>
-      alum.location && alum.location.toLowerCase().includes(filters.location.toLowerCase())
-    );
-  }
-
-  if (filters.field) {
-    filteredData = filteredData.filter(alum =>
-      alum.field && alum.field.toLowerCase().includes(filters.field.toLowerCase())
-    );
-  }
-
-  if (filters.skills) {
-    filteredData = filteredData.filter(alum =>
-      alum.skills && alum.skills.some(skill =>
-        skill.toLowerCase().includes(filters.skills.toLowerCase())
-      )
-    );
-  }
-
-  if (filters.sortCategory && filters.sortOrder) {
-    const sortMapping = {
-      year: (a, b) => (a.year_graduated || "").localeCompare(b.year_graduated || ""),
-      name: (a, b) => a.last_name.localeCompare(b.last_name),
-      location: (a, b) => (a.location || "").localeCompare(b.location || ""),
-      field: (a, b) => (a.field || "").localeCompare(b.field || "")
-    };
-
-    const sortFn = sortMapping[filters.sortCategory] || sortMapping.name;
-    filteredData.sort(sortFn);
-
-    if (filters.sortOrder === "desc") {
-      filteredData.reverse();
-    }
-  }
-
-  const startIndex = (page - 1) * limit;
-  const endIndex = startIndex + Number(limit) - 1;
-  const paginatedData = filteredData.slice(startIndex, endIndex + 1);
+  filteredData = applyArraySearch(filteredData, search, fuseOptions);
+  filteredData = applyArrayFilter(filteredData, filters);
+  const paginatedData = applyPagination(filteredData, page, limit);
 
   return {
     data: paginatedData,
@@ -197,7 +135,6 @@ const fetchApprovedAlumni = async (supabase, page = 1, limit = 10, search = "", 
 
   if (profilesError) throw profilesError;
 
-  // Get all degree programs for these alumni
   const { data: degreePrograms, error: degreesError } = await supabase
     .from("degree_programs")
     .select("user_id, year_graduated")
@@ -205,7 +142,6 @@ const fetchApprovedAlumni = async (supabase, page = 1, limit = 10, search = "", 
 
   if (degreesError) throw degreesError;
 
-  // Combine the data manually
   const combinedData = alumniProfiles.map(alum => {
     const degrees = degreePrograms.filter(d => d.user_id === alum.alum_id);
 
@@ -217,83 +153,10 @@ const fetchApprovedAlumni = async (supabase, page = 1, limit = 10, search = "", 
     };
   });
 
-  // Apply search filter
-  const fuseOptions = {
-    keys: [
-      "first_name",
-      "middle_name",
-      "last_name",
-      "full_name",
-      // "location",
-      // "field",
-      // "skills",
-    ],
-    threshold: fuseThreshold, // Adjust this value (0-1) for more/less strict matching
-    includeScore: true,
-    ignoreLocation: true,
-    minMatchCharLength: 2 // Minimum characters required for matching
-  };
-
-  // Apply fuzzy search if search term exists
   let filteredData = combinedData;
-  if (search) {
-    const fuse = new Fuse(combinedData, fuseOptions);
-    const results = fuse.search(search);
-    filteredData = results.map(result => result.item);
-  }
-
-  // Apply other filters
-  if (filters.yearFrom) {
-    filteredData = filteredData.filter(alum =>
-      alum.year_graduated && alum.year_graduated >= filters.yearFrom
-    );
-  }
-
-  if (filters.yearTo) {
-    filteredData = filteredData.filter(alum =>
-      alum.year_graduated && alum.year_graduated <= filters.yearTo
-    );
-  }
-
-  if (filters.location) {
-    filteredData = filteredData.filter(alum =>
-      alum.location && alum.location.toLowerCase().includes(filters.location.toLowerCase())
-    );
-  }
-
-  if (filters.field) {
-    filteredData = filteredData.filter(alum =>
-      alum.field && alum.field.toLowerCase().includes(filters.field.toLowerCase())
-    );
-  }
-
-  if (filters.skills) {
-    filteredData = filteredData.filter(alum =>
-      alum.skills && alum.skills.some(skill =>
-        skill.toLowerCase().includes(filters.skills.toLowerCase())
-      )
-    );
-  }
-
-  if (filters.sortCategory && filters.sortOrder) {
-    const sortMapping = {
-      year: (a, b) => (a.year_graduated || "").localeCompare(b.year_graduated || ""),
-      name: (a, b) => a.last_name.localeCompare(b.last_name),
-      location: (a, b) => (a.location || "").localeCompare(b.location || ""),
-      field: (a, b) => (a.field || "").localeCompare(b.field || "")
-    };
-
-    const sortFn = sortMapping[filters.sortCategory] || sortMapping.name;
-    filteredData.sort(sortFn);
-
-    if (filters.sortOrder === "desc") {
-      filteredData.reverse();
-    }
-  }
-
-  const startIndex = (page - 1) * limit;
-  const endIndex = startIndex + Number(limit) - 1;
-  const paginatedData = filteredData.slice(startIndex, endIndex + 1);
+  filteredData = applyArraySearch(filteredData, search, fuseOptions);
+  filteredData = applyArrayFilter(filteredData, filters);
+  const paginatedData = applyPagination(filteredData, page, limit);
 
   return {
     data: paginatedData,
@@ -323,7 +186,6 @@ const fetchPendingAlumni = async (supabase, page = 1, limit = 10, search = "", f
 
   if (profilesError) throw profilesError;
 
-  // Get all degree programs for these alumni
   const { data: degreePrograms, error: degreesError } = await supabase
     .from("degree_programs")
     .select("user_id, year_graduated")
@@ -331,7 +193,6 @@ const fetchPendingAlumni = async (supabase, page = 1, limit = 10, search = "", f
 
   if (degreesError) throw degreesError;
 
-  // Combine the data manually
   const combinedData = alumniProfiles.map(alum => {
     const degrees = degreePrograms.filter(d => d.user_id === alum.alum_id);
 
@@ -343,83 +204,10 @@ const fetchPendingAlumni = async (supabase, page = 1, limit = 10, search = "", f
     };
   });
 
-  // Apply search filter
-  const fuseOptions = {
-    keys: [
-      "first_name",
-      "middle_name",
-      "last_name",
-      "full_name",
-      // "location",
-      // "field",
-      // "skills",
-    ],
-    threshold: fuseThreshold, // Adjust this value (0-1) for more/less strict matching
-    includeScore: true,
-    ignoreLocation: true,
-    minMatchCharLength: 2 // Minimum characters required for matching
-  };
-
-  // Apply fuzzy search if search term exists
   let filteredData = combinedData;
-  if (search) {
-    const fuse = new Fuse(combinedData, fuseOptions);
-    const results = fuse.search(search);
-    filteredData = results.map(result => result.item);
-  }
-
-  // Apply other filters
-  if (filters.yearFrom) {
-    filteredData = filteredData.filter(alum =>
-      alum.year_graduated && alum.year_graduated >= filters.yearFrom
-    );
-  }
-
-  if (filters.yearTo) {
-    filteredData = filteredData.filter(alum =>
-      alum.year_graduated && alum.year_graduated <= filters.yearTo
-    );
-  }
-
-  if (filters.location) {
-    filteredData = filteredData.filter(alum =>
-      alum.location && alum.location.toLowerCase().includes(filters.location.toLowerCase())
-    );
-  }
-
-  if (filters.field) {
-    filteredData = filteredData.filter(alum =>
-      alum.field && alum.field.toLowerCase().includes(filters.field.toLowerCase())
-    );
-  }
-
-  if (filters.skills) {
-    filteredData = filteredData.filter(alum =>
-      alum.skills && alum.skills.some(skill =>
-        skill.toLowerCase().includes(filters.skills.toLowerCase())
-      )
-    );
-  }
-
-  if (filters.sortCategory && filters.sortOrder) {
-    const sortMapping = {
-      year: (a, b) => (a.year_graduated || "").localeCompare(b.year_graduated || ""),
-      name: (a, b) => a.last_name.localeCompare(b.last_name),
-      location: (a, b) => (a.location || "").localeCompare(b.location || ""),
-      field: (a, b) => (a.field || "").localeCompare(b.field || "")
-    };
-
-    const sortFn = sortMapping[filters.sortCategory] || sortMapping.name;
-    filteredData.sort(sortFn);
-
-    if (filters.sortOrder === "desc") {
-      filteredData.reverse();
-    }
-  }
-
-  const startIndex = (page - 1) * limit;
-  const endIndex = startIndex + Number(limit) - 1;
-  const paginatedData = filteredData.slice(startIndex, endIndex + 1);
+  filteredData = applyArraySearch(filteredData, search, fuseOptions);
+  filteredData = applyArrayFilter(filteredData, filters);
+  const paginatedData = applyPagination(filteredData, page, limit);
 
   return {
     data: paginatedData,

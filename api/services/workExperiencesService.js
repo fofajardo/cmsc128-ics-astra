@@ -1,4 +1,4 @@
-import { applyFilter } from "../utils/applyFilter.js";
+import { applyFilter } from "../utils/filters.js";
 
 /*
 Format /work_experiences?query_key=query_value&query2_key=query2_value&...
@@ -72,6 +72,12 @@ const fetchWorkExperiencesByAlumId = async (supabase, userId) => {
     .eq("user_id", userId);
 };
 
+const fetchDistinctFields = async (supabase) => {
+  return await supabase
+    .from("distinct_work_fields")
+    .select("*");
+};
+
 const insertWorkExperience = async (supabase, workExperienceData) => {
   return await supabase
     .from("work_experiences")
@@ -97,6 +103,7 @@ const workExperiencesService = {
   fetchWorkExperiences,
   fetchWorkExperienceById,
   fetchWorkExperiencesByAlumId,
+  fetchDistinctFields,
   insertWorkExperience,
   updateWorkExperience,
   deleteWorkExperience

@@ -21,6 +21,8 @@ const statisticsRouter = () => {
   router.get("/alumni-income-range-stats", statisticsController.getAlumniIncomeRangeStats);
   router.get("/alumni-employment-status", statisticsController.getAlumniEmploymentStatus);
   router.get("/alumni-batch", statisticsController.getAlumniBatch);
+  router.get("/interested-alumni-email", statisticsController.getInterestedAlumniEmail);
+  router.get("/events-summary", statisticsController.getEventsStats);
 
   return router;
 };

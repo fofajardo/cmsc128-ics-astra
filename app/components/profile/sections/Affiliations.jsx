@@ -7,13 +7,13 @@ export const Affiliations = ({ affiliations, setIsShowAffiliationForm, setIsShow
         <h2 className="text-xl md:text-2xl font-bold text-[var(--color-astrablack)]">Affiliations</h2>
         <div className="flex gap-2">
           <button
-            className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[var(--color-astradirtywhite)] rounded-md"
+            className="text-sm md:text-base px-3 py-2 md:px-4 md:py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[var(--color-astradirtywhite)] rounded-md"
             onClick={() => setIsShowAddAffiliationForm(true)}
           >
             Add
           </button>
           <button
-            className="text-sm md:text-base px-2 py-1 md:px-4 md:py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[var(--color-astradirtywhite)] rounded-md"
+            className="text-sm md:text-base px-3 py-2 md:px-4 md:py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[var(--color-astradirtywhite)] rounded-md"
             onClick={() => setIsShowAffiliationForm(true)}
           >
             Edit
@@ -31,10 +31,16 @@ export const Affiliations = ({ affiliations, setIsShowAffiliationForm, setIsShow
               <h3 className="text-lg md:text-xl font-bold text-[var(--color-astrablack)]">{aff.organization}</h3>
               <p className="text-sm text-[var(--color-astrablack)]">{aff.title}</p>
               <p className="text-sm text-[var(--color-astrablack)]">
-                {aff.startDate} {aff.isCurrentlyAffiliated ? "- Present" : `- ${aff.endDate}`}
+                {aff.startDate} {
+                  aff.isCurrent
+                    ? "- Present"
+                    : !aff.endDate
+                      ? ""
+                      : `- ${aff.endDate}`
+                }
               </p>
               <p className="text-[var(--color-astrablack)] text-sm md:text-md text-justify">
-                {aff.location} • {aff.isCurrentlyAffiliated ? "Currently Affiliated" : "Not Affiliated"}
+                {aff.location}
               </p>
               <p className="text-[var(--color-astrablack)] text-sm md:text-md text-justify mt-2">{aff.description}</p>
             </div>

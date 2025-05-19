@@ -21,7 +21,7 @@ import axios from "axios";
 import { formatCurrency, formatDate, capitalizeName } from "@/utils/format";
 import { PROJECT_TYPE } from "../../../../../common/scopes";
 import { useSignedInUser } from "@/components/UserContext.jsx";
-import { feRoutes } from "../../../../../common/routes";
+import { absFeRoutes } from "../../../../../common/routes";
 
 // Add constant for fallback image
 const FALLBACK_IMAGE = "/projects/assets/Donation.png";
@@ -554,7 +554,7 @@ export default function ProjectDetails({ params }) {
                 <input
                   type="text"
                   readOnly
-                  value={feRoutes.projects.about(id)}
+                  value={absFeRoutes.projects.about(id)}
                   className="w-full text-sm py-1 bg-transparent focus:outline-none text-gray-700 overflow-hidden text-ellipsis"
                 />
               </div>
@@ -563,7 +563,7 @@ export default function ProjectDetails({ params }) {
             <div className="mt-6 flex justify-center">
               <button
                 onClick={() => {
-                  navigator.clipboard.writeText(feRoutes.projects.about(id));
+                  navigator.clipboard.writeText(absFeRoutes.projects.about(id));
 
                   // Show success animation in button
                   const btn = document.getElementById("copyBtn");
@@ -613,7 +613,7 @@ export default function ProjectDetails({ params }) {
                 <div className="flex space-x-4 justify-center">
                   <a
                     href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-                      feRoutes.projects.about(id)
+                      absFeRoutes.projects.about(id)
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -631,7 +631,7 @@ export default function ProjectDetails({ params }) {
                   </a>
                   <a
                     href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(
-                      feRoutes.projects.about(id)
+                      absFeRoutes.projects.about(id)
                     )}&text=Check out this project!`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -649,7 +649,7 @@ export default function ProjectDetails({ params }) {
                   </a>
                   <a
                     href={`https://api.whatsapp.com/send?text=Check out this project! ${encodeURIComponent(
-                      feRoutes.projects.about(id)
+                      absFeRoutes.projects.about(id)
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -667,7 +667,7 @@ export default function ProjectDetails({ params }) {
                   </a>
                   <a
                     href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
-                      feRoutes.projects.about(id)
+                      absFeRoutes.projects.about(id)
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"

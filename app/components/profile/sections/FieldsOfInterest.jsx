@@ -1,8 +1,8 @@
 "use client";
-import { PlusCircle } from "lucide-react";
 import SkillTag from "@/components/SkillTag";
+import InterestsModal from "@/components/profile/modals/InterestsModal.jsx";
 
-export const FieldsOfInterest = ({ fieldOfInterests, setIsShowInterestForm }) => {
+export const FieldsOfInterest = ({ context, fieldOfInterests }) => {
   return (
     <section className="bg-white rounded-lg p-8 mb-6">
       <h2 className="text-xl md:text-2xl font-bold text-[var(--color-astrablack)] mb-6">Fields of Interest</h2>
@@ -11,15 +11,10 @@ export const FieldsOfInterest = ({ fieldOfInterests, setIsShowInterestForm }) =>
           <SkillTag
             key={index}
             text={interest.text}
-            color={interest.color}
           />
         ))}
-        <button
-          className="p-2 bg-[(var(--color-astradirtywhite)] text-[var(--color-astraprimary)] rounded-full"
-          onClick={() => setIsShowInterestForm(true)}
-        >
-          <PlusCircle size={20} />
-        </button>
+
+        <InterestsModal context={context} interests={fieldOfInterests} />
       </div>
     </section>
   );
