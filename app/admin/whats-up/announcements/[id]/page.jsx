@@ -18,6 +18,7 @@ export default function AnnouncementDetail() {
   const [photoPreview, setPhotoPreview] = useState(null);
   const [photoError, setPhotoError] = useState("");
   const [isDragging, setIsDragging] = useState(false);
+  const [existingPhotoId, setExistingPhotoId] = useState(null);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -31,8 +32,8 @@ export default function AnnouncementDetail() {
   // Load photos from localStorage
   const loadPhotosFromLocalStorage = () => {
     try {
-      const cachedPhotos = localStorage.getItem('announcementPhotos');
-      const cachedTypesMap = localStorage.getItem('photoTypesMap');
+      const cachedPhotos = localStorage.getItem("announcementPhotos");
+      const cachedTypesMap = localStorage.getItem("photoTypesMap");
 
       if (cachedPhotos && cachedTypesMap) {
         return {
@@ -49,6 +50,7 @@ export default function AnnouncementDetail() {
   // Handle photo upload
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
+    console.log("File uploaded:", file);
     handleFile(file);
   };
 
@@ -67,6 +69,7 @@ export default function AnnouncementDetail() {
     e.preventDefault();
     setIsDragging(false);
     const file = e.dataTransfer.files[0];
+    console.log("File dropped:", file);
     handleFile(file);
   };
 
@@ -99,33 +102,55 @@ export default function AnnouncementDetail() {
       const payload = {
         title: formData.title,
         details: formData.content,
-        image: formData.image,
         tags: ["announcement", "published"]
       };
 
       const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`, payload);
+      console.log("Content update response:", response.data);
 
       if (photo) {
         try {
           const formData = new FormData();
           formData.append("File", photo);
           formData.append("content_id", id);
-          formData.append("type", 5); // TODO: use appropriate ENUM
+          formData.append("type", PhotoType.PROJECT_PIC); // Using the proper ENUM from scopes.js
 
-          const photoResponse = await axios.post(
-            `${process.env.NEXT_PUBLIC_API_URL}/v1/photos`,
-            formData,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data"
+          // If we have an existing photo ID, update it instead of creating a new one
+          if (existingPhotoId) {
+            console.log("Updating existing photo with ID:", existingPhotoId);
+            const photoResponse = await axios.put(
+              `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/${existingPhotoId}`,
+              formData,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data"
+                }
               }
-            }
-          );
+            );
 
-          if (photoResponse.data.status === "CREATED") {
-            console.log("Photo uploaded successfully:", photoResponse.data);
+            if (photoResponse.data.status === "UPDATED") {
+              console.log("Photo updated successfully:", photoResponse.data);
+            } else {
+              console.error("Unexpected photo update response:", photoResponse.data);
+            }
           } else {
-            console.error("Unexpected photo upload response:", photoResponse.data);
+            // Create new photo if no existing photo ID
+            console.log("Creating new photo for content ID:", id);
+            const photoResponse = await axios.post(
+              `${process.env.NEXT_PUBLIC_API_URL}/v1/photos`,
+              formData,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data"
+                }
+              }
+            );
+
+            if (photoResponse.data.status === "CREATED") {
+              console.log("Photo uploaded successfully:", photoResponse.data);
+            } else {
+              console.error("Unexpected photo upload response:", photoResponse.data);
+            }
           }
         } catch (photoError) {
           console.error("Failed to upload announcement photo:", photoError);
@@ -145,33 +170,55 @@ export default function AnnouncementDetail() {
       const payload = {
         title: formData.title,
         details: formData.content,
-        image: formData.image,
         tags: ["announcement", "draft"]
       };
 
       const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`, payload);
+      console.log("Draft save response:", response.data);
 
       if (photo) {
         try {
           const formData = new FormData();
           formData.append("File", photo);
           formData.append("content_id", id);
-          formData.append("type", 5); // TODO: use appropriate ENUM
+          formData.append("type", PhotoType.PROJECT_PIC); // Using the proper ENUM from scopes.js
 
-          const photoResponse = await axios.post(
-            `${process.env.NEXT_PUBLIC_API_URL}/v1/photos`,
-            formData,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data"
+          // If we have an existing photo ID, update it instead of creating a new one
+          if (existingPhotoId) {
+            console.log("Updating existing photo with ID:", existingPhotoId);
+            const photoResponse = await axios.put(
+              `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/${existingPhotoId}`,
+              formData,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data"
+                }
               }
-            }
-          );
+            );
 
-          if (photoResponse.data.status === "CREATED") {
-            console.log("Photo uploaded successfully:", photoResponse.data);
+            if (photoResponse.data.status === "UPDATED") {
+              console.log("Photo updated successfully:", photoResponse.data);
+            } else {
+              console.error("Unexpected photo update response:", photoResponse.data);
+            }
           } else {
-            console.error("Unexpected photo upload response:", photoResponse.data);
+            // Create new photo if no existing photo ID
+            console.log("Creating new photo for content ID:", id);
+            const photoResponse = await axios.post(
+              `${process.env.NEXT_PUBLIC_API_URL}/v1/photos`,
+              formData,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data"
+                }
+              }
+            );
+
+            if (photoResponse.data.status === "CREATED") {
+              console.log("Photo uploaded successfully:", photoResponse.data);
+            } else {
+              console.error("Unexpected photo upload response:", photoResponse.data);
+            }
           }
         } catch (photoError) {
           console.error("Failed to upload announcement photo:", photoError);
@@ -197,6 +244,7 @@ export default function AnnouncementDetail() {
         setPhotoPreview(cachedPhoto);
       }
 
+      // Get content data
       axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`)
         .then((response) => {
           const content = response.data.content;
@@ -212,9 +260,23 @@ export default function AnnouncementDetail() {
           if (!cachedPhoto && content?.image) {
             setPhotoPreview(content.image);
           }
+
+          // Check if there's an existing photo for this content
+          return axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/photos?content_id=${id}`);
+        })
+        .then((photoResponse) => {
+          if (photoResponse?.data?.status === "OK" && photoResponse.data.photos?.length > 0) {
+            // Store the existing photo ID for potential updates
+            setExistingPhotoId(photoResponse.data.photos[0].id);
+
+            // If we don't already have a preview, use the photo URL
+            if (!photoPreview && photoResponse.data.photos[0].url) {
+              setPhotoPreview(photoResponse.data.photos[0].url);
+            }
+          }
         })
         .catch((error) => {
-          console.log("Error fetching content", error);
+          console.log("Error fetching content or photos", error);
           setToast({ type: "error", message: "Failed to load announcement" });
         })
         .finally(() => {

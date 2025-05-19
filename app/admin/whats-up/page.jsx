@@ -81,8 +81,8 @@ export default function CommunicationPage() {
   // Save photos to localStorage
   const savePhotosToLocalStorage = (photos, typesMap) => {
     try {
-      localStorage.setItem('announcementPhotos', JSON.stringify(photos));
-      localStorage.setItem('photoTypesMap', JSON.stringify(typesMap));
+      localStorage.setItem("announcementPhotos", JSON.stringify(photos));
+      localStorage.setItem("photoTypesMap", JSON.stringify(typesMap));
     } catch (error) {
       console.error("Error saving photos to localStorage:", error);
     }
@@ -179,27 +179,27 @@ export default function CommunicationPage() {
     fetchContents();
   }, []);
 
-  // Main function to determine image based on content type
-  const getDefaultImageByType = (type) => {
-    if (!type) return getDefaultEventImage();
+  // // Main function to determine image based on content type
+  // const getDefaultImageByType = (type) => {
+  //   if (!type) return getDefaultEventImage();
 
-    // Check if type is a string and normalize it
-    const contentType = typeof type === "string" ? type.toLowerCase() : null;
+  //   // Check if type is a string and normalize it
+  //   const contentType = typeof type === "string" ? type.toLowerCase() : null;
 
-    switch (contentType) {
-    case "event":
-      return getDefaultEventImage();
-    case "project":
-    case "donation_drive":
-    case "fundraising":
-    case "scholarship":
-      return getDefaultProjectImage();
-    case "job":
-      return getDefaultJobImage();
-    default:
-      return getDefaultEventImage();
-    }
-  };
+  //   switch (contentType) {
+  //   case "event":
+  //     return getDefaultEventImage();
+  //   case "project":
+  //   case "donation_drive":
+  //   case "fundraising":
+  //   case "scholarship":
+  //     return getDefaultProjectImage();
+  //   case "job":
+  //     return getDefaultJobImage();
+  //   default:
+  //     return getDefaultEventImage();
+  //   }
+  // };
 
   const filteredAnnouncements = announcements.filter((announcement) => {
     const hasAnnouncementTag = announcement.tags?.includes("announcement");

@@ -116,7 +116,7 @@ export default function CreateAnnouncement() {
 
   const handleSubmit = async () => {
 
-        // Check if user is ADMIN
+    // Check if user is ADMIN
     // if (!userContext?.state?.isAdmin) {
     //   setToast({
     //     type: "fail",
