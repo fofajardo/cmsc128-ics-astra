@@ -11,7 +11,7 @@ import { capitalizeTitle } from "@/utils/format";
 
 export default function Organizations() {
   const [showFilter, setShowFilter] = useState(false);
-  const { info } = useTab();
+  const { info, setRefreshTrigger } = useTab();
   const [toast, setToast] = useState(null);
   const toggleFilter = () => {
     setShowFilter((prev) => !prev);
@@ -28,7 +28,7 @@ export default function Organizations() {
     display: [1, 10],       // Displaying Alum #1 to #10
     currPage: 1,            // Current active page
     lastPage: 10,           // Last Page => total/numToShow
-    numToShow: 5,          // How many organizations to show
+    numToShow: 5,           // How many organizations to show
     total: 0                // How many organizations in db
   });
   const [searchQuery, setSearchQuery] = useState("");
@@ -41,63 +41,63 @@ export default function Organizations() {
     }));
   }, [searchQuery, stableFilters, pagination.numToShow]);
 
-  useEffect(() => {
-    const fetchOrganizations = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/v1/organizations`,
-          {
-            params: {
-              page: pagination.currPage,
-              limit: pagination.numToShow,
-              search: searchQuery,
-              filters: stableFilters
-            },
-          }
+  const fetchOrganizations = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/organizations`,
+        {
+          params: {
+            page: pagination.currPage,
+            limit: pagination.numToShow,
+            search: searchQuery,
+            filters: stableFilters
+          },
+        }
+      );
+
+      console.log(response.data.organization);
+
+      if (response.data.status === "OK") {
+        const updatedOrganizationList = await Promise.all(
+          response.data.organization.map(async (organization) => {
+            const organizationData = {
+              id: organization.id,
+              name: capitalizeTitle(organization.name),
+              acronym: organization.acronym,
+              type: organization.type,
+              founded_date: organization.founded_date,
+              created_at: organization.created_at
+            };
+
+            return organizationData;
+          })
         );
 
-        console.log(response.data.organization);
+        const listLength = updatedOrganizationList.length;
+        const lowerBound = listLength === 0 ? 0 : (pagination.currPage - 1) * pagination.numToShow + 1;
+        const upperBound = listLength === 0 ? 0 : lowerBound + listLength - 1;
 
-        if (response.data.status === "OK") {
-          const updatedOrganizationList = await Promise.all(
-            response.data.organization.map(async (organization) => {
-              const organizationData = {
-                id: organization.id,
-                name: capitalizeTitle(organization.name),
-                acronym: organization.acronym,
-                type: organization.type,
-                founded_date: organization.founded_date,
-                created_at: organization.created_at
-              };
+        setPagination((prev) => ({
+          ...prev,
+          display: [lowerBound, upperBound],
+          total: response.data.total,
+          lastPage: Math.ceil(response.data.total / prev.numToShow)
+        }));
 
-              return organizationData;
-            })
-          );
-
-          const listLength = updatedOrganizationList.length;
-          const lowerBound = listLength === 0 ? 0 : (pagination.currPage - 1) * pagination.numToShow + 1;
-          const upperBound = listLength === 0 ? 0 : lowerBound + listLength - 1;
-
-          setPagination((prev) => ({
-            ...prev,
-            display: [lowerBound, upperBound],
-            total: response.data.total,
-            lastPage: Math.ceil(response.data.total / prev.numToShow)
-          }));
-
-          setOrgList(updatedOrganizationList);
-        } else {
-          console.error("Unexpected response:", response.data);
-        }
-      } catch (error) {
-        console.error("Failed to fetch organizations:", error);
-        setToast({
-          type: "fail",
-          message: "Failed to fetch organizations.",
-        });
+        setOrgList(updatedOrganizationList);
+      } else {
+        console.error("Unexpected response:", response.data);
       }
-    };
+    } catch (error) {
+      console.error("Failed to fetch organizations:", error);
+      setToast({
+        type: "fail",
+        message: "Failed to fetch organizations.",
+      });
+    }
+  };
 
+  useEffect(() => {
     fetchOrganizations();
   }, [searchQuery, stableFilters, pagination.numToShow, pagination.currPage]);
 
@@ -107,6 +107,7 @@ export default function Organizations() {
         await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/v1/organizations/${id}`);
         setToast({ type: "success", message: `${name} has been deleted!` });
         fetchOrganizations();
+        setRefreshTrigger(prev => prev + 1);
       } catch (error) {
         console.error("Failed to delete organization:", error);
         setToast({ type: "fail", message: `Failed to delete ${name}.` });
