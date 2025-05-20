@@ -27,13 +27,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { NameEmailSkeleton, Skeleton } from "@/components/ui/skeleton";
+import { PROJECT_STATUS, PROJECT_STATUS_LABELS } from "../../../../common/scopes";
 
-// temporary labels
-const PROJECT_STATUS_LABELS = {
-  0: "Pending",
-  1: "Active",
-  2: "Finished",
-};
 const PROJECT_STATUS_COLORS = {
   0: "bg-yellow-100 text-yellow-800",
   1: "bg-blue-100 text-blue-800",
@@ -192,6 +187,7 @@ export function Donut({ fundsRaised, projectStatistics }) {
 
   // filter out donations with 0 funds
   const filteredStatistics = projectStatistics?.filter(item => item.funds > 0) ?? [];
+  // console.log("Filtered Statistics:", filteredStatistics);>
   React.useEffect(() => {
     if (
       filteredStatistics.length > 0 &&
@@ -222,7 +218,7 @@ export function Donut({ fundsRaised, projectStatistics }) {
         <div className="flex justify-between items-center">
           <div className="flex flex-col">
             <CardTitle>Projects by Funds Raised</CardTitle>
-            <CardDescription>
+            <CardDescription className ="line-clamp-1">
               See which projects have raised the most funds.
             </CardDescription>
           </div>
@@ -230,13 +226,13 @@ export function Donut({ fundsRaised, projectStatistics }) {
             onClick={() => router.push("/admin/projects")}
             className="text-astraprimary font-rb hover:underline cursor-pointer"
           >
-            See All
+            View
           </a>
         </div>
         <hr className="h-2 border-astrablack"></hr>
       </CardHeader>
       {/* Page size selector */}
-      <div className="flex items-center gap-2 justify-end mr-6">
+      <div className="flex items-center gap-2 justify-end mr-6 mb-[-20]">
         <span className="text-muted-foreground">Show</span>
         <div className="min-w-[60px]">
           <Select
@@ -357,7 +353,7 @@ export function Donut({ fundsRaised, projectStatistics }) {
               ? paginatedData.map((item, index) => (
                 <div
                   key={index}
-                  className="transition-all cursor-pointer duration-200
+                  className="transition-all duration-200
                         hover:scale-102
                         rounded-lg px-2.5 py-0.5 group"
                 >
