@@ -23,7 +23,7 @@ const sendEmail = async (req, res) => {
       message: "Failed to send email."
     });
   }
-}
+};
 
 const emailController = {
   sendEmail
