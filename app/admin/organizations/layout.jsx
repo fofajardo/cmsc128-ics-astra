@@ -55,7 +55,7 @@ export default function AdminAlumniLayout({ children }) {
 
   const statData = stats;
 
-   return (
+  return (
     <>
       <ActiveNavItemMarker id={NavMenuItemId.ORGANIZATIONS} />
 

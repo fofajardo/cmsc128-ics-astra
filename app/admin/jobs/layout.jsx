@@ -60,10 +60,9 @@ export default function AdminJobsLayout({ children }) {
     }
   };
 
-return (
+  return (
     <>
       <ActiveNavItemMarker id={NavMenuItemId.JOBS} />
-
       {/* Background Section */}
       <div className="relative w-full h-auto overflow-hidden">
         {/* Background Image */}
