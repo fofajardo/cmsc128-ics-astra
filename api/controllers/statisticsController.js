@@ -289,11 +289,44 @@ const getInterestedAlumniEmail = async (req, res) => {
   }
 };
 
+const getEventsStats = async (req, res) => {
+  try {
+    const stats = await statisticsService.fetchEventsStats(req.supabase);
+
+    res.status(httpStatus.OK).json({
+      status: "OK",
+      stats: stats
+    });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
+
+const getEventsSummary = async (req, res) => {
+  try {
+    const eventsSummary = await statisticsService.fetchEventsSummary(req.supabase);
+
+    res.status(httpStatus.OK).json({
+      status: "OK",
+      list: eventsSummary
+    });
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
+
 const statisticsController = {
   getAlumniStats,
   getActiveAlumniStats,
   getActiveJobsStats,
   getActiveEventsStats,
+  getEventsSummary,
   getFundsRaisedStats,
   getUpcomingEvents,
   getProjectDonationSummary,
@@ -308,6 +341,7 @@ const statisticsController = {
   getAlumniEmploymentStatus,
   getAlumniBatch,
   getInterestedAlumniEmail,
+  getEventsStats,
 };
 
 export default statisticsController;

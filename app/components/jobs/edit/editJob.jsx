@@ -100,7 +100,7 @@ export default function JobForm({isEdit, close, job, content, handleUpdate}){
         await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${job.job_id}`, contentToSend);
       }
       // const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs/${job.job_id}`);
-      console.log("Job and/or content updated successfully!");
+      // console.log("Job and/or content updated successfully!");
       setPrompt(false);
       handleUpdate(job.job_id);
       close();
@@ -213,7 +213,7 @@ export default function JobForm({isEdit, close, job, content, handleUpdate}){
               placeholder="Please Select"
               onChange={(selected) => {
                 setLocationType(selected);
-                setFormData((prev) => ({ ...prev, location_type: selected?.value || "" }));
+                setFormData((prev) => ({ ...prev, location_type: selected?.value }));
               }}
               value={locationType}
               instanceId="locationType"
@@ -254,7 +254,7 @@ export default function JobForm({isEdit, close, job, content, handleUpdate}){
               placeholder="Please Select"
               onChange={(selected) => {
                 setEmploymentType(selected);
-                setFormData((prev) => ({ ...prev, employment_type: selected?.value || "" }));
+                setFormData((prev) => ({ ...prev, employment_type: selected?.value }));
               }}
               value={employmentType}
               instanceId="employmentType"
@@ -295,7 +295,7 @@ export default function JobForm({isEdit, close, job, content, handleUpdate}){
               placeholder="Please Select"
               onChange={(selected) => {
                 setStatus(selected);
-                setFormData((prev) => ({ ...prev, status: selected?.value || "" }));
+                setFormData((prev) => ({ ...prev, status: selected?.value }));
               }}
               value={status}
               instanceId="status"

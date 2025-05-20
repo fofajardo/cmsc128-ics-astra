@@ -13,10 +13,23 @@ const fetchPhotoById = async (supabase, id) => {
     .single();
 };
 
+const fetchAllFiles = async (supabase) => {
+  return await supabase
+    .from("files")
+    .select("*");
+};
+
 const insertPhoto = async (supabase, photoData) => {
   return await supabase
     .from("photos")
     .insert(photoData)
+    .select();
+};
+
+const insertFile = async (supabase, fileData) => {
+  return await supabase
+    .from("files")
+    .insert(fileData)
     .select();
 };
 
@@ -127,6 +140,29 @@ const getAvatarUrl = async (supabase, id) => {
     .createSignedUrl(keyData.image_key, 60 * 60);
 };
 
+const fetchDonationReceipt = async (supabase, userId, projectId) => {
+  return await supabase
+    .from("photos")
+    .select("*")
+    .eq("user_id", userId)
+    .eq("content_id", projectId)
+    .eq("type", PhotoType.PROOF_OF_PAYMENT);
+};
+
+const fetchFileById = async (supabase, id) => {
+  return await supabase
+    .from("files")
+    .select("*")
+    .eq("content_id", id)
+    .single();
+};
+
+const deleteNewsletterById = async (supabase, id) => {
+  return await supabase
+    .from("files")
+    .delete()
+    .eq("content_id", id);
+};
 const photosService = {
   fetchAllPhotos,
   fetchPhotoById,
@@ -142,6 +178,11 @@ const photosService = {
   fetchPhotoTypesByContentIds,
   fetchPhotosByContentId,
   getAvatarUrl,
+  fetchDonationReceipt,
+  insertFile,
+  fetchAllFiles,
+  fetchFileById,
+  deleteNewsletterById,
 };
 
 export default photosService;

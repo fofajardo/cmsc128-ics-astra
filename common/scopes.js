@@ -71,7 +71,6 @@ const PhotoType = Object.freeze({
   JOB_PIC: 4,
   PROJECT_PIC: 5,
   POSTS_PIC: 6,
-  RECEIPTS_PIC: 7,
   isDefined: function(aValue) {
     if (typeof aValue === "string" || aValue instanceof String) {
       const value = aValue.toLowerCase().trim();
@@ -83,7 +82,7 @@ const PhotoType = Object.freeze({
       case PhotoType.JOB_PIC:
       case PhotoType.PROJECT_PIC:
       case PhotoType.POSTS_PIC:
-      case PhotoType.RECEIPTS_PIC:
+
         return true;
       default:
         break;
@@ -97,7 +96,7 @@ const PhotoType = Object.freeze({
     }
     return parseInt(aValue);
   },
-})
+});
 
 const EmploymentStatus = Object.freeze({
   UNEMPLOYED: 0,
@@ -300,11 +299,38 @@ export const REQUEST_TYPE = {
   OTHERS: 2,
 };
 
+const EventStatus = Object.freeze({
+  OPEN: "open",
+  CLOSED: "closed",
+  CANCELLED: "cancelled",
+  isDefined: function(aValue) {
+    if (typeof aValue === "string" || aValue instanceof String) {
+      const value = aValue.toLowerCase().trim();
+      switch (value) {
+      case EventStatus.OPEN:
+      case EventStatus.CLOSED:
+      case EventStatus.CANCELLED:
+        return true;
+      default:
+        break;
+      }
+    }
+    return false;
+  },
+  parse: function(aValue) {
+    if (!this.isDefined(aValue)) {
+      return null;
+    }
+    return parseInt(aValue);
+  },
+});
+
 export {
   RoleName,
   Subjects,
   Actions,
   PhotoType,
   EmploymentStatus,
+  EventStatus,
   JobsStatus,
 };

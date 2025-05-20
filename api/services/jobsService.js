@@ -23,6 +23,28 @@ const fetchJobs = async (supabase, filters) => {
   return await query;
 };
 
+const fetchReportedJobs = async (supabase, filters) => {
+  console.log("Supabase:", supabase);
+
+  const { data: reports, error: reportError } = await supabase
+    .from("reports")
+    .select("content_id");
+
+  if (reportError) {
+    console.error(reportError);
+    return;
+  }
+
+  const reported = reports.map(report => report.content_id).filter(id => id !== null);
+
+  const jobs = await supabase
+    .from("jobs")
+    .select("*")
+    .in("job_id", reported);
+
+  return jobs;
+};
+
 const fetchJobById = async (supabase, jobId) => {
   return await supabase
     .from("jobs")
@@ -66,6 +88,7 @@ const deleteJobData = async (supabase, jobId) => {
 
 const jobsService = {
   fetchJobs,
+  fetchReportedJobs,
   fetchJobById,
   checkExistingJob,
   insertJob,

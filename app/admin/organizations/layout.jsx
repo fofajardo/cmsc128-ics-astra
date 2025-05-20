@@ -26,32 +26,34 @@ export default function AdminAlumniLayout({ children }) {
     title: "Organizations",
     search: "Search for an organization",
   });
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const fetchStatistics = async () => {
+    try {
+      console.log(`${process.env.NEXT_PUBLIC_API_URL}/v1/organizations/statistics`);
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/organizations/stats`);
+
+      if (response.data.status === "OK") {
+        // Update state with the statistics data
+        const { total_organizations, universities, outside } = response.data.statistics;
+        setStats({
+          total_organizations,
+          universities,
+          outside,
+        });
+      } else {
+        console.error("Failed to fetch statistics");
+      }
+    } catch (error) {
+      console.error("Error fetching statistics:", error);
+    }
+  };
 
   useEffect(() => {
     // Fetch statistics from the API
-    const fetchStatistics = async () => {
-      try {
-        console.log(`${process.env.NEXT_PUBLIC_API_URL}/v1/organizations/statistics`);
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/organizations/stats`);
-
-        if (response.data.status === "OK") {
-          // Update state with the statistics data
-          const { total_organizations, universities, outside } = response.data.statistics;
-          setStats({
-            total_organizations,
-            universities,
-            outside,
-          });
-        } else {
-          console.error("Failed to fetch statistics");
-        }
-      } catch (error) {
-        console.error("Error fetching statistics:", error);
-      }
-    };
 
     fetchStatistics();
-  }, []); // Empty dependency array means this runs only once when the component mounts
+  }, [refreshTrigger]); // Empty dependency array means this runs only once when the component mounts
 
   const statData = stats;
 
@@ -131,8 +133,8 @@ export default function AdminAlumniLayout({ children }) {
         </div>
       </div>
 
-      {/* Context Provider */}
-      <TabContext.Provider value={{ info, setInfo }}>
+      {/* pass the value of currTab and info to the children */}
+      <TabContext.Provider value={{ info, setRefreshTrigger }}>
         {children}
       </TabContext.Provider>
 

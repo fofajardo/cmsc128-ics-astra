@@ -1,21 +1,29 @@
 import httpStatus from "http-status-codes";
 import eventsService from "../services/eventsService.js";
+import {sendEmailBlast} from "../services/email.js";
 import { isValidUUID, isValidDate } from "../utils/validators.js";
 import { Actions, Subjects } from "../../common/scopes.js";
 
 const getEvents = async (req, res) => {
   try {
-  //  console.log("User role:", req.user?.role);
-    //console.log("Permissions check:", req.you.can(Actions.READ, Subjects.EVENT)); //Fix: alumnus permission results to false here
-    const filters = req.query;
 
-    if (req.you.cannot(Actions.READ, Subjects.EVENT)) {
+    if (req.you && req.you.cannot(Actions.READ, Subjects.EVENT)) {
       return res.status(httpStatus.FORBIDDEN).json({
         status: "FORBIDDEN",
         message: "You do not have permission to view events"
-
       });
     }
+
+    const filters = {
+      searchQuery: req.query.searchQuery || null,
+      locationFilter: req.query.locationFilter ? JSON.parse(req.query.locationFilter) : null,
+      statusFilter: req.query.statusFilter ? JSON.parse(req.query.statusFilter) : null,
+      startDateFilter: req.query.startDateFilter || null,
+      endDateFilter: req.query.endDateFilter || null,
+      sortFilter: req.query.sortFilter ? JSON.parse(req.query.sortFilter) : null,
+      page: req.query.page || 1,
+      limit: req.query.limit || 4
+    };
 
     const { data, count, error } = await eventsService.fetchEvents(req.supabase, filters);
 
@@ -29,11 +37,14 @@ const getEvents = async (req, res) => {
     return res.status(httpStatus.OK).json({
       status: "OK",
       list: data || [],
-      total: count || 0
-
+      total: count || 0,
+      page: parseInt(filters.page),
+      limit: parseInt(filters.limit),
+      totalPages: Math.ceil(count / filters.limit) || 0
     });
 
   } catch (error) {
+    console.error("Error in getEvents controller:", error);
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: "FAILED",
       message: error.message
@@ -165,13 +176,15 @@ const createEvent = async (req, res) => {
       "venue",
       "external_link",
       "access_link",
-      "online"
+      "online",
+      "status",
+      "slots"
     ];
     const missingFields = requiredFields.filter(field => !(field in req.body));
     if (missingFields.length > 0) {
       return res.status(httpStatus.BAD_REQUEST).json({
         status: "FAILED",
-        message: `Missing required fields: ${missingFields.join(", ")}`
+        message: `Missing required fields: ${missingFields}`
       });
     }
 
@@ -181,7 +194,9 @@ const createEvent = async (req, res) => {
       venue,
       external_link,
       access_link,
-      online
+      online,
+      slots,
+      status
     } = req.body;
 
     const parsedDate = new Date(event_date);
@@ -193,7 +208,9 @@ const createEvent = async (req, res) => {
             typeof venue === "string" &&
             typeof external_link === "string" &&
             typeof access_link === "string" &&
-            typeof online === "boolean";
+            typeof online === "boolean" &&
+            typeof slots === "number" &&
+            typeof status === "string";
 
     if (!isValidTypes) {
       return res.status(httpStatus.BAD_REQUEST).json({
@@ -230,7 +247,10 @@ const createEvent = async (req, res) => {
       venue,
       external_link,
       access_link,
-      online
+      online,
+      slots,
+      status
+
     });
 
     if (error) {
@@ -293,7 +313,9 @@ const updateEvent = async (req, res) => {
       venue,
       external_link,
       access_link,
-      online
+      online,
+      slots,
+      status
     } = req.body;
 
 
@@ -303,7 +325,9 @@ const updateEvent = async (req, res) => {
       venue,
       external_link,
       access_link,
-      online
+      online,
+      slots,
+      status
     };
     Object.keys(updateData).forEach(key => {
       if (updateData[key] === undefined) {
@@ -399,6 +423,31 @@ const deleteEvent = async (req, res) => {
   }
 };
 
+const sendEventEmail = async(req, res) => {
+  const { emails, subject, content } = req.body;
+
+  if (!emails || !Array.isArray(emails) || !subject || !content) {
+    return res.status(httpStatus.BAD_REQUEST).json({ error: "Invalid request format" });
+  }
+
+  try {
+    const {results,error} = await sendEmailBlast(emails, subject, content);
+    if (error){
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error
+      });
+    }
+    return res.status(httpStatus.OK).json({
+      status: "OK",
+      message: "Events successfully sent",
+    });
+  } catch (err) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      error: "Failed to send emails", details: err.message
+    });
+  }
+};
 const eventsController = {
   getEvents,
   getEventById,
@@ -407,7 +456,8 @@ const eventsController = {
   createEvent,
   updateEvent,
   deleteEmptyEvent,
-  deleteEvent
+  deleteEvent,
+  sendEventEmail
 };
 
 export default eventsController;

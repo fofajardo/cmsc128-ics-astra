@@ -1,8 +1,7 @@
 "use client";
 
-import { useMemo } from "react";
-import { TrendingUp } from "lucide-react";
-import { Pie, PieChart } from "recharts";
+import { useMemo, useState } from "react";
+import { Pie, PieChart, Cell } from "recharts";
 
 import {
   Card,
@@ -19,6 +18,13 @@ import {
   ChartLegendContent,
   ChartLegend,
 } from "@/components/ui/chart";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function ReusablePieChart({
   data,
@@ -29,11 +35,30 @@ export default function ReusablePieChart({
   nameKey = "name",
   footer = "",
   maxHeight = 250,
+  selectOptions = null, // { options: [{ label, value }], dataMap: { [value]: { data, config } }, defaultValue }
 }) {
+  // If selectOptions is provided, use its data/config, else use props
+  const [selected, setSelected] = useState(
+    selectOptions?.defaultValue || (selectOptions?.options?.[0].value)
+  );
+  const [chartKey, setChartKey] = useState(selected);
+
+  const handleSelectChange = (value) => {
+    setSelected(value);
+    setChartKey(value);
+  };
+
+  const chartData = selectOptions
+    ? selectOptions.dataMap[selected]?.data || []
+    : data;
+  const chartConfig = selectOptions
+    ? selectOptions.dataMap[selected]?.config || {}
+    : config;
+
   // calculate total for percentage
   const total = useMemo(
-    () => data.reduce((sum, item) => sum + (item[dataKey] ?? 0), 0),
-    [data, dataKey]
+    () => chartData.reduce((sum, item) => sum + (item[dataKey] ?? 0), 0),
+    [chartData, dataKey]
   );
 
   // custom label to show percentage
@@ -45,35 +70,55 @@ export default function ReusablePieChart({
 
   return (
     <Card className="flex flex-col">
-      <CardHeader className="items-center pb-0">
-        <CardTitle>{title}</CardTitle>
-        {description && <CardDescription>{description}</CardDescription>}
+      <CardHeader className="flex-row items-start space-y-0 pb-0">
+        <div className="flex flex-row items-center space-x-2 w-full">
+          <div className="grid gap-1 flex-1">
+            <CardTitle>{title}</CardTitle>
+            {description && <CardDescription>Showing {total} {description}</CardDescription>}
+          </div>
+          {selectOptions && (
+            <Select value={selected} onValueChange={handleSelectChange}>
+              <SelectTrigger
+                className="ml-auto h-7 max-w-full rounded-lg pl-2.5"
+                aria-label="Select chart type"
+              >
+                <SelectValue placeholder="Select type" />
+              </SelectTrigger>
+              <SelectContent align="end" className="rounded-xl">
+                {selectOptions.options.map(opt => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        </div>
       </CardHeader>
       <CardContent className="flex-1 pb-0 px-4">
         <ChartContainer
-          config={config}
-          className={`mx-auto aspect-square max-h-[${maxHeight + 10}px] font-s pb-0 [&_.recharts-pie-label-text]:fill-foreground [&_.recharts-pie-label-text]:text-xs [&_.recharts-pie-label-text]:font-semibold [&_.recharts-pie-label-text]:leading-none`}
+          key={chartKey}
+          config={chartConfig}
+          className="aspect-auto h-[400px] w-full"
         >
           <PieChart>
             <ChartTooltip content={<ChartTooltipContent hideLabel />} />
             <Pie
-              data={data}
+              data={chartData}
               dataKey={dataKey}
               label={renderLabel}
               nameKey={nameKey}
-            />
+            >
+            </Pie>
             <ChartLegend
               content={props => <ChartLegendContent {...props} nameKey={nameKey} />}
+              className="flex-wrap"
             />
           </PieChart>
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
-        {footer && <p className="text-muted-foreground">{footer}</p>}
-        <div className="flex items-center gap-2">
-          <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          <span className="text-muted-foreground">Total: {total}</span>
-        </div>
+        {footer}
       </CardFooter>
     </Card>
   );

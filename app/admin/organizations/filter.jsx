@@ -1,33 +1,41 @@
 import { useState } from "react";
 
-export default function SearchFilter({onClose, onApply}) {
-  const initialFilters = {
-    orgName: "",
-    fromDate: "",
-    toDate: "",
-    sortCategory: "",
-    sortOrder: "asc",
-  };
-
+export default function SearchFilter({ onClose, initialFilters, updateFilters }) {
   const [filters, setFilters] = useState(initialFilters);
 
-
   const handleResetAll = () => {
-    setFilters(initialFilters);
+    setFilters({
+      orgName: "",
+      fromDate: "",
+      toDate: "",
+      sortCategory: "",
+      sortOrder: "asc",
+    });
+    updateFilters({
+      orgName: "",
+      fromDate: "",
+      toDate: "",
+      sortCategory: "",
+      sortOrder: "asc",
+    });
+    onClose();
   };
 
   const handleApply = () => {
-    if (onApply) {
-      onApply(filters);
-    }
-    onClose(); // optionally close after apply
+    updateFilters(filters);
+    onClose();
+  };
+
+  const closeModal = () => {
+    setFilters(initialFilters);
+    onClose();
   };
 
   return (
     <div className="bg-astrawhite p-6 rounded-2xl shadow-lg space-y-4 overflow-y-auto h-auto">
       <div className="flex justify-between items-center">
         <div className="text-astrablack text-2xl font-semibold">Filter by:</div>
-        <button className="text-xl text-astradarkgray hover:text-astrablack font-bold" onClick={onClose}>&times;</button>
+        <button className="text-xl text-astradarkgray hover:text-astrablack font-bold" onClick={closeModal}>&times;</button>
       </div>
 
       {/* Organization Name */}

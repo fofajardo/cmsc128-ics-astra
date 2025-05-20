@@ -1,5 +1,6 @@
 import httpStatus from "http-status-codes";
 import photosService from "../services/photosService.js";
+import contentsService from "../services/contentsService.js";
 import fs from "fs";
 import path from "path";
 import { get } from "http";
@@ -59,10 +60,58 @@ const getPhotoById = async (req, res) => {
   }
 };
 
+const getFileById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { data, error } = await photosService.fetchFileById(req.supabase, id);
+
+    if (error || !data) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: "FAILED",
+        message: "File not found",
+      });
+    }
+
+    // Generate signed URL for the file
+    const { data: signedUrlData, error: signedUrlError } = await req.supabase
+      .storage
+      .from("user-photos-bucket")
+      .createSignedUrl(data.image_key, 60 * 60); // URL valid for 1 hour
+
+    if (signedUrlError) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: "Failed to generate file URL",
+      });
+    }
+
+    return res.status(httpStatus.OK).json({
+      status: "OK",
+      file: {
+        ...data,
+        url: signedUrlData.signedUrl
+      },
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message,
+    });
+  }
+};
+
 const uploadPhoto = async (req, res) => {
   try {
     const { user_id, content_id, type } = req.body;
     const file = req.file;
+
+    console.log("File upload details:", {
+      file: file,
+      user_id: user_id,
+      content_id: content_id,
+      type: type
+    });
 
     // Validate that at least one of user_id or content_id exists, and file is provided
     if (!file || (!user_id && !content_id) || type === undefined) {
@@ -122,11 +171,108 @@ const uploadPhoto = async (req, res) => {
   }
 };
 
+const getFiles = async (req, res) => {
+  try {
+    const { data, error } = await photosService.fetchAllFiles(req.supabase);
+
+    console.log("Files:", data);
+
+    if (error) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error.message,
+      });
+    }
+
+    return res.status(httpStatus.OK).json({
+      status: "OK",
+      files: data,
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message,
+    });
+  }
+};
+
+const uploadNewsletter = async (req, res) => {
+  try {
+    const { title, user_id, content_id } = req.body;
+    const file = req.file;
+
+    console.log("Newsletter upload details:", {
+      title: title,
+      file: file
+    });
+
+    if (!file) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "File is required",
+      });
+    }
+
+    // Generate a unique filename
+    const uniqueFilename = `${Date.now()}-${file.originalname}`;
+    const oldPath = path.join(file.destination, file.filename);
+
+    // Read the file content
+    const fileContent = fs.readFileSync(oldPath);
+
+    const { data: storageData, error: storageError } = await req.supabase.storage
+      .from("user-photos-bucket")
+      .upload(uniqueFilename, fileContent, {
+        contentType: file.mimetype,
+      });
+
+    if (storageError) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: `Failed to upload file to Supabase storage: ${storageError.message}`,
+      });
+    }
+
+    const { data, error } = await photosService.insertFile(req.supabase, {
+      user_id: user_id || null,
+      content_id: content_id || null,
+      title: title || null,
+      type: req.body.type || 6, // Default to newsletter type (6)
+      image_key: storageData.path, // Save the new unique file path
+    });
+
+    if (error) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error.message,
+      });
+    }
+
+    return res.status(httpStatus.CREATED).json({
+      status: "CREATED",
+      message: "File uploaded successfully",
+      file: data[0],
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message,
+    });
+  }
+};
+
 const updatePhoto = async (req, res) => {
   try {
     const { id } = req.params;
-    const { user_id, content_id, type } = req.body;
-    const file = req.file;
+    const { user_id, content_id, type, file } = req.body;
+
+    console.log("Photo update details:", {
+      id: id,
+      user_id: user_id,
+      content_id: content_id,
+      type: type,
+      file: file ? "File provided" : "No file"
+    });
 
     if (!id) {
       return res.status(httpStatus.BAD_REQUEST).json({
@@ -239,6 +385,68 @@ const deletePhoto = async (req, res) => {
     return res.status(httpStatus.OK).json({
       status: "DELETED",
       message: "Photo deleted successfully",
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message,
+    });
+  }
+};
+
+const deleteNewsletter = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "Newsletter ID is required",
+      });
+    }
+
+    // First fetch the newsletter details to get the image_key
+    const { data: newsletter, error: fetchError } = await photosService.fetchFileById(req.supabase, id);
+
+    if (fetchError || !newsletter) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: "FAILED",
+        message: "Newsletter not found",
+      });
+    }
+
+    // Delete the file from Supabase storage
+    const { error: storageError } = await req.supabase.storage
+      .from("user-photos-bucket")
+      .remove([newsletter.image_key]);
+
+    if (storageError) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: `Failed to delete file from Supabase storage: ${storageError.message}`,
+      });
+    }
+
+    // Now delete the database records
+    const { data, error } = await photosService.deleteNewsletterById(req.supabase, id);
+    const { data: content, error: contentError } = await contentsService.deleteContentData(req.supabase, id);
+
+    if (error) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error.message,
+      });
+    }
+
+    if (contentError) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: contentError.message,
+      });
+    }
+    return res.status(httpStatus.OK).json({
+      status: "DELETED",
+      message: "Newsletter deleted successfully",
     });
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -423,7 +631,7 @@ const getEventPhotoByContentId = async (req, res) => {
     // console.log("Response error:", error);
 
     if (error || !data) {
-      console.log("Photo not found for content_id:", content_id, "Error:", error);
+      // console.log("Photo not found for content_id:", content_id, "Error:", error);
       return res.status(httpStatus.OK).json({
         status: "OK",
         photo: "/events/default-event.jpg" // Default event image
@@ -493,7 +701,7 @@ const getProjectPhotoByContentId = async (req, res) => {
     // console.log("Response error:", error);
 
     if (error || !data) {
-      console.log("Photo not found for project_id:", project_id, "Error:", error);
+      // console.log("Photo not found for project_id:", project_id, "Error:", error);
       return res.status(httpStatus.OK).json({
         status: "OK",
         photo: "/projects/assets/Donation.jpg" // Default project image
@@ -560,7 +768,7 @@ const getJobPhotoByContentId = async (req, res) => {
     const { data, error } = await photosService.fetchJobPhotos(req.supabase, job_id);
 
     if (error || !data) {
-      console.log("Photo not found for job_id:", job_id, "Error:", error);
+      // console.log("Photo not found for job_id:", job_id, "Error:", error);
       return res.status(200).json({
         status: "OK",
         photo: "/jobs/assets/default-job.jpg" // Default job image
@@ -635,12 +843,115 @@ const getPhotosByContentId = async (req, res) => {
       });
     }
 
+    // Process photos to include signed URLs
+    let photosWithUrls = [];
+    if (data && data.length > 0) {
+      const urlPromises = data.map(async (photo) => {
+        const { data: signedUrlData, error: signedUrlError } = await req.supabase
+          .storage
+          .from("user-photos-bucket")
+          .createSignedUrl(photo.image_key, 60 * 60); // URL valid for 1 hour
+
+        return {
+          ...photo,
+          url: signedUrlError ? null : signedUrlData.signedUrl
+        };
+      });
+
+      photosWithUrls = await Promise.all(urlPromises);
+    }
+
     return res.status(httpStatus.OK).json({
       status: "OK",
-      photos: data || []
+      photos: photosWithUrls || []
     });
 
   } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
+
+const getDonationReceipt = async (req, res) => {
+  try {
+    const { user_id, project_id } = req.query;
+
+    if (!user_id || !project_id) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "Both user_id and project_id are required"
+      });
+    }
+
+    // Fetch the receipt photo matching both user_id and project_id
+    const { data, error } = await photosService.fetchDonationReceipt(req.supabase, user_id, project_id);
+
+    if (error) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error.message
+      });
+    }
+
+    // If no receipt photo found
+    if (!data || data.length === 0) {
+      return res.status(httpStatus.OK).json({
+        status: "OK",
+        message: "No receipt photo found for this donation",
+        photo: null
+      });
+    }
+
+    // Found receipt photo - generate a signed URL
+    const receiptPhoto = data[0];
+
+    try {
+      const { data: signedUrlData, error: signedUrlError } = await req.supabase
+        .storage
+        .from("user-photos-bucket")
+        .createSignedUrl(receiptPhoto.image_key, 60 * 60); // URL valid for 1 hour
+
+      if (signedUrlError) {
+        // Try public URL as fallback
+        const { data: publicUrlData } = req.supabase
+          .storage
+          .from("user-photos-bucket")
+          .getPublicUrl(receiptPhoto.image_key);
+
+        if (publicUrlData && publicUrlData.publicUrl) {
+          return res.status(httpStatus.OK).json({
+            status: "OK",
+            photo: receiptPhoto,
+            url: publicUrlData.publicUrl
+          });
+        } else {
+          return res.status(httpStatus.OK).json({
+            status: "OK",
+            photo: receiptPhoto,
+            url: null,
+            message: "Could not generate URL for receipt photo"
+          });
+        }
+      }
+
+      return res.status(httpStatus.OK).json({
+        status: "OK",
+        photo: receiptPhoto,
+        url: signedUrlData.signedUrl
+      });
+    } catch (urlError) {
+      console.error("Error generating URL for receipt photo:", urlError);
+      return res.status(httpStatus.OK).json({
+        status: "OK",
+        photo: receiptPhoto,
+        url: null,
+        message: "Error generating URL for receipt photo"
+      });
+    }
+  } catch (error) {
+    console.error("Error in getDonationReceipt:", error);
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
       status: "FAILED",
       message: error.message
@@ -663,6 +974,11 @@ const photosController = {
   getJobPhotoByContentId,
   getContentPhotoTypes,
   getPhotosByContentId,
+  getDonationReceipt,
+  uploadNewsletter,
+  getFiles,
+  getFileById,
+  deleteNewsletter,
 };
 
 export default photosController;

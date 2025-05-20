@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 import AdminStatCard from "@/components/AdminStatCard";
 import AdminTabs from "@/components/AdminTabs";
 import {Megaphone, Newspaper, CalendarDays, FilePlus2,  } from "lucide-react";
@@ -16,9 +17,13 @@ export default function AdminAlumniLayout({ children }) {
     title: "Announcements",
     search: "Search for announcements",
   });
+  const [dashboard, setDashboard] = useState({
+    announcements: 0,
+    newsletters: 0,
+  });
 
   const tabs = {
-    "Announcements": 3,
+    "Announcements": 0,
     "Newsletters": 0,
   };
 
@@ -50,7 +55,7 @@ export default function AdminAlumniLayout({ children }) {
 
   //if from profile page, go back and set tab
   const dynamicTabClick = (tabName) => {
-    if (pathname === "/admin/whjats-up"){
+    if (pathname === "/admin/whats-up"){
       handleTabChange(tabName);
     }else {
       handleGoToTab(tabName);
@@ -128,12 +133,25 @@ export default function AdminAlumniLayout({ children }) {
               />
             </div>
           </div>
+          {currTab === "Announcements" && (
+            <Link href="/admin/whats-up/create/announcement" passHref>
+              <button className="mt-7 mx-auto block border-2 border-astrawhite text-astrawhite hover:bg-astrawhite hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-[200px] h-[60px]">
+                Create an announcement
+              </button>
+            </Link>
+          )}
+          {currTab === "Newsletters" && (
+            <Link href="/admin/whats-up/create/newsletter" passHref>
+              <button className="mt-2 border-2 border-astrawhite text-astrawhite hover:bg-astrawhite hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-[200px] h-[60px]">
+                Add a newsletter
+              </button>
+            </Link>
+          )}
         </div>
       </div>
-
-      {/* Tabs and Children Context */}
-      <TabContext.Provider value={{ currTab, setCurrTab, info, setInfo }}>
-        <AdminTabs tabs={tabs} currTab={currTab} handleTabChange={dynamicTabClick} />
+      {/* pass the value of currTab and info to the children */}
+      <TabContext.Provider value={{ currTab, setCurrTab, info, setInfo, setDashboard }}>
+        <AdminTabs tabs ={tabs} currTab={currTab} handleTabChange={dynamicTabClick}/>
         {children}
       </TabContext.Provider>
 

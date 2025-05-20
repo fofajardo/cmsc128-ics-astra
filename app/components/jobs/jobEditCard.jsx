@@ -5,6 +5,7 @@ import ConfirmationPrompt from "./edit/confirmation";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { jobTypeMap, locationTypeMap } from "@/components/jobs/mappings";
+import { formatDate, formatSalary } from "@/utils/format";
 
 export default function JobEditCard({ job }) {
   const [showPrompt, setPrompt] = useState(false);
@@ -23,25 +24,6 @@ export default function JobEditCard({ job }) {
 
   const editPost = () => {
     router.push(`/jobs/${job.job_id}/edit`);
-  };
-
-  const formatSalary = (num) => {
-    const cap = 1_000_000_000;
-    if (num > cap) {
-      // Convert number to string and slice first 12 characters
-      return `₱${num.toLocaleString("en-US").slice(0, 13)}...`;
-    }
-    return `₱${num.toLocaleString("en-US")}`;
-  };
-
-  const formatDate = (date) => {
-    const parsedDate = new Date(date);
-    if (isNaN(parsedDate)) return "Invalid Date";
-    return parsedDate.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric"
-    });
   };
 
   const handleRenew = () => {
@@ -84,7 +66,7 @@ export default function JobEditCard({ job }) {
             <div className="flex items-center gap-2">
               <Clock size={14} className="flex-shrink-0" />
               <p className="text-sm text-astrablack truncate">
-                {formatDate(job.expires_at)}
+                {formatDate(job.expires_at, "short-month", "en-US")}
               </p>
             </div>
           </div>

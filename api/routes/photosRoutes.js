@@ -25,7 +25,9 @@ const photosRouter = () => {
   router.get("/jobs/:job_id", photosController.getJobPhotoByContentId);
   router.get("/content-types", photosController.getContentPhotoTypes);
   router.get("/by-content-id/:contentId", photosController.getPhotosByContentId);
-
+  router.get("/donation-receipt", photosController.getDonationReceipt);
+  router.get("/files", photosController.getFiles);
+  router.get("/files/:id", photosController.getFileById);
   router.use(RequireAuthenticated);
 
   router.get("/profile-pics", photosController.getAllProfilePics);
@@ -34,7 +36,8 @@ const photosRouter = () => {
   router.post("/", upload.single("File"), photosController.uploadPhoto);
   router.put("/:id", upload.single("File"), photosController.updatePhoto);
   router.delete("/:id", photosController.deletePhoto);
-
+  router.post("/newsletter", upload.single("File"), photosController.uploadNewsletter);
+  router.delete("/newsletter/:id", photosController.deleteNewsletter);
   return router;
 };
 

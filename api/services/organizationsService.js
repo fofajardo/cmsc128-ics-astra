@@ -1,11 +1,34 @@
-const fetchOrganizations = async (supabase, page, limit) => {
-  const startIndex = (page - 1) * limit;
-  const endIndex = startIndex + Number(limit) - 1;
+import { applyArraySearch, applyOrganizationFilter, applyPagination } from "../utils/filters.js";
 
-  return await supabase
-    .from("organizations")
-    .select()
-    .range(startIndex, endIndex);
+const fuseThreshold = 0.3; // Adjust this value (0-1) for more/less strict matching
+const fuseOptions = {
+  keys: [
+    "name",
+    "acronym",
+    "founded_date"
+  ],
+  threshold: fuseThreshold,
+  includeScore: true,
+  ignoreLocation: true,
+  minMatchCharLength: 2
+};
+
+const fetchOrganizations = async (supabase, page = 1, limit = 5, search = "", filters = {}) => {
+  const { data, error } = await supabase.from("organizations").select();
+
+  if (error) throw error;
+
+  let filteredData = data;
+  filteredData = applyArraySearch(filteredData, search, fuseOptions);
+  filteredData = applyOrganizationFilter(filteredData, filters);
+  const paginatedData = applyPagination(filteredData, page, limit);
+
+  return {
+    data: paginatedData,
+    total: filteredData.length,
+    page,
+    totalPages: Math.ceil(filteredData.length / limit)
+  };
 };
 
 const fetchOrganizationById = async (supabase, orgId) => {
