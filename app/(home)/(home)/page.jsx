@@ -48,7 +48,7 @@ const ChevronDown = ({ className }) => (
 const sectionBase = "relative h-[95vh] flex items-center overflow-hidden isolate z-10";
 const absoluteInset = "absolute inset-0";
 const textWhiteCenter = "text-astrawhite text-center";
-const buttonBase = "border-1 border-astraprimary text-astrawhite bg-transparent hover:bg-astrawhite/5 hover:text-astrawhite rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-[200px] h-[60px]";
+const buttonBase = "border-1 border-astradirtywhite text-astrawhite bg-transparent hover:bg-astrawhite/5 hover:text-astrawhite rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-[200px] h-[60px]";
 const loopContainer = "loop-container w-full overflow-hidden whitespace-nowrap py-0";
 const loopTrackBase = "inline-block";
 const imageLoopBase = "inline-block mr-3 w-80 h-46 relative";
@@ -75,14 +75,9 @@ export default function Page() {
   };
 
   return (
-    <main className="min-h-screen bg-astratintedwhite relative overflow-hidden">
-      <div className={`${absoluteInset} bg-gradient-to-br from-astradark to-color-pieastra-primary-60 z-0`} />
-      <div className={`${absoluteInset} bg-astrablack/100 z-1`} />
-
-      <RouteGuard />
-
+    <div className="min-h-screen relative overflow-hidden">
+<div className={`${absoluteInset} bg-gradient-to-br from-midnightblue via-[var(--color-astradark)] to-astrablack/90 bg-astrablack/100 subtle-opacity-pulse z-1`} />
       <section className={`${sectionBase} justify-center`}>
-        <div className={`${absoluteInset} bg-gradient-to-br from-astradark to-color-astraprimary/40 animate-pulse-slow z-1`} />
         <motion.div
           initial={{ opacity: 0, scale: 0.8, y: 50 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -103,7 +98,7 @@ export default function Page() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.4 }}
           >
-          Your lifelong connection to ICS starts here. Access resources, network with peers, and advance your career.
+            Your lifelong connection to ICS starts here. Access resources, network with peers, and advance your career.
           </motion.p>
         </motion.div>
         <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 animate-bounce">
@@ -112,54 +107,57 @@ export default function Page() {
       </section>
 
       <section className={`${sectionBase} gap-10`}>
-        <div className={`${absoluteInset} bg-astrablack/20 z-1`} />
-        <motion.div
-  initial={{ opacity: 0, x: 100, scale: 0.8, rotate: -30 }}
-  whileInView={{ opacity: 1, x: 0, scale: 1, rotate: 0 }}
-  transition={{
-    type: "spring",
-    stiffness: 120,
-    damping: 18,
-    duration: 3,
-    delay: 0.4,
-  }}
-  viewport={{ once: true }}
-  className="relative z-20 flex-shrink-0 mr-8 md:mr-16 mt-10 md:mt-16"
->
-  <Image
-    src="/landing_page.gif"
-    alt="Institute of Computer Science Logo"
-    width={600}
-    height={400}
-    className="relative z-10 transform transition-all duration-500 hover:scale-105 object-cover  "
-  />
-</motion.div>
+        <div className="relative z-20 flex-shrink-0 mr-8 md:mr-16 mt-10 md:mt-16 hidden md:block">
+          <motion.div
+            initial={{ opacity: 0, x: 100, scale: 0.8, rotate: -30 }}
+            whileInView={{ opacity: 1, x: 0, scale: 1, rotate: 0 }}
+            transition={{
+              type: "spring",
+              stiffness: 120,
+              damping: 18,
+              duration: 3,
+              delay: 0.4,
+            }}
+            viewport={{ once: true }}
+          >
+            <Image
+              src="/landing_page.gif"
+              alt="Institute of Computer Science Logo"
+              width={600}
+              height={400}
+              className="relative z-10 transform transition-all duration-500 hover:scale-105 object-cover"
+            />
+          </motion.div>
+        </div>
 
         <motion.div
           whileInView={{ opacity: 1, y: 0 }}
           initial={{ opacity: 0, y: 50 }}
           transition={{ duration: 3, ease: "easeOut" }}
           viewport={{ once: true }}
-          className="relative z-20 px-6 md:px-8 max-w-4xl text-astrawhite mb-10 md:mb-16"
+          className="relative z-20 px-6 md:px-8 max-w-4xl text-astrawhite mb-10 md:mb-16 md:text-left text-center"
         >
-          <h1 className="font-h2 mb-6 md:mb-8 leading-tight items-center">
-            Here at ICS-Astra, we keep the spirit of innovation alive by connecting alumni, fostering collaboration, and celebrating achievements beyond graduation.
+          <h1 className="font-h2 mb-4 md:mb-6 leading-tight items-center text-xl md:text-3xl lg:text-4xl">
+            Here at ICS-Astra, we keep the spirit of innovation alive by connecting
+            alumni, fostering collaboration, and celebrating achievements beyond
+            graduation.
             <br />
           </h1>
-          <Link href="/about" passHref>
-            <button className={`${buttonBase} mt-10`}>
-              Learn More
-            </button>
-          </Link>
-        </motion.div>
 
+          <div className="flex justify-center md:justify-start">
+            <Link href="/about" passHref>
+              <button className={`${buttonBase} mt-6 md:mt-10`}>Learn More</button>
+            </Link>
+          </div>
+        </motion.div>
       </section>
+
+
       <section className={`${sectionBase} flex-col justify-center`}>
-        <div className={`${absoluteInset} bg-astrablack/20`} />
         <motion.div
           whileInView={{ opacity: 1, y: 0 }}
           initial={{ opacity: 0, y: 50 }}
-          transition={{ duration: 3 }}
+          transition={{ duration: 5 }}
           viewport={{ once: true }}
           className={`relative z-20 px-6 md:px-8 max-w-4xl ${textWhiteCenter} overflow-hidden`}
         >
@@ -238,6 +236,49 @@ export default function Page() {
           </Link>
         </motion.div>
       </section>
+      <section className={`${sectionBase} gap-10 flex flex-col md:flex-row items-center justify-center flex-wrap`}>
+        <motion.div
+          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 50 }}
+          transition={{ duration: 3, ease: "easeOut" }}
+          viewport={{ once: true }}
+          className="relative z-20 px-6 md:px-8 max-w-full md:max-w-4xl text-astrawhite mb-10 md:mb-16 text-center md:text-left"
+        >
+          <h1 className="font-h2 mb-4 md:mb-6 leading-tight text-xl md:text-3xl lg:text-4xl">
+            Stay connected with the latest updates from Astra-ICS. From important news
+            to exciting announcements, find out what’s happening, what’s new, and
+            what’s coming next — all right here.
+          </h1>
+          <Link href="/about" passHref>
+            <button className={buttonBase}>
+              See Latest Updates
+            </button>
+          </Link>
+        </motion.div>
+
+        <div className="relative z-20 flex-shrink-0 w-full md:w-auto hidden md:block pb-40">
+          <motion.div
+            initial={{ opacity: 0, x: 100, scale: 0.8, rotate: -30 }}
+            whileInView={{ opacity: 1, x: 0, scale: 1, rotate: 0 }}
+            transition={{
+              type: "spring",
+              stiffness: 120,
+              damping: 18,
+              duration: 3,
+              delay: 0.4,
+            }}
+            viewport={{ once: true }}
+          >
+            <Image
+              src="/landing_page_2.gif"
+              alt="Institute of Computer Science Logo"
+              width={1200}
+              height={900}
+              className="relative z-10 transition-all duration-500 hover:scale-105 object-contain w-full h-auto"
+            />
+          </motion.div>
+        </div>
+      </section>
 
       <style jsx>
         {`
@@ -270,6 +311,27 @@ export default function Page() {
           }
         `}
       </style>
+<style jsx>
+  {`
+    .subtle-opacity-pulse {
+      animation: subtlePulse 6s linear infinite alternate;
+    }
+
+    @keyframes subtlePulse {
+      0% {
+        opacity: 0.90;
+      }
+      50% {
+        opacity: 0.95;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+  `}
+</style>
+
+<RouteGuard />
       <motion.div
         animate={controls}
         className="opacity-0 absolute inset-0 w-full h-full z-2 pointer-events-none"
@@ -340,14 +402,14 @@ export default function Page() {
                 number: {
                   density: {
                     enable: true,
-                    width: 400,
-                    height: 400,
+                    width: 500,
+                    height: 500,
                   },
                   value: 100,
                 },
                 opacity: {
                   value: {
-                    min: 0.3,
+                    min: 0.2,
                     max: 1,
                   },
                   animation: {
@@ -377,6 +439,6 @@ export default function Page() {
           />
         )}
       </motion.div>
-    </main>
+    </div>
   );
 }
