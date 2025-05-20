@@ -513,12 +513,12 @@ export default function Dashboard() {
 
     case "events": {
       const pieEventsStats = [
-        { name: "Active", 
-          value: eventsSummaryStats?.active_events ?? 0, 
+        { name: "Active",
+          value: eventsSummaryStats?.active_events ?? 0,
           fill: "var(--color-astradark)" },
 
-        { name: "Past", 
-          value: eventsSummaryStats?.past_events ?? 0, 
+        { name: "Past",
+          value: eventsSummaryStats?.past_events ?? 0,
           fill: "var(--color-astralightgray" },
       ];
 
