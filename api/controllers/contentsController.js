@@ -328,7 +328,7 @@ const contentsController = {
   getContentById,
   createContent,
   updateContent,
-  deleteContent
+  deleteContent,
 };
 
 export default contentsController;
