@@ -669,18 +669,27 @@ function renderActions(id, name, currTab, setRefreshTrigger, setToast) {
       );
 
       const userEmail = userResponse.data?.user?.email;
+
       if (!userEmail) {
         setToast({ type: "error", message: `Email not found for ${name}.` });
         return;
       }
 
-      // Assume backend email trigger endpoint
+      const alumniResponse = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/${id}`
+      );
+
+      console.log(alumniResponse.data);
+
+      const userName = `${alumniResponse.data?.alumniProfile?.honorifics} ${alumniResponse.data?.alumniProfile?.last_name}`;
+
       const emailResponse = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/v1/email/send`,
         {
           to: userEmail,
           subject: "Your Alumni Profile Request Has Been Declined",
           body: reason,
+          name: userName || "recipient"
         }
       );
 

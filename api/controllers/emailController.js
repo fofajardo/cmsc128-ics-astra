@@ -2,7 +2,7 @@ import emailService from "../services/emailService.js";
 import httpStatus from "http-status-codes";
 
 const sendEmail = async (req, res) => {
-  const { to, subject, body } = req.body;
+  const { to, subject, body, name = "recipient" } = req.body;
 
   if (!to || !subject || !body) {
     return res.status(httpStatus.BAD_REQUEST).json({
@@ -12,7 +12,7 @@ const sendEmail = async (req, res) => {
   }
 
   try {
-    await emailService.sendEmail({ to, subject, body });
+    await emailService.sendEmail({ to, subject, body, name });
     return res.status(httpStatus.OK).json({
       status: "SENT"
     });

@@ -13,12 +13,24 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sendEmail = async ({ to, subject, body }) => {
+const sendEmail = async ({ to, subject, body, name }) => {
+  const fullBody = `
+Dear ${name},
+
+${body}
+
+Regards,
+UPLB Alumni Admin Team
+
+---
+This is an automated message. Please do not reply to this email.
+  `.trim();
+
   const mailOptions = {
     from: `UPLB Alumni Admin" <${process.env.EMAIL_USER}>`,
     to,
     subject,
-    text: body
+    text: fullBody
   };
 
   try {
