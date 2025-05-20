@@ -16,5 +16,4 @@ jobs:
           port: ${{ secrets.SSH_DPL_PORT }}
           username: ${{ secrets.SSH_DPL_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            whoami
+          script: ${{ secrets.SSH_DPL_SCRIPT }}
