@@ -90,9 +90,9 @@ export default function AdminAlumniLayout({ children }) {
             </Link>
           )}
           {currTab === "Newsletters" && (
-            <Link href="/admin/whats-up/newsletters/create" passHref>
+            <Link href="/admin/whats-up/create/newsletter" passHref>
               <button className="mt-2 border-2 border-astrawhite text-astrawhite hover:bg-astrawhite hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-[200px] h-[60px]">
-                Create a newsletter
+                Add a newsletter
               </button>
             </Link>
           )}

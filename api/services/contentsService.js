@@ -15,6 +15,10 @@ const fetchContents = async (supabase, filters = {}) => {
     query = query.contains("tags", ["announcement"]);
   }
 
+  if (filters.tag === "newsletter") {
+    query = query.contains("tags", ["newsletter"]);
+  }
+
   // Apply filters if any
   query = applyFilter(query, filters, {
     ilike: ["title", "details"],
