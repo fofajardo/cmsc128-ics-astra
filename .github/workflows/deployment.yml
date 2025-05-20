@@ -17,4 +17,4 @@ jobs:
           username: ${{ secrets.SSH_DPL_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            whoami
+            ${{ secrets.SSH_DPL_SCRIPT }}
