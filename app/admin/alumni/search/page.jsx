@@ -236,10 +236,10 @@ function renderSkills(skills) {
   return (
     <div className="relative group flex justify-center items-center cursor-default">
       <div className="flex flex-wrap justify-center items-center">
-        {skills.length === 0 ? <span className="text-astradarkgray">N/A</span> : 
-        visibleSkills.map((skill, index) => (
-          <SkillTag key={index} text={skill} />
-        ))}
+        {skills.length === 0 ? <span className="text-astradarkgray">N/A</span> :
+          visibleSkills.map((skill, index) => (
+            <SkillTag key={index} text={skill} />
+          ))}
         {remainingCount > 0 && (
           <div className="size-8 flex justify-center items-center rounded-full text-xs font-medium border border-dashed text-astradarkgray bg-astratintedwhite cursor-default">
             +{remainingCount}
