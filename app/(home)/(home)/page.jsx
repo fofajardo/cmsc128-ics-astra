@@ -76,7 +76,7 @@ export default function Page() {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-<div className={`${absoluteInset} bg-gradient-to-br from-midnightblue via-[var(--color-astradark)] to-astrablack/90 bg-astrablack/100 subtle-opacity-pulse z-1`} />
+      <div className={`${absoluteInset} bg-gradient-to-br from-midnightblue via-[var(--color-astradark)] to-astrablack/90 bg-astrablack/100 subtle-opacity-pulse z-1`} />
       <section className={`${sectionBase} justify-center`}>
         <motion.div
           initial={{ opacity: 0, scale: 0.8, y: 50 }}
@@ -311,8 +311,8 @@ export default function Page() {
           }
         `}
       </style>
-<style jsx>
-  {`
+      <style jsx>
+        {`
     .subtle-opacity-pulse {
       animation: subtlePulse 6s linear infinite alternate;
     }
@@ -329,9 +329,9 @@ export default function Page() {
       }
     }
   `}
-</style>
+      </style>
 
-<RouteGuard />
+      <RouteGuard />
       <motion.div
         animate={controls}
         className="opacity-0 absolute inset-0 w-full h-full z-2 pointer-events-none"
