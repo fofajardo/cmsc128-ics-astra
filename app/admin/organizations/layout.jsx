@@ -9,6 +9,7 @@ import { Building } from "lucide-react";
 import axios from "axios";
 import {NavMenuItemId} from "../../../common/scopes.js";
 import {ActiveNavItemMarker} from "@/components/Header.jsx"; // Make sure axios is installed
+import { Skeleton } from "@/components/ui/skeleton.jsx";
 
 export default function AdminAlumniLayout({ children }) {
   const router = useRouter();
@@ -16,9 +17,9 @@ export default function AdminAlumniLayout({ children }) {
 
   // State to store the statistics
   const [stats, setStats] = useState({
-    total_organizations: 0,
-    universities: 0,
-    outside: 0,
+    total_organizations: null,
+    universities: null,
+    outside: null,
   });
 
   const [info, setInfo] = useState({
@@ -76,7 +77,7 @@ export default function AdminAlumniLayout({ children }) {
               <AdminStatCard
                 delay={0.0}
                 title="Total Orgs"
-                value={statData.total_organizations}
+                value={statData.total_organizations ?? <Skeleton className="h-7 w-12 my-2" />}
                 icon={<School className="size-13 text-astrawhite/" strokeWidth={2} />}
                 route={false}
                 onClick={() => {}}
@@ -84,7 +85,7 @@ export default function AdminAlumniLayout({ children }) {
               <AdminStatCard
                 delay={0.1}
                 title="University Orgs"
-                value={statData.universities}
+                value={statData.universities ?? <Skeleton className="h-7 w-12 my-2" />}
                 icon={<School2 className="size-13 text-astrawhite/" strokeWidth={2} />}
                 route={false}
                 onClick={() => {}}
@@ -92,7 +93,7 @@ export default function AdminAlumniLayout({ children }) {
               <AdminStatCard
                 delay={0.2}
                 title="Outside Orgs"
-                value={statData.outside}
+                value={statData.outside ?? <Skeleton className="h-7 w-12 my-2" />}
                 icon={<Building className="size-13 text-astrawhite/" strokeWidth={2} />}
                 route={false}
                 onClick={() => {}}
