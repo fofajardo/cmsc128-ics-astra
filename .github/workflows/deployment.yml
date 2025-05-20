@@ -17,3 +17,24 @@ jobs:
           password: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             whoami
+
+name: Deployment
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Execute remote SSH commands using SSH key
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_DPL_IP }}
+          port: ${{ secrets.SSH_DPL_PORT }}
+          username: ${{ secrets.SSH_DPL_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            ${{ secrets.SSH_DPL_SCRIPT }}
