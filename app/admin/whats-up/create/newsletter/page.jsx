@@ -180,7 +180,7 @@ export default function UploadNewsletter() {
             <h1 className="font-h2 text-astrablack mb-6">Upload Newsletter</h1>
 
             <div
-              className={`relative aspect-[3/4] mb-6 group ${isDragging ? 'border-2 border-dashed border-astrablue' : ''}`}
+              className={`relative aspect-[3/4] mb-6 group ${isDragging ? "border-2 border-dashed border-astrablue" : ""}`}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}

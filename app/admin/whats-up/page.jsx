@@ -283,13 +283,13 @@ export default function CommunicationPage() {
 
   const currentItems = currTab === "Newsletters"
     ? filteredNewsletters.slice(
-        (pagination.currPage - 1) * pagination.numToShow,
-        pagination.currPage * pagination.numToShow
-      )
+      (pagination.currPage - 1) * pagination.numToShow,
+      pagination.currPage * pagination.numToShow
+    )
     : filteredAnnouncements.slice(
-        (pagination.currPage - 1) * pagination.numToShow,
-        pagination.currPage * pagination.numToShow
-      );
+      (pagination.currPage - 1) * pagination.numToShow,
+      pagination.currPage * pagination.numToShow
+    );
 
   const handleDeleteNewsletter = async (id, e) => {
     e.preventDefault();

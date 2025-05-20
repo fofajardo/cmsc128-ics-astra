@@ -194,7 +194,7 @@ const getFiles = async (req, res) => {
       message: error.message,
     });
   }
-}
+};
 
 const uploadNewsletter = async (req, res) => {
   try {

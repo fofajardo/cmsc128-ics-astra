@@ -109,7 +109,7 @@ const ArticleView = () => {
                 dateTime={new Date(article.created_at).toISOString()}
                 className="block mt-6 text-center text-slate-500 font-medium"
               >
-                Published on {new Date(article.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                Published on {new Date(article.created_at).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
               </motion.time>
 
               <motion.div
@@ -127,7 +127,7 @@ const ArticleView = () => {
         ) : (
           <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
             <h2 className="text-2xl font-bold text-slate-800">Article not found</h2>
-            <p className="mt-4 text-slate-600">The article you're looking for doesn't exist or has been removed.</p>
+            <p className="mt-4 text-slate-600">The article you`&apos;`re looking for doesn`&apos;`t exist or has been removed.</p>
           </div>
         )}
       </motion.article>

@@ -101,7 +101,7 @@ export default function WhatsUpPage() {
           const photoUrl = photo && photo[0]?.url ? photo[0].url : getDefaultImage();
 
           // Save photo URL to localStorage
-          if (typeof window !== 'undefined' && photo && photo[0]?.url) {
+          if (typeof window !== "undefined" && photo && photo[0]?.url) {
             localStorage.setItem(`article_photo_${news.id}`, photo[0].url);
           }
 
