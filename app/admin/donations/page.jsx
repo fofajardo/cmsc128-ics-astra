@@ -111,7 +111,7 @@ export default function Donations() {
 
   const getDonationsByStatus = (donations) => {
     return donations.filter(
-      (donation) => info.currTab === "All" || donation.is_verified === false
+      (donation) => info.currTab === "All" || donation.is_verified === false && !donation.deleted_at
     );
   };
 
@@ -132,8 +132,12 @@ export default function Donations() {
     let unverified = 0;
 
     for (const donation of list) {
+      const isDeleted = donation.deleted_at;
       const verifiedStatus = donation.is_verified;
-      if (verifiedStatus) {
+      if (isDeleted) {
+        // Do not count deleted donations
+        continue;
+      } else if (verifiedStatus) {
         verified++;
       } else {
         unverified++;
@@ -179,6 +183,7 @@ export default function Donations() {
       const matchesFromAmount = isNaN(parsedFromAmount) || donationAmount >= parsedFromAmount;
       const matchesToAmount = isNaN(parsedToAmount) || donationAmount <= parsedToAmount;
       const matchesVerificationStatus = !verificationStatus ||
+        (verificationStatus === "deleted" && donation.deleted_at) ||
         (verificationStatus === "verified" && donation.is_verified) ||
         (verificationStatus === "unverified" && !donation.is_verified);
 
@@ -222,7 +227,7 @@ export default function Donations() {
       console.error("Error approving donation:", error);
     }
   };
-  //method for declining a donation, pa-check nalang
+
   const handleDecline = async () => {
     if (!donationToDecline?.id) {
       console.error("No donation selected for decline.");
@@ -230,8 +235,9 @@ export default function Donations() {
     }
 
     try {
-      const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations/${donationToDecline.id}`, { is_verified: false, verified_by_user_id: user_id });
-      if (response.data.status === "UPDATED") {
+      console.log(user_id);
+      const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations/${donationToDecline.id}`, { data: { verified_by_user_id: user_id }});
+      if (response.data.status === "DELETED") {
         console.log("Successfully declined");
         fetchDonations();
         setToast({ type: "success", message: "Donation successfully declined." });
@@ -286,9 +292,14 @@ export default function Donations() {
       </div>
       {showPrompt && (
         <ConfirmationPrompt
-          prompt="Are you sure you want to approve this donation?"
-          close={() => setPrompt(false)}
-          handleConfirm={handleApprove}
+          prompt={donationToApprove ? "Are you sure you want to approve this donation?" : "Are you sure you want to decline this donation?"}
+          close={() => {
+            setDonationToApprove(null);
+            setDonationToDecline(null);
+            setPrompt(false);
+          }
+          }
+          handleConfirm={donationToApprove ? handleApprove : handleDecline}
         />
       )}
     </div>
@@ -320,10 +331,10 @@ function createRows(selectedIds, setSelectedIds, currTab, filteredDonations, set
     "Amount": renderText(donation.amount),
     // "Donated Anonymously": renderIsAnonymous(donation.is_anonymous),
     // "Comment": renderText(donation.comment),
-    "Verification Status": renderVerificationStatus(donation.is_verified),
+    "Verification Status": renderVerificationStatus(donation.deleted_at, donation.is_verified),
     // "Verifier": renderText(donation.verified_by_user_id),
     // "Updated At": renderUpdatedAt(donation.updated_at),
-    "Quick Actions": renderActions(donation.id, donation.donor, donation.is_verified, currTab, setPrompt, setDonationToApprove, setDonationToDecline),
+    "Quick Actions": renderActions(donation.id, donation.donor, donation.is_verified, donation.deleted_at, currTab, setPrompt, setDonationToApprove, setDonationToDecline),
   }));
 }
 
@@ -356,12 +367,15 @@ function renderIsAnonymous(bool) {
   return <div className={"text-center font-s"}>{text}</div>;
 }
 
-function renderVerificationStatus(bool) {
-  const text = bool ? "Verified" : "Unverified";
-  return <div className={`text-center ${text === "Unverified" ? "text-astrared" : "text-astragreen"} font-s`}>{text}</div>;
+function renderVerificationStatus(deleted, verified) {
+  const isDeleted = deleted !== null;
+  const text = isDeleted ? "Deleted" : verified ? "Verified" : "Unverified";
+  return <div className={`text-center ${text === "Unverified" || text === "Deleted" ? "text-astrared" : "text-astragreen"} font-s`}>{text}</div>;
 }
 
-function renderActions(id, name, isVerified, currTab, setPrompt, setDonationToApprove, setDonationToDecline) {
+function renderActions(id, name, isVerified, deleted, currTab, setPrompt, setDonationToApprove, setDonationToDecline) {
+  const isDeleted = deleted !== null;
+
   const confirmApprove = () => {
     setDonationToApprove({id});
     setPrompt(true);
@@ -388,7 +402,7 @@ function renderActions(id, name, isVerified, currTab, setPrompt, setDonationToAp
           route={`/admin/donations/${id}/view`}
         />
       </div>
-      {!isVerified ? (
+      {!isVerified && !isDeleted ? (
         <>
           <div className="hidden md:block">
             <ActionButton
