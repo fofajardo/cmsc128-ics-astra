@@ -63,11 +63,8 @@ export default function ProjectsAdmin() {
       const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/requests/projects`);
       const projectData = response.data;
       if (projectData.status === "OK") {
-        console.log("Fetched projects:", projectData);
-
         // extract project id's
         const projectIds = projectData.list.map(project => project.projectData.project_id);
-        // console.log(projectIds);
 
         // map for photos initialization
         const photoMap = {};
@@ -83,7 +80,7 @@ export default function ProjectsAdmin() {
               photoMap[projectId] = photoResponse.data.photo;
             }
           } catch (error) {
-            console.log(`Failed to fetch photo for project_id ${projectId}:`, error);
+            // Failed to fetch photo
           }
         });
 
@@ -102,14 +99,10 @@ export default function ProjectsAdmin() {
           }
         }));
 
-        console.log(updatedProjects);
-
         // Get the list of updated projects (those whose status has changed)
         const changedProjects = getUpdatedProjects(originalProjects, updatedProjects);
-        console.log("Project past their due dates (updated project_status to finished): ", changedProjects);
         if (changedProjects.length > 0) {
           const projectIdsToUpdate = changedProjects.map(project => project.projectData.project_id);
-          console.log("Project IDs to update in DB", projectIdsToUpdate);
           await updateProjectsStatus(projectIdsToUpdate); // Update status in backend
         }
 
@@ -154,7 +147,6 @@ export default function ProjectsAdmin() {
       const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations/summary`);
       const donationSummaryData = response.data;
       if (donationSummaryData.status === "OK") {
-        console.log("Fetched donation summary:", donationSummaryData);
         setDonationsSummary({
           total_raised: donationSummaryData.summary.total_raised,
           contributors: donationSummaryData.summary.contributors
@@ -193,7 +185,7 @@ export default function ProjectsAdmin() {
       const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/projects/status`, { projectIds: projectIds, project_status: PROJECT_STATUS.FINISHED });
       const updateData = response.data;
       if (updateData.status === "UPDATED") {
-        console.log("Successfully updated! ", updateData);
+        // Successfully updated
       } else {
         console.error("Unexpected response:", updateData);
       }
@@ -208,7 +200,6 @@ export default function ProjectsAdmin() {
   }, []);
 
   useEffect(() => {
-
     setFilteredProjects(projects);
   }, [projects]);
 
@@ -274,7 +265,6 @@ export default function ProjectsAdmin() {
 
       const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/requests/${encodeURI(requestId)}`, data);
       if (response.data.status === "UPDATED") {
-        console.log("Successfully updated project request with id:", requestId);
         handleUpdateCallback(updatedStatus, requestId);
       } else {
         console.error("Unexpected response:", response);
@@ -303,9 +293,6 @@ export default function ProjectsAdmin() {
         message: `${title} is already past its due date (${formatDate(endDate, "short-month")})`
       });
     } else {
-      console.log(id);
-      console.log(title);
-      // updateProjectRequest(REQUEST_STATUS.APPROVED, id);
       setToast({
         type: "success",
         message: `${title} has been approved!`
