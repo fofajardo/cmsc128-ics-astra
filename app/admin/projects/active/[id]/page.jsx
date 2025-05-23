@@ -81,18 +81,18 @@ export default function ActiveProjectDetail({ params }) {
         setLoading(true);
         const projectResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/requests/projects/${id}`);
         const projectData = projectResponse.data;
-        console.log(projectData);
+        // console.log(projectData);
         if (projectData.status === "OK") {
           const projectId = projectData.list.projectData.project_id;
 
           const donationsResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations`, {
             params: {
               requester_id: user_id,
-              project_id: projectId
+              project_id: projectId,
             }
           });
           const donationData = donationsResponse.data;
-          console.log(donationData);
+          // console.log(donationData);
           let formattedDonations;
           if (donationData.status === "OK") {
             formattedDonations = donationData.donations.map(donation => ({
@@ -101,7 +101,8 @@ export default function ActiveProjectDetail({ params }) {
               amount: donation.amount,
               date: donation.donation_date,
               isVerified: donation.is_verified,
-            }));
+              deletedAt: donation.deleted_at
+            })).filter(donation => donation.deletedAt === null);
           } else {
             console.error("Unexpected response:", donationData);
           }
@@ -225,7 +226,7 @@ export default function ActiveProjectDetail({ params }) {
       });
 
       if (response.data.status === "UPDATED") {
-        console.log("Successfully deleted project request with id:", id);
+        // console.log("Successfully deleted project request with id:", id);
         return true;
       } else {
         console.error("Unexpected response:", response);
@@ -369,7 +370,7 @@ export default function ActiveProjectDetail({ params }) {
     try {
       const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/projects/${encodeURI(projectData.id)}`, updateData);
       if (response.data.status === "UPDATED") {
-        console.log("Successfully updated project with id:", id);
+        // console.log("Successfully updated project with id:", id);
         return true;
       } else {
         console.error("Unexpected response:", response);
