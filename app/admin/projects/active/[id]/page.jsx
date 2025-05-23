@@ -27,6 +27,7 @@ import { useSignedInUser } from "@/components/UserContext.jsx";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "../../../../styles/datepicker.css";
+import Link from "next/link";
 
 //for admin/projects/active/[id]
 export default function ActiveProjectDetail({ params }) {
@@ -1218,7 +1219,14 @@ export default function ActiveProjectDetail({ params }) {
 
           {/* Transactions section*/}
           <div className="bg-astrawhite p-6 rounded-xl shadow">
-            <h2 className="font-lb text-xl mb-4">Transactions</h2>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="font-lb text-xl">Transactions</h2>
+              <Link href="/admin/donations" passHref>
+                <button className="border-2 border-astraprimary text-astraprimary hover:bg-astraprimary hover:text-astrawhite rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer px-4 py-2">
+                  Manage Donations
+                </button>
+              </Link>
+            </div>
 
             <div className="max-h-80 overflow-y-auto custom-scrollbar rounded-lg border border-astralightgray/50">
               <table className="w-full border-collapse">
