@@ -373,14 +373,17 @@ function HeaderAvatar({context}) {
 
   return (
     <div className="relative flex items-center">
-      <Image
-        src={context.state.avatarUrl}
-        alt="User Avatar"
-        width={40}
-        height={40}
-        className="rounded-full border-2 border-astraprimary shadow-md transition-all duration-300 hover:scale-105 cursor-pointer"
-        onClick={() => setIsMenuOpen(!isMenuOpen)}
-      />
+      <div className="relative w-[40px] h-[40px] overflow-hidden rounded-full border-2 border-astraprimary shadow-md transition-all duration-300 hover:scale-105 cursor-pointer">
+        <Image
+          src={context.state.avatarUrl}
+          alt="User Avatar"
+          layout="fill"
+          objectFit="cover"
+          objectPosition="center"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+        />
+      </div>
+
       {isMenuOpen && (
         <div
           ref={dropdownRef}
@@ -441,7 +444,7 @@ export function Header() {
         }`}
         style={{height: "72px"}}
       >
-        <div className="flex items-center justify-between max-w-screen-xl mx-auto h-full px-4 sm:px-6 md:px-8 w-full">
+        <div className="flex items-center justify-between mx-auto h-full px-4 sm:px-6 md:px-8 w-full">
           <div className="flex items-center space-x-4">
             <button onClick={toggleSidebar}
               className={context.state.isAdmin ? "transition-transform duration-200" : "lg:hidden flex items-center space-x-2 p-3"}>
