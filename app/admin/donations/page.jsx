@@ -215,7 +215,7 @@ export default function Donations() {
     try {
       const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations/${donationToApprove.id}`, { is_verified: true, verified_by_user_id: user_id });
       if (response.data.status === "UPDATED") {
-        console.log("Successfully approved");
+        // console.log("Successfully approved");
         fetchDonations();
         setToast({ type: "success", message: "Donation successfully approved." });
         setPrompt(false);
@@ -230,7 +230,7 @@ export default function Donations() {
 
   const handleDecline = async () => {
     if (!donationToDecline?.id) {
-      console.error("No donation selected for decline.");
+      console.error("No donation selected for reject.");
       return;
     }
 
@@ -238,16 +238,16 @@ export default function Donations() {
       console.log(user_id);
       const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations/${donationToDecline.id}`, { data: { verified_by_user_id: user_id }});
       if (response.data.status === "DELETED") {
-        console.log("Successfully declined");
+        // console.log("Successfully rejected");
         fetchDonations();
-        setToast({ type: "success", message: "Donation successfully declined." });
+        setToast({ type: "success", message: "Donation successfully rejected." });
         setPrompt(false);
         setDonationToDecline(null);
       } else {
-        console.error("Failed to decline donation.");
+        console.error("Failed to decline reject.");
       }
     } catch (error) {
-      console.error("Error declining donation:", error);
+      console.error("Error rejecting donation:", error);
     }
   };
 
@@ -292,7 +292,7 @@ export default function Donations() {
       </div>
       {showPrompt && (
         <ConfirmationPrompt
-          prompt={donationToApprove ? "Are you sure you want to approve this donation?" : "Are you sure you want to decline this donation?"}
+          prompt={donationToApprove ? "Are you sure you want to approve this donation?" : "Are you sure you want to reject this donation?"}
           close={() => {
             setDonationToApprove(null);
             setDonationToDecline(null);
@@ -424,10 +424,10 @@ function renderActions(id, name, isVerified, deleted, currTab, setPrompt, setDon
           </div>
           <div className="hidden md:block">
             <ActionButton
-              label="Decline"
+              label="Reject"
               color="red"
               onClick={confirmDecline}
-              notifyMessage={`${name} has been declined!`}
+              notifyMessage={`${name} has been rejected!`}
               notifyType="fail"
             />
           </div>
@@ -436,7 +436,7 @@ function renderActions(id, name, isVerified, deleted, currTab, setPrompt, setDon
               label={<X size={20}/>}
               color="red"
               onClick={confirmDecline}
-              notifyMessage={`${name} has been declined!`}
+              notifyMessage={`${name} has been rejected!`}
               notifyType="fail"
             />
           </div>
