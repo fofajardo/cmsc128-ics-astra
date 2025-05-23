@@ -224,7 +224,16 @@ export const NavMenuItemId = Object.freeze({
   JOBS: "jobs",
   ALUMNI: "alumni",
   ALUMNI_ACCESS: "alumni-access",
-  ORGANIZATIONS: "organizations"
+  ORGANIZATIONS: "organizations",
+  ADMIN_HOME: "admin_home",
+  ADMIN_ALUMNI: "admin_alumni",
+  ADMIN_ALUMNI_DIRECTORY: "admin_alumni_directory",
+  ADMIN_ALUMNI_ACCESS: "admin_alumni_access",
+  ADMIN_EVENTS: "admin_events",
+  ADMIN_JOBS: "admin_jobs",
+  ADMIN_PROJECTS: "admin_projects",
+  ADMIN_NEWS: "admin_news",
+  ADMIN_ORGANIZATIONS: "admin_organizations"
 });
 
 export const DONATION_MODE_OF_PAYMENT = {

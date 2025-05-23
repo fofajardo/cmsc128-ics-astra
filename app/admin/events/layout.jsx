@@ -33,7 +33,7 @@ export default function AdminEventsLayout({ children }) {
   return (
     <>
       {/* Header with background */}
-      <ActiveNavItemMarker id={NavMenuItemId.EVENTS}/>
+      <ActiveNavItemMarker id={NavMenuItemId.ADMIN_EVENTS}/>
       <div className="relative">
         <img
           src="/blue-bg.png"

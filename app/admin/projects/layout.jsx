@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function AdminProjectsLayout({ children }) {
   return <>
-    <ActiveNavItemMarker id={NavMenuItemId.PROJECTS}/>
+    <ActiveNavItemMarker id={NavMenuItemId.ADMIN_PROJECTS}/>
     {children}
   </>;
 }

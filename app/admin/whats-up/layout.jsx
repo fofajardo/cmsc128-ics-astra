@@ -64,7 +64,7 @@ export default function AdminAlumniLayout({ children }) {
   return (
     <>
       {/* Header with background */}
-      <ActiveNavItemMarker id={NavMenuItemId.NEWS}/>
+      <ActiveNavItemMarker id={NavMenuItemId.ADMIN_NEWS}/>
       <div className="relative">
         <img
           src="/blue-bg.png"

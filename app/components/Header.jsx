@@ -19,7 +19,8 @@ import {
   Settings,
   User,
   Users,
-  X
+  X,
+  BadgeInfo
 } from "lucide-react";
 import {useSignedInUser} from "@/components/UserContext.jsx";
 import {LoadingSpinner} from "@/components/LoadingSpinner.jsx";
@@ -30,31 +31,38 @@ import { ShieldUser } from "lucide-react";
 
 const menuItemsMain = {
   [NavMenuItemId.HOME]: {
+    icon: <Home size={18}/>,
     label: "Home",
     path: "/"
   },
   [NavMenuItemId.ABOUT]: {
+    icon: <BadgeInfo size={18}/>,
     label: "About",
     path: "/about"
   },
   [NavMenuItemId.EVENTS]: {
+    icon: <Calendar size={18}/>,
     label: "Events",
     path: "/events"
   },
   [NavMenuItemId.PROJECTS]: {
+    icon: <Gift size={18}/>,
     label: "Projects",
     path: "/projects"
   },
   [NavMenuItemId.ALUMNI_DIRECTORY]: {
+    icon: <Users size={18}/>,
     label: "Directory",
     path: "/search",
     hideIfGuest: true,
   },
   [NavMenuItemId.NEWS]: {
+    icon: <MessageCircle size={18}/>,
     label: "News",
     path: "/whats-up"
   },
   [NavMenuItemId.JOBS]: {
+    icon: <Briefcase size={18}/>,
     label: "Jobs",
     path: "/jobs",
     hideIfGuest: true,
@@ -62,53 +70,53 @@ const menuItemsMain = {
 };
 
 const menuItemsAdmin = {
-  [NavMenuItemId.HOME]: {
+  [NavMenuItemId.ADMIN_HOME]: {
     icon: <Home size={18}/>,
     label: "Dashboard",
     path: "/admin/dashboard"
   },
-  [NavMenuItemId.ALUMNI]: {
+  [NavMenuItemId.ADMIN_ALUMNI]: {
     icon: <Users size={18}/>,
     label: "Alumni",
     path: "/admin/alumni",
     children: [
-      NavMenuItemId.ALUMNI_DIRECTORY,
-      NavMenuItemId.ALUMNI_ACCESS,
+      NavMenuItemId.ADMIN_ALUMNI_DIRECTORY,
+      NavMenuItemId.ADMIN_ALUMNI_ACCESS,
     ]
   },
-  [NavMenuItemId.ALUMNI_DIRECTORY]: {
-    parent: NavMenuItemId.ALUMNI,
+  [NavMenuItemId.ADMIN_ALUMNI_DIRECTORY]: {
+    parent: NavMenuItemId.ADMIN_ALUMNI,
     icon: <Search size={16}/>,
     label: "Search",
     path: "/admin/alumni/search"
   },
-  [NavMenuItemId.ALUMNI_ACCESS]: {
+  [NavMenuItemId.ADMIN_ALUMNI_ACCESS]: {
     parent: NavMenuItemId.ALUMNI,
     icon: <Key size={16}/>,
     label: "Manage Access",
     path: "/admin/alumni/manage-access"
   },
-  [NavMenuItemId.EVENTS]: {
+  [NavMenuItemId.ADMIN_EVENTS]: {
     icon: <Calendar size={18}/>,
     label: "Events",
     path: "/admin/events"
   },
-  [NavMenuItemId.JOBS]: {
+  [NavMenuItemId.ADMIN_JOBS]: {
     icon: <Briefcase size={18}/>,
     label: "Jobs",
     path: "/admin/jobs"
   },
-  [NavMenuItemId.PROJECTS]: {
+  [NavMenuItemId.ADMIN_PROJECTS]: {
     icon: <Gift size={18}/>,
     label: "Projects",
     path: "/admin/projects"
   },
-  [NavMenuItemId.NEWS]: {
+  [NavMenuItemId.ADMIN_NEWS]: {
     icon: <MessageCircle size={18}/>,
     label: "What's up?",
     path: "/admin/whats-up"
   },
-  [NavMenuItemId.ORGANIZATIONS]: {
+  [NavMenuItemId.ADMIN_ORGANIZATIONS]: {
     icon: <School size={18}/>,
     label: "Organizations",
     path: "/admin/organizations"
@@ -150,7 +158,80 @@ function Sidebar({
         }`}
       >
         <ul className="p-6 space-y-4 text-gray-600 font-medium">
-          {Object.entries(items).map(([key, navItem]) => {
+
+
+          {context.state.isAdmin &&(
+            <>
+              <div className="font-rb">ADMIN</div>
+
+              {Object.entries(menuItemsAdmin).map(([key, navItem]) => {
+                if ((navItem.hideIfGuest && context.state.isGuest) || navItem.parent) {
+                  return null;
+                }
+                let isNavOpen = context.state.activeNavSubmenus?.[key];
+                return (
+                  <li key={"sidebar-" + key}>
+                    <div
+                      className={`flex items-center justify-between cursor-pointer rounded-md p-2 transition-all ${
+                        context.state.activeNavItem === key
+                          ? "bg-[var(--color-astraprimary-light)] text-astraprimary font-semibold"
+                          : "hover:bg-[#dce4ff] hover:text-blue-600"
+                      }`}
+                      onClick={() => {
+                        if (navItem.children) {
+                          return context.actions.toggleNavSubmenu(key);
+                        }
+                        handleNavigate(navItem);
+                      }}
+                    >
+                      <div className="flex items-center space-x-3">
+                        {navItem.icon}
+                        <span className="text-sm">{navItem.label}</span>
+                      </div>
+                      {navItem.children && (
+                        <span>
+                          {isNavOpen ? (
+                            <ChevronUp size={18}/>
+                          ) : (
+                            <ChevronDown size={18}/>
+                          )}
+                        </span>
+                      )}
+                    </div>
+                    {navItem.children && (
+                      <ul className={`ml-6 mt-2 space-y-3 border-l border-gray-300 pl-4 ${isNavOpen ? "" : "hidden"}`}>
+                        {navItem.children.map(function (childNavItemId, i) {
+                          const childNavItem = items[childNavItemId];
+                          let isChildActive = context.state.activeNavItem === childNavItemId;
+                          if (isChildActive && !isNavOpen && submenuToOpen !== key) {
+                            setSubmenuToOpen(key);
+                          }
+                          return (
+                            <li
+                              key={i}
+                              className={`flex items-center space-x-3 text-sm cursor-pointer transition-all pl-1 ${
+                                isChildActive
+                                  ? "text-astraprimary font-semibold"
+                                  : "text-gray-500 hover:text-blue-600 hover:scale-[1.02]"
+                              }`}
+                              onClick={() => handleNavigate(childNavItem)}
+                            >
+                              {childNavItem.icon}
+                              <span>{childNavItem.label}</span>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+                  </li>
+                );
+              })}
+
+              <div className="font-rb">USER</div>
+            </>
+          )}
+
+          {Object.entries(menuItemsMain).map(([key, navItem]) => {
             if ((navItem.hideIfGuest && context.state.isGuest) || navItem.parent) {
               return null;
             }
@@ -212,6 +293,7 @@ function Sidebar({
               </li>
             );
           })}
+
         </ul>
       </div>
       <div
@@ -320,14 +402,6 @@ function HeaderAvatar({context}) {
             <Settings size={16} className="mr-2"/>
             Settings
           </Link>
-          <Link
-            href="/admin/dashboard"
-            className="flex items-center p-2 w-full text-astrablack hover:bg-astraprimary hover:text-white rounded-md text-sm"
-            onClick={handleMenuClose}
-          >
-            <ShieldUser size={16} className="mr-2"/>
-            Admin
-          </Link>
           <Link href="/sign-out">
             <button
               className="flex items-center p-2 w-full text-astrared hover:bg-astrared hover:text-white rounded-md text-sm"
@@ -343,7 +417,7 @@ function HeaderAvatar({context}) {
   );
 }
 
-export function Header({fromAdmin}) {
+export function Header() {
   const context = useSignedInUser();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -355,7 +429,7 @@ export function Header({fromAdmin}) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  let items = fromAdmin ? menuItemsAdmin : menuItemsMain;
+  let items = context.state.isAdmin ? menuItemsAdmin : menuItemsMain;
 
   return (
     <>
@@ -370,7 +444,7 @@ export function Header({fromAdmin}) {
         <div className="flex items-center justify-between max-w-screen-xl mx-auto h-full px-4 sm:px-6 md:px-8 w-full">
           <div className="flex items-center space-x-4">
             <button onClick={toggleSidebar}
-              className={fromAdmin ? "transition-transform duration-200" : "lg:hidden flex items-center space-x-2 p-3"}>
+              className={context.state.isAdmin ? "transition-transform duration-200" : "lg:hidden flex items-center space-x-2 p-3"}>
               <div
                 className={`transition-transform duration-300 ${
                   isSidebarOpen ? "rotate-90" : "rotate-0"
@@ -396,7 +470,7 @@ export function Header({fromAdmin}) {
             </Link>
           </div>
           {
-            !fromAdmin &&
+            !context.state?.isAdmin &&
             <HeaderNavigation
               items={items}
               context={context}
