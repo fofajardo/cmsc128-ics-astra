@@ -196,7 +196,9 @@ const getUserById = async (req, res) => {
     let avatarUrl = "https://cdn-icons-png.flaticon.com/512/145/145974.png";
     const {data: avatarData, error: avatarError} =
       await PhotosService.getAvatarUrl(req.supabase, userId);
-    if (!avatarError) {
+    if (avatarError) {
+      data.avatar_exists = false;
+    } else {
       avatarUrl = avatarData?.signedUrl;
     }
     data.avatar_url = avatarUrl;
