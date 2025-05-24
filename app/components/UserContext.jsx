@@ -120,6 +120,9 @@ function buildUserContext() {
         updatedOrganizationAffiliations[index] = value;
         return setOrganizationAffiliations(updatedOrganizationAffiliations);
       },
+      resetAvatarUrl: function() {
+        return setAvatarUrl(user.avatar_url);
+      },
       setActiveNavItem,
       setActiveNavSubmenus,
       toggleNavSubmenu,
