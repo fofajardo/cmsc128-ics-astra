@@ -69,7 +69,6 @@ export default function ReportForm({contentType, close, id}){
       type: type[contentType],
       reporter_id: user.state.user.id,
     };
-    console.log(payload);
     try {
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/v1/reports`, payload);
 

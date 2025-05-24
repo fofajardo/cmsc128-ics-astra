@@ -127,7 +127,7 @@ export default function InactiveProjectDetail({ params }) {
               setImageSrc(FALLBACK_IMAGE);
             }
           } catch (photoError) {
-            console.log(`Failed to fetch photo for project_id ${projectId}:`, photoError);
+            console.error(`Failed to fetch photo for project_id ${projectId}:`, photoError);
             setImageError(true);
             setImageLoading(false);
             setImageSrc(FALLBACK_IMAGE);

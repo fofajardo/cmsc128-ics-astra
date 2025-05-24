@@ -119,7 +119,7 @@ export default function JobForm({isEdit, close, refreshJobs}){
 
   const selectStyle = {
     control: (state) =>
-      `${state.isFocused ? console.log(state) : console.log(state) } focus:border-[#0E6CF3] !cursor-text outline-none border-1 border-[#C4C4C4] rounded-sm w-full min-h-[30px] min-h-[unset] h-[30px] mt-1.5 px-3 text-sm`,
+      `${state.isFocused ? '' : '' } focus:border-[#0E6CF3] !cursor-text outline-none border-1 border-[#C4C4C4] rounded-sm w-full min-h-[30px] min-h-[unset] h-[30px] mt-1.5 px-3 text-sm`,
     valueContainer: () => "focus:border-[#0E6CF3] m-0 p-0 h-full flex items-center",
     placeholder: () => "text-[var(--color-astradarkgray)] p-0 m-0",
     dropdownIndicator: ({menuIsOpen}) => `py-0 text-[var(--color-astraprimary)] transition-transform duration-300 ease-in-out ${menuIsOpen ? "rotate-180" : ""}`,
@@ -266,7 +266,7 @@ export default function JobForm({isEdit, close, refreshJobs}){
                 <p className="text-sm text-astrared self-end">Required</p> : <></>
               }
             </div>
-            <textarea  type="text" placeholder="Provide a concise overview of the role, including key responsibilities, and objectives. You may also include your company’s representative email for additional inquiries. (3,000 characters maximum)"
+            <textarea  type="text" placeholder="Provide a concise overview of the role, including key responsibilities, and objectives. You may also include your company's representative email for additional inquiries. (3,000 characters maximum)"
               onChange={handleChange} name={"details"} value={formData.details} className='focus:border-astraprimary placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm resize-none h-[110px]'></textarea>
           </div>
 
