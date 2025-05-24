@@ -119,7 +119,7 @@ export default function JobForm({isEdit, close, refreshJobs}){
 
   const selectStyle = {
     control: (state) =>
-      `${state.isFocused ? '' : '' } focus:border-[#0E6CF3] !cursor-text outline-none border-1 border-[#C4C4C4] rounded-sm w-full min-h-[30px] min-h-[unset] h-[30px] mt-1.5 px-3 text-sm`,
+      `${state.isFocused ? "" : "" } focus:border-[#0E6CF3] !cursor-text outline-none border-1 border-[#C4C4C4] rounded-sm w-full min-h-[30px] min-h-[unset] h-[30px] mt-1.5 px-3 text-sm`,
     valueContainer: () => "focus:border-[#0E6CF3] m-0 p-0 h-full flex items-center",
     placeholder: () => "text-[var(--color-astradarkgray)] p-0 m-0",
     dropdownIndicator: ({menuIsOpen}) => `py-0 text-[var(--color-astraprimary)] transition-transform duration-300 ease-in-out ${menuIsOpen ? "rotate-180" : ""}`,

@@ -40,7 +40,7 @@ export default function DonationSuccess() {
       >
         <h2 className="text-3xl font-bold text-astrablack">Thank you for your generous support!</h2>
         <p className="text-base text-astradarkgray">
-        Your donation has been successfully processed. Kindly wait while the admin verifies the transaction.
+          Your donation has been successfully processed. Kindly wait while the admin verifies the transaction.
         </p>
       </motion.div>
 
