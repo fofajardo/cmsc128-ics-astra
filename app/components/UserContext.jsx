@@ -30,6 +30,7 @@ function buildUserContext() {
   const [isAlumnus, setIsAlumnus] = useState(false);
   const [isModerator, setIsModerator] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [roleFriendlyName, setRoleFriendlyName] = useState(null);
 
   const [activeNavItem, setActiveNavItem] = useState(null);
   const [activeNavSubmenus, setActiveNavSubmenus] = useState({});
@@ -62,6 +63,7 @@ function buildUserContext() {
       isAlumnus,
       isModerator,
       isAdmin,
+      roleFriendlyName,
       get isVerified() {
         return profile?.approved;
       },
@@ -88,6 +90,7 @@ function buildUserContext() {
       setIsAlumnus,
       setIsModerator,
       setIsAdmin,
+      setRoleFriendlyName,
       patchUser: function(key, value) {
         const updatedUser = {
           ...user,
@@ -162,6 +165,7 @@ function updateRoleProperties(aUser, aContext) {
     aContext.actions.setIsAlumnus(false);
     aContext.actions.setIsModerator(false);
     aContext.actions.setIsAdmin(false);
+    aContext.actions.setRoleFriendlyName("Unlinked");
     break;
   case RoleName.ALUMNUS:
     aContext.actions.setIsGuest(false);
@@ -169,6 +173,7 @@ function updateRoleProperties(aUser, aContext) {
     aContext.actions.setIsAlumnus(true);
     aContext.actions.setIsModerator(false);
     aContext.actions.setIsAdmin(false);
+    aContext.actions.setRoleFriendlyName("Alumnus");
     break;
   case RoleName.MODERATOR:
     aContext.actions.setIsGuest(false);
@@ -176,6 +181,7 @@ function updateRoleProperties(aUser, aContext) {
     aContext.actions.setIsAlumnus(false);
     aContext.actions.setIsModerator(true);
     aContext.actions.setIsAdmin(false);
+    aContext.actions.setRoleFriendlyName("Moderator");
     break;
   case RoleName.ADMIN:
     aContext.actions.setIsGuest(false);
@@ -183,6 +189,7 @@ function updateRoleProperties(aUser, aContext) {
     aContext.actions.setIsAlumnus(false);
     aContext.actions.setIsModerator(false);
     aContext.actions.setIsAdmin(true);
+    aContext.actions.setRoleFriendlyName("Admin");
     break;
   default:
     aContext.actions.setIsGuest(true);
@@ -190,6 +197,7 @@ function updateRoleProperties(aUser, aContext) {
     aContext.actions.setIsAlumnus(false);
     aContext.actions.setIsModerator(false);
     aContext.actions.setIsAdmin(false);
+    aContext.actions.setRoleFriendlyName("Guest");
     break;
   }
 }
