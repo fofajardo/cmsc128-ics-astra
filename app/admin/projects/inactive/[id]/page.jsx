@@ -54,9 +54,8 @@ export default function InactiveProjectDetail({ params }) {
     const fetchProjectRequest = async () => {
       try {
         setLoading(true);
-        const projectResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/requests/projects/${id}`);
-        const projectData = projectResponse.data;
-        // console.log(projectData);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/requests/projects/${id}`);
+        const projectData = response.data;
         if (projectData.status === "OK") {
           const projectId = projectData.list.projectData.project_id;
 
@@ -88,7 +87,7 @@ export default function InactiveProjectDetail({ params }) {
             project_status: projectData.list.projectData.project_status,
             title: projectData.list.projectData.title,
             type: projectData.list.projectData.type,
-            image: FALLBACK_IMAGE, // Use constant for default image
+            image: FALLBACK_IMAGE,
             urlLink: projectData.list.projectData.donation_link,
             description: projectData.list.projectData.details,
             longDescription: projectData.list.projectData.details,

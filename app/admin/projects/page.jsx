@@ -80,7 +80,7 @@ export default function ProjectsAdmin() {
               photoMap[projectId] = photoResponse.data.photo;
             }
           } catch (error) {
-            // Failed to fetch photo
+            console.error(`Failed to fetch photo for project_id ${projectId}:`, error);
           }
         });
 
