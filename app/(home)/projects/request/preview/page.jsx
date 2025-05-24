@@ -106,7 +106,6 @@ const RequestFundraiserPreview = () => {
       const projectData = response.data;
 
       if (projectData.status === "CREATED") {
-        console.log("Created project:", projectData);
         return {
           status: "CREATED",
           id: projectData.id // Return the content ID
@@ -142,7 +141,6 @@ const RequestFundraiserPreview = () => {
       }
 
       const contentId = projectResponse.id;
-      console.log("Project created with ID:", contentId);
 
       if (photo) {
         try {
@@ -150,8 +148,6 @@ const RequestFundraiserPreview = () => {
           formData.append("File", photo);
           formData.append("content_id", contentId);
           formData.append("type", 5); // TODO: use appropriate ENUM; check photo_type.js once merged
-
-          console.log("Uploading photo for project ID:", contentId);
 
           const photoResponse = await axios.post(
             `${process.env.NEXT_PUBLIC_API_URL}/v1/photos`,
@@ -163,9 +159,7 @@ const RequestFundraiserPreview = () => {
             }
           );
 
-          if (photoResponse.data.status === "CREATED") {
-            console.log("Photo uploaded successfully:", photoResponse.data);
-          } else {
+          if (photoResponse.data.status !== "CREATED") {
             console.error("Unexpected photo upload response:", photoResponse.data);
           }
         } catch (photoError) {
