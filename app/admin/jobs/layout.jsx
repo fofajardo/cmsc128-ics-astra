@@ -62,7 +62,7 @@ export default function AdminJobsLayout({ children }) {
   return (
     <>
       {/* Header with background */}
-      <ActiveNavItemMarker id={NavMenuItemId.JOBS}/>
+      <ActiveNavItemMarker id={NavMenuItemId.ADMIN_JOBS}/>
       <div className="relative">
         <img
           src="/blue-bg.png"
