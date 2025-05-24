@@ -127,7 +127,7 @@ export default function CommunicationPage() {
               }
             })
             .catch(error => {
-              console.log(`Failed to fetch photo for content_id ${contentId}:`, error);
+              console.error(`Failed to fetch photo for content_id ${contentId}:`, error);
             });
 
           photoPromises.push(photoPromise);
@@ -163,7 +163,7 @@ export default function CommunicationPage() {
             }
           })
           .catch(error => {
-            console.log(`Failed to fetch file for content_id ${contentId}:`, error);
+            console.error(`Failed to fetch file for content_id ${contentId}:`, error);
           })
       );
 

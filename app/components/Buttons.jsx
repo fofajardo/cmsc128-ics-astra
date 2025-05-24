@@ -76,13 +76,7 @@ export default function ReportForm({contentType, close, id}){
         close();
       }
     } catch (error) {
-      let message = "An unexpected error occurred. Please try again.";
-      if (axios.isAxiosError(error)) {
-        message = error.response?.data?.message || error.message;
-        console.error("Axios error:", message);
-      } else {
-        console.error("Unexpected error:", error);
-      }
+      console.error("Failed to submit report:", error);
     }
   };
 

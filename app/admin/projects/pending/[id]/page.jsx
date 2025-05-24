@@ -81,7 +81,7 @@ export default function PendingProjectDetail({ params }) {
               setImageSrc(FALLBACK_IMAGE);
             }
           } catch (error) {
-            console.log(`Failed to fetch photo for project_id ${projectId}:`, error);
+            console.error(`Failed to fetch photo for project_id ${projectId}:`, error);
             setImageError(true);
             setImageLoading(false);
             setImageSrc(FALLBACK_IMAGE);
@@ -155,7 +155,7 @@ export default function PendingProjectDetail({ params }) {
         response: updatedResponse,
       });
       if (response.data.status === "UPDATED") {
-        console.log("Successfully updated project request with id:", id);
+        console.error("Successfully updated project request with id:", id);
       } else {
         console.error("Unexpected response:", response);
       }
