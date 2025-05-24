@@ -421,7 +421,7 @@ export default function Page() {
                       onChange={handleFilterChange}
                       onBlur={handleApplyFilters}
                       onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
+                        if (e.key === "Enter") {
                           handleApplyFilters();
                         }
                       }}
@@ -438,7 +438,7 @@ export default function Page() {
                       onChange={handleFilterChange}
                       onBlur={handleApplyFilters}
                       onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
+                        if (e.key === "Enter") {
                           handleApplyFilters();
                         }
                       }}
