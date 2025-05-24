@@ -38,9 +38,9 @@ export default function DonationSuccess() {
         transition={{ delay: 0.3, duration: 0.5 }}
         className="max-w-md space-y-4"
       >
-        <h2 className="text-3xl font-bold text-astrablack">Thank you for your support!</h2>
+        <h2 className="text-3xl font-bold text-astrablack">Thank you for your generous support!</h2>
         <p className="text-base text-astradarkgray">
-          Your generous donation helps us make the world a better place. We are truly grateful for your contribution.
+        Your donation has been successfully processed. Kindly wait while the admin verifies the transaction.
         </p>
       </motion.div>
 
