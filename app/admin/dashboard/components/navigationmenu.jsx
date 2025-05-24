@@ -26,6 +26,7 @@ const tabOptions = {
   ],
   status: [
     { value: "alumni", label: "Alumni Status", description: "Active, inactive, and other statuses." },
+    { value: "events", label: "Events", description: "Alumni events status." },
   ],
 };
 
@@ -105,7 +106,7 @@ export function NavigationMenuDemo({
                   <button
                     className={`w-full text-left px-3 py-2 rounded transition-colors ${
                       tab === opt.value
-                        ? "bg-primary text-white"
+                        ? "bg-astraprimary text-white"
                         : "hover:bg-accent"
                     }`}
                     onClick={() => setTab(opt.value)}
@@ -134,7 +135,7 @@ export function NavigationMenuDemo({
             )}
           </NavigationMenuTrigger>
           <NavigationMenuContent>
-            <ul className="grid grid-cols-0 gap-1 p-4 w-90 md:w-max">
+            <ul className="grid grid-cols-2 gap-1 p-4 w-90 md:w-max">
               {tabOptions.status.map(opt => (
                 <li key={opt.value}>
                   <button

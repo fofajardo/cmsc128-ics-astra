@@ -54,9 +54,8 @@ export default function InactiveProjectDetail({ params }) {
     const fetchProjectRequest = async () => {
       try {
         setLoading(true);
-        const projectResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/requests/projects/${id}`);
-        const projectData = projectResponse.data;
-        console.log(projectData);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/requests/projects/${id}`);
+        const projectData = response.data;
         if (projectData.status === "OK") {
           const projectId = projectData.list.projectData.project_id;
 
@@ -67,7 +66,7 @@ export default function InactiveProjectDetail({ params }) {
             }
           });
           const donationData = donationsResponse.data;
-          console.log(donationData);
+          // console.log(donationData);
           let formattedDonations;
           if (donationData.status === "OK") {
             formattedDonations = donationData.donations.map(donation => ({
@@ -76,7 +75,8 @@ export default function InactiveProjectDetail({ params }) {
               amount: donation.amount,
               date: donation.donation_date,
               isVerified: donation.is_verified,
-            }));
+              deletedAt: donation.deleted_at
+            })).filter(donation => donation.deletedAt === null);;
           } else {
             console.error("Unexpected response:", donationData);
           }
@@ -87,7 +87,7 @@ export default function InactiveProjectDetail({ params }) {
             project_status: projectData.list.projectData.project_status,
             title: projectData.list.projectData.title,
             type: projectData.list.projectData.type,
-            image: FALLBACK_IMAGE, // Use constant for default image
+            image: FALLBACK_IMAGE,
             urlLink: projectData.list.projectData.donation_link,
             description: projectData.list.projectData.details,
             longDescription: projectData.list.projectData.details,
@@ -126,7 +126,7 @@ export default function InactiveProjectDetail({ params }) {
               setImageSrc(FALLBACK_IMAGE);
             }
           } catch (photoError) {
-            console.log(`Failed to fetch photo for project_id ${projectId}:`, photoError);
+            console.error(`Failed to fetch photo for project_id ${projectId}:`, photoError);
             setImageError(true);
             setImageLoading(false);
             setImageSrc(FALLBACK_IMAGE);
@@ -360,7 +360,14 @@ export default function InactiveProjectDetail({ params }) {
 
           {/* Transactions section - Improved */}
           <div className="bg-astrawhite p-6 rounded-xl shadow">
-            <h2 className="font-lb text-xl mb-4">Transactions</h2>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="font-lb text-xl">Transactions</h2>
+              <Link href="/admin/donations" passHref>
+                <button className="border-2 border-astraprimary text-astraprimary hover:bg-astraprimary hover:text-astrawhite rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer px-4 py-2">
+                  Manage Donations
+                </button>
+              </Link>
+            </div>
 
             <div className="max-h-80 overflow-y-auto custom-scrollbar rounded-lg border border-astralightgray/50">
               <table className="w-full border-collapse">

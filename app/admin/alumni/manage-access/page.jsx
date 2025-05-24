@@ -655,6 +655,55 @@ function renderActions(id, name, currTab, setRefreshTrigger, setToast) {
     }
   };
 
+  const handleDecline = async () => {
+    const reason = prompt(`Enter a message to send to ${name}:`);
+
+    if (!reason || reason.trim() === "") {
+      setToast({ type: "error", message: "Decline message cannot be empty." });
+      return;
+    }
+
+    try {
+      const userResponse = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/users/${id}`
+      );
+
+      const userEmail = userResponse.data?.user?.email;
+
+      if (!userEmail) {
+        setToast({ type: "error", message: `Email not found for ${name}.` });
+        return;
+      }
+
+      const alumniResponse = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/${id}`
+      );
+
+      console.log(alumniResponse.data);
+
+      const userName = `${alumniResponse.data?.alumniProfile?.honorifics} ${alumniResponse.data?.alumniProfile?.last_name}`;
+
+      const emailResponse = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/email/send`,
+        {
+          to: userEmail,
+          subject: "Your Alumni Profile Request Has Been Declined",
+          body: reason,
+          name: userName || "recipient"
+        }
+      );
+
+      if (emailResponse.data.status === "SENT") {
+        setToast({ type: "success", message: `Decline email sent to ${name}.` });
+      } else {
+        setToast({ type: "error", message: `Failed to send email. ${emailResponse.data.message}` });
+      }
+    } catch (error) {
+      console.error("Decline error:", error);
+      setToast({ type: "error", message: `Error declining ${name}.` });
+    }
+  };
+
   return (
     <div className="flex justify-center gap-3 md:pr-4 lg:pr-2">
       <div className="hidden md:block">
@@ -697,6 +746,7 @@ function renderActions(id, name, currTab, setRefreshTrigger, setToast) {
               color="red"
               notifyMessage={`${name} has been declined!`}
               notifyType="fail"
+              onClick={handleDecline}
             />
           </div>
           <div className="block md:hidden">
@@ -705,6 +755,7 @@ function renderActions(id, name, currTab, setRefreshTrigger, setToast) {
               color="red"
               notifyMessage={`${name} has been declined!`}
               notifyType="fail"
+              onClick={handleDecline}
             />
           </div>
         </>

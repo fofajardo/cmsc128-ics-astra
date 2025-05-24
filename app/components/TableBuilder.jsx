@@ -45,7 +45,6 @@ export function TableHeader({ info, pagination, toggleFilter, setPagination, sea
 }
 
 export function EventTableHeader({ info, pagination, toggleFilter, setPagination, searchQuery, setSearchQuery }) {
-  console.log("inside the event table heaadr");
   return (
     <div>
       <div className='flex md:hidden flex-col gap-4'>
@@ -66,7 +65,6 @@ export function EventTableHeader({ info, pagination, toggleFilter, setPagination
 }
 
 export function EventToolbar({ toggleFilter, pagination, setPagination }) {
-  console.log("at event tool bar");
   const handleNumToShowChange = (e) => {
     const newNumToShow = parseInt(e.target.value);
     const total = pagination.total;
@@ -238,15 +236,7 @@ export function Table({ cols, data }) {
 export function PageTool({ pagination, setPagination }) {
   const { currPage, lastPage, total, numToShow } = pagination;
 
-  console.log("PageTool rendering with:", {
-    currPage,
-    lastPage,
-    total,
-    numToShow,
-    display: pagination.display
-  });
   const handlePageChange = (newPage) => {
-    console.log("Changing to page:", newPage);
     const start = (newPage - 1) * numToShow + 1;
     const end = Math.min(newPage * numToShow, total);
     setPagination({ ...pagination, currPage: newPage, display: [start, end] });

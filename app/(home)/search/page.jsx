@@ -13,7 +13,6 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 const ITEMS_PER_PAGE = 10;
 
 export default function Page() {
-  // Replace dummy data with API data
   const [alumList, setAlumList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState("");
@@ -29,21 +28,8 @@ export default function Page() {
     location: "",
     skills: "",
   });
-  const [showFilters, setShowFilters] = useState({
-    graduationYear: false,
-    location: false,
-    skills: false,
-  });
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
-  const [totalResults, setTotalResults] = useState(0);
-
-  const toggleFilter = (filterName) => {
-    setShowFilters((prevShowFilters) => ({
-      ...prevShowFilters,
-      [filterName]: !prevShowFilters[filterName],
-    }));
-  };
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -53,32 +39,31 @@ export default function Page() {
     }));
   };
 
-  const handleApplyFilters = () => {
-    setCurrentPage(1); // Reset to the first page when filters are applied
+  const handlesearch = () => {
+    setCurrentPage(1);
+    // Apply filters immediately on search for all input fields
     setAppliedFilters(filters);
   };
 
-  const handleSearchChange = (e) => {
+  const handleInputChange = (e) => {
     setSearchTerm(e.target.value);
-    setCurrentPage(1); // Reset page on search
+    setCurrentPage(1);
   };
 
   useEffect(() => {
     const fetchAlumniProfiles = async () => {
+      setLoading(true);
       try {
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles`,
           {
             params: {
-              // Only paginate when not searching
-              page: searchTerm ? null : currentPage,
-              limit: searchTerm ? null : ITEMS_PER_PAGE,
-              search: searchTerm ? null : searchTerm, // We'll handle search on client side for better flexibility
+              page: currentPage,
+              limit: ITEMS_PER_PAGE,
+              search: searchTerm || undefined,
             },
           }
         );
-
-        // Rest of your code remains the same...
 
         if (response.data.status === "OK") {
           const updatedAlumList = await Promise.all(
@@ -115,7 +100,6 @@ export default function Page() {
               try {
                 const idForDegree = alum.user_id || alum.alum_id;
                 if (idForDegree) {
-                  console.log("Fetching degree programs for user_id:", idForDegree);
                   const degreeResponse = await axios.get(
                     `${process.env.NEXT_PUBLIC_API_URL}/v1/degree-programs/alumni/${idForDegree}`
                   );
@@ -135,7 +119,7 @@ export default function Page() {
                 }
               } catch (degreeError) {
                 console.error(
-                  `Failed to fetch degree programs for user_id: ${alum.user_id || alum.alum_id}`,
+                  `Failed to fetch degree programs for user_id: ${idForDegree}`,
                   degreeError
                 );
               }
@@ -144,15 +128,15 @@ export default function Page() {
             })
           );
 
-          // Store the complete list without filtering
           setAlumList(updatedAlumList);
-          setLoading(false);
         } else {
           console.error("Unexpected response:", response.data);
-          setLoading(false);
+          setAlumList([]);
         }
       } catch (error) {
         console.error("Failed to fetch alumni:", error);
+        setAlumList([]);
+      } finally {
         setLoading(false);
       }
     };
@@ -161,72 +145,74 @@ export default function Page() {
   }, [currentPage, searchTerm]);
 
   const filteredAlumList = useMemo(() => {
-    return alumList.filter(alum => {
+    let currentFilteredList = alumList;
+
+    if (searchTerm) {
       const lowerSearchTerm = searchTerm.toLowerCase();
-      let searchMatch = true;
-
-      if (searchTerm) {
+      currentFilteredList = currentFilteredList.filter((alum) => {
         const fullName = `${alum.first_name} ${alum.last_name}`.toLowerCase();
-
-        // Only match if the search term appears as a consecutive substring
-        const partialFirstNameMatch = alum.first_name.toLowerCase().includes(lowerSearchTerm);
-        const partialLastNameMatch = alum.last_name.toLowerCase().includes(lowerSearchTerm);
+        const partialFirstNameMatch = alum.first_name
+          .toLowerCase()
+          .includes(lowerSearchTerm);
+        const partialLastNameMatch = alum.last_name
+          .toLowerCase()
+          .includes(lowerSearchTerm);
         const fullNameMatch = fullName.includes(lowerSearchTerm);
 
-        // Only use exact substring matches
-        searchMatch = partialFirstNameMatch || partialLastNameMatch || fullNameMatch;
+        return partialFirstNameMatch || partialLastNameMatch || fullNameMatch;
+      });
+    }
 
-        // const containsAllChars = [...lowerSearchTerm].every(char =>
-        //   char === ' ' || fullName.includes(char)
-        // );
+    return currentFilteredList.filter((alum) => {
+      const gradYear =
+        alum.year_graduated !== "N/A"
+          ? parseInt(alum.year_graduated.substring(0, 4), 10)
+          : null;
 
-        // Keep initials matching if needed, but make it exact
-        const initials = `${alum.first_name[0]}${alum.last_name[0]}`.toLowerCase();
-        const matchesInitials = initials === lowerSearchTerm;
+      const withinMinYear =
+        !appliedFilters.minGradYear ||
+        (gradYear && gradYear >= parseInt(appliedFilters.minGradYear, 10));
 
-        searchMatch = searchMatch || matchesInitials;
-      }
+      const withinMaxYear =
+        !appliedFilters.maxGradYear ||
+        (gradYear && gradYear <= parseInt(appliedFilters.maxGradYear, 10));
 
-      const gradYear = alum.year_graduated !== "N/A"
-        ? parseInt(alum.year_graduated.substring(0, 4), 10)
-        : null;
+      const matchesLocation =
+        !appliedFilters.location ||
+        (alum.location &&
+          alum.location.toLowerCase().includes(appliedFilters.location.toLowerCase()));
 
-      const withinMinYear = !appliedFilters.minGradYear || !gradYear ||
-        gradYear >= parseInt(appliedFilters.minGradYear, 10);
-
-      const withinMaxYear = !appliedFilters.maxGradYear || !gradYear ||
-        gradYear <= parseInt(appliedFilters.maxGradYear, 10);
-
-      const matchesLocation = !appliedFilters.location ||
-        (alum.location && alum.location.toLowerCase().includes(appliedFilters.location.toLowerCase()));
-
-      const skillsMatch = !appliedFilters.skills ||
-        alum.skills.some(skill =>
+      const skillsMatch =
+        !appliedFilters.skills ||
+        alum.skills.some((skill) =>
           skill.toLowerCase().includes(appliedFilters.skills.toLowerCase())
         );
 
-      return searchMatch && withinMinYear && withinMaxYear && matchesLocation && skillsMatch;
+      return withinMinYear && withinMaxYear && matchesLocation && skillsMatch;
     });
   }, [alumList, appliedFilters, searchTerm]);
 
-  // Apply sorting only (don't filter here)
   const sortedAlumList = useMemo(() => {
-    let sortedList = [...filteredAlumList]; // Use filteredAlumList instead of alumList
+    let sortedList = [...filteredAlumList];
     if (sortBy === "firstName") {
       sortedList.sort((a, b) => a.first_name.localeCompare(b.first_name));
-    }
-    if (sortBy === "lastName") {
+    } else if (sortBy === "lastName") {
       sortedList.sort((a, b) => a.last_name.localeCompare(b.last_name));
-    }
-    if (sortBy === "graduationYear") {
+    } else if (sortBy === "graduationYear") {
       sortedList.sort((a, b) => {
-        const yearA = a.year_graduated !== "N/A" ? parseInt(a.year_graduated.substring(0, 4), 10) : 0;
-        const yearB = b.year_graduated !== "N/A" ? parseInt(b.year_graduated.substring(0, 4), 10) : 0;
+        const yearA =
+          a.year_graduated !== "N/A"
+            ? parseInt(a.year_graduated.substring(0, 4), 10)
+            : 9999;
+        const yearB =
+          b.year_graduated !== "N/A"
+            ? parseInt(b.year_graduated.substring(0, 4), 10)
+            : 9999;
         return yearA - yearB;
       });
     }
     return sortedList;
-  }, [filteredAlumList, sortBy]); // Change dependency from alumList to filteredAlumList
+  }, [filteredAlumList, sortBy]);
 
   const totalPages = useMemo(() => {
     return Math.ceil(sortedAlumList.length / ITEMS_PER_PAGE);
@@ -238,26 +224,43 @@ export default function Page() {
     return sortedAlumList.slice(startIndex, endIndex);
   }, [sortedAlumList, currentPage]);
 
-  // Define skeleton rows for loading state
-  const skeletonRows = Array(10).fill({}).map(() => ({
-    "Image:label-hidden": <div className="flex justify-center p-2"><div className="w-12 h-12 m-3 bg-gray-200 rounded-xl animate-pulse"></div></div>,
-    "First Name": <div className="bg-gray-200 h-5 w-24 animate-pulse"></div>,
-    "Last Name": <div className="bg-gray-200 h-5 w-24 animate-pulse"></div>,
-    "Graduation Year": <div className="text-center bg-gray-200 h-5 w-16 mx-auto animate-pulse"></div>,
+  const skeletonRows = Array(10)
+    .fill({})
+    .map(() => ({
+      "Image:label-hidden": (
+        <div className="flex justify-center p-2">
+          <div className="w-12 h-12 m-3 bg-gray-200 rounded-xl animate-pulse"></div>
+        </div>
+      ),
+      "First Name": (
+        <div className="bg-gray-200 h-5 w-24 animate-pulse"></div>
+      ),
+      "Last Name": (
+        <div className="bg-gray-200 h-5 w-24 animate-pulse"></div>
+      ),
+      "Graduation Year": (
+        <div className="text-center bg-gray-200 h-5 w-16 mx-auto animate-pulse"></div>
+      ),
+      // "Location": (
+      //   <div className="text-center bg-gray-200 h-5 w-32 mx-auto animate-pulse"></div>
+      // ),
+      "Skills": (
+        <div className="flex justify-center p-2">
+          <div className="bg-gray-200 h-5 w-32 animate-pulse rounded-md"></div>
+        </div>
+      ),
+      "Actions:label-hidden": (
+        <div className="flex justify-center p-2">
+          {/* <div className="bg-gray-200 h-8 w-16 animate-pulse rounded-md"></div> */}
+        </div>
+      ),
+    }));
 
-    // uncomment if you want to show location, skills, and actions
-    // "Location": <div className="text-center bg-gray-200 h-5 w-20 mx-auto animate-pulse"></div>,
-    // "Skills": <div className="flex justify-center"><div className="bg-gray-200 h-6 w-32 animate-pulse"></div></div>,
-    // "Quick Actions": <div className="flex justify-center"><div className="bg-gray-200 h-8 w-16 rounded animate-pulse"></div></div>,
-  }));
-
-  // Column definitions
   const cols = [
     { label: "Image:label-hidden", justify: "center", visible: "all" },
     {
       label: "First Name",
       justify: "center",
-      // justify: "start",
       visible: "sm",
       sortable: true,
       onSort: () => handleSort("firstName"),
@@ -265,7 +268,6 @@ export default function Page() {
     {
       label: "Last Name",
       justify: "center",
-      // justify: "start",
       visible: "sm",
       sortable: true,
       onSort: () => handleSort("lastName"),
@@ -277,11 +279,21 @@ export default function Page() {
       sortable: true,
       onSort: () => handleSort("graduationYear"),
     },
-
-    // Uncomment if you want to show location, skills, and actions
-    // { label: "Location", justify: "center", visible: "lg" },
-    // { label: "Skills", justify: "center", visible: "md" },
-    // { label: "Quick Actions", justify: "center", visible: "all" },
+    // {
+    //   label: "Location",
+    //   justify: "center",
+    //   visible: "lg",
+    // },
+    {
+      label: "Skills",
+      justify: "center",
+      visible: "lg",
+    },
+    {
+      label: "Actions:label-hidden",
+      justify: "center",
+      visible: "all",
+    },
   ];
 
   function handleSort(column) {
@@ -291,15 +303,19 @@ export default function Page() {
 
   function createRows(alumList) {
     return alumList.map((alum) => ({
-      "Image:label-hidden": renderAvatar(alum.image, `${alum.first_name} ${alum.last_name}`),
+      "Image:label-hidden": renderAvatar(
+        alum.image,
+        `${alum.first_name} ${alum.last_name}`
+      ),
       "First Name": renderText(alum.first_name),
       "Last Name": renderText(alum.last_name),
-      "Graduation Year": renderText(alum.year_graduated !== "N/A" ? alum.year_graduated.substring(0, 4) : "N/A"),
-
-      // uncomment if you want to show location, skills, and actions
-      // Location: renderText(alum.location || "N/A"),
-      // Skills: renderSkills(alum.skills || []),
-      // "Quick Actions": renderActions(alum.id),
+      "Graduation Year": renderText(
+        alum.year_graduated !== "N/A" ? alum.year_graduated.substring(0, 4) : "N/A"
+      ),
+      // "Location": renderText(alum.location),
+      "Skills": renderSkills(alum.skills),
+      "Actions:label-hidden": <div className="flex justify-center p-2"></div>,
+      // "Actions:label-hidden": renderActions(alum.id),
     }));
   }
 
@@ -341,34 +357,33 @@ export default function Page() {
     );
   }
 
-  function renderActions(id) {
-    return (
-      <div className="flex justify-center p-2">
-        <ActionButton label="View" color="gray" route={`/search/${id}`} />
-      </div>
-    );
-  }
+  // function renderActions(id) {
+  //   return (
+  //     <div className="flex justify-center p-2">
+  //       <ActionButton label="View" color="gray" route={`/search/${id}`} />
+  //     </div>
+  //   );
+  // }
 
   return (
-    <div className="w-full bg-astradirtywhite">
+    <div className="w-full bg-astradirtywhite flex flex-col items-center">
       <div className="h-auto" />
       <>
-        {/* Hero */}
         <div
           className="relative w-full bg-cover bg-center"
           style={{ backgroundImage: "url('/blue-bg.png')" }}
         >
-          <div className="max-w-[1440px] mx-auto px-6 py-10 md:px-12 md:py-16 lg:px-12 lg:py-20 flex flex-col lg:flex-row items-center justify-between text-astrawhite gap-6 lg:gap-10">
-            <div className="max-w-[600px] space-y-4 text-center lg:text-left animate-slide-up">
-              <h1 className="font-h1 text-astrawhite leading-[1.1] text-3xl md:text-4xl lg:text-5xl">
+          <div className="max-w-[1440px] mx-auto px-12 py-20 flex flex-col lg:flex-row items-start justify-between text-astrawhite gap-10">
+            <div className="max-w-[600px] space-y-6 text-left animate-hero-text">
+              <h1 className="text-[60px] font-extrabold leading-[1.1]">
                 Alumni Directory
               </h1>
-              <p className="font-l text-astrawhite text-sm md:text-base">
+              <p className="text-lg font-medium">
                 Discover, connect, and engage with alumni to expand your network!
               </p>
             </div>
-            <div className="w-full lg:w-[550px] flex justify-center animate-fade-in">
-              <div className="relative w-full h-auto max-w-[400px] md:max-w-[550px]">
+            <div className="w-full lg:w-[550px] flex justify-end">
+              <div className="relative w-full h-auto max-w-[550px] animate-natural-float">
                 <Image
                   src={eventsVector}
                   alt="Events Illustration"
@@ -379,195 +394,132 @@ export default function Page() {
             </div>
           </div>
         </div>
-        <section className="py-16 md:py-24 relative">
-          <div className="w-full max-w-7xl mx-auto px-4 md:px-8">
-            <div className="flex flex-col md:flex-row md:items-center max-lg:gap-4 justify-between w-full mb-6 md:mb-8">
-              <h2 className="font-h2 text-xl md:text-2xl lg:text-3xl">Search for Alumni</h2>
-              <div className="relative w-full max-w-sm flex flex-col sm:flex-row gap-2">
-                <div className="relative w-full">
-                  <svg
-                    className="absolute top-1/2 -translate-y-1/2 left-4 z-50"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 20 20"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M16.5555 3.33203H3.44463C2.46273 3.33203 1.66675 4.12802 1.66675 5.10991C1.66675 5.56785 1.84345 6.00813 2.16004 6.33901L6.83697 11.2271C6.97021 11.3664 7.03684 11.436 7.0974 11.5068C7.57207 12.062 7.85127 12.7576 7.89207 13.4869C7.89728 13.5799 7.89728 13.6763 7.89728 13.869V16.251C7.89728 17.6854 9.30176 18.6988 10.663 18.2466C11.5227 17.961 12.1029 17.157 12.1029 16.251V14.2772C12.1029 13.6825 12.1029 13.3852 12.1523 13.1015C12.2323 12.6415 12.4081 12.2035 12.6683 11.8158C12.8287 11.5767 13.0342 11.3619 13.4454 10.9322L17.8401 6.33901C18.1567 6.00813 18.3334 5.56785 18.3334 5.10991C18.3334 4.12802 17.5374 3.33203 16.5555 3.33203Z"
-                      strokeWidth="1.6"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                  <input
-                    type="text"
-                    id="Offer"
-                    placeholder="Search..."
-                    className="px-6 bg-astrawhite border border-astragray w-full h-12"
-                    value={searchTerm}
-                    onChange={handleSearchChange}
-                  />
-                </div>
-                <select
-                  className="border border-astragray p-2 w-full sm:w-32 h-12 bg-white"
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                >
-                  <option value="" hidden>
-                    Sort by...
-                  </option>
-                  <option value="firstName">First Name</option>
-                  <option value="lastName">Last Name</option>
-                  <option value="graduationYear">Graduation Year</option>
-                </select>
-                <svg
-                  className="absolute top-1/2 -translate-y-1/2 right-4 z-50 pointer-events-none"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M12.0002 5.99845L8.00008 9.99862L3.99756 5.99609"
-                    strokeWidth="1.6"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-            </div>
-            <svg
-              className="my-4 md:my-7 w-full"
-              xmlns="http://www.w3.org/2000/svg"
-              width="1216"
-              height="2"
-              viewBox="0 0 1216 2"
-              fill="none"
+      <section className="py-16 md:py-24 relative w-full flex flex-col items-center">
+      <div className="w-full max-w-7xl px-4 md:px-8 flex flex-col items-center"> {/* This div centers its content */}
+        <div className="w-full max-w-[1000px] mb-6 md:mb-8 flex flex-col items-center"> {/* Add flex-col items-center here */}
+          <div className="flex items-stretch w-full border border-astragray bg-astrawhite">
+            <input
+              type="text"
+              placeholder="Search for alumni"
+              className="flex-grow py-4 pl-6 focus:outline-none text-base text-astradark"
+              value={searchTerm}
+              onChange={handleInputChange}
+            />
+            <button
+              className="px-6 bg-astraprimary hover:bg-astradark text-astrawhite font-semibold transition flex items-center gap-2 cursor-pointer"
+              onClick={handlesearch}
             >
-              <path className="stroke-astragray" d="M0 1H1216" />
-            </svg>
-            <div className="grid grid-cols-12 gap-6">
-              <div className="col-span-12 md:col-span-3 w-full max-md:max-w-md max-md:mx-auto">
-                <div className="rounded-xl border border-astragray bg-astrawhite p-4 md:p-6 w-full md:max-w-sm space-y-4 md:space-y-5">
-                  {/* Filter Buttons */}
-                  <div className="space-y-2">
-                    <div className="pb-2 border-b border-astragray">
-                      <button
-                        className="w-full py-2 rounded-md text-astrablack font-medium text-left focus:outline-none focus:ring-2 focus:ring-astraprimary flex items-center justify-between"
-                        onClick={() => toggleFilter("graduationYear")}
-                      >
-                        Graduation Year
-                        <FontAwesomeIcon icon={faPlus} className="h-4 w-4" />
-                      </button>
-                      {showFilters.graduationYear && (
-                        <div className="flex items-center gap-1 mt-2">
-                          <div className="relative w-full">
-                            <input
-                              type="text"
-                              id="minGradYear"
-                              name="minGradYear"
-                              placeholder="From"
-                              className="border border-astragray p-2 pl-4 w-full h-10"
-                              value={filters.minGradYear}
-                              onChange={handleFilterChange}
-                            />
-                          </div>
-                          <p className="px-1 font-normal text-sm leading-6 text-astradarkgray">to</p>
-                          <div className="relative w-full">
-                            <input
-                              type="text"
-                              id="maxGradYear"
-                              name="maxGradYear"
-                              placeholder="To"
-                              className="border border-astragray p-2 pl-4 w-full h-10"
-                              value={filters.maxGradYear}
-                              onChange={handleFilterChange}
-                            />
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="pb-2 border-b border-astragray">
-                      <button
-                        className="w-full py-2 rounded-md text-astrablack font-medium text-left focus:outline-none focus:ring-2 focus:ring-astraprimary flex items-center justify-between"
-                        onClick={() => toggleFilter("location")}
-                      >
-                        Location
-                        <FontAwesomeIcon icon={faPlus} className="h-4 w-4" />
-                      </button>
-                      {showFilters.location && (
-                        <div className="relative w-full mt-2">
-                          <input
-                            type="text"
-                            id="location"
-                            name="location"
-                            placeholder="Enter Location"
-                            className="border border-astragray p-2 pl-4 w-full h-10"
-                            value={filters.location}
-                            onChange={handleFilterChange}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </div>
+              Search
+            </button>
+          </div>
 
-                  <div className="space-y-2">
-                    <div className="pb-2 border-b border-astragray">
-                      <button
-                        className="w-full py-2 rounded-md text-astrablack font-medium text-left focus:outline-none focus:ring-2 focus:ring-astraprimary flex items-center justify-between"
-                        onClick={() => toggleFilter("skills")}
-                      >
-                        Skills
-                        <FontAwesomeIcon icon={faPlus} className="h-4 w-4" />
-                      </button>
-                      {showFilters.skills && (
-                        <div className="relative w-full mt-2">
-                          <input
-                            type="text"
-                            id="skills"
-                            name="skills"
-                            placeholder="Enter Skills"
-                            className="border border-astragray p-2 pl-4 w-full h-10"
-                            value={filters.skills}
-                            onChange={handleFilterChange}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </div>
+          <div className="flex flex-wrap gap-4 mt-4 justify-center"> {/* Add justify-center here */}
+            {/* Graduation Year Inputs */}
+            <div className="flex items-center gap-2">
+              <label htmlFor="minGradYear" className="sr-only">Min Graduation Year</label>
+              <input
+                type="text"
+                id="minGradYear"
+                name="minGradYear"
+                placeholder="Min Year"
+                className="border border-astraprimary p-2 pl-4 h-10 rounded-lg text-sm"
+                value={filters.minGradYear}
+                onChange={handleFilterChange}
+                onBlur={handlesearch}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {handlesearch();
+                  }
+                }}
+              />
+              <p className="font-normal text-sm leading-6 text-astradarkgray">to</p>
+              <label htmlFor="maxGradYear" className="sr-only">Max Graduation Year</label>
+              <input
+                type="text"
+                id="maxGradYear"
+                name="maxGradYear"
+                placeholder="Max Year"
+                className="border border-astraprimary p-2 pl-4 h-10 rounded-lg text-sm"
+                value={filters.maxGradYear}
+                onChange={handleFilterChange}
+                onBlur={handlesearch}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handlesearch();
+                  }
+                }}
+              />
+            </div>
 
-                  <button
-                    className="blue-button w-full py-2.5 flex items-center justify-center gap-2 rounded-full text-sm font-semibold shadow-sm shadow-transparent transition-all duration-300 hover:bg-astradark hover:shadow-astraprimary/20"
-                    onClick={handleApplyFilters}
-                  >
-                    Apply
-                  </button>
-                </div>
-              </div>
-              <div className="col-span-12 md:col-span-9">
-                <div className="overflow-x-auto md:pl-4">
-                  {loading ? (
-                    <Table cols={cols} data={skeletonRows} />
-                  ) : (
-                    <>
-                      <Table cols={cols} data={createRows(paginatedAlumList)} />
-                      {totalPages > 1 && (
-                        <Pagination
-                          currentPage={currentPage}
-                          totalPages={totalPages}
-                          onPageChange={(page) => setCurrentPage(page)}
-                        />
-                      )}
-                    </>
-                  )}
-                </div>
-              </div>
+            {/* Location Input */}
+            <div className="relative">
+              <label htmlFor="location" className="sr-only">Location</label>
+              <input
+                type="text"
+                id="location"
+                name="location"
+                placeholder="Location"
+                className="border border-astraprimary p-2 pl-4 h-10 rounded-lg text-sm"
+                value={filters.location}
+                onChange={handleFilterChange}
+                onBlur={handlesearch}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handlesearch();
+                  }
+                }}
+              />
+            </div>
+
+            {/* Skills Input */}
+            <div className="relative">
+              <label htmlFor="skills" className="sr-only">Skills</label>
+              <input
+                type="text"
+                id="skills"
+                name="skills"
+                placeholder="Skills"
+                className="border border-astraprimary p-2 pl-4 h-10 rounded-lg text-sm"
+                value={filters.skills}
+                onChange={handleFilterChange}
+                onBlur={handlesearch}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handlesearch();
+                  }
+                }}
+              />
             </div>
           </div>
-        </section>
+        </div>
+        <svg
+          className="my-4 md:my-7 w-full"
+          xmlns="http://www.w3.org/2000/svg"
+          width="1216"
+          height="2"
+          viewBox="0 0 1216 2"
+          fill="none"
+        >
+          <path className="stroke-astragray" d="M0 1H1216" />
+        </svg>
+
+        <div className="overflow-x-auto w-full max-w-7xl">
+          {loading ? (
+            <Table cols={cols} data={skeletonRows} />
+          ) : (
+            <>
+              <Table cols={cols} data={createRows(paginatedAlumList)} />
+              {totalPages > 1 && (
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={(page) => setCurrentPage(page)}
+                />
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    </section>
       </>
     </div>
   );

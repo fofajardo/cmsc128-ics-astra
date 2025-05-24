@@ -507,7 +507,20 @@ const deleteDonation = async (req, res) => {
       });
     }
 
-    const { error } = await donationsService.deleteDonation(req.supabase, donationId);
+    const { verified_by_user_id } = req.body;
+
+    // console.log(verified_by_user_id);
+
+    const updateData = {
+      is_verified: false,
+      updated_at: new Date().toISOString(),
+      verified_by_user_id,
+      deleted_at: new Date().toISOString()
+    };
+
+    const { data, error } = await donationsService.updateDonationData(req.supabase, donationId, updateData);
+
+    // const { error } = await donationsService.deleteDonation(req.supabase, donationId);
 
     if (error) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({

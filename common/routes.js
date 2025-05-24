@@ -115,6 +115,10 @@ class BaseRoutes {
     this.announcements = {
       base: (append = "") => `${this.BASE_URL}/announcements${append}`,
     };
+
+    this.email = {
+      base: (append = "") => `${this.BASE_URL}/email${append}`
+    };
   }
 }
 
