@@ -3,8 +3,9 @@ import organizationAffiliationsController from "../controllers/organizationAffil
 import degreeProgramsController from "../controllers/degreeProgramController.js";
 import alumniProfilesController from "../controllers/alumniProfilesController.js";
 import workExperiencesController from "../controllers/workExperiencesController.js";
+import photosController from "../controllers/photosController.js";
 
-const usersExtensionRoutes = () => {
+const usersExtensionRoutes = (aUpload) => {
   const router = express.Router();
 
   router.get("/:id/degree-programs", degreeProgramsController.getDegreeProgramsByUserId);
@@ -15,6 +16,8 @@ const usersExtensionRoutes = () => {
   router.post("/:alumId/organizations", organizationAffiliationsController.affiliateAlumnusToOrganization);
   router.put("/:alumId/organizations/:orgId", organizationAffiliationsController.updateAffiliationData);
   router.delete("/:alumId/organizations/:orgId", organizationAffiliationsController.deleteAffiliatedOrganization);
+  router.post("/:userId/avatar", aUpload.single("avatar"), photosController.uploadOrReplaceAvatar);
+  router.delete("/:id/avatar", photosController.deleteAvatar);
 
   return router;
 };

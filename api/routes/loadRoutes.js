@@ -21,6 +21,18 @@ import jobsRouter from "./jobsRoutes.js";
 import statisticsRouter from "./statisticsRoutes.js";
 import emailRouter from "./emailRoutes.js";
 import {serverRoutes} from "../../common/routes.js";
+import multer from "multer";
+
+const storage = multer.diskStorage({
+  // destination: (req, file, cb) => {
+  //     cb(null, "assets/photos/"); // Directory where files will be stored
+  // },
+  filename: (req, file, cb) => {
+    cb(null, `${file.originalname}`); // sample filename
+  },
+});
+
+const upload = multer({ storage });
 
 const ensureDirectoriesExist = () => {
   const photosDir = path.join("assets", "photos");
@@ -35,9 +47,9 @@ const registerRoutes = (app) => {
 
   app.use(serverRoutes.auth.base(), authRouter());
   app.use(serverRoutes.users.base(), usersRouter());
-  app.use(serverRoutes.users.base(), usersExtensionRoutes());
+  app.use(serverRoutes.users.base(), usersExtensionRoutes(upload));
   app.use(serverRoutes.degreePrograms.base(), degreeProgramsRouter());
-  app.use(serverRoutes.photos.base(), photosRouter());
+  app.use(serverRoutes.photos.base(), photosRouter(upload));
   app.use(serverRoutes.alumniProfiles.base(), alumniProfilesRouter());
   app.use(serverRoutes.contents.base(), contentsRouter());
   app.use(serverRoutes.workExperiences.base(), workExperiencesRouter());
