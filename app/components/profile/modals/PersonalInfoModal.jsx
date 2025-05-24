@@ -1,20 +1,26 @@
 "use client";
 import React, { useState } from "react";
 import { Camera } from "lucide-react";
-import ToastNotification from "@/components/ToastNotification";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {toast} from "@/components/ToastNotification.jsx";
 
-export default function PersonalInfoModal({ profileData, onClose }) {
+export default function PersonalInfoModal({ profileData }) {
+  const [open, setOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [formData, setFormData] = useState(profileData || {});
-  const [isMaidenNameChecked, setIsMaidenNameChecked] = useState(
-    profileData?.Title === "Ms." || profileData?.Title === "Mrs." ? profileData?.IsMaidenName : false
-  );
-  const [showToast, setShowToast] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     if (type === "radio") {
       setFormData({ ...formData, Title: value });
-      setIsMaidenNameChecked(value === "Ms." || value === "Mrs.");
     } else if (type === "checkbox") {
       setFormData({ ...formData, [name]: checked });
     } else {
@@ -50,42 +56,24 @@ export default function PersonalInfoModal({ profileData, onClose }) {
     const missingFields = Object.entries(requiredFields).filter(([_, value]) => isEmpty(value));
 
     if (missingFields.length > 0) {
-      setShowToast({ type: "fail", message: "Please fill in the missing fields." });
+      toast({ variant: "fail", title: "Please fill in the missing fields." });
       return;
     }
 
-    setShowToast({ type: "success", message: "Your profile has been saved!" });
+    toast({ variant: "success", title: "Your profile has been saved!" });
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="max-h-[90vh] overflow-y-auto bg-white rounded-lg shadow-lg w-full max-w-4xl p-8">
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger className="text-sm md:text-base px-3 py-2 md:px-4 md:py-2 bg-[var(--color-astraprimary)] text-white hover:bg-[var(--color-astradark)] rounded-md">
+        Edit
+      </DialogTrigger>
+      <DialogContent loading={isSubmitting}>
+        <DialogHeader>
+          <DialogTitle>Edit Intro</DialogTitle>
+        </DialogHeader>
         <form className="space-y-4" onSubmit={handleSubmit} noValidate>
-          {/* Profile Picture */}
-          <div className="flex justify-center w-full mb-8 relative">
-            <div className="relative">
-              <img
-                src={formData?.ProfilePicture || "/Placeholder.png"}
-                className="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-2 border-gray-300"
-                alt="Profile"
-              />
-              <input
-                type="file"
-                accept="image/*"
-                className="absolute bottom-0 right-0 opacity-0 cursor-pointer w-24 h-24 sm:w-32 sm:h-32 rounded-full"
-                onChange={handleImageChange}
-                id="profile-picture-upload"
-              />
-              <label
-                htmlFor="profile-picture-upload"
-                className="absolute bottom-0 right-0 p-2 bg-black bg-opacity-50 rounded-full cursor-pointer"
-              >
-                <Camera className="text-white" size={24} />
-              </label>
-            </div>
-          </div>
-
-          {/* Preferred Title & Maiden Name */}
+          {/* Preferred Title */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm md:text-base font-medium text-gray-700 mb-1">
@@ -107,25 +95,6 @@ export default function PersonalInfoModal({ profileData, onClose }) {
                 ))}
               </div>
             </div>
-            {isMaidenNameChecked && (
-              <div>
-                <label className="block text-sm md:text-base font-medium text-gray-700 mb-1">
-                  Maiden Name
-                </label>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    name="IsMaidenName"
-                    checked={formData?.IsMaidenName || false}
-                    onChange={handleChange}
-                    className="form-checkbox h-4 w-4 text-[var(--color-astraprimary)] focus:ring-[var(--color-astraprimary)]"
-                  />
-                  <span className="ml-2 text-sm md:text-base">
-                    Is your last name your maiden name?
-                  </span>
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Name Fields */}
@@ -178,42 +147,6 @@ export default function PersonalInfoModal({ profileData, onClose }) {
                 onChange={handleChange}
                 className="w-full rounded-lg border border-gray-300 px-3 py-1 focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] text-sm md:text-base"
                 placeholder="Suffix (e.g., Jr., III)"
-              />
-            </div>
-          </div>
-
-          {/* Degree & Graduation Year */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm md:text-base font-medium text-gray-700 mb-1">
-                UPLB Degree <span className="text-[var(--color-astrared)]">*</span>
-              </label>
-              <select
-                name="Degree"
-                value={formData?.Degree || ""}
-                onChange={handleChange}
-                className="w-full rounded-lg border border-gray-300 px-3 py-1 focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] text-sm md:text-base"
-              >
-                <option value="">Select degree</option>
-                <option value="BS Computer Science">BS Computer Science</option>
-                <option value="MS Computer Science">MS Computer Science</option>
-                <option value="Master of Information Technology">Master of Information Technology</option>
-                <option value="PhD Computer Science">PhD Computer Science</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm md:text-base font-medium text-gray-700 mb-1">
-                Graduation Year <span className="text-[var(--color-astrared)]">*</span>
-              </label>
-              <input
-                type="number"
-                name="GraduationYear"
-                value={formData?.GraduationYear || ""}
-                onChange={handleChange}
-                className="w-full rounded-lg border border-gray-300 px-3 py-1 focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] text-sm md:text-base"
-                min="1900"
-                max={new Date().getFullYear()}
-                placeholder="Enter your graduation year"
               />
             </div>
           </div>
@@ -325,22 +258,12 @@ export default function PersonalInfoModal({ profileData, onClose }) {
             <button
               type="button"
               className="text-sm md:text-base px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-              onClick={onClose}
             >
               Cancel
             </button>
           </div>
         </form>
-
-        {/* Show Toast Notification */}
-        {showToast && (
-          <ToastNotification
-            type={showToast.type}
-            message={showToast.message}
-            onClose={() => setShowToast(null)}
-          />
-        )}
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

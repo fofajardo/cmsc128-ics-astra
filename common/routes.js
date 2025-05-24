@@ -45,6 +45,7 @@ class BaseRoutes {
       getAlumniProfiles: (id) => `${this.BASE_URL}/users/${id}/profile`,
       getWorkExperiences: (id) => `${this.BASE_URL}/users/${id}/work-experiences`,
       getOrganizations: (id) => `${this.BASE_URL}/users/${id}/organizations`,
+      getAvatar: (id) => `${this.BASE_URL}/users/${id}/avatar`,
     };
 
     this.degreePrograms = {

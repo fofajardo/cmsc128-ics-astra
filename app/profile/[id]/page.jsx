@@ -12,7 +12,6 @@ import AddAffiliationModal from "@/components/profile/modals/AddAffiliationModal
 import AddExperienceModal from "@/components/profile/modals/AddExperienceModal";
 import AffiliationModal from "@/components/profile/modals/AffiliationModal";
 import ExperienceModal from "@/components/profile/modals/ExperienceModal";
-import PersonalInfoModal from "@/components/profile/modals/PersonalInfoModal";
 import {UserFetcher, UserProvider, useUser} from "@/components/UserContext.jsx";
 import {feRoutes} from "../../../common/routes.js";
 import {
@@ -29,7 +28,6 @@ nationalities.registerLocale(nationalities_en);
 
 function Page() {
   const context = useUser();
-  const [isShowPersonalForm, setIsShowPersonalForm] = useState(false);
   const [isShowExperienceForm, setIsShowExperienceForm] = useState(false);
   const [isShowAffiliationForm, setIsShowAffiliationForm] = useState(false);
   const [isShowAddExperienceForm, setIsShowAddExperienceForm] = useState(false);
@@ -38,7 +36,6 @@ function Page() {
   {/* Disables background scrolling */}
   useEffect(() => {
     const isAnyModalOpen =
-      isShowPersonalForm ||
       isShowExperienceForm ||
       isShowAffiliationForm ||
       isShowAddExperienceForm ||
@@ -54,7 +51,6 @@ function Page() {
       document.body.style.overflow = "";
     };
   }, [
-    isShowPersonalForm,
     isShowExperienceForm,
     isShowAffiliationForm,
     isShowAddExperienceForm,
@@ -75,21 +71,6 @@ function Page() {
       </div>
     );
   }
-
-  const profileData = {
-    Title: context.state.profile.honorifics,
-    FirstName: context.state.profile.first_name,
-    MiddleName: context.state.profile.middle_name,
-    LastName: context.state.profile.last_name,
-    Suffix: context.state.profile.suffix,
-    Gender: context.state.profile.gender,
-    SexAssignedAtBirth: SEX_LABELS[context.state.profile.sex],
-    BirthDate: context.state.profile.birthdate,
-    Address: context.state.profile.address,
-    Citizenship: nationalities.getName(context.state.profile.citizenship, "en"),
-    CivilStatus: CIVIL_STATUS_LABELS[context.state.profile.civil_status],
-    StudentNumber: context.state.profile.student_num,
-  };
 
   const technicalSkills = (context.state.profile.skills?.trim() ?? "") === ""
     ? []
@@ -145,11 +126,7 @@ function Page() {
           </div>
         )}
 
-        <PersonalInfo
-          context={context}
-          profileData={profileData}
-          setIsShowPersonalForm={setIsShowPersonalForm}
-        />
+        <PersonalInfo context={context} />
 
         {context.state.isVerified && (
           <>
@@ -179,13 +156,6 @@ function Page() {
       </main>
 
       {/* Modal Forms */}
-      {isShowPersonalForm && (
-        <PersonalInfoModal
-          profileData={profileData}
-          onClose={() => setIsShowPersonalForm(false)}
-        />
-      )}
-
       {isShowExperienceForm && (
         <ExperienceModal
           experiences={experiences}
