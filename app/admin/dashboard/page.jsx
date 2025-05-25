@@ -87,7 +87,7 @@ export default function Dashboard() {
     donations: projectDonationSummary,
   }), [
     alumniAgeStats, alumniSexStats, alumniCivilStats, alumniOrgStats,
-    alumniFieldStats, alumniIncomeStats, alumniEmploymentStats, 
+    alumniFieldStats, alumniIncomeStats, alumniEmploymentStats,
     alumniBatchStats, alumniHighestDegreeStats, activeAlumniStats,
     eventsSummaryStats, projectDonationSummary
   ]);
@@ -617,10 +617,10 @@ export default function Dashboard() {
 
       <div className="flex gap-4 flex-col bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24">
         <div className="flex flex-col gap-2 flex-2">
-          <NavigationMenuDemo 
-            tab={tab} 
-            setTab={setTab} 
-            chartRefs={chartRefs} 
+          <NavigationMenuDemo
+            tab={tab}
+            setTab={setTab}
+            chartRefs={chartRefs}
             chartData={chartData}
           />
           {renderTabContent()}

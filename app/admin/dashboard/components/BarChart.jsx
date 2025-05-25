@@ -40,7 +40,7 @@ export function BarChartComponent({
   const total = data.reduce(function(sum, row) {
     return sum + (row[barKey] || 0);
   }, 0);
-  
+
   function renderChart(showToolTip = true) {
     return (
       <ChartContainer config={config} className="aspect-auto h-[380px] w-full">
@@ -141,7 +141,7 @@ export function StackedBarChart({
   footer = null,
 }) {
   const chartRef = useRef(null);
-  
+
   // Calculate total alumni
   const total = data.reduce(
     (sum, row) =>
@@ -209,8 +209,8 @@ export function StackedBarChart({
                       ? function(props) {
                         const { x, y, width, index } = props;
                         const total = barKeys.reduce(
-                          function(sum, k) { 
-                            return sum + (data[index]?.[k] || 0); 
+                          function(sum, k) {
+                            return sum + (data[index]?.[k] || 0);
                           },
                           0
                         );
@@ -245,7 +245,7 @@ export function StackedBarChart({
       <CardHeader>
         <div className="flex justify-between items-center">
           <div className="grid gap-1 flex-1">
-            <CardTitle>{title}</CardTitle>  
+            <CardTitle>{title}</CardTitle>
             {description && <CardDescription>Showing {total} {description}</CardDescription>}
             <ReusableDrawer
               title={`Export ${title}`}
@@ -297,7 +297,7 @@ export function VerticalBarChart({
   footer = null,
 }) {
   const chartRef = useRef(null);
-  
+
   // Calculate total alumni
   const total = data.reduce(function(sum, row) {
     return sum + (row[barKey] || 0);
@@ -359,7 +359,7 @@ export function VerticalBarChart({
       </ChartContainer>
     );
   }
-  
+
   return (
     <Card>
       <CardHeader>

@@ -91,7 +91,7 @@ export default function LineChartComponent({ alumniBatchStats }) {
   const currentConfig = chartConfig[activeChart];
   const currentData = chartDataMap[activeChart];
 
-  const range = useMemo(function() { 
+  const range = useMemo(function() {
     return {
       admission: {
         min: chartDataMap.admission[0]?.year_started,
@@ -193,7 +193,7 @@ export default function LineChartComponent({ alumniBatchStats }) {
               <CardDescription>
                 Showing {total[activeChart]} alumni statistics by {currentConfig.label.toLowerCase()}
               </CardDescription>
-              
+
               {/* Add ReusableDrawer for export functionality */}
               <ReusableDrawer
                 title={`Export ${currentConfig.label} Chart`}

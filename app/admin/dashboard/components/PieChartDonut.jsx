@@ -190,7 +190,7 @@ export function Donut({ fundsRaised, projectStatistics }) {
 
   // filter out donations with 0 funds
   const filteredStatistics = projectStatistics?.filter(item => item.funds > 0) ?? [];
-  
+
   React.useEffect(() => {
     if (
       filteredStatistics.length > 0 &&
@@ -251,7 +251,7 @@ export function Donut({ fundsRaised, projectStatistics }) {
                         y={viewBox.cy}
                         className="fill-astradark font-lb bg-blue-red"
                       >
-                        ₱{typeof totalFunds === 'number' ? totalFunds.toLocaleString() : 'Loading...'}
+                        ₱{typeof totalFunds === "number" ? totalFunds.toLocaleString() : "Loading..."}
                       </tspan>
                       <tspan
                         x={viewBox.cx}
@@ -280,7 +280,7 @@ export function Donut({ fundsRaised, projectStatistics }) {
             <CardDescription className="line-clamp-1">
               See which projects have raised the most funds.
             </CardDescription>
-            
+
           </div>
           <a
             onClick={() => router.push("/admin/projects")}
@@ -313,14 +313,14 @@ export function Donut({ fundsRaised, projectStatistics }) {
           <div className="bg-white p-4 rounded-lg flex flex-col">
             <h3 className="text-lg font-bold mb-0">Projects by Funds Raised</h3>
             <p className="text-sm text-muted-foreground mb-2">
-              Top {paginatedData.length} projects by funds raised (₱{typeof totalFunds === 'number' ? totalFunds.toLocaleString() : 'Loading...'} total)
+              Top {paginatedData.length} projects by funds raised (₱{typeof totalFunds === "number" ? totalFunds.toLocaleString() : "Loading..."} total)
             </p>
-            
+
             {/* Main chart section */}
             <div className="h-[280px]">
               {renderChart(true, true)}
             </div>
-            
+
             {/* Custom legend with values in two columns */}
             <div className="mt-2 border-t pt-2">
               <h4 className="text-xs font-bold mb-2">Legend</h4>
@@ -328,8 +328,8 @@ export function Donut({ fundsRaised, projectStatistics }) {
                 {paginatedData.map((item, index) => (
                   <div key={index} className="flex items-center justify-between border-b border-gray-100 pb-1">
                     <div className="flex items-center gap-1">
-                      <div 
-                        className="w-3 h-3 rounded-full" 
+                      <div
+                        className="w-3 h-3 rounded-full"
                         style={{ backgroundColor: item.fill }}
                       />
                       <span className="truncate md:max-w-48 max-w-24 text-xs" title={item.donationTitle}>
@@ -347,7 +347,7 @@ export function Donut({ fundsRaised, projectStatistics }) {
             </div>
           </div>
         </ReusableDrawer>
-        
+
         {/* Page size selector */}
         <div className="flex items-center gap-2 justify-end mr-6">
           <span className="text-muted-foreground">Show</span>
@@ -376,7 +376,7 @@ export function Donut({ fundsRaised, projectStatistics }) {
           <span className="text-muted-foreground">per page</span>
         </div>
       </div>
-      
+
       <CardContent className="flex-0 pb-0 px-0">
         {showChart ? (
           <div ref={chartRef}>

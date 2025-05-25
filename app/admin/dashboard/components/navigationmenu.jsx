@@ -15,8 +15,8 @@ import Link from "next/link";
 import { ReusableDrawer } from "./Drawer";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { saveAs } from 'file-saver';
-import JSZip from 'jszip';
+import { saveAs } from "file-saver";
+import JSZip from "jszip";
 
 const tabOptions = {
   demographics: [
@@ -52,7 +52,7 @@ export function NavigationMenuDemo({
 }) {
   const [exportTab, setExportTab] = useState("all");
   const [exporting, setExporting] = useState(false);
-  
+
   const getCategoryByTab = (tab) => {
     for (const key in tabOptions) {
       if (tabOptions[key].some(opt => opt.value === tab)) return key;
@@ -67,44 +67,44 @@ export function NavigationMenuDemo({
       console.error("Chart refs or data missing");
       return;
     }
-    
+
     setExporting(true);
     try {
       console.log("Starting export process...");
-      
+
       // Create a new ZIP file
       const zip = new JSZip();
-      
+
       // Add a README
-      zip.file("README.txt", 
+      zip.file("README.txt",
         "Alumni Dashboard Export\n" +
         "Date: " + new Date().toLocaleDateString() + "\n" +
         "Time: " + new Date().toLocaleTimeString() + "\n\n" +
         "This archive contains exported data from the Alumni Dashboard."
       );
-      
+
       // Create folder for data
       const dataFolder = zip.folder("chart-data");
-      
+
       // Export data even if refs are null
       for (const chartKey in chartData) {
         const data = chartData[chartKey];
-        
+
         if (!data || !Array.isArray(data) || data.length === 0) {
           console.warn(`No data available for ${chartKey}`);
           continue;
         }
-        
+
         // Export chart data as CSV
         try {
           console.log(`Creating CSV for ${chartKey} (${data.length} rows)`);
-          const headers = Object.keys(data[0]).join(',');
-          const rows = data.map(item => 
-            Object.values(item).map(val => 
-              typeof val === 'string' ? `"${val.replace(/"/g, '""')}"` : val
-            ).join(',')
+          const headers = Object.keys(data[0]).join(",");
+          const rows = data.map(item =>
+            Object.values(item).map(val =>
+              typeof val === "string" ? `"${val.replace(/"/g, "\"\"")}"` : val
+            ).join(",")
           );
-          const csv = [headers, ...rows].join('\n');
+          const csv = [headers, ...rows].join("\n");
           dataFolder.file(`${chartKey}.csv`, csv);
           console.log(`Successfully created CSV for ${chartKey}`);
         } catch (csvErr) {
@@ -114,11 +114,11 @@ export function NavigationMenuDemo({
 
       // Generate and download the ZIP file
       console.log("Generating ZIP...");
-      const content = await zip.generateAsync({ type: 'blob' });
+      const content = await zip.generateAsync({ type: "blob" });
       saveAs(content, `alumni-dashboard-data-${new Date().toISOString().slice(0,10)}.zip`);
       console.log("Export complete!");
       alert("Data exported successfully! Note: Chart images could not be included because the chart components aren't properly configured with refs.");
-      
+
     } catch (err) {
       console.error("Error exporting data:", err);
       alert("An error occurred while exporting data. Please check the console for details.");
@@ -126,34 +126,34 @@ export function NavigationMenuDemo({
       setExporting(false);
     }
   };
-  
+
   const exportChartByKey = async (chartKey) => {
     const data = chartData?.[chartKey];
-    
+
     if (!data || !Array.isArray(data) || data.length === 0) {
       console.error(`No data available for ${chartKey}`);
       alert(`Cannot export ${chartKey}: No data available`);
       return;
     }
-    
+
     setExporting(true);
     try {
       console.log(`Exporting data for: ${chartKey}`);
-      
+
       // Create CSV content directly
-      const headers = Object.keys(data[0]).join(',');
-      const rows = data.map(item => 
-        Object.values(item).map(val => 
-          typeof val === 'string' ? `"${val.replace(/"/g, '""')}"` : val
-        ).join(',')
+      const headers = Object.keys(data[0]).join(",");
+      const rows = data.map(item =>
+        Object.values(item).map(val =>
+          typeof val === "string" ? `"${val.replace(/"/g, "\"\"")}"` : val
+        ).join(",")
       );
-      const csv = [headers, ...rows].join('\n');
-      
+      const csv = [headers, ...rows].join("\n");
+
       // Create a blob and save it directly
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
       saveAs(blob, `${chartKey}-data-${new Date().toISOString().slice(0,10)}.csv`);
       console.log(`Export of ${chartKey} complete!`);
-      
+
     } catch (err) {
       console.error(`Error exporting chart ${chartKey}:`, err);
       alert(`An error occurred while exporting "${chartKey}". Please check the console for details.`);
@@ -201,7 +201,7 @@ export function NavigationMenuDemo({
                 </ul>
               </NavigationMenuContent>
             </NavigationMenuItem>
-            
+
             <NavigationMenuItem>
               <div className="font-sb">
                 Career
@@ -236,7 +236,7 @@ export function NavigationMenuDemo({
                 </ul>
               </NavigationMenuContent>
             </NavigationMenuItem>
-            
+
             <NavigationMenuItem>
               <div className="font-sb">
                 Status
@@ -293,13 +293,13 @@ export function NavigationMenuDemo({
                   <p className="text-sm text-muted-foreground mb-4">
                     Choose what you want to export from the dashboard
                   </p>
-                  
+
                   <Tabs defaultValue="all" value={exportTab} onValueChange={setExportTab} className="w-full">
                     <TabsList>
                       <TabsTrigger value="all">All Charts</TabsTrigger>
                       <TabsTrigger value="individual">Individual Charts</TabsTrigger>
                     </TabsList>
-                    
+
                     <TabsContent value="all" className="mt-4">
                       <div className="space-y-4">
                         <p>Export all charts and their data as a ZIP file containing:</p>
@@ -313,9 +313,9 @@ export function NavigationMenuDemo({
                             <span>CSV files with raw chart data</span>
                           </li>
                         </ul>
-                        
-                        <Button 
-                          onClick={exportAllCharts} 
+
+                        <Button
+                          onClick={exportAllCharts}
                           disabled={exporting || !chartRefs || Object.keys(chartRefs).length === 0}
                           className="w-full"
                         >
@@ -323,7 +323,7 @@ export function NavigationMenuDemo({
                         </Button>
                       </div>
                     </TabsContent>
-                    
+
                     <TabsContent value="individual" className="mt-4">
                       <div>
                         <p className="mb-2">Select individual charts to export:</p>
@@ -332,9 +332,9 @@ export function NavigationMenuDemo({
                             {chartRefs && Object.keys(chartRefs).map((chartKey) => {
                               // Format chart key for display (camelCase to Title Case)
                               const chartName = chartKey
-                                .replace(/([A-Z])/g, ' $1')
+                                .replace(/([A-Z])/g, " $1")
                                 .replace(/^./, (str) => str.toUpperCase());
-                                
+
                               return (
                                 <div key={chartKey} className="flex justify-between items-center p-2 border rounded-md">
                                   <div>
@@ -343,8 +343,8 @@ export function NavigationMenuDemo({
                                       {chartData?.[chartKey]?.length || 0} data points
                                     </p>
                                   </div>
-                                  <Button 
-                                    size="sm" 
+                                  <Button
+                                    size="sm"
                                     onClick={() => exportChartByKey(chartKey)}
                                     disabled={exporting}
                                     variant="outline"

@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Download, FileDown, ImageDown, Table } from "lucide-react"
-import html2canvas from 'html2canvas-pro';
+import * as React from "react";
+import { Download, FileDown, ImageDown, Table } from "lucide-react";
+import html2canvas from "html2canvas-pro";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Drawer,
   DrawerClose,
@@ -14,8 +14,8 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "@/components/ui/drawer"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+} from "@/components/ui/drawer";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function ReusableDrawer({
   title = "Export Data",
@@ -32,48 +32,48 @@ export function ReusableDrawer({
 
   function convertToCSV(data) {
     if (!data || !data.length) return "";
-    
+
     // Get headers from first object
     const headers = Object.keys(data[0]);
     const csvRows = [];
-    
+
     // Add header row
-    csvRows.push(headers.join(','));
-    
+    csvRows.push(headers.join(","));
+
     // Add data rows
     for (const row of data) {
       const values = headers.map(header => {
         const value = row[header];
         // Handle string values with commas by quoting them
-        return typeof value === 'string' && value.includes(',') 
-          ? `"${value}"` 
+        return typeof value === "string" && value.includes(",")
+          ? `"${value}"`
           : value;
       });
-      csvRows.push(values.join(','));
+      csvRows.push(values.join(","));
     }
-    
-    return csvRows.join('\n');
+
+    return csvRows.join("\n");
   }
-  
+
   function downloadCSV() {
     if (!chartData || !chartData.length) return;
-    
-    const csv = convertToCSV(chartData);
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
 
-    link.setAttribute('href', url);
-    link.setAttribute('download', `${chartTitle.toLowerCase().replace(/\s+/g, '_')}_data.csv`);
-    link.style.display = 'none';
+    const csv = convertToCSV(chartData);
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.setAttribute("href", url);
+    link.setAttribute("download", `${chartTitle.toLowerCase().replace(/\s+/g, "_")}_data.csv`);
+    link.style.display = "none";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   }
-  
+
   function downloadImage() {
-    const chartPreviewContainer = document.querySelector('[data-tab="chart"] .bg-white');
-    
+    const chartPreviewContainer = document.querySelector("[data-tab=\"chart\"] .bg-white");
+
     if (!chartPreviewContainer) {
       // Fallback to chartRef if preview container not found
       if (!chartRef || !chartRef.current) {
@@ -81,7 +81,7 @@ export function ReusableDrawer({
         return;
       }
     }
-    
+
     try {
       // Get the element to capture (preview container or direct chart)
       const elementToCapture = chartPreviewContainer || chartRef.current;
@@ -90,18 +90,18 @@ export function ReusableDrawer({
       const capturePromise = new Promise((resolve, reject) => {
         // Use html2canvas-pro with improved settings
         html2canvas(elementToCapture, {
-          backgroundColor: '#ffffff',
+          backgroundColor: "#ffffff",
           scale: 2,  // Higher quality
           logging: false,
           useCORS: true,
           allowTaint: true,
-          
+
           // Fix color issues by applying custom style preprocessor
           onBeforeCapture: (canvas, ctx, elements) => {
             // Can modify canvas context here if needed
             return { canvas, ctx };
           },
-          
+
           // Properly handle font family and text
           fontFaces: true
         }).then(canvas => {
@@ -111,13 +111,13 @@ export function ReusableDrawer({
           reject(error);
         });
       });
-      
+
       capturePromise.then(canvas => {
         // Export the canvas as PNG
         try {
-          const imgURL = canvas.toDataURL('image/png');
-          const link = document.createElement('a');
-          link.download = `${chartTitle.toLowerCase().replace(/\s+/g, '_')}_chart.png`;
+          const imgURL = canvas.toDataURL("image/png");
+          const link = document.createElement("a");
+          link.download = `${chartTitle.toLowerCase().replace(/\s+/g, "_")}_chart.png`;
           link.href = imgURL;
           link.click();
         } catch (e) {
@@ -136,7 +136,7 @@ export function ReusableDrawer({
   // Preview CSV in the drawer
   function renderCSVPreview() {
     if (!chartData || !chartData.length) return <p>No data available</p>;
-    
+
     const headers = Object.keys(chartData[0]);
     return (
       <div className="overflow-auto max-h-96 border rounded">
@@ -193,7 +193,7 @@ export function ReusableDrawer({
               <TabsContent value="csv" className="p-0">
                 {renderCSVPreview()}
                 <div className="mt-4 mb-4 flex justify-end">
-                {buttons && <Button onClick={downloadCSV}>
+                  {buttons && <Button onClick={downloadCSV}>
                     <FileDown />
                     Download CSV
                   </Button> }
@@ -204,7 +204,7 @@ export function ReusableDrawer({
                   {children}
                 </div>
                 <div className="mt-4 mb-4 flex justify-end">
-                {buttons && <Button onClick={downloadImage}>
+                  {buttons && <Button onClick={downloadImage}>
                     <Download />
                     Save Image
                   </Button> }
