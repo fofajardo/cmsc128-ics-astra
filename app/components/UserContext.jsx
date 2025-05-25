@@ -6,6 +6,7 @@ import {RoleName} from "../../common/scopes.js";
 import axios from "axios";
 import {clientRoutes} from "../../common/routes.js";
 import httpStatus from "http-status-codes";
+import {useParams} from "next/navigation.js";
 
 function buildUserContext() {
   const [initialized, setInitialized] = useState(false);
@@ -305,8 +306,13 @@ function useRefetchUser(aContext, aUserId = null, aIsMinimal = true) {
   });
 }
 
-function UserFetcher({userId = null, isMinimal = true}) {
+function UserFetcher({userId = null, inferId = null, isMinimal = true}) {
   const context = useUser();
+
+  if (inferId !== null) {
+    const params = useParams();
+    userId = params[inferId];
+  }
 
   useEffect(function () {
     useRefetchUser(context, userId, isMinimal);
