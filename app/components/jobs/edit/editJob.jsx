@@ -56,7 +56,7 @@ export default function JobForm({isEdit, close, job, content, handleUpdate}){
     });
     // console.log(changedFields);
     if (changedFields.length === 0) {
-      console.error("No changes detected.");
+      // console.error("No changes detected.");
       setPrompt(false);
       return;
     }
@@ -72,7 +72,7 @@ export default function JobForm({isEdit, close, job, content, handleUpdate}){
     }, {});
 
     if (Object.keys(missingFields).length > 0) {
-      console.error("Missing required fields:", missingFields);
+      // console.error("Missing required fields:", missingFields);
       setErrors(missingFields);
       setPrompt(false);
       return;
@@ -105,7 +105,7 @@ export default function JobForm({isEdit, close, job, content, handleUpdate}){
       handleUpdate(job.job_id);
       close();
     } catch (error) {
-      console.error("Error updating job:", error.response?.data || error.message);
+      // console.error("Error updating job:", error.response?.data || error.message);
       setPrompt(false);
     }
   };

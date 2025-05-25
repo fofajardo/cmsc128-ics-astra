@@ -35,7 +35,7 @@ export default function Donations() {
   const itemsPerPage = 5;
 
   const toggleFilter = () => {
-    console.log("Toggling filter modal:", !showFilter);
+    // console.log("Toggling filter modal:", !showFilter);
     setShowFilter((prev) => !prev);
   };
 
@@ -56,15 +56,15 @@ export default function Donations() {
           requester_id: user_id,
         }
       });
-      console.log(response.data);
+      // console.log(response.data);
       if (response.data.status === "OK") {
         setDonations(response.data.donations || []);
         computeCounts(response.data.donations || []);
       } else {
-        console.error("Unexpected response from server.");
+        ; // console.error("Unexpected response from server.");
       }
     } catch (error) {
-      console.error("Failed to fetch donations. Please try again later.");
+      ; // console.error("Failed to fetch donations. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -187,7 +187,7 @@ export default function Donations() {
         (verificationStatus === "verified" && donation.is_verified) ||
         (verificationStatus === "unverified" && !donation.is_verified);
 
-      console.log(`${donationModeOfPayment} === ${parsedModeOfPayment}`);
+      // console.log(`${donationModeOfPayment} === ${parsedModeOfPayment}`);
 
       return (
         matchesDonor &&
@@ -208,7 +208,7 @@ export default function Donations() {
 
   const handleApprove = async () => {
     if (!donationToApprove?.id) {
-      console.error("No donation selected for approval.");
+      // console.error("No donation selected for approval.");
       return;
     }
 
@@ -221,21 +221,21 @@ export default function Donations() {
         setPrompt(false);
         setDonationToApprove(null);
       } else {
-        console.error("Failed to approve donation.");
+        ; // console.error("Failed to approve donation.");
       }
     } catch (error) {
-      console.error("Error approving donation:", error);
+      ; // console.error("Error approving donation:", error);
     }
   };
 
   const handleDecline = async () => {
     if (!donationToDecline?.id) {
-      console.error("No donation selected for reject.");
+      // console.error("No donation selected for reject.");
       return;
     }
 
     try {
-      console.log(user_id);
+      // console.log(user_id);
       const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations/${donationToDecline.id}`, { data: { verified_by_user_id: user_id }});
       if (response.data.status === "DELETED") {
         // console.log("Successfully rejected");
@@ -244,10 +244,10 @@ export default function Donations() {
         setPrompt(false);
         setDonationToDecline(null);
       } else {
-        console.error("Failed to decline reject.");
+        ; // console.error("Failed to decline reject.");
       }
     } catch (error) {
-      console.error("Error rejecting donation:", error);
+      ; // console.error("Error rejecting donation:", error);
     }
   };
 

@@ -48,7 +48,7 @@ export default function EventsPage() {
         return response.data.photo;
       }
     } catch (error) {
-      console.log(`Failed to fetch photo for event_id ${contentId}:`, error);
+      ; // console.log(`Failed to fetch photo for event_id ${contentId}:`, error);
     }
     return venue2.src; // Return default image if fetch fails
   };
@@ -62,7 +62,7 @@ export default function EventsPage() {
         return response.data.user.username;
       }
     } catch(error){
-      console.error("Failed to get user:", error);
+      ; // console.error("Failed to get user:", error);
     }
     return "Unknown";
   };
@@ -86,7 +86,7 @@ export default function EventsPage() {
         return interestedUserNames;
       }
     } catch(error) {
-      console.log("Error fetching attendees", error);
+      ; // console.log("Error fetching attendees", error);
     }
     return [];
   };
@@ -138,7 +138,7 @@ export default function EventsPage() {
         setTotalPages(response.data.totalPages);
       }
     } catch (error) {
-      console.error("Failed to fetch events:", error);
+      // console.error("Failed to fetch events:", error);
       setEventList([]);
     } finally {
       setIsLoading(false);
@@ -173,7 +173,7 @@ export default function EventsPage() {
         setUpcomingEvents(upcomingEventsWithDetails);
       }
     } catch (error) {
-      console.error("Failed to fetch upcoming events:", error);
+      ; // console.error("Failed to fetch upcoming events:", error);
     }
   };
 
@@ -301,7 +301,7 @@ export default function EventsPage() {
               placeholder="End Date"
               value={endDateFilter}
               onChange={(date) => {
-                console.log("date:", date);
+                // console.log("date:", date);
                 setEndDateFilter(date);
               }}
             />

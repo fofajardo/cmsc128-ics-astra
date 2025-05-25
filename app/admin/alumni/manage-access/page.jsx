@@ -112,10 +112,10 @@ export default function AlumniAccess() {
                   alumData.image = photoResponse.data.photo;
                 }
               } catch (photoError) {
-                console.log(
-                  `Failed to fetch photo for alum_id ${alum.alum_id}:`,
-                  photoError
-                );
+                ; // console.log(
+                //   `Failed to fetch photo for alum_id ${alum.alum_id}:`,
+                //   photoError
+                // );
               }
 
               return alumData;
@@ -136,10 +136,10 @@ export default function AlumniAccess() {
 
           setAlumList(updatedAlumList);
         } else {
-          console.error("Unexpected response:", response.data);
+          ; // console.error("Unexpected response:", response.data);
         }
       } catch (error) {
-        console.error("Failed to fetch alumni:", error);
+        ; // console.error("Failed to fetch alumni:", error);
       }
       finally {
         setLoading(false);
@@ -278,7 +278,7 @@ function BottomButtons({ selectedCount, currTab, setToast, selectedIds, setRefre
         }
 
       } catch (err) {
-        console.error("Approval failed", err);
+        // console.error("Approval failed", err);
         setToast({
           type: "error",
           message: err?.response?.data?.message || "Failed to approve selected profiles."
@@ -308,7 +308,7 @@ function BottomButtons({ selectedCount, currTab, setToast, selectedIds, setRefre
         }
 
       } catch (err) {
-        console.error("Remove failed", err);
+        // console.error("Remove failed", err);
         setToast({
           type: "error",
           message: err?.response?.data?.message || "Failed to remove selected profiles' access."
@@ -338,7 +338,7 @@ function BottomButtons({ selectedCount, currTab, setToast, selectedIds, setRefre
         }
 
       } catch (err) {
-        console.error("Reactivate failed", err);
+        // console.error("Reactivate failed", err);
         setToast({
           type: "error",
           message: err?.response?.data?.message || "Failed to reactivate selected profiles."
@@ -531,7 +531,7 @@ function renderActions(id, name, currTab, setRefreshTrigger, setToast) {
   // Based muna sa currTab pero I think mas maganda kung sa mismong account/user kukunin yung active status
   const handleApprove = async () => {
     try {
-      console.log(`Approving ID: ${id}.`);
+      // console.log(`Approving ID: ${id}.`);
 
       const getResponse = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/${id}`
@@ -568,7 +568,7 @@ function renderActions(id, name, currTab, setRefreshTrigger, setToast) {
         setToast({ type: "error", message: `Failed to approve ${name}. ${postResponse.data.message}` });
       }
     } catch (error) {
-      console.error(`Failed to approve ${name}:`, error);
+      // console.error(`Failed to approve ${name}:`, error);
       setToast({ type: "error", message: `An error occurred while approving ${name}.` });
     }
   };
@@ -610,7 +610,7 @@ function renderActions(id, name, currTab, setRefreshTrigger, setToast) {
         setToast({ type: "error", message: `Failed to remove ${name}'s access. ${postResponse.data.message}` });
       }
     } catch (error) {
-      console.error(`Failed to remove ${name}'s access:`, error);
+      // console.error(`Failed to remove ${name}'s access:`, error);
       setToast({ type: "error", message: `An error occurred while removing ${name}'s access.` });
     }
   };
@@ -650,7 +650,7 @@ function renderActions(id, name, currTab, setRefreshTrigger, setToast) {
         setToast({ type: "error", message: `Failed to reactivate ${name}. ${postResponse.data.message}` });
       }
     } catch (error) {
-      console.error(`Failed to reactivate ${name}:`, error);
+      // console.error(`Failed to reactivate ${name}:`, error);
       setToast({ type: "error", message: `An error occurred while reactivating ${name}.` });
     }
   };
@@ -679,7 +679,7 @@ function renderActions(id, name, currTab, setRefreshTrigger, setToast) {
         `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/${id}`
       );
 
-      console.log(alumniResponse.data);
+      // console.log(alumniResponse.data);
 
       const userName = `${alumniResponse.data?.alumniProfile?.honorifics} ${alumniResponse.data?.alumniProfile?.last_name}`;
 
@@ -699,7 +699,7 @@ function renderActions(id, name, currTab, setRefreshTrigger, setToast) {
         setToast({ type: "error", message: `Failed to send email. ${emailResponse.data.message}` });
       }
     } catch (error) {
-      console.error("Decline error:", error);
+      // console.error("Decline error:", error);
       setToast({ type: "error", message: `Error declining ${name}.` });
     }
   };

@@ -44,7 +44,7 @@ function AlumniItem({ alumni, router }) {
         setProfilePhoto(response.data.photo);
       }
     } catch (error) {
-      console.error(`Failed to fetch photo for user ${userId}:`, error);
+      ; // console.error(`Failed to fetch photo for user ${userId}:`, error);
     }
   };
 
@@ -219,10 +219,10 @@ export default function ActivityOverview() {
             "Recent Registrations": updatedRecentRegisters.length
           }));
         } else {
-          console.error("Unexpected response:", response.data);
+          ; // console.error("Unexpected response:", response.data);
         }
       } catch (error) {
-        console.error("Failed to fetch alumni:", error);
+        ; // console.error("Failed to fetch alumni:", error);
       }
     };
 
@@ -254,10 +254,10 @@ export default function ActivityOverview() {
             "Inactive Accounts": updatedInactiveAccounts.length
           }));
         } else {
-          console.error("Unexpected response:", response.data);
+          ; // console.error("Unexpected response:", response.data);
         }
       } catch (error) {
-        console.error("Failed to fetch alumni:", error);
+        ; // console.error("Failed to fetch alumni:", error);
       }
     };
 

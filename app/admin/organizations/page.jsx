@@ -55,7 +55,7 @@ export default function Organizations() {
         }
       );
 
-      console.log(response.data.organization);
+      // console.log(response.data.organization);
 
       if (response.data.status === "OK") {
         const updatedOrganizationList = await Promise.all(
@@ -86,10 +86,10 @@ export default function Organizations() {
 
         setOrgList(updatedOrganizationList);
       } else {
-        console.error("Unexpected response:", response.data);
+        ; // console.error("Unexpected response:", response.data);
       }
     } catch (error) {
-      console.error("Failed to fetch organizations:", error);
+      // console.error("Failed to fetch organizations:", error);
       setToast({
         type: "fail",
         message: "Failed to fetch organizations.",
@@ -109,7 +109,7 @@ export default function Organizations() {
         fetchOrganizations();
         setRefreshTrigger(prev => prev + 1);
       } catch (error) {
-        console.error("Failed to delete organization:", error);
+        // console.error("Failed to delete organization:", error);
         setToast({ type: "fail", message: `Failed to delete ${name}.` });
       }
     };

@@ -155,10 +155,10 @@ export default function UpcomingEvents() {
 
           setUpcomingEvents(updatedUpcomingEvents);
         } else {
-          console.error("Unexpected response:", response.data);
+          ; // console.error("Unexpected response:", response.data);
         }
       } catch (error) {
-        console.log("Failed to fetch upcoming events:", error);
+        ; // console.log("Failed to fetch upcoming events:", error);
       }
     };
 

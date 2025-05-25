@@ -65,10 +65,10 @@ export default function Contributors() {
             )
           );
         } else {
-          console.error("Unexpected response:", contributorData);
+          ; // console.error("Unexpected response:", contributorData);
         }
       } catch (error) {
-        console.error("Failed to fetch contributors:", error);
+        ; // console.error("Failed to fetch contributors:", error);
       } finally {
         setLoading(false);
       }

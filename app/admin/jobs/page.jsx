@@ -63,10 +63,10 @@ export default function Jobs() {
         setJobs(response.data.list || []);
         computeCounts(response.data.list || []);
       } else {
-        console.error("Unexpected response from server.");
+        ; // console.error("Unexpected response from server.");
       }
     } catch (error) {
-      console.error("Failed to fetch jobs. Please try again later.");
+      ; // console.error("Failed to fetch jobs. Please try again later.");
     }
   };
 
@@ -189,7 +189,7 @@ export default function Jobs() {
 
   const handleDelete = async () => {
     if (!jobToDelete?.id) {
-      console.error("No job selected for deletion.");
+      // console.error("No job selected for deletion.");
       return;
     }
 
@@ -201,10 +201,10 @@ export default function Jobs() {
         setPrompt(false);
         setJobToDelete(null);
       } else {
-        console.error("Failed to delete job.");
+        ; // console.error("Failed to delete job.");
       }
     } catch (error) {
-      console.error("Error deleting job:", error);
+      ; // console.error("Error deleting job:", error);
     }
   };
 

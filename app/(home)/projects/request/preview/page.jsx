@@ -111,12 +111,11 @@ const RequestFundraiserPreview = () => {
           id: projectData.id // Return the content ID
         };
       } else {
-        console.error("Unexpected response:", projectData);
+        ; // console.error("Unexpected response:", projectData);
         return false;
       }
     } catch (error) {
-      console.error("Failed to create project request:", error);
-      throw error;
+      ; // console.error("Failed to create project request:", error);
     }
   };
 
@@ -160,10 +159,10 @@ const RequestFundraiserPreview = () => {
           );
 
           if (photoResponse.data.status !== "CREATED") {
-            console.error("Unexpected photo upload response:", photoResponse.data);
+            ; // console.error("Unexpected photo upload response:", photoResponse.data);
           }
         } catch (photoError) {
-          console.error("Failed to upload project photo:", photoError);
+          ; // console.error("Failed to upload project photo:", photoError);
         }
       }
 
@@ -178,7 +177,7 @@ const RequestFundraiserPreview = () => {
         router.push("/projects");
       }, 2000);
     } catch (error) {
-      console.error("Error submitting project:", error);
+      // console.error("Error submitting project:", error);
       setShowToast({
         type: "fail",
         message: "Failed to submit project. Please try again."

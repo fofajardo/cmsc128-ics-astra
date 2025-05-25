@@ -31,7 +31,7 @@ export default function PersonalInfoModal({ context }) {
   }, [open]);
 
   const handleSubmit = async (values, { setSubmitting }) => {
-    console.log(values);
+    // console.log(values);
     setIsChildSubmitting(true);
     try {
       await axios.put(clientRoutes.alumniProfiles.withId(context.state.user.id), values);

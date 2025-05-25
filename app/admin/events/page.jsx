@@ -131,11 +131,11 @@ export default function Events() {
         if (interestResponse.data.status === "OK") {
           interestMap[event.event_id] = interestResponse.data.list.interest_count || 0;
         } else {
-          console.error("Failed to fetch interests:", interestResponse.data);
+          // console.error("Failed to fetch interests:", interestResponse.data);
           interestMap[event.event_id] = 0; // Fallback
         }
       } catch (error) {
-        console.error(`Failed to fetch interests for event_id ${event.event_id}:`, error);
+        // console.error(`Failed to fetch interests for event_id ${event.event_id}:`, error);
         interestMap[event.event_id] = 0; // Fallback
       }
     });
@@ -156,12 +156,12 @@ export default function Events() {
         setEventCounts(counts);
         return counts;
       } else {
-        console.error("Failed to fetch event statistics:", response.data);
+        // console.error("Failed to fetch event statistics:", response.data);
         setEventCounts({ past: 0, active: 0, total: 0 });
         return { past: 0, active: 0, total: 0 };
       }
     } catch (error) {
-      console.error("Failed to fetch event statistics:", error);
+      // console.error("Failed to fetch event statistics:", error);
       setEventCounts({ past: 0, active: 0, total: 0 });
       return { past: 0, active: 0, total: 0 };
     };
@@ -231,7 +231,7 @@ export default function Events() {
         throw new Error("Failed to fetch events");
       }
     } catch (error) {
-      console.error("Failed to fetch events:", error);
+      // console.error("Failed to fetch events:", error);
       setToast({
         type: "error",
         message: error.response
@@ -305,7 +305,7 @@ export default function Events() {
       }
 
     }catch(error){
-      console.error("Failed to delete events:", error);
+      // console.error("Failed to delete events:", error);
       setToast({ type: "error", message: "Failed to delete event!" });
     }  finally {
       setShowDeleteModal(false);
@@ -318,7 +318,7 @@ export default function Events() {
       const response = await axios
         .delete(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`);
     }catch(error){
-      console.error("Failed to delete events:", error);
+      // console.error("Failed to delete events:", error);
       setToast({ type: "error", message: "Failed to delete event!" });
     }
     fetchEvents();
@@ -390,9 +390,9 @@ export default function Events() {
               }
             );
 
-            if (photoResponse.data.status === "CREATED") {
-              console.log("Event photo uploaded successfully");
-            }
+            // if (photoResponse.data.status === "CREATED") {
+            // console.log("Event photo uploaded successfully");
+            // }
           }
 
           if (eventResponse.data.status === "CREATED") {
@@ -406,7 +406,7 @@ export default function Events() {
         }
       }
     }catch(error){
-      console.error("Failed to create events:", error);
+      // console.error("Failed to create events:", error);
       setToast({ type: "error", message: "Failed to create event." });
     }
     setShowAddModal(false);
@@ -472,7 +472,7 @@ export default function Events() {
       }
 
     }catch(error){
-      console.error("error",error);
+      // console.error("error",error);
       setToast({ type: "error", message: "Failed to edit event." });
     } finally{
       setShowEditModal(false);
@@ -481,7 +481,7 @@ export default function Events() {
     }
   };
 
-  console.log(user);
+  // console.log(user);
   const isAllowed = user?.state?.isAdmin || user?.state?.isModerator;
 
   if (!isAllowed) {

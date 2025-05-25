@@ -31,7 +31,7 @@ export default function AdminAlumniLayout({ children }) {
 
   const fetchStatistics = async () => {
     try {
-      console.log(`${process.env.NEXT_PUBLIC_API_URL}/v1/organizations/statistics`);
+      // console.log(`${process.env.NEXT_PUBLIC_API_URL}/v1/organizations/statistics`);
       const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/organizations/stats`);
 
       if (response.data.status === "OK") {
@@ -43,10 +43,10 @@ export default function AdminAlumniLayout({ children }) {
           outside,
         });
       } else {
-        console.error("Failed to fetch statistics");
+        ; // console.error("Failed to fetch statistics");
       }
     } catch (error) {
-      console.error("Error fetching statistics:", error);
+      ; // console.error("Error fetching statistics:", error);
     }
   };
 

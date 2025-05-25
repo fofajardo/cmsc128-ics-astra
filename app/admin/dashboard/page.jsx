@@ -150,7 +150,7 @@ export default function Dashboard() {
         }
       }
       catch (error) {
-        console.log("Error fetching statistics:", error);
+        ; // console.log("Error fetching statistics:", error);
       }
     };
 

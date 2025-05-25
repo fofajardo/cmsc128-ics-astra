@@ -26,19 +26,19 @@ export default function EventDetailPage() {
   // const [currentPage, setCurrentPage] = useState(1);
   const [numOfInterested, setNumOfInterested] = useState(0);
   //const user_id = "38f98c8d-af8d-4cef-ab9b-8a5d80e9c8b1"; //Only using this since userid is needed
-  console.log("user: ", user);
+  // console.log("user: ", user);
   const isAlumn = user?.state?.isAlumnus;
   const user_id = user?.state?.user?.id;
-  console.log("isAlumnus: ",isAlumn);
-  console.log("user id: ", user?.state?.user?.id );
+  // console.log("isAlumnus: ",isAlumn);
+  // console.log("user id: ", user?.state?.user?.id );
 
   const fetchEvent = async () => {
     try {
-      console.log("id: ", id);
-      console.log("id interest: ", id);
+      // console.log("id: ", id);
+      // console.log("id interest: ", id);
       const ID = id;
-      console.log("id fetch:", ID);
-      if(isValidUUID(id)) console.log("valid");
+      // console.log("id fetch:", ID);
+      // if(isValidUUID(id)) console.log("valid");
       const [eventRes, contentRes,interestStatsRes,interestRes] = await Promise.all([
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/${id}`),
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`),
@@ -52,13 +52,13 @@ export default function EventDetailPage() {
         const interests = interestRes.data.list;
         const interestStats = interestStatsRes.data.list;
 
-        console.log("event: ", event);
-        console.log("content: ", content);
-        console.log("interests:", interests);
-        console.log("intereststat", interestStats.interest_count);
+        // console.log("event: ", event);
+        // console.log("content: ", content);
+        // console.log("interests:", interests);
+        // console.log("intereststat", interestStats.interest_count);
         let interestedUsers = [];
         if( user?.state?.isAlumnus || user?.state?.isAdmin||user?.state?.isModerator){
-          console.log("signed in");
+          // console.log("signed in");
           const isCurrentUserInterested = interests.some(user => user.user_id === user_id);
           setIsInterested(isCurrentUserInterested);
           interestedUsers = await Promise.all(
@@ -89,7 +89,7 @@ export default function EventDetailPage() {
         setNumOfInterested(interestStats.interest_count);
       }
     } catch (error) {
-      console.error("Failed fetching event, content, or interests:", error);
+      // console.error("Failed fetching event, content, or interests:", error);
       setEvent(null);
     }
   };
@@ -99,16 +99,16 @@ export default function EventDetailPage() {
       const response = await axios
         .get(`${process.env.NEXT_PUBLIC_API_URL}/v1/users/${id}`);
 
-      console.log(response);
+      // console.log(response);
       if (response.data.status === "OK") {
         const selectEventName = response.data.user.username;
-        console.log("select event name:",selectEventName, "type", typeof(selectEventName));
+        // console.log("select event name:",selectEventName, "type", typeof(selectEventName));
         return selectEventName;
       } else {
-        console.error("Unexpected response:", response.data);
+        ; // console.error("Unexpected response:", response.data);
       }
     }catch(error){
-      console.error("Failed to get content:", error);
+      ; // console.error("Failed to get content:", error);
     }
     return "Unknown";
   };
@@ -124,7 +124,7 @@ export default function EventDetailPage() {
         return response.data.photo;
       }
     } catch (error) {
-      console.log(`Failed to fetch photo for event_id ${contentId}:`, error);
+      ; // console.log(`Failed to fetch photo for event_id ${contentId}:`, error);
     }
     return venue2.src;
   };
@@ -147,36 +147,36 @@ export default function EventDetailPage() {
   const addDeleteInterest = async (newIsInterested) => {
     try{
 
-      console.log("user:", user?.state?.user);
+      // console.log("user:", user?.state?.user);
 
-      console.log("click interests...");
-      console.log("not alumn", !user?.state?.isAlumnus);
+      // console.log("click interests...");
+      // console.log("not alumn", !user?.state?.isAlumnus);
       const hasAccess = user?.state?.isAlumnus || user?.state?.isAdmin || user?.state?.isModerator;
       if (!hasAccess) return;
-      console.log("adding interest: ", user_id, event.id);
+      // console.log("adding interest: ", user_id, event.id);
       const interest = {
         user_id: user_id,
         content_id: event.id
       };
 
-      console.log("s interested: ",newIsInterested);
+      // console.log("s interested: ",newIsInterested);
       if(newIsInterested){
-        console.log("adding to interest: ", interest);
+        // console.log("adding to interest: ", interest);
         const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests`, interest);
 
         if(response.status === "CREATED"){
-          console.log("successfully created event interest");
+          // console.log("successfully created event interest");
         }
       } else {
-        console.log("interest: ", interest);
+        // console.log("interest: ", interest);
         const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/${interest.user_id}/${interest.content_id}`);
         if(response.status === "DELETED"){
-          console.log("successfully deleted event interest");
+          // console.log("successfully deleted event interest");
         }
       }
 
     } catch (error){
-      console.log("error at addDeleteInterest: ", error.message);
+      ; // console.log("error at addDeleteInterest: ", error.message);
     }
   };
 
@@ -193,7 +193,7 @@ export default function EventDetailPage() {
     if (isInterestedLoading || isGoingLoading) return;
 
 
-    console.log("passed..");
+    // console.log("passed..");
     try {
       setIsInterestedLoading(true);
       const newIsInterested = !isInterested;
@@ -205,11 +205,11 @@ export default function EventDetailPage() {
       }
 
       await addDeleteInterest(newIsInterested);
-      console.log("added/deleted event interest");
+      // console.log("added/deleted event interest");
 
       await fetchEvent();
     } catch (error) {
-      console.error("Failed to update interest:", error);
+      // console.error("Failed to update interest:", error);
       setIsInterested(!isInterested);
     } finally {
       setIsInterestedLoading(false);

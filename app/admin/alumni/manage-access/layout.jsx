@@ -45,7 +45,7 @@ export default function AdminAlumniLayout({ children }) {
           inactive: response.data.stats.inactive_alumni_count,
         });
       } catch (error) {
-        console.error("Failed to fetch alumni stats:", error);
+        ; // console.error("Failed to fetch alumni stats:", error);
       }
     };
 
