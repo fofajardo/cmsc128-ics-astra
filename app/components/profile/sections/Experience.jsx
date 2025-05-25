@@ -63,7 +63,7 @@ export const Experience = ({ context, editMode }) => {
           </p>
           <p className="text-sm text-[var(--color-astrablack)]">
             {exp.startDateDisplay} {
-              exp.isCurrent
+              exp.is_current
                 ? "- Present"
                 : !exp.year_ended
                   ? ""
