@@ -6,26 +6,38 @@ import FormActionButtons from "./FormActionButtons";
 
 export default function EditEventModal({ event, onClose, onSave }) {
   const [title, setTitle] = useState(event.title);
-  const [eventDetail, setEventDetail] = useState(event.eventDetail);
+  const [eventDetail, setEventDetail] = useState(event.description);
   const [date, setDate] = useState(event.date ? new Date(event.date) : null);
   const [location, setLocation] = useState(event.location || "");
   const [status, setStatus] = useState(event.status || "Open");
   const [image, setImage] = useState(event.image || "");
+  const [file, setFile] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Create the updated event object
     const updatedEvent = {
-      ...event,
-      title,
-      eventDetail,
-      date: new Date(date).toISOString().slice(0, 10) || "",
-      location,
-      status,
-      image,
+      title: title,
+      date: date,
+      location: location,
+      status: status,
+      description: eventDetail,
+      image: image,
+      file: file,
     };
-    if (onSave) {
-      onSave(updatedEvent);
-    }
+
+    // Pass the updated event to the parent's onSave function
+    onSave(updatedEvent);
+  };
+
+
+  const handleDateChange = (selDate) => {
+    if (!selDate) return;
+    const adjustedDate = new Date(selDate);
+    adjustedDate.setHours(0, 1, 0, 0);
+
+    setDate(selDate);
   };
 
   return (
@@ -37,13 +49,13 @@ export default function EditEventModal({ event, onClose, onSave }) {
       <div className="relative z-50 bg-white p-6 rounded-2xl shadow-2xl w-[90%] max-w-2xl">
         <h2 className="text-2xl font-bold text-astradarkgray mb-6">Edit Event</h2>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <ImageUploadSection image={image} setImage={setImage} />
+          <ImageUploadSection image={image} file={file} setImage={setImage} setFile={setFile}/>
           <EventFormFields
             isEdit={true}
             title={title}
             setTitle={setTitle}
             date={date}
-            setDate={setDate}
+            setDate={handleDateChange}
             location={location}
             setLocation={setLocation}
             status={status}
