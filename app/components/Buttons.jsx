@@ -76,7 +76,7 @@ export default function ReportForm({contentType, close, id}){
         close();
       }
     } catch (error) {
-      console.error("Failed to submit report:", error);
+      ; // console.error("Failed to submit report:", error);
     }
   };
 

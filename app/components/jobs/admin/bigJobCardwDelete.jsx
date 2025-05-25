@@ -17,10 +17,10 @@ export default function BigJobCardwDelete({ job = {}, content = {} }) {
       if (response.data.status === "DELETED") {
         router.push("/admin/jobs"); // Redirect after successful deletion
       } else {
-        console.error("Failed to delete job.");
+        ; // console.error("Failed to delete job.");
       }
     } catch (error) {
-      console.error("Error deleting job:", error);
+      ; // console.error("Error deleting job:", error);
     }
   };
 

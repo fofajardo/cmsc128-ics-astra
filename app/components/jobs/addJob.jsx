@@ -106,9 +106,9 @@ export default function JobForm({isEdit, close, refreshJobs}){
       let message = "An unexpected error occurred. Please try again.";
       if (axios.isAxiosError(error)) {
         message = error.response?.data?.message || error.message;
-        console.error("Axios error:", message);
+        // console.error("Axios error:", message);
       } else {
-        console.error("Unexpected error:", error);
+        ; // console.error("Unexpected error:", error);
       }
 
       setErrorMessage(message);

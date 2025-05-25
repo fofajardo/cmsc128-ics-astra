@@ -35,10 +35,10 @@ const JobMap = ({ address }) => {
           // update coordinates state
           setCoords([parseFloat(result.lon), parseFloat(result.lat)]);
         } else {
-          setError("Location not found");
+          ; // setError("Location not found");
         }
       } catch (err) {
-        setError("Geocoding failed");
+        ; // setError("Geocoding failed");
       } finally {
         setLoading(false);
       }
