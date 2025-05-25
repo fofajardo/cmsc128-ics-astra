@@ -61,11 +61,9 @@ export default function AlumniSearchProfile({ params }) {
             });
           }).catch(() => {
             console.log("No org affiliation");
-            setMissing(true);
           });
         }).catch(() => {
           console.log("No work experience");
-          setMissing(true);
         });
       }).catch(() => {
         console.log("No alumni profile");

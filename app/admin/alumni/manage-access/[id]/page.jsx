@@ -6,7 +6,7 @@ import { Mail, MapPin, GraduationCap, Image } from "lucide-react";
 import { ActionButton } from "@/components/Buttons";
 import TransitionSlide from "@/components/transitions/TransitionSlide";
 import axios from "axios";
-import { capitalizeName, formatDate } from "../../../../utils/format.jsx";
+import { capitalizeName, formatDate } from "@/utils/format.jsx";
 
 const getStatusBadge = (status) => {
   const statusMap = {
@@ -77,11 +77,9 @@ export default function AlumniSearchProfile({ params }) {
             });
           }).catch(() => {
             console.log("No org affiliation");
-            setMissing(true);
           });
         }).catch(() => {
           console.log("No work experience");
-          setMissing(true);
         });
       }).catch(() => {
         console.log("No alumni profile");

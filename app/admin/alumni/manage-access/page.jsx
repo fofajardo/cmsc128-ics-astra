@@ -188,7 +188,6 @@ export default function AlumniAccess() {
         </div>
         <div className="flex flex-row justify-between md:pl-4 lg:pl-8">
           <ActionButton label="Reset Selection" color="blue" onClick={() => setSelectedIds([])} />
-
           <BottomButtons selectedCount={selectedIds.length} currTab={currTab} setToast={setToast} selectedIds={selectedIds} setRefreshTrigger={setRefreshTrigger} alumList={alumList} pagination={pagination} setPagination={setPagination} />
         </div>
       </div>
@@ -528,7 +527,6 @@ function renderText(text) {
 }
 
 function renderActions(id, name, currTab, setRefreshTrigger, setToast) {
-  // Based muna sa currTab pero I think mas maganda kung sa mismong account/user kukunin yung active status
   const handleApprove = async () => {
     try {
       console.log(`Approving ID: ${id}.`);
@@ -678,8 +676,6 @@ function renderActions(id, name, currTab, setRefreshTrigger, setToast) {
       const alumniResponse = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/${id}`
       );
-
-      console.log(alumniResponse.data);
 
       const userName = `${alumniResponse.data?.alumniProfile?.honorifics} ${alumniResponse.data?.alumniProfile?.last_name}`;
 
