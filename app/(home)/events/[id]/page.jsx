@@ -8,7 +8,7 @@ import BackButton from "@/components/events/IndividualEvent/BackButton";
 import HeaderEvent from "@/components/events/IndividualEvent/HeaderEvent";
 import axios from "axios";
 import { isValidUUID } from "../../../../api/utils/validators";
-import ToastNotification from "@/components/ToastNotification";
+import {toast} from "@/components/ToastNotification";
 
 import venue2 from "../../../assets/venue2.jpeg";
 import { ChartColumnStackedIcon } from "lucide-react";
@@ -23,7 +23,6 @@ export default function EventDetailPage() {
   const [isGoing, setIsGoing] = useState(false);
   const [eventList, setEventList] = useState([]);
   const [numOfInterested, setNumOfInterested] = useState(0);
-  const [toastData, setToastData] = useState(null);
   const isAlumn = user?.state?.isAlumnus;
   const user_id = user?.state?.user?.id;
 
@@ -138,13 +137,21 @@ export default function EventDetailPage() {
       if(newIsInterested){
         const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests`, interest);
         if(response.status === "CREATED"){
-          setToastData({ type: "success", message: "Interest added!" });
+         toast({
+          title: "Success",
+          description: "Interest added!",
+          variant: "success"
+        });
         }
       } else {
 
         const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/${interest.user_id}/${interest.content_id}`);
         if(response.status === "DELETED"){
-          setToastData({ type: "success", message: "Interest removed successfully!"});
+          toast({
+            title: "Success",
+            description: "Interest removed successfully!",
+            variant: "success"
+          });
         }
       }
 
@@ -166,12 +173,20 @@ export default function EventDetailPage() {
 
     const hasAccess = user?.state?.isAlumnus || user?.state?.isAdmin || user?.state?.isModerator;
     if (!hasAccess) {
-      setToastData({ type: "fail", message: "Sign in first to add interest." });
+      toast({
+        title: "Fail",
+        description: "Sign in first to add interest.",
+        variant: "fail"
+      });
       return;
     }
 
     if (event?.status !== "Open") {
-      setToastData({ type: "fail", message: "Event is closed for interest." });
+      toast({
+        title: "Fail",
+        description: "Event is already closed for interest.",
+        variant: "fail"
+      });
       return;
     }
 
@@ -203,13 +218,6 @@ export default function EventDetailPage() {
       <BackButton />
 
       <div className="flex flex-col lg:flex-row gap-6">
-        {toastData && (
-          <ToastNotification
-            type={toastData.type}
-            message={toastData.message}
-            onClose={() => setToastData(null)}
-          />
-        )}
         <HeaderEvent event={event} onSave={handleSave} />
         <EventDetails event={event} isInterested={isInterested} handleInterestClick={handleInterestClick} isGoing={isGoing} handleGoingClick={handleGoingClick}/>
       </div>
