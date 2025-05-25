@@ -449,26 +449,26 @@ export default function Events() {
         details: addFormData.description,
       }, contentDefaults);
 
-      let eventRes, contentRes, eventOnly = 0;
-      if (Object.keys(eventUpdateData).length > 0) {
-        eventRes = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/${toEditId}`, eventUpdateData);
-        eventOnly += 1;
-      }
+      const needsEventUpdate = Object.keys(eventUpdateData).length > 0;
+      const needsContentUpdate = Object.keys(contentUpdateData).length > 0;
+      const needsPhotoUpdate = addFormData.imageFile !== null;
 
-      if (Object.keys(contentUpdateData).length > 0) {
-        contentRes = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${toEditId}`,contentUpdateData);
-        eventOnly += 1; // 2 -> event,content updated; 1->onlyevent
-      }
+      // Perform updates if needed
+      const [eventRes, contentRes] = await Promise.all([
+        needsEventUpdate ? axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/${toEditId}`, eventUpdateData) : null,
+        needsContentUpdate ? axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${toEditId}`, contentUpdateData) : null
+      ]);
 
-      if (eventRes?.data?.status ==="UPDATED"  && contentRes?.data?.status === "UPDATED" && eventOnly===2){
-        setToast({ type: "success", message: "Event edited successfully!" });
-      } else if ((eventRes?.data?.status ==="UPDATED" && eventOnly===1) || (contentRes?.data?.status === "UPDATED" && eventOnly===1)){
-        setToast({ type: "success", message: "Event edited successfully!" });
-      } else if (
-        ((eventRes?.data?.status === "FAILED" || eventRes?.data?.status === "FORBIDDEN") && eventOnly === 2) ||
-        ((contentRes?.data?.status === "FAILED" || contentRes?.data?.status === "FORBIDDEN") && eventOnly === 2)
-      ) {
+      // Check results and set appropriate toast message
+      const eventSuccess = eventRes?.data?.status === "UPDATED";
+      const contentSuccess = contentRes?.data?.status === "UPDATED";
+      const eventFailed = eventRes?.data?.status === "FAILED" || eventRes?.data?.status === "FORBIDDEN";
+      const contentFailed = contentRes?.data?.status === "FAILED" || contentRes?.data?.status === "FORBIDDEN";
+
+      if ((needsEventUpdate && eventFailed) || (needsContentUpdate && contentFailed)) {
         setToast({ type: "error", message: "Failed to edit event." });
+      } else if ((needsEventUpdate && eventSuccess) || (needsContentUpdate && contentSuccess)) {
+        setToast({ type: "success", message: "Event edited successfully!" });
       }
 
     }catch(error){

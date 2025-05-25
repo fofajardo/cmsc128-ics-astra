@@ -323,6 +323,8 @@ export default function EventAdminDetailPage() {
           imageSrc: photoUrl, // fetch this on photo entity;
           title: contentResponse.content.title || "Untitled",
           description: contentResponse?.content.details || "No description",
+          external_link: eventResponse.event.external_link|| "",
+          access_link: eventResponse.event.access_link || "",
           date: new Date(eventResponse.event.event_date).toDateString(),
           location: eventResponse.event.venue,
           attendees: interestedUsers, //

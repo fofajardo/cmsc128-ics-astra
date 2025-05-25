@@ -9,7 +9,6 @@ export default function AttendeesSection({ event }) {
           Interested ({event.attendeesList.length})
         </div>
         <div className="text-4xl font-bold text-astraprimary">{event.attendees}</div>
-        <div className="text-sm text-astradarkgray">Attendees Count</div>
       </div>
 
       <div className="flex flex-col gap-4 mt-4">

@@ -43,6 +43,8 @@ export default function EventDetailPage() {
         const interests = interestRes.data.list;
         const interestStats = interestStatsRes.data.list;
 
+        console.log("Event Data:", event);
+
         let interestedUsers = [];
         if( user?.state?.isAlumnus || user?.state?.isAdmin||user?.state?.isModerator){
           const isCurrentUserInterested = interests.some(user => user.user_id === user_id);
@@ -64,6 +66,8 @@ export default function EventDetailPage() {
           imageSrc: photoUrl || venue2,
           title: content.content.title || "Untitled",
           description: content?.content.details || "No description",
+          external_link: event.event.external_link|| "",
+          access_link: event.event.access_link || "",
           date: new Date(event.event.event_date).toDateString(),
           location: event.event.venue,
           attendeesList: interestedUsers,

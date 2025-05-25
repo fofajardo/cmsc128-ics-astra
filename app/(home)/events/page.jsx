@@ -346,7 +346,7 @@ export default function EventsPage() {
                 description={event.description}
                 date={event.date}
                 location={event.location}
-                attendees={event.attendees}
+                attendees={event.attendees.length}
                 status={event.status}
                 avatars={event.avatars}
               />
