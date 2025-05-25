@@ -46,9 +46,6 @@ export default function UserProjects() {
         });
         const projectData = response.data;
         if (projectData.status === "OK") {
-          console.log("Fetched projects:", projectData);
-          console.log("First project response:", projectData.list[0]?.response);
-
           // extract project id's
           const projectIds = projectData.list.map(project => project.projectData.project_id);
 
@@ -66,7 +63,7 @@ export default function UserProjects() {
                 photoMap[projectId] = photoResponse.data.photo;
               }
             } catch (error) {
-              console.log(`Failed to fetch photo for project_id ${projectId}:`, error);
+              ; // console.error(`Failed to fetch photo for project_id ${projectId}:`, error);
             }
           });
 
@@ -75,10 +72,6 @@ export default function UserProjects() {
 
           const mappedProjects = projectData.list.map(
             project => {
-              console.log("Project status:", project.status);
-              console.log("Project response:", project.response);
-              console.log("REQUEST_STATUS_LABELS:", REQUEST_STATUS_LABELS);
-              console.log("REQUEST_STATUS_LABELS[REQUEST_STATUS.APPROVED]:", REQUEST_STATUS_LABELS[REQUEST_STATUS.APPROVED]);
               return {
                 id: project.projectData.project_id,
                 title: project.projectData.title,
@@ -100,13 +93,12 @@ export default function UserProjects() {
               };
             }
           );
-          console.log("Mapped projects:", mappedProjects);
           setProjects(mappedProjects);
         } else {
-          console.error("Unexpected response:", projectData);
+          ; // console.error("Unexpected response:", projectData);
         }
       } catch (error) {
-        console.error("Failed to fetch projects:", error);
+        ; // console.error("Failed to fetch projects:", error);
       } finally {
         setLoading(false);
       }

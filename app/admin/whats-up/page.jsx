@@ -87,7 +87,7 @@ export default function CommunicationPage() {
       localStorage.setItem("announcementPhotos", JSON.stringify(photos));
       localStorage.setItem("photoTypesMap", JSON.stringify(typesMap));
     } catch (error) {
-      console.error("Error saving photos to localStorage:", error);
+      ; // console.error("Error saving photos to localStorage:", error);
     }
   };
 
@@ -127,7 +127,7 @@ export default function CommunicationPage() {
               }
             })
             .catch(error => {
-              console.log(`Failed to fetch photo for content_id ${contentId}:`, error);
+              ; // console.error(`Failed to fetch photo for content_id ${contentId}:`, error);
             });
 
           photoPromises.push(photoPromise);
@@ -143,7 +143,7 @@ export default function CommunicationPage() {
       // Return the correct structure
       return { photos: photoMap, typesMap: photoTypesMap };
     } catch (error) {
-      console.error("Error fetching photos:", error);
+      // console.error("Error fetching photos:", error);
       // Return empty objects to avoid undefined values
       return { photos: {}, typesMap: {} };
     }
@@ -163,7 +163,7 @@ export default function CommunicationPage() {
             }
           })
           .catch(error => {
-            console.log(`Failed to fetch file for content_id ${contentId}:`, error);
+            ; // console.error(`Failed to fetch file for content_id ${contentId}:`, error);
           })
       );
 
@@ -172,7 +172,7 @@ export default function CommunicationPage() {
 
       return filesMap;
     } catch (error) {
-      console.error("Error fetching files:", error);
+      // console.error("Error fetching files:", error);
       return {};
     }
   };
@@ -201,7 +201,7 @@ export default function CommunicationPage() {
           setContentPhotos(photos);
           setPhotoTypesMap(typesMap);
         } else {
-          console.error("Unexpected response format for announcements:", announcementResponse.data);
+          // console.error("Unexpected response format for announcements:", announcementResponse.data);
           setAnnouncements([]);
         }
 
@@ -217,13 +217,13 @@ export default function CommunicationPage() {
           // Fetch files for newsletters
           const files = await fetchNewsletterFiles(newsletterIds);
           setNewsletterFiles(files);
-          console.log("Fetched files:", files);
+          // console.log("Fetched files:", files);
         } else {
-          console.error("Unexpected response format for newsletters:", newsletterResponse.data);
+          // console.error("Unexpected response format for newsletters:", newsletterResponse.data);
           setNewsletters([]);
         }
       } catch (error) {
-        console.error("Failed to fetch contents:", error);
+        // console.error("Failed to fetch contents:", error);
         setAnnouncements([]);
         setNewsletters([]);
       } finally {
@@ -304,7 +304,7 @@ export default function CommunicationPage() {
         setToast({ type: "error", message: response.data.message || "Failed to delete newsletter" });
       }
     } catch (error) {
-      console.error("Error deleting newsletter:", error);
+      // console.error("Error deleting newsletter:", error);
       setToast({ type: "error", message: "An error occurred while deleting the newsletter" });
     }
   };

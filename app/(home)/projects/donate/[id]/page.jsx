@@ -16,22 +16,14 @@ import { X } from "lucide-react";
 
 async function uploadReceiptImage(userId, projectId, file) {
   try {
-    // console.log("Uploading receipt image:", { userId, projectId, file });
     if (!file) return null;
-    // console.log("AAHAHAHAHAHAHAHA");
+
     // Create form data for the receipt upload
     const formData = new FormData();
     formData.append("user_id", userId);
     formData.append("content_id", projectId);
     formData.append("type", PhotoType.PROOF_OF_PAYMENT);
     formData.append("File", file);
-
-    console.log("Uploading receipt with:", {
-      userId,
-      projectId,
-      fileName: file.name,
-      photoType: PhotoType.PROOF_OF_PAYMENT
-    });
 
     // Upload the receipt image
     const response = await axios.post(
@@ -45,7 +37,6 @@ async function uploadReceiptImage(userId, projectId, file) {
     );
 
     if (response.data.status === "CREATED") {
-      // console.log("Receipt uploaded successfully:", response.data);
       return response.data.photo?.id || null;
     } else {
       // console.error("Failed to upload receipt:", response.data);
@@ -83,7 +74,6 @@ export default function DonatePage() {
         setLoading(true);
         const projectResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/requests/projects/${id}`);
         const projectData = projectResponse.data;
-        console.log(projectData);
         if (projectData.status === "OK") {
           const projectId = projectData.list.projectData.project_id;
           const donationLink = projectData.list.projectData.donation_link;
@@ -107,10 +97,10 @@ export default function DonatePage() {
           setPaymentMethod(donationLink ? "external" : "bank");
 
         } else {
-          console.error("Unexpected response: ", projectData);
+          ; // console.error("Unexpected response: ", projectData);
         }
       } catch (error) {
-        console.error("Failed to fetch project:", error);
+        ; // console.error("Failed to fetch project:", error);
       } finally {
         setLoading(false);
       }
@@ -157,15 +147,14 @@ export default function DonatePage() {
       const donationData = response.data;
 
       if (donationData.status === "CREATED") {
-      // console.log("Created donation:", donationData);
         setStatus("success"); // Show success UI
       } else {
-      // console.error("Unexpected response:", donationData);
+        // console.error("Unexpected response:", donationData);
         setShowToast({ type: "fail", message: "Failed to process donation. Please try again." });
         setStatus("idle"); // Return to idle state
       }
     } catch (error) {
-    // console.error("Failed to create donation:", error);
+      // console.error("Failed to create donation:", error);
       setShowToast({ type: "fail", message: "An error occurred. Please try again." });
       setStatus("idle"); // Return to idle state
     }

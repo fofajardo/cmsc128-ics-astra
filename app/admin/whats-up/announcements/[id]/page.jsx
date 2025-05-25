@@ -42,7 +42,7 @@ export default function AnnouncementDetail() {
         };
       }
     } catch (error) {
-      console.error("Error loading photos from localStorage:", error);
+      ; // console.error("Error loading photos from localStorage:", error);
     }
     return { photos: {}, typesMap: {} };
   };
@@ -50,7 +50,7 @@ export default function AnnouncementDetail() {
   // Handle photo upload
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
-    console.log("File uploaded:", file);
+    // console.log("File uploaded:", file);
     handleFile(file);
   };
 
@@ -69,7 +69,7 @@ export default function AnnouncementDetail() {
     e.preventDefault();
     setIsDragging(false);
     const file = e.dataTransfer.files[0];
-    console.log("File dropped:", file);
+    // console.log("File dropped:", file);
     handleFile(file);
   };
 
@@ -106,7 +106,7 @@ export default function AnnouncementDetail() {
       };
 
       const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`, payload);
-      console.log("Content update response:", response.data);
+      // console.log("Content update response:", response.data);
 
       if (photo) {
         try {
@@ -117,7 +117,7 @@ export default function AnnouncementDetail() {
 
           // If we have an existing photo ID, update it instead of creating a new one
           if (existingPhotoId) {
-            console.log("Updating existing photo with ID:", existingPhotoId);
+            // console.log("Updating existing photo with ID:", existingPhotoId);
             const photoResponse = await axios.put(
               `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/${existingPhotoId}`,
               formData,
@@ -128,14 +128,14 @@ export default function AnnouncementDetail() {
               }
             );
 
-            if (photoResponse.data.status === "UPDATED") {
-              console.log("Photo updated successfully:", photoResponse.data);
-            } else {
-              console.error("Unexpected photo update response:", photoResponse.data);
-            }
+            // if (photoResponse.data.status === "UPDATED") {
+            ; // console.log("Photo updated successfully:", photoResponse.data);
+            // } else {
+            ; // console.error("Unexpected photo update response:", photoResponse.data);
+            // }
           } else {
             // Create new photo if no existing photo ID
-            console.log("Creating new photo for content ID:", id);
+            // console.log("Creating new photo for content ID:", id);
             const photoResponse = await axios.post(
               `${process.env.NEXT_PUBLIC_API_URL}/v1/photos`,
               formData,
@@ -146,21 +146,21 @@ export default function AnnouncementDetail() {
               }
             );
 
-            if (photoResponse.data.status === "CREATED") {
-              console.log("Photo uploaded successfully:", photoResponse.data);
-            } else {
-              console.error("Unexpected photo upload response:", photoResponse.data);
-            }
+            // if (photoResponse.data.status === "CREATED") {
+            // console.log("Photo uploaded successfully:", photoResponse.data);
+            // } else {
+            ; // console.error("Unexpected photo upload response:", photoResponse.data);
+            // }
           }
         } catch (photoError) {
-          console.error("Failed to upload announcement photo:", photoError);
+          ; // console.error("Failed to upload announcement photo:", photoError);
         }
       }
 
       setToast({ type: "success", message: "Announcement published successfully!" });
       setTimeout(() => router.push("/admin/whats-up"), 2000);
     } catch (error) {
-      console.error("Publish failed", error);
+      // console.error("Publish failed", error);
       setToast({ type: "error", message: "Failed to publish announcement" });
     }
   };
@@ -174,7 +174,7 @@ export default function AnnouncementDetail() {
       };
 
       const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`, payload);
-      console.log("Draft save response:", response.data);
+      // console.log("Draft save response:", response.data);
 
       if (photo) {
         try {
@@ -185,7 +185,7 @@ export default function AnnouncementDetail() {
 
           // If we have an existing photo ID, update it instead of creating a new one
           if (existingPhotoId) {
-            console.log("Updating existing photo with ID:", existingPhotoId);
+            // console.log("Updating existing photo with ID:", existingPhotoId);
             const photoResponse = await axios.put(
               `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/${existingPhotoId}`,
               formData,
@@ -196,14 +196,14 @@ export default function AnnouncementDetail() {
               }
             );
 
-            if (photoResponse.data.status === "UPDATED") {
-              console.log("Photo updated successfully:", photoResponse.data);
-            } else {
-              console.error("Unexpected photo update response:", photoResponse.data);
-            }
+            // if (photoResponse.data.status === "UPDATED") {
+            ; // console.log("Photo updated successfully:", photoResponse.data);
+            // } else {
+            ; // console.error("Unexpected photo update response:", photoResponse.data);
+            // }
           } else {
             // Create new photo if no existing photo ID
-            console.log("Creating new photo for content ID:", id);
+            // console.log("Creating new photo for content ID:", id);
             const photoResponse = await axios.post(
               `${process.env.NEXT_PUBLIC_API_URL}/v1/photos`,
               formData,
@@ -214,20 +214,20 @@ export default function AnnouncementDetail() {
               }
             );
 
-            if (photoResponse.data.status === "CREATED") {
-              console.log("Photo uploaded successfully:", photoResponse.data);
-            } else {
-              console.error("Unexpected photo upload response:", photoResponse.data);
-            }
+            // if (photoResponse.data.status === "CREATED") {
+            // console.log("Photo uploaded successfully:", photoResponse.data);
+            // } else {
+            ; // console.error("Unexpected photo upload response:", photoResponse.data);
+            // }
           }
         } catch (photoError) {
-          console.error("Failed to upload announcement photo:", photoError);
+          ; // console.error("Failed to upload announcement photo:", photoError);
         }
       }
 
       setToast({ type: "success", message: "Draft saved successfully!" });
     } catch (error) {
-      console.error("Save draft failed", error);
+      // console.error("Save draft failed", error);
       setToast({ type: "error", message: "Failed to save draft" });
     }
   };
@@ -276,7 +276,7 @@ export default function AnnouncementDetail() {
           }
         })
         .catch((error) => {
-          console.log("Error fetching content or photos", error);
+          // console.log("Error fetching content or photos", error);
           setToast({ type: "error", message: "Failed to load announcement" });
         })
         .finally(() => {
@@ -298,7 +298,7 @@ export default function AnnouncementDetail() {
         router.push("/admin/whats-up");
       }, 1000);
     } catch (error) {
-      console.error("Delete failed:", error);
+      // console.error("Delete failed:", error);
       setToast({ type: "error", message: "Failed to delete announcement" });
     } finally {
       setShowDeleteModal(false);

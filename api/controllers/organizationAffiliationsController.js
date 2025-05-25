@@ -78,7 +78,7 @@ const affiliateAlumnusToOrganization = async (req, res) => {
 
     const affiliationData = {
       org_id: org_id,
-      alum_id: alumId,
+      user_id: alumId,
       role: role,
       joined_date: joined_date,
       end_date,

@@ -106,18 +106,16 @@ const RequestFundraiserPreview = () => {
       const projectData = response.data;
 
       if (projectData.status === "CREATED") {
-        console.log("Created project:", projectData);
         return {
           status: "CREATED",
           id: projectData.id // Return the content ID
         };
       } else {
-        console.error("Unexpected response:", projectData);
+        ; // console.error("Unexpected response:", projectData);
         return false;
       }
     } catch (error) {
-      console.error("Failed to create project request:", error);
-      throw error;
+      ; // console.error("Failed to create project request:", error);
     }
   };
 
@@ -142,7 +140,6 @@ const RequestFundraiserPreview = () => {
       }
 
       const contentId = projectResponse.id;
-      console.log("Project created with ID:", contentId);
 
       if (photo) {
         try {
@@ -150,8 +147,6 @@ const RequestFundraiserPreview = () => {
           formData.append("File", photo);
           formData.append("content_id", contentId);
           formData.append("type", 5); // TODO: use appropriate ENUM; check photo_type.js once merged
-
-          console.log("Uploading photo for project ID:", contentId);
 
           const photoResponse = await axios.post(
             `${process.env.NEXT_PUBLIC_API_URL}/v1/photos`,
@@ -163,13 +158,11 @@ const RequestFundraiserPreview = () => {
             }
           );
 
-          if (photoResponse.data.status === "CREATED") {
-            console.log("Photo uploaded successfully:", photoResponse.data);
-          } else {
-            console.error("Unexpected photo upload response:", photoResponse.data);
+          if (photoResponse.data.status !== "CREATED") {
+            ; // console.error("Unexpected photo upload response:", photoResponse.data);
           }
         } catch (photoError) {
-          console.error("Failed to upload project photo:", photoError);
+          ; // console.error("Failed to upload project photo:", photoError);
         }
       }
 
@@ -184,7 +177,7 @@ const RequestFundraiserPreview = () => {
         router.push("/projects");
       }, 2000);
     } catch (error) {
-      console.error("Error submitting project:", error);
+      // console.error("Error submitting project:", error);
       setShowToast({
         type: "fail",
         message: "Failed to submit project. Please try again."

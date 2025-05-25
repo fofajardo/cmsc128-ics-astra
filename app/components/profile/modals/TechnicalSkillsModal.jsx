@@ -48,11 +48,12 @@ export default function TechnicalSkillsModal({ context, skills: initialSkills })
     setIsSubmitting(true);
     try {
       const skillsJoined = skills.map((skill) => skill.text).join(",");
-      await axios.put(clientRoutes.alumniProfiles.withId(context.state.user.id), {
+      const newData = {
         skills: skillsJoined,
-      });
+      };
+      await axios.put(clientRoutes.alumniProfiles.withId(context.state.user.id), newData);
       setOpen(false);
-      context.actions.patchProfile("skills", skillsJoined);
+      context.actions.patchProfile(newData);
       toast({title: "Skills saved successfully!", variant: "success"});
     } catch (e) {
       toast({title: e.message, variant: "fail"});

@@ -1,4 +1,4 @@
-import {object, string, number, date, ref, mixed, boolean} from "yup";
+import {boolean, date, mixed, number, object, ref, string} from "yup";
 
 export const AuthSchema = object({
   username: string().label("Email").email().required(),
@@ -41,6 +41,16 @@ export const PersonalInfoSchema = object({
   is_profile_public: boolean(),
 });
 
+export const PersonalInfoUpdateSchema = object({
+  honorifics: string().required("Title is required"),
+  first_name: string().required("First name is required"),
+  middle_name: string().required("Middle name is required"),
+  last_name: string().required("Last name is required"),
+  civil_status: string().required("Civil status is required"),
+  citizenship: string().required("Citizenship is required"),
+  is_profile_public: boolean(),
+});
+
 export const DegreeProgramSchema = object({
   degree_program_const: string().required("Degree program is required"),
   year_started: string()
@@ -53,4 +63,50 @@ export const DegreeProgramSchema = object({
 
 export const GraduationProofSchema = object({
   proof_file: mixed().required("Proof of graduation is required")
+});
+
+export const ExperienceSchema = object({
+  company: string().required("Company or organization is required"),
+  title: string().required("Title is required"),
+  field: string().required("Field is required"),
+  employment_type: string().required("Employment type is required"),
+  location: string().required("Location is required"),
+  location_type: string().required("Location type is required"),
+  startDate: object().shape({
+    month: string().required("Start month is required"),
+    year: string().required("Start year is required")
+  }),
+  endDate: object().when("is_current", {
+    is: false,
+    then: () => object().shape({
+      month: string().required("End month is required"),
+      year: string().required("End year is required")
+    }),
+    otherwise: () => object().shape({
+      month: string(),
+      year: string()
+    })
+  }),
+  is_current: boolean(),
+  description: string(),
+  salary: number().required("Salary is required")
+});
+
+export const AffiliationSchema = object().shape({
+  org_id: string().required("Organization is required"),
+  role: string().required("Role is required"),
+  is_current: boolean(),
+  startDate: object().shape({
+    month: string().required("Start month is required"),
+    year: string().required("Start year is required")
+  }),
+  endDate: object().when("is_current", {
+    is: false,
+    then: () => object().shape({
+      month: string().required("End month is required"),
+      year: string().required("End year is required")
+    }),
+    otherwise: () => object()
+  }),
+  description: string()
 });

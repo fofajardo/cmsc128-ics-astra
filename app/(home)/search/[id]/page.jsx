@@ -42,7 +42,7 @@ export default function AlumniSearchProfile({ params }) {
             alumnusData.image = "https://cdn-icons-png.flaticon.com/512/145/145974.png";
           }
         } catch (photoError) {
-          console.log("Failed to fetch photo:", photoError);
+          // console.log("Failed to fetch photo:", photoError);
           alumnusData.image = "https://cdn-icons-png.flaticon.com/512/145/145974.png";
         }
 
@@ -64,7 +64,7 @@ export default function AlumniSearchProfile({ params }) {
             alumnusData.year_graduated = "N/A";
           }
         } catch (degreeError) {
-          console.error("Failed to fetch degree programs:", degreeError);
+          // console.error("Failed to fetch degree programs:", degreeError);
           alumnusData.degree_program = "N/A";
           alumnusData.year_graduated = "N/A";
         }
@@ -87,7 +87,7 @@ export default function AlumniSearchProfile({ params }) {
             alumnusData.experience = [];
           }
         } catch (expError) {
-          console.error("Failed to fetch work experience:", expError);
+          // console.error("Failed to fetch work experience:", expError);
           alumnusData.experience = [];
         }
 
@@ -109,7 +109,7 @@ export default function AlumniSearchProfile({ params }) {
             alumnusData.affiliations = [];
           }
         } catch (affError) {
-          console.error("Failed to fetch affiliations:", affError);
+          // console.error("Failed to fetch affiliations:", affError);
           alumnusData.affiliations = [];
         }
 
@@ -134,7 +134,7 @@ export default function AlumniSearchProfile({ params }) {
         setAlumnus(defaultAlumnus);
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching alumnus details:", error);
+        // console.error("Error fetching alumnus details:", error);
         setError(error.message || "Failed to fetch alumni details");
         setLoading(false);
       }

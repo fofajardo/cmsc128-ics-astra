@@ -86,17 +86,17 @@ export default function CreateAnnouncement() {
       const announcementData = response.data;
 
       if (announcementData.status === "CREATED") {
-        console.log("Created announcement:", announcementData);
+        // console.log("Created announcement:", announcementData);
         return {
           status: announcementData.status,
           id: announcementData.content.id // Return the content ID
         };
       } else {
-        console.error("Unexpected response:", announcementData);
+        // console.error("Unexpected response:", announcementData);
         return false;
       }
     } catch (error) {
-      console.error("Failed to create announcement:", error);
+      ; // console.error("Failed to create announcement:", error);
       throw error;
     }
     //   const contentId = response.data.data.id;
@@ -135,7 +135,7 @@ export default function CreateAnnouncement() {
       }
 
       const contentId = announcementResponse.id;
-      console.log("Announcement created with ID:", contentId);
+      // console.log("Announcement created with ID:", contentId);
 
       if (photo) {
         try {
@@ -144,7 +144,7 @@ export default function CreateAnnouncement() {
           formData.append("content_id", contentId);
           formData.append("type", 5); // TODO: use appropriate ENUM; check photo_type.js once merged
 
-          console.log("Uploading photo for announcement ID:", contentId);
+          // console.log("Uploading photo for announcement ID:", contentId);
 
           const photoResponse = await axios.post(
             `${process.env.NEXT_PUBLIC_API_URL}/v1/photos`,
@@ -156,13 +156,13 @@ export default function CreateAnnouncement() {
             }
           );
 
-          if (photoResponse.data.status === "CREATED") {
-            console.log("Photo uploaded successfully:", photoResponse.data);
-          } else {
-            console.error("Unexpected photo upload response:", photoResponse.data);
-          }
+          // if (photoResponse.data.status === "CREATED") {
+          // console.log("Photo uploaded successfully:", photoResponse.data);
+          // } else {
+          ; // console.error("Unexpected photo upload response:", photoResponse.data);
+          // }
         } catch (photoError) {
-          console.error("Failed to upload project photo:", photoError);
+          ; // console.error("Failed to upload project photo:", photoError);
         }
       }
 
@@ -182,7 +182,7 @@ export default function CreateAnnouncement() {
         router.push("/admin/whats-up");
       }, 2000);
     } catch (error) {
-      console.error("Error submitting announcement:", error);
+      // console.error("Error submitting announcement:", error);
       setToast({
         type: "fail",
         message: "Failed to submit announcement. Please try again."

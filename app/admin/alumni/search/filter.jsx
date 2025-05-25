@@ -24,7 +24,7 @@ export default function SearchFilter({ onClose, initialFilters, updateFilters })
 
         setAllFields(combined);
       } catch (err) {
-        console.error("Failed to fetch fields:", err);
+        ; // console.error("Failed to fetch fields:", err);
       }
     };
 

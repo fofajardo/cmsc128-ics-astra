@@ -81,7 +81,7 @@ export default function PendingProjectDetail({ params }) {
               setImageSrc(FALLBACK_IMAGE);
             }
           } catch (error) {
-            console.log(`Failed to fetch photo for project_id ${projectId}:`, error);
+            // console.error(`Failed to fetch photo for project_id ${projectId}:`, error);
             setImageError(true);
             setImageLoading(false);
             setImageSrc(FALLBACK_IMAGE);
@@ -114,10 +114,10 @@ export default function PendingProjectDetail({ params }) {
             donationLink: projectData.list.projectData.donation_link,
           });
         } else {
-          console.error("Unexpected response:", projectData);
+          ; // console.error("Unexpected response:", projectData);
         }
       } catch (error) {
-        console.error("Failed to fetch project:", error);
+        ; // console.error("Failed to fetch project:", error);
       } finally {
         setLoading(false);
       }
@@ -155,12 +155,12 @@ export default function PendingProjectDetail({ params }) {
         response: updatedResponse,
       });
       if (response.data.status === "UPDATED") {
-        console.log("Successfully updated project request with id:", id);
+        ; // console.error("Successfully updated project request with id:", id);
       } else {
-        console.error("Unexpected response:", response);
+        ; // console.error("Unexpected response:", response);
       }
     } catch (error) {
-      console.error("Failed to approve project request:", error);
+      ; // console.error("Failed to approve project request:", error);
     }
   };
 
@@ -226,7 +226,7 @@ export default function PendingProjectDetail({ params }) {
             setImageLoading(false);
           }}
           onError={(e) => {
-            console.error("Image failed to load:", e);
+            // console.error("Image failed to load:", e);
             setImageError(true);
             setImageSrc(FALLBACK_IMAGE);
             setImageLoading(false);

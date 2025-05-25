@@ -24,13 +24,13 @@ const ArticleView = () => {
           const photoUrl = localStorage.getItem(`article_photo_${id}`);
           if (photoUrl) {
             setPhoto(photoUrl);
-            console.log("Photo URL:", photoUrl);
+            // console.log("Photo URL:", photoUrl);
           }
         } catch (photoError) {
-          console.error("Failed to get article photo from localStorage:", photoError);
+          ; // console.error("Failed to get article photo from localStorage:", photoError);
         }
       } catch (error) {
-        console.error("Failed to fetch article:", error);
+        ; // console.error("Failed to fetch article:", error);
       } finally {
         setLoading(false);
       }
@@ -41,10 +41,10 @@ const ArticleView = () => {
     }
   }, [id]);
 
-  useEffect(() => {
-    // Log the photo whenever it changes
-    console.log("Current photo state:", photo);
-  }, [photo]);
+  // useEffect(() => {
+  // Log the photo whenever it changes
+  // console.log("Current photo state:", photo);
+  // }, [photo]);
 
   const handleBack = () => {
     window.history.back();

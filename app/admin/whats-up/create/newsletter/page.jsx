@@ -61,7 +61,7 @@ export default function UploadNewsletter() {
       setFile(file);
       setFileError("");
       setFormData(prev => ({ ...prev, file: file }));
-      console.log("File selected:", file.name);
+      // console.log("File selected:", file.name);
     }
   };
 
@@ -79,17 +79,17 @@ export default function UploadNewsletter() {
       const newsletterData = response.data;
 
       if (newsletterData.status === "CREATED") {
-        console.log("Created newsletter:", newsletterData);
+        // console.log("Created newsletter:", newsletterData);
         return {
           status: newsletterData.status,
           id: newsletterData.content.id
         };
       } else {
-        console.error("Unexpected response:", newsletterData);
+        // console.error("Unexpected response:", newsletterData);
         return false;
       }
     } catch (error) {
-      console.error("Failed to create newsletter:", error);
+      ; // console.error("Failed to create newsletter:", error);
       throw error;
     }
   };
@@ -105,7 +105,7 @@ export default function UploadNewsletter() {
       }
 
       const contentId = newsletterResponse.id;
-      console.log("Newsletter created with ID:", contentId);
+      // console.log("Newsletter created with ID:", contentId);
 
       if (formData.file) {
         try {
@@ -127,14 +127,14 @@ export default function UploadNewsletter() {
           );
 
           if (response.data.status === "CREATED") {
-            console.log("File uploaded successfully:", response.data);
+            ; // console.log("File uploaded successfully:", response.data);
           } else {
-            console.error("Unexpected file upload response:", response.data);
+            // console.error("Unexpected file upload response:", response.data);
             throw new Error("Failed to upload file");
           }
         } catch (fileError) {
-          console.error("Failed to upload newsletter file:", fileError);
-          throw fileError;
+          ; // console.error("Failed to upload newsletter file:", fileError);
+          // throw fileError;
         }
       }
 
@@ -152,7 +152,7 @@ export default function UploadNewsletter() {
         router.push("/admin/whats-up");
       }, 2000);
     } catch (error) {
-      console.error("Error submitting newsletter:", error);
+      // console.error("Error submitting newsletter:", error);
       setToast({
         type: "fail",
         message: "Failed to submit newsletter. Please try again."

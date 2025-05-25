@@ -138,6 +138,24 @@ body {
   .animate-slide-up {
     animation: slideUp 0.5s ease-in-out;
   }
+
+  @keyframes shimmer {
+    100% {
+      transform: translateX(100%);
+    }
+  }
+  .skeleton-shimmer {
+    position: relative;
+    overflow: hidden;
+    background: #e0e0e0;
+  }
+  .skeleton-shimmer::after {
+    content: "";
+    position: absolute;
+    top: 0; left: -150px; height: 100%; width: 150px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: shimmer 1.5s infinite;
+  }
 }
 
 @keyframes fadeIn {
@@ -237,8 +255,22 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   border-radius: 50%;
 }
 
-
-
+/* Gradient pulse animation */
+@keyframes gradient-pulse {
+  0%, 100% {
+    background-position: 0% 50%;
+    opacity: 0.3;
+  }
+  50% {
+    background-position: 100% 50%;
+    opacity: 0.6;
+  }
+}
+.gradient-pulse {
+  background: linear-gradient(150deg, #e0e0e0 25%, #f5f5f5 50%, #e0e0e0 75%);
+  background-size: 200% 100%;
+  animation: gradient-pulse 1.5s infinite;
+}
 
 /* shadcn */
 
@@ -275,10 +307,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
   --sidebar-border: oklch(0.92 0.004 286.32);
   --sidebar-ring: oklch(0.623 0.214 259.815);
-
-
-
-
 }
 
 

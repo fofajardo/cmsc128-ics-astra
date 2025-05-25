@@ -106,16 +106,16 @@ export default function Page() {
                   alumData.image = photoResponse.data.photo;
                 }
               } catch (photoError) {
-                console.log(
-                  `Failed to fetch photo for alum_id ${alum.alum_id}:`,
-                  photoError
-                );
+                ; // console.log(
+                //   `Failed to fetch photo for alum_id ${alum.alum_id}:`,
+                //   photoError
+                // );
               }
 
               try {
                 const idForDegree = alum.user_id || alum.alum_id;
                 if (idForDegree) {
-                  console.log("Fetching degree programs for user_id:", idForDegree);
+                  // console.log("Fetching degree programs for user_id:", idForDegree);
                   const degreeResponse = await axios.get(
                     `${process.env.NEXT_PUBLIC_API_URL}/v1/degree-programs/alumni/${idForDegree}`
                   );
@@ -134,10 +134,10 @@ export default function Page() {
                   }
                 }
               } catch (degreeError) {
-                console.error(
-                  `Failed to fetch degree programs for user_id: ${alum.user_id || alum.alum_id}`,
-                  degreeError
-                );
+                ; // console.error(
+                //   `Failed to fetch degree programs for user_id: ${alum.user_id || alum.alum_id}`,
+                //   degreeError
+                // );
               }
 
               return alumData;
@@ -148,11 +148,11 @@ export default function Page() {
           setAlumList(updatedAlumList);
           setLoading(false);
         } else {
-          console.error("Unexpected response:", response.data);
+          // console.error("Unexpected response:", response.data);
           setLoading(false);
         }
       } catch (error) {
-        console.error("Failed to fetch alumni:", error);
+        // console.error("Failed to fetch alumni:", error);
         setLoading(false);
       }
     };

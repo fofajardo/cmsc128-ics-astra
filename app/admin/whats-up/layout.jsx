@@ -8,6 +8,7 @@ import { TabContext } from "../../components/TabContext";
 import { useRouter, usePathname } from "next/navigation";
 import {NavMenuItemId} from "../../../common/scopes.js";
 import {ActiveNavItemMarker} from "@/components/Header.jsx";
+import Image from "next/image";
 
 export default function AdminAlumniLayout({ children }) {
   const router = useRouter();
@@ -64,27 +65,76 @@ export default function AdminAlumniLayout({ children }) {
   return (
     <>
       {/* Header with background */}
-      <ActiveNavItemMarker id={NavMenuItemId.NEWS}/>
-      <div className="relative">
-        <img
+      <ActiveNavItemMarker id={NavMenuItemId.ADMIN_NEWS}/>
+      <div className="relative w-full h-auto overflow-hidden">
+        {/* Background Image */}
+        <Image
           src="/blue-bg.png"
           alt="Background"
-          className="h-80 w-full object-cover"
+          fill
+          className="object-cover object-center z-0"
+          priority
         />
-        <div className="absolute inset-2 flex flex-col items-center justify-evenly text-astrawhite z-20">
-          <div className="text-center pt-6">
-            <h1 className="font-h1">Communication Module</h1>
-            <p className="font-s">The ever-growing UPLB-ICS Alumni Network</p>
-          </div>
-          <div className="pt-6 pb-4 overflow-y-scroll w-full scrollbar-hide">
-            <div className="flex flex-row gap-3 min-w-max px-4 justify-center">
-              <AdminStatCard title='Announcements' value = {dashboard.announcements} icon={<Megaphone className='size-13 text-astrawhite/>' strokeWidth={1.5} />} route = {false} onClick={() => dynamicTabClick("Announcements")}/>
-              <AdminStatCard title='Newsletters' value = {dashboard.newsletters} icon={<Newspaper className='size-13 text-astrawhite/>' strokeWidth={1.5}/>} route={false} onClick={() => dynamicTabClick("Newsletters")}/>
+
+        {/* Header Content */}
+        <div className="relative z-10 px-6 pt-10 md:pt-16 pb-10 text-white">
+          <div className="max-w-7xl mx-auto flex flex-col gap-10">
+            {/* Title and Vector Illustration */}
+            <div className="flex flex-col md:flex-row items-center justify-between">
+              {/* Text Section */}
+              <div className="w-full md:w-1/2 text-center md:text-left">
+                <h1 className="text-5xl font-extrabold leading-tight">
+                  Communication Module
+                </h1>
+                <p className="mt-6 text-lg text-blue-100 max-w-md">
+                  The ever-growing UPLB-ICS Alumni Network
+                </p>
+              </div>
+
+              {/* Vector Illustration */}
+              <div className="w-full md:w-1/2 flex justify-center mt-8 md:mt-0">
+                <div className="transition-transform duration-300 ease-in-out hover:scale-105">
+                  <Image
+                    src="/vectors/whats-up.svg"
+                    alt="Alumni Vector"
+                    width={500}
+                    height={300}
+                    className="w-full max-w-md h-auto animate-float hover:animate-hover-wiggle"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Stat Cards */}
+            <div className="flex flex-col md:flex-row justify-center items-center gap-6">
+              <AdminStatCard
+                title="Announcements"
+                value={255}
+                icon={<Megaphone className="size-13 text-white" strokeWidth={1.5} />}
+                route={false}
+                onClick={() => dynamicTabClick("Announcements")}
+                className="bg-blue-800/80 backdrop-blur-md border border-white/10 rounded-xl"
+              />
+              <AdminStatCard
+                title="Newsletters"
+                value={59}
+                icon={<Newspaper className="size-13 text-white" strokeWidth={1.5} />}
+                route={false}
+                onClick={() => dynamicTabClick("Newsletters")}
+                className="bg-blue-800/80 backdrop-blur-md border border-white/10 rounded-xl"
+              />
+              <AdminStatCard
+                title="Active Events"
+                value={179}
+                icon={<CalendarDays className="size-13 text-white" strokeWidth={1.5} />}
+                route={"/admin/events"}
+                className="bg-blue-800/80 backdrop-blur-md border border-white/10 rounded-xl"
+              />
             </div>
           </div>
           {currTab === "Announcements" && (
             <Link href="/admin/whats-up/create/announcement" passHref>
-              <button className="mt-2 border-2 border-astrawhite text-astrawhite hover:bg-astrawhite hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-[200px] h-[60px]">
+              <button className="mt-7 mx-auto block border-2 border-astrawhite text-astrawhite hover:bg-astrawhite hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-[200px] h-[60px]">
                 Create an announcement
               </button>
             </Link>
@@ -103,6 +153,47 @@ export default function AdminAlumniLayout({ children }) {
         <AdminTabs tabs ={tabs} currTab={currTab} handleTabChange={dynamicTabClick}/>
         {children}
       </TabContext.Provider>
+
+      {/* Animations */}
+      <style jsx global>{`
+        @keyframes float {
+          0% {
+            transform: translateY(0px);
+          }
+          50% {
+            transform: translateY(-10px);
+          }
+          100% {
+            transform: translateY(0px);
+          }
+        }
+
+        @keyframes hoverWiggle {
+          0% {
+            transform: rotate(0deg);
+          }
+          25% {
+            transform: rotate(2deg);
+          }
+          50% {
+            transform: rotate(-2deg);
+          }
+          75% {
+            transform: rotate(1deg);
+          }
+          100% {
+            transform: rotate(0deg);
+          }
+        }
+
+        .animate-float {
+          animation: float 3s ease-in-out infinite;
+        }
+
+        .hover\\:animate-hover-wiggle:hover {
+          animation: hoverWiggle 0.6s ease-in-out;
+        }
+      `}</style>
     </>
   );
 }

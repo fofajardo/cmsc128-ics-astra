@@ -45,7 +45,7 @@ export default function AdminAlumniLayout({ children }) {
           inactive: response.data.stats.inactive_alumni_count,
         });
       } catch (error) {
-        console.error("Failed to fetch alumni stats:", error);
+        ; // console.error("Failed to fetch alumni stats:", error);
       }
     };
 
@@ -86,7 +86,7 @@ export default function AdminAlumniLayout({ children }) {
     <>
       {/* Header with background */}
       <div className="relative">
-        <ActiveNavItemMarker id={NavMenuItemId.ALUMNI_ACCESS}/>
+        <ActiveNavItemMarker id={NavMenuItemId.ADMIN_ALUMNI_ACCESS}/>
         <img
           src="/blue-bg.png"
           alt="Background"

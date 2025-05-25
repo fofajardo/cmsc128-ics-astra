@@ -140,6 +140,77 @@ const getAvatarUrl = async (supabase, id) => {
     .createSignedUrl(keyData.image_key, 60 * 60);
 };
 
+const deleteAvatar = async (supabase, id) => {
+  let { data: photosData, error: photosError } = await supabase
+    .from("photos")
+    .select("image_key")
+    .eq("user_id", id)
+    .eq("type", PhotoType.PROFILE_PIC);
+
+  if (photosError) {
+    return { error: photosError };
+  }
+
+  // If there are photos to delete
+  if (photosData && photosData.length > 0) {
+    const imageKeys = photosData.map(photo => photo.image_key);
+
+    // Delete all files from storage
+    const { error: storageError } = await supabase.storage
+      .from("user-photos-bucket")
+      .remove(imageKeys);
+
+    if (storageError) {
+      return { error: storageError };
+    }
+  }
+
+  // Delete all profile pic records from the database
+  return await supabase
+    .from("photos")
+    .delete()
+    .eq("user_id", id)
+    .eq("type", PhotoType.PROFILE_PIC);
+};
+
+const uploadOrReplaceAvatar = async (supabase, userId, fileContent, contentType) => {
+  try {
+    const { error: deleteError } = await deleteAvatar(supabase, userId);
+    if (deleteError) {
+      return { error: deleteError };
+    }
+
+    const filename = `avatar-${userId}`;
+
+    const { data: storageData, error: storageError } = await supabase.storage
+      .from("user-photos-bucket")
+      .upload(filename, fileContent, {
+        contentType,
+        upsert: true,
+      });
+
+    if (storageError) {
+      return { error: storageError };
+    }
+
+    // Save reference to database
+    const photoData = {
+      user_id: userId,
+      content_id: null,
+      type: PhotoType.PROFILE_PIC,
+      image_key: storageData.path,
+    };
+
+    return await supabase
+      .from("photos")
+      .insert(photoData)
+      .select();
+
+  } catch (error) {
+    return { error };
+  }
+};
+
 const fetchDonationReceipt = async (supabase, userId, projectId) => {
   return await supabase
     .from("photos")
@@ -178,6 +249,8 @@ const photosService = {
   fetchPhotoTypesByContentIds,
   fetchPhotosByContentId,
   getAvatarUrl,
+  deleteAvatar,
+  uploadOrReplaceAvatar,
   fetchDonationReceipt,
   insertFile,
   fetchAllFiles,

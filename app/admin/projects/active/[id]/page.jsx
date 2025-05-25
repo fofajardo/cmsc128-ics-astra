@@ -27,6 +27,7 @@ import { useSignedInUser } from "@/components/UserContext.jsx";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "../../../../styles/datepicker.css";
+import Link from "next/link";
 
 //for admin/projects/active/[id]
 export default function ActiveProjectDetail({ params }) {
@@ -81,18 +82,18 @@ export default function ActiveProjectDetail({ params }) {
         setLoading(true);
         const projectResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/requests/projects/${id}`);
         const projectData = projectResponse.data;
-        console.log(projectData);
+        // console.log(projectData);
         if (projectData.status === "OK") {
           const projectId = projectData.list.projectData.project_id;
 
           const donationsResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations`, {
             params: {
               requester_id: user_id,
-              project_id: projectId
+              project_id: projectId,
             }
           });
           const donationData = donationsResponse.data;
-          console.log(donationData);
+          // console.log(donationData);
           let formattedDonations;
           if (donationData.status === "OK") {
             formattedDonations = donationData.donations.map(donation => ({
@@ -101,9 +102,10 @@ export default function ActiveProjectDetail({ params }) {
               amount: donation.amount,
               date: donation.donation_date,
               isVerified: donation.is_verified,
-            }));
+              deletedAt: donation.deleted_at
+            })).filter(donation => donation.deletedAt === null);
           } else {
-            console.error("Unexpected response:", donationData);
+            ; // console.error("Unexpected response:", donationData);
           }
 
           setProjectData({
@@ -149,16 +151,16 @@ export default function ActiveProjectDetail({ params }) {
               setImageSrc(FALLBACK_IMAGE);
             }
           } catch (photoError) {
-            console.log(`Failed to fetch photo for project_id ${projectId}:`, photoError);
+            // console.error(`Failed to fetch photo for project_id ${projectId}:`, photoError);
             setImageError(true);
             setImageLoading(false);
             setImageSrc(FALLBACK_IMAGE);
           }
         } else {
-          console.error("Unexpected response:", projectData);
+          ; // console.error("Unexpected response:", projectData);
         }
       } catch (error) {
-        console.error("Failed to fetch projects and donations:", error);
+        ; // console.error("Failed to fetch projects and donations:", error);
       } finally {
         setLoading(false);
       }
@@ -225,14 +227,14 @@ export default function ActiveProjectDetail({ params }) {
       });
 
       if (response.data.status === "UPDATED") {
-        console.log("Successfully deleted project request with id:", id);
+        // console.log("Successfully deleted project request with id:", id);
         return true;
       } else {
-        console.error("Unexpected response:", response);
+        // console.error("Unexpected response:", response);
         return false;
       }
     } catch (error) {
-      console.error("Failed to delete project request:", error);
+      // console.error("Failed to delete project request:", error);
       return false;
     }
   };
@@ -284,7 +286,7 @@ export default function ActiveProjectDetail({ params }) {
       setShowContactModal(false);
       setMessage("");
     } catch (error) {
-      console.error("Failed to open Gmail:", error);
+      // console.error("Failed to open Gmail:", error);
       setToast({
         type: "fail",
         message: "Failed to open Gmail. Please try again.",
@@ -369,14 +371,14 @@ export default function ActiveProjectDetail({ params }) {
     try {
       const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/projects/${encodeURI(projectData.id)}`, updateData);
       if (response.data.status === "UPDATED") {
-        console.log("Successfully updated project with id:", id);
+        // console.log("Successfully updated project with id:", id);
         return true;
       } else {
-        console.error("Unexpected response:", response);
+        // console.error("Unexpected response:", response);
         return false;
       }
     } catch (error) {
-      console.error("Failed to update project:", error);
+      // console.error("Failed to update project:", error);
       return false;
     }
   };
@@ -1082,7 +1084,7 @@ export default function ActiveProjectDetail({ params }) {
             setImageLoading(false);
           }}
           onError={(e) => {
-            console.error("Image failed to load:", e);
+            // console.error("Image failed to load:", e);
             setImageError(true);
             setImageSrc(FALLBACK_IMAGE);
             setImageLoading(false);
@@ -1217,7 +1219,14 @@ export default function ActiveProjectDetail({ params }) {
 
           {/* Transactions section*/}
           <div className="bg-astrawhite p-6 rounded-xl shadow">
-            <h2 className="font-lb text-xl mb-4">Transactions</h2>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="font-lb text-xl">Transactions</h2>
+              <Link href="/admin/donations" passHref>
+                <button className="border-2 border-astraprimary text-astraprimary hover:bg-astraprimary hover:text-astrawhite rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer px-4 py-2">
+                  Manage Donations
+                </button>
+              </Link>
+            </div>
 
             <div className="max-h-80 overflow-y-auto custom-scrollbar rounded-lg border border-astralightgray/50">
               <table className="w-full border-collapse">

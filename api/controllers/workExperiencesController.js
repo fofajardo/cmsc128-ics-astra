@@ -6,7 +6,7 @@ import { isValidUUID, isValidDate } from "../utils/validators.js";
 import { Actions, Subjects } from "../../common/scopes.js";
 
 const getWorkExperiences = async (req, res) => {
-  if (req.you.cannot(Actions.READ, Subjects.WORK_EXPERIENCES)) {
+  if (req.you.cannot(Actions.READ, Subjects.WORK_EXPERIENCE)) {
     return res.status(httpStatus.FORBIDDEN).json({
       status: "FORBIDDEN",
       message: "You are not allowed to access this resource",
@@ -37,7 +37,7 @@ const getWorkExperiences = async (req, res) => {
 };
 
 const getWorkExperienceById = async (req, res) => {
-  if (req.you.cannot(Actions.READ, Subjects.WORK_EXPERIENCES)) {
+  if (req.you.cannot(Actions.READ, Subjects.WORK_EXPERIENCE)) {
     return res.status(httpStatus.FORBIDDEN).json({
       status: "FORBIDDEN",
       message: "You are not allowed to access this resource",
@@ -76,7 +76,7 @@ const getWorkExperienceById = async (req, res) => {
 };
 
 const getWorkExperiencesByUserId = async (req, res) => {
-  if (req.you.cannot(Actions.READ, Subjects.WORK_EXPERIENCES)) {
+  if (req.you.cannot(Actions.READ, Subjects.WORK_EXPERIENCE)) {
     return res.status(httpStatus.FORBIDDEN).json({
       status: "FORBIDDEN",
       message: "You are not allowed to access this resource",
@@ -115,7 +115,7 @@ const getWorkExperiencesByUserId = async (req, res) => {
 };
 
 const getDistinctFields = async (req, res) => {
-  if (req.you.cannot(Actions.READ, Subjects.WORK_EXPERIENCES)) {
+  if (req.you.cannot(Actions.READ, Subjects.WORK_EXPERIENCE)) {
     return res.status(httpStatus.FORBIDDEN).json({
       status: "FORBIDDEN",
       message: "You are not allowed to access this resource",
@@ -145,7 +145,7 @@ const getDistinctFields = async (req, res) => {
 };
 
 const createWorkExperience = async (req, res) => {
-  if (req.you.cannot(Actions.CREATE, Subjects.WORK_EXPERIENCES)) {
+  if (req.you.cannot(Actions.CREATE, Subjects.WORK_EXPERIENCE)) {
     return res.status(httpStatus.FORBIDDEN).json({
       status: "FORBIDDEN",
       message: "You are not allowed to access this resource",
@@ -206,15 +206,15 @@ const createWorkExperience = async (req, res) => {
         status: "FAILED",
         message: `Missing required fields: ${missingFields.join(", ")}`,
       });
-    };
+    }
 
     for (const field of optionalFields) {
       if (!req.body[field]) {
         req.body[field] = null;
-      };
-    };
+      }
+    }
 
-    const {
+    let {
       user_id,
       title,
       field,
@@ -228,6 +228,10 @@ const createWorkExperience = async (req, res) => {
       location_type,
       is_current,
     } = req.body;
+
+    if (typeof salary === "string") {
+      salary = parseInt(salary);
+    }
 
     if ((year_started && !isValidDate(year_started)) ||
             (year_ended && !isValidDate(year_ended)) ||
@@ -281,11 +285,11 @@ const createWorkExperience = async (req, res) => {
       message: error.message || error,
     });
 
-  };
+  }
 };
 
 const updateWorkExperience = async (req, res) => {
-  if (req.you.cannot(Actions.MANAGE, Subjects.WORK_EXPERIENCES)) {
+  if (req.you.cannot(Actions.MANAGE, Subjects.WORK_EXPERIENCE)) {
     return res.status(httpStatus.FORBIDDEN).json({
       status: "FORBIDDEN",
       message: "You are not allowed to access this resource",
@@ -349,44 +353,45 @@ const updateWorkExperience = async (req, res) => {
     });
 
     const allowedFields = ["title", "field", "company", "year_started", "year_ended", "salary"];
-
-    allowedFields.forEach(field => {
+    for (const field of allowedFields) {
       if (!(field in req.body)) {
-        return;
-      };
+        continue;
+      }
+
+      if (field === "salary" && typeof req.body[field] === "string") {
+        req.body[field] = parseInt(salary);
+      }
 
       const value = req.body[field];
 
       if ((field === "year_started" || field === "year_ended") && !isValidDate(value) ||
-                (field === "salary" && typeof value !== "number") ||
-                (field === "title" && typeof value !== "string") ||
-                (field === "field" && typeof value !== "string") ||
-                (field === "company" && typeof value !== "string"))
-      {
+        (field === "salary" && typeof value !== "number") ||
+        (field === "title" && typeof value !== "string") ||
+        (field === "field" && typeof value !== "string") ||
+        (field === "company" && typeof value !== "string")) {
         return res.status(httpStatus.BAD_REQUEST).json({
           status: "FAILED",
           message: `Invalid ${field} value`,
         });
-      };
+      }
 
       if (field === "year_ended" && value !== null && value < year_started) {
         return res.status(httpStatus.BAD_REQUEST).json({
           status: "FAILED",
           message: "Year ended cannot be less than year started",
         });
-      };
-    });
+      }
+    }
 
     const restrictedFields = ["user_id", "created_at", "updated_at"];
-
-    restrictedFields.forEach(field => {
+    for (const field of restrictedFields) {
       if (field in req.body) {
         return res.status(httpStatus.FORBIDDEN).json({
           status: "FORBIDDEN",
           message: `You are not allowed to edit the ${field} field`,
         });
-      };
-    });
+      }
+    }
 
     const { error: updateError } = await workExperiencesService.updateWorkExperience(req.supabase, workExperienceId, updateData);
 
@@ -411,7 +416,7 @@ const updateWorkExperience = async (req, res) => {
 };
 
 const deleteWorkExperience = async (req, res) => {
-  if (req.you.cannot(Actions.MANAGE, Subjects.WORK_EXPERIENCES)) {
+  if (req.you.cannot(Actions.MANAGE, Subjects.WORK_EXPERIENCE)) {
     return res.status(httpStatus.FORBIDDEN).json({
       status: "FORBIDDEN",
       message: "You are not allowed to access this resource",
