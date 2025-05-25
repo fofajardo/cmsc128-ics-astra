@@ -8,6 +8,7 @@ import { useProjectRequestForm } from "@/utils/hooks/useProjectRequestForm";
 import ToastNotification from "@/components/ToastNotification";
 import { useSignedInUser } from "@/components/UserContext";
 import axios from "axios";
+import { PhotoType } from "../../../../../common/scopes";
 
 const RequestFundraiserPreview = () => {
   const router = useRouter();
@@ -147,7 +148,7 @@ const RequestFundraiserPreview = () => {
           const formData = new FormData();
           formData.append("File", photo);
           formData.append("content_id", contentId);
-          formData.append("type", 5); // TODO: use appropriate ENUM; check photo_type.js once merged
+          formData.append("type", PhotoType.PROJECT_PIC);
 
           const photoResponse = await axios.post(
             `${process.env.NEXT_PUBLIC_API_URL}/v1/photos`,
