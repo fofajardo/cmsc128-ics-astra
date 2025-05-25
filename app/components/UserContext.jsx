@@ -20,6 +20,7 @@ function buildUserContext() {
   const [degreeProofUrl, setDegreeProofUrl] = useState(null);
   const [workExperiences, setWorkExperiences] = useState(null);
   const [organizationAffiliations, setOrganizationAffiliations] = useState(null);
+  const [organizations, setOrganizations] = useState(null);
   const [avatarUrl, setAvatarUrl] = useState("https://cdn-icons-png.flaticon.com/512/145/145974.png");
 
   const [rules, setRules] = useState(null);
@@ -56,6 +57,7 @@ function buildUserContext() {
       degreeProofUrl,
       workExperiences,
       organizationAffiliations,
+      organizations,
       avatarUrl,
       rules,
       ability,
@@ -83,6 +85,7 @@ function buildUserContext() {
       setDegreeProofUrl,
       setWorkExperiences,
       setOrganizationAffiliations,
+      setOrganizations,
       setAvatarUrl,
       setRules,
       setAbility,
@@ -135,6 +138,16 @@ function buildUserContext() {
           ...updates
         };
         return setOrganizationAffiliations(updatedOrganizationAffiliations);
+      },
+      pushOrganizationAffiliation: function(organizationAffiliation) {
+        const updatedOrganizationAffiliations = [...organizationAffiliations];
+        updatedOrganizationAffiliations.push(organizationAffiliation);
+        return setOrganizationAffiliations(updatedOrganizationAffiliations);
+      },
+      pushOrganization: function(organization) {
+        const updatedOrganizations = [...organizations];
+        updatedOrganizations.push(organization);
+        return setOrganizations(updatedOrganizations);
       },
       resetAvatarUrl: function() {
         return setAvatarUrl(user.avatar_url);
@@ -265,6 +278,7 @@ async function fetchData(aUser, aContext, aIsMinimal) {
       aContext.actions.setDegreeProofUrl(null);
       aContext.actions.setWorkExperiences(null);
       aContext.actions.setOrganizationAffiliations(null);
+      aContext.actions.setOrganizations(null);
     } else {
       try {
         const degreeProof = await axios.get(clientRoutes.photos.getDegreeProof(aUser.id));
@@ -284,6 +298,12 @@ async function fetchData(aUser, aContext, aIsMinimal) {
         aContext.actions.setOrganizationAffiliations(affiliations?.data?.affiliated_organizations);
       } catch (e) {
         // Ignore missing organization affiliations.
+      }
+      try {
+        const organizations = await axios.get(clientRoutes.organizations.base());
+        aContext.actions.setOrganizations(organizations?.data?.organization);
+      } catch (e) {
+        // Ignore missing organizations.
       }
     }
     updateRoleProperties(aUser, aContext);
