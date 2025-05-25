@@ -2,13 +2,14 @@
 import { useState } from "react";
 import { UploadCloud, ImageIcon, Trash2 } from "lucide-react";
 
-export default function ImageUploadSection({ image, setImage }) {
+export default function ImageUploadSection({ image, setImage, file, setFile }) {
   const [imagePreview, setImagePreview] = useState(image || "");
   const [fileName, setFileName] = useState("");
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      setFile(file);
       setFileName(file.name);
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -21,6 +22,7 @@ export default function ImageUploadSection({ image, setImage }) {
 
   const handleImageRemove = () => {
     setImage("");
+    setFile(null);
     setImagePreview("");
     setFileName("");
   };
