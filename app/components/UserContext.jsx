@@ -325,7 +325,7 @@ function UserFetcher({userId = null, inferId = null, isMinimal = true}) {
   }, []);
 }
 
-function SignedInUserFetcher({isMinimal = true}) {
+function SignedInUserFetcher() {
   const context = useSignedInUser();
 
   useEffect(function () {
