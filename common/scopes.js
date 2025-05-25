@@ -215,6 +215,7 @@ const JobsStatus = Object.freeze({
 });
 
 export const NavMenuItemId = Object.freeze({
+  NONE: "none",
   HOME: "home",
   ABOUT: "about",
   EVENTS: "events",
