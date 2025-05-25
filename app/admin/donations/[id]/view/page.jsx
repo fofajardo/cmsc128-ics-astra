@@ -69,7 +69,7 @@ export default function ViewDonationIdAdminPage() {
           setError("Donation not found.");
         }
       } catch (error) {
-        console.error("Error fetching data:", error);
+        // console.error("Error fetching data:", error);
         setError("Failed to fetch data.");
       } finally {
         setLoading(false);
@@ -114,7 +114,7 @@ export default function ViewDonationIdAdminPage() {
                   onError={(e) => {
                     e.target.onerror = null;
                     e.target.src = "/placeholder-image.jpg";
-                    console.error("Error loading image:", receiptPhoto.url);
+                    // console.error("Error loading image:", receiptPhoto.url);
                   }}
                 />
                 <p className="text-sm text-gray-500 mt-2 text-center">Receipt uploaded by donor</p>

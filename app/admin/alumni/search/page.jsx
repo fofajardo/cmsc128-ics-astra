@@ -85,10 +85,10 @@ export default function AlumniSearch() {
                   alumData.image = photoResponse.data.photo;
                 }
               } catch (photoError) {
-                console.log(
-                  `Failed to fetch photo for alum_id ${alum.alum_id}:`,
-                  photoError
-                );
+                ; // console.log(
+                //   `Failed to fetch photo for alum_id ${alum.alum_id}:`,
+                //   photoError
+                // );
               }
 
               return alumData;
@@ -109,11 +109,11 @@ export default function AlumniSearch() {
           setAlumList(updatedAlumList);
           setLoading(false);
         } else {
-          console.error("Unexpected response:", response.data);
+          // console.error("Unexpected response:", response.data);
           setLoading(false);
         }
       } catch (error) {
-        console.error("Failed to fetch alumni:", error);
+        // console.error("Failed to fetch alumni:", error);
         setLoading(false);
       }
     };

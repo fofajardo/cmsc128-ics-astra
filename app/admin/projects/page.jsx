@@ -80,7 +80,7 @@ export default function ProjectsAdmin() {
               photoMap[projectId] = photoResponse.data.photo;
             }
           } catch (error) {
-            console.error(`Failed to fetch photo for project_id ${projectId}:`, error);
+            ; // console.error(`Failed to fetch photo for project_id ${projectId}:`, error);
           }
         });
 
@@ -133,10 +133,10 @@ export default function ProjectsAdmin() {
           )
         );
       } else {
-        console.error("Unexpected response:", projectData);
+        ; // console.error("Unexpected response:", projectData);
       }
     } catch (error) {
-      console.error("Failed to fetch projects:", error);
+      ; // console.error("Failed to fetch projects:", error);
     } finally {
       setLoading(false);
     }
@@ -152,10 +152,10 @@ export default function ProjectsAdmin() {
           contributors: donationSummaryData.summary.contributors
         });
       } else {
-        console.error("Unexpected response:", donationSummaryData);
+        ; // console.error("Unexpected response:", donationSummaryData);
       }
     } catch (error) {
-      console.error("Failed to fetch donation summary:", error);
+      ; // console.error("Failed to fetch donation summary:", error);
     }
   };
 
@@ -187,10 +187,10 @@ export default function ProjectsAdmin() {
       if (updateData.status === "UPDATED") {
         // Successfully updated
       } else {
-        console.error("Unexpected response:", updateData);
+        ; // console.error("Unexpected response:", updateData);
       }
     } catch (error) {
-      console.error("Error updating projects:", error);
+      ; // console.error("Error updating projects:", error);
     }
   };
 
@@ -267,10 +267,10 @@ export default function ProjectsAdmin() {
       if (response.data.status === "UPDATED") {
         handleUpdateCallback(updatedStatus, requestId);
       } else {
-        console.error("Unexpected response:", response);
+        ; // console.error("Unexpected response:", response);
       }
     } catch (error) {
-      console.error("Failed to approve project request:", error);
+      ; // console.error("Failed to approve project request:", error);
     }
   };
 

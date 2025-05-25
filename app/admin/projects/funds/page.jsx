@@ -50,10 +50,10 @@ export default function ProjectFunds() {
           );
           setProjectData(mappedProjects);
         } else {
-          console.error("Unexpected response:", projectData);
+          ; // console.error("Unexpected response:", projectData);
         }
       } catch (error) {
-        console.error("Failed to fetch project:", error);
+        ; // console.error("Failed to fetch project:", error);
       } finally {
         setLoading(false);
       }
@@ -68,10 +68,10 @@ export default function ProjectFunds() {
             total_raised: donationSummaryData.summary.total_raised
           });
         } else {
-          console.error("Unexpected response:", donationSummaryData);
+          ; // console.error("Unexpected response:", donationSummaryData);
         }
       } catch (error) {
-        console.error("Failed to fetch donation summary:", error);
+        ; // console.error("Failed to fetch donation summary:", error);
       }
     };
 

@@ -105,7 +105,7 @@ export default function ActiveProjectDetail({ params }) {
               deletedAt: donation.deleted_at
             })).filter(donation => donation.deletedAt === null);
           } else {
-            console.error("Unexpected response:", donationData);
+            ; // console.error("Unexpected response:", donationData);
           }
 
           setProjectData({
@@ -151,16 +151,16 @@ export default function ActiveProjectDetail({ params }) {
               setImageSrc(FALLBACK_IMAGE);
             }
           } catch (photoError) {
-            console.error(`Failed to fetch photo for project_id ${projectId}:`, photoError);
+            // console.error(`Failed to fetch photo for project_id ${projectId}:`, photoError);
             setImageError(true);
             setImageLoading(false);
             setImageSrc(FALLBACK_IMAGE);
           }
         } else {
-          console.error("Unexpected response:", projectData);
+          ; // console.error("Unexpected response:", projectData);
         }
       } catch (error) {
-        console.error("Failed to fetch projects and donations:", error);
+        ; // console.error("Failed to fetch projects and donations:", error);
       } finally {
         setLoading(false);
       }
@@ -230,11 +230,11 @@ export default function ActiveProjectDetail({ params }) {
         // console.log("Successfully deleted project request with id:", id);
         return true;
       } else {
-        console.error("Unexpected response:", response);
+        // console.error("Unexpected response:", response);
         return false;
       }
     } catch (error) {
-      console.error("Failed to delete project request:", error);
+      // console.error("Failed to delete project request:", error);
       return false;
     }
   };
@@ -286,7 +286,7 @@ export default function ActiveProjectDetail({ params }) {
       setShowContactModal(false);
       setMessage("");
     } catch (error) {
-      console.error("Failed to open Gmail:", error);
+      // console.error("Failed to open Gmail:", error);
       setToast({
         type: "fail",
         message: "Failed to open Gmail. Please try again.",
@@ -374,11 +374,11 @@ export default function ActiveProjectDetail({ params }) {
         // console.log("Successfully updated project with id:", id);
         return true;
       } else {
-        console.error("Unexpected response:", response);
+        // console.error("Unexpected response:", response);
         return false;
       }
     } catch (error) {
-      console.error("Failed to update project:", error);
+      // console.error("Failed to update project:", error);
       return false;
     }
   };
@@ -1084,7 +1084,7 @@ export default function ActiveProjectDetail({ params }) {
             setImageLoading(false);
           }}
           onError={(e) => {
-            console.error("Image failed to load:", e);
+            // console.error("Image failed to load:", e);
             setImageError(true);
             setImageSrc(FALLBACK_IMAGE);
             setImageLoading(false);
