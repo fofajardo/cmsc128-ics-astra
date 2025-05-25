@@ -530,7 +530,7 @@ export default function Events() {
           if (photoId) {
             // Update existing photo
             // console.log("Updating existing photo with ID:", photoId);
-            photoRes = await axios.put(
+            const photoRes = await axios.put(
               `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/event/${photoId}`,
               formData,
               {
@@ -540,10 +540,9 @@ export default function Events() {
               }
             );
           } else {
-            // Create new photo
-            // console.log("Creating new photo for event");
+
             formData.append("type", PhotoType.EVENT_PIC);
-            photoRes = await axios.post(
+            const photoRes = await axios.post(
               `${process.env.NEXT_PUBLIC_API_URL}/v1/photos`,
               formData,
               {
@@ -576,7 +575,11 @@ export default function Events() {
 
     }catch(error){
       // console.error("error",error);
-      setToast({ type: "error", message: "Failed to edit event." });
+      toast({
+        title: "Error",
+        description: "Failed to edit event!",
+        variant: "error"
+      });
     } finally{
       setShowEditModal(false);
       resetForm();
@@ -749,7 +752,7 @@ function renderActions(event, confirmDelete, toggleEditModal, setAddFormData) {
 
       toggleEditModal(event);
     } catch (error) {
-      console.error("Error fetching event photo information:", error);
+      //console.error("Error fetching event photo information:", error);
 
       // Fall back to basic information without photo
       setAddFormData({

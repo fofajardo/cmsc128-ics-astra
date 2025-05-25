@@ -103,6 +103,7 @@ export default function EventAdminDetailPage() {
       const needsEventUpdate = Object.keys(eventUpdateData).length > 0;
       const needsContentUpdate = Object.keys(contentUpdateData).length > 0;
       const needsPhotoUpdate = updatedEvent.photoFile !== null;
+      let photoRes;
 
       const [eventRes, contentRes] = await Promise.all([
         needsEventUpdate ? axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/${toEditId}`, eventUpdateData) : null,
@@ -125,7 +126,7 @@ export default function EventAdminDetailPage() {
           }
         );
 
-        // console.log("Event photo update response:", photoRes.data);
+
       }
       const eventSuccess = eventRes?.data?.status === "UPDATED";
       const contentSuccess = contentRes?.data?.status === "UPDATED";
@@ -316,7 +317,6 @@ export default function EventAdminDetailPage() {
         );
 
         const photoUrl = await fetchEventPhoto(eventResponse.event.event_id);
-
         const mergedEvent = {
           id: eventResponse.event.event_id,
           event_id: eventResponse.event.event_id,

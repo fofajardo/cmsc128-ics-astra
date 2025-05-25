@@ -22,7 +22,7 @@ export default function HeaderEvent({ event }) {
 
   return (
     <div className="flex-1 bg-white rounded-xl shadow-md p-6 relative">
-      <HeaderImage imageSrc={eventData.image || eventData.imageSrc} title={eventData.title} />
+      <HeaderImage imageSrc={event.imageSrc} title={eventData.title} />
       <HeaderTitleBar
         title={event.title}
       />
