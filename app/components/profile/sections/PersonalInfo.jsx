@@ -76,7 +76,7 @@ export function PersonalInfo({context}) {
                 Personal Information
               </h2>
               {context.state.isVerified && (
-                <PersonalInfoModal context={context} profileData={profileData} />
+                <PersonalInfoModal context={context} />
               )}
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-5">

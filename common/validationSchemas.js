@@ -1,4 +1,4 @@
-import {object, string, number, date, ref, mixed, boolean} from "yup";
+import {boolean, date, mixed, number, object, ref, string} from "yup";
 
 export const AuthSchema = object({
   username: string().label("Email").email().required(),
@@ -38,6 +38,16 @@ export const PersonalInfoSchema = object({
   middle_name: string().required("Middle name is required"),
   last_name: string().required("Last name is required"),
   suffix: string(),
+  is_profile_public: boolean(),
+});
+
+export const PersonalInfoUpdateSchema = object({
+  honorifics: string().required("Title is required"),
+  first_name: string().required("First name is required"),
+  middle_name: string().required("Middle name is required"),
+  last_name: string().required("Last name is required"),
+  civil_status: string().required("Civil status is required"),
+  citizenship: string().required("Citizenship is required"),
   is_profile_public: boolean(),
 });
 
