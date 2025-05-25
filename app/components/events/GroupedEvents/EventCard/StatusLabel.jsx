@@ -11,12 +11,12 @@ export default function StatusLabel({ status }) {
       {isOpen ? (
         <>
           <CheckCircle size={16} className="text-astrawhite" />
-          Open
+          {status}
         </>
       ) : (
         <>
           <XCircle size={16} className="text-astrawhite" />
-          Closed
+          {status}
         </>
       )}
     </span>

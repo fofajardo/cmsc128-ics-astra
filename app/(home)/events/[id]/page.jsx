@@ -8,11 +8,11 @@ import BackButton from "@/components/events/IndividualEvent/BackButton";
 import HeaderEvent from "@/components/events/IndividualEvent/HeaderEvent";
 import axios from "axios";
 import { isValidUUID } from "../../../../api/utils/validators";
+import ToastNotification from "@/components/ToastNotification";
 
 import venue2 from "../../../assets/venue2.jpeg";
 import { ChartColumnStackedIcon } from "lucide-react";
 import { useSignedInUser } from "@/components/UserContext";
-
 
 
 export default function EventDetailPage() {
@@ -22,23 +22,14 @@ export default function EventDetailPage() {
   const [isInterested, setIsInterested] = useState(false);
   const [isGoing, setIsGoing] = useState(false);
   const [eventList, setEventList] = useState([]);
-  // const [currentEvents, setCurrentEvents] = useState([]);
-  // const [currentPage, setCurrentPage] = useState(1);
   const [numOfInterested, setNumOfInterested] = useState(0);
-  //const user_id = "38f98c8d-af8d-4cef-ab9b-8a5d80e9c8b1"; //Only using this since userid is needed
-  // console.log("user: ", user);
+  const [toastData, setToastData] = useState(null);
   const isAlumn = user?.state?.isAlumnus;
   const user_id = user?.state?.user?.id;
-  // console.log("isAlumnus: ",isAlumn);
-  // console.log("user id: ", user?.state?.user?.id );
 
   const fetchEvent = async () => {
     try {
-      // console.log("id: ", id);
-      // console.log("id interest: ", id);
       const ID = id;
-      // console.log("id fetch:", ID);
-      // if(isValidUUID(id)) console.log("valid");
       const [eventRes, contentRes,interestStatsRes,interestRes] = await Promise.all([
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/${id}`),
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`),
@@ -52,13 +43,8 @@ export default function EventDetailPage() {
         const interests = interestRes.data.list;
         const interestStats = interestStatsRes.data.list;
 
-        // console.log("event: ", event);
-        // console.log("content: ", content);
-        // console.log("interests:", interests);
-        // console.log("intereststat", interestStats.interest_count);
         let interestedUsers = [];
         if( user?.state?.isAlumnus || user?.state?.isAdmin||user?.state?.isModerator){
-          // console.log("signed in");
           const isCurrentUserInterested = interests.some(user => user.user_id === user_id);
           setIsInterested(isCurrentUserInterested);
           interestedUsers = await Promise.all(
@@ -81,7 +67,7 @@ export default function EventDetailPage() {
           date: new Date(event.event.event_date).toDateString(),
           location: event.event.venue,
           attendeesList: interestedUsers,
-          status: event.event.online ? "Online" : "Offline",
+          status: event.event.status,
           avatars: [],
         };
 
@@ -89,7 +75,6 @@ export default function EventDetailPage() {
         setNumOfInterested(interestStats.interest_count);
       }
     } catch (error) {
-      // console.error("Failed fetching event, content, or interests:", error);
       setEvent(null);
     }
   };
@@ -99,16 +84,14 @@ export default function EventDetailPage() {
       const response = await axios
         .get(`${process.env.NEXT_PUBLIC_API_URL}/v1/users/${id}`);
 
-      // console.log(response);
       if (response.data.status === "OK") {
         const selectEventName = response.data.user.username;
-        // console.log("select event name:",selectEventName, "type", typeof(selectEventName));
         return selectEventName;
       } else {
         ; // console.error("Unexpected response:", response.data);
       }
     }catch(error){
-      ; // console.error("Failed to get content:", error);
+      ;
     }
     return "Unknown";
   };
@@ -130,9 +113,7 @@ export default function EventDetailPage() {
   };
 
   useEffect(() => {
-
     fetchEvent();
-    //fetchInterest(id);
   }, [id]);
 
   useEffect(()=>{
@@ -147,31 +128,21 @@ export default function EventDetailPage() {
   const addDeleteInterest = async (newIsInterested) => {
     try{
 
-      // console.log("user:", user?.state?.user);
-
-      // console.log("click interests...");
-      // console.log("not alumn", !user?.state?.isAlumnus);
-      const hasAccess = user?.state?.isAlumnus || user?.state?.isAdmin || user?.state?.isModerator;
-      if (!hasAccess) return;
-      // console.log("adding interest: ", user_id, event.id);
       const interest = {
         user_id: user_id,
         content_id: event.id
       };
 
-      // console.log("s interested: ",newIsInterested);
       if(newIsInterested){
-        // console.log("adding to interest: ", interest);
         const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests`, interest);
-
         if(response.status === "CREATED"){
-          // console.log("successfully created event interest");
+          setToastData({ type: "success", message: "Interest added!" });
         }
       } else {
-        // console.log("interest: ", interest);
+
         const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/${interest.user_id}/${interest.content_id}`);
         if(response.status === "DELETED"){
-          // console.log("successfully deleted event interest");
+          setToastData({ type: "success", message: "Interest removed successfully!"});
         }
       }
 
@@ -187,13 +158,21 @@ export default function EventDetailPage() {
   };
 
   const [isInterestedLoading, setIsInterestedLoading] = useState(false);
-  const [isGoingLoading, setIsGoingLoading] = useState(false);
 
   const handleInterestClick = async () => {
-    if (isInterestedLoading || isGoingLoading) return;
+    if (isInterestedLoading) return;
 
+    const hasAccess = user?.state?.isAlumnus || user?.state?.isAdmin || user?.state?.isModerator;
+    if (!hasAccess) {
+      setToastData({ type: "fail", message: "Sign in first to add interest." });
+      return;
+    }
 
-    // console.log("passed..");
+    if (event?.status !== "Open") {
+      setToastData({ type: "fail", message: "Event is closed for interest." });
+      return;
+    }
+
     try {
       setIsInterestedLoading(true);
       const newIsInterested = !isInterested;
@@ -205,11 +184,8 @@ export default function EventDetailPage() {
       }
 
       await addDeleteInterest(newIsInterested);
-      // console.log("added/deleted event interest");
-
       await fetchEvent();
     } catch (error) {
-      // console.error("Failed to update interest:", error);
       setIsInterested(!isInterested);
     } finally {
       setIsInterestedLoading(false);
@@ -225,6 +201,13 @@ export default function EventDetailPage() {
       <BackButton />
 
       <div className="flex flex-col lg:flex-row gap-6">
+        {toastData && (
+          <ToastNotification
+            type={toastData.type}
+            message={toastData.message}
+            onClose={() => setToastData(null)}
+          />
+        )}
         <HeaderEvent event={event} onSave={handleSave} />
         <EventDetails event={event} isInterested={isInterested} handleInterestClick={handleInterestClick} isGoing={isGoing} handleGoingClick={handleGoingClick}/>
       </div>

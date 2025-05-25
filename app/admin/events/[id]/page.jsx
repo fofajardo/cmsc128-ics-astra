@@ -75,11 +75,6 @@ export default function EventAdminDetailPage() {
   const handleEdit = async (updatedEvent) => {
     try{
       const toEditId = id;
-      // console.log("event id in ", toEditId);
-      // console.log(event);
-      // console.log(new Date(event.date));
-      // console.log(updatedEvent);
-
       const eventDefaults = {
         event_date: "",
         venue: "",
@@ -91,7 +86,6 @@ export default function EventAdminDetailPage() {
       const contentDefaults = {
         title: "",
         details: "",
-        //tags: [],
       };
 
       const eventUpdateData = getChangedFields({
@@ -291,31 +285,28 @@ export default function EventAdminDetailPage() {
   const fetchEvent = async () =>{
     try {
       // console.log("id: ", id);
-      const [eventRes, contentRes,interestStatsRes,interestRes,eventsResponse,actResponse, stats] = await Promise.all([
+      const [eventRes, contentRes,interestStatsRes,interestRes, stats] = await Promise.all([
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/${id}`),
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`),
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/${id}`),
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/content/${id}`),
-        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events`),
-        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/active-events`),
+        // axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events`),
+        //axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/active-events`),
         updateStats(),
         //TODO: fetch the photo
 
       ]);
-      if(eventsResponse.data.status === "OK" && actResponse.data.status === "OK") {
+      // if(eventsResponse.data.status === "OK" && actResponse.data.status === "OK") {
         // console.log("events responses: ",eventsResponse);
         // console.log("acts responses: ",actResponse);
 
-      }
+      //}
       // console.log("eventResponse:",eventRes);
       if (eventRes.data.status === "OK" && contentRes.data.status === "OK" ) {
         const eventResponse = eventRes.data;
         const contentResponse = contentRes.data;
         const interests = interestRes.data.list;
         const interestStats = interestStatsRes.data.list;
-
-        // console.log("interests:", interests);
-        // console.log("intereststat", interestStats.interest_count);
 
         const interestedUsers = await Promise.all(
           interests.map(async (user) => ({
@@ -324,15 +315,7 @@ export default function EventAdminDetailPage() {
           }))
         );
 
-        // console.log("event: ", eventResponse);
-        // console.log("content: ", contentResponse);
-        // console.log("event: ", eventResponse.event.event_id);
-        // console.log("content: ", contentResponse.content.id);
-
         const photoUrl = await fetchEventPhoto(eventResponse.event.event_id);
-
-        // console.log("photo url: ", photoUrl);
-
 
         const mergedEvent = {
           id: eventResponse.event.event_id,
