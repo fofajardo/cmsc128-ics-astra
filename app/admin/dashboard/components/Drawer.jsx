@@ -27,6 +27,7 @@ export function ReusableDrawer({
   chartTitle = "Chart",
   open,
   onOpenChange,
+  buttons = true
 }) {
 
   function convertToCSV(data) {
@@ -192,10 +193,10 @@ export function ReusableDrawer({
               <TabsContent value="csv" className="p-0">
                 {renderCSVPreview()}
                 <div className="mt-4 mb-4 flex justify-end">
-                  <Button onClick={downloadCSV}>
+                {buttons && <Button onClick={downloadCSV}>
                     <FileDown />
                     Download CSV
-                  </Button>
+                  </Button> }
                 </div>
               </TabsContent>
               <TabsContent value="chart" data-tab="chart">
@@ -203,10 +204,10 @@ export function ReusableDrawer({
                   {children}
                 </div>
                 <div className="mt-4 mb-4 flex justify-end">
-                  <Button onClick={downloadImage}>
+                {buttons && <Button onClick={downloadImage}>
                     <Download />
                     Save Image
-                  </Button>
+                  </Button> }
                 </div>
               </TabsContent>
             </Tabs>
