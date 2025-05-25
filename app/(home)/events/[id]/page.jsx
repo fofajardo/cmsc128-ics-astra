@@ -136,17 +136,19 @@ export default function EventDetailPage() {
 
       if(newIsInterested){
         const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests`, interest);
-        if(response.status === "CREATED"){
-         toast({
-          title: "Success",
-          description: "Interest added!",
-          variant: "success"
-        });
+
+        if(response.data.status === "CREATED"){
+          toast({
+            title: "Success",
+            description: "Interest added!",
+            variant: "success"
+          });
         }
       } else {
 
         const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/${interest.user_id}/${interest.content_id}`);
-        if(response.status === "DELETED"){
+
+        if(response.data.status === "DELETED"){
           toast({
             title: "Success",
             description: "Interest removed successfully!",
