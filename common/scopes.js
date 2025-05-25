@@ -193,19 +193,6 @@ const JobsStatus = Object.freeze({
     }
     return false;
   },
-  isDefined: function(aValue) {
-    if (typeof aValue === "string" || aValue instanceof String) {
-      const value = aValue.toLowerCase().trim();
-      switch (value) {
-      case JobsStatus.OPEN:
-      case JobsStatus.CLOSED:
-        return true;
-      default:
-        break;
-      }
-    }
-    return false;
-  },
   parse: function(aValue) {
     if (!this.isDefined(aValue)) {
       return null;
