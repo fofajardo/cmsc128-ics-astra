@@ -47,11 +47,12 @@ export default function InterestsModal({ context, interests: initialInterests })
     setIsSubmitting(true);
     try {
       const interestsJoined = interests.map((interest) => interest.text).join(",");
-      await axios.put(clientRoutes.alumniProfiles.withId(context.state.user.id), {
+      const newData = {
         interests: interestsJoined,
-      });
+      };
+      await axios.put(clientRoutes.alumniProfiles.withId(context.state.user.id), newData);
       setOpen(false);
-      context.actions.patchProfile("interests", interestsJoined);
+      context.actions.patchProfile(newData);
       toast({title: "Interests saved successfully!", variant: "success"});
     } catch (e) {
       toast({title: e.message, variant: "fail"});

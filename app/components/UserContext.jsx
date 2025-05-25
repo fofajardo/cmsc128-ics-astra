@@ -91,33 +91,42 @@ function buildUserContext() {
       setIsModerator,
       setIsAdmin,
       setRoleFriendlyName,
-      patchUser: function(key, value) {
+      patchUser: function(updates) {
         const updatedUser = {
           ...user,
-          [key]: value,
+          ...updates
         };
         return setUser(updatedUser);
       },
-      patchProfile: function(key, value) {
+      patchProfile: function(updates) {
         const updatedProfile = {
           ...profile,
-          [key]: value,
+          ...updates
         };
         return setProfile(updatedProfile);
       },
-      patchDegreePrograms: function(index, value) {
-        const updatedDegreePrograms = degreePrograms;
-        updatedDegreePrograms[index] = value;
+      patchDegreePrograms: function(index, updates) {
+        const updatedDegreePrograms = [...degreePrograms];
+        updatedDegreePrograms[index] = {
+          ...updatedDegreePrograms[index],
+          ...updates
+        };
         return setDegreePrograms(updatedDegreePrograms);
       },
-      patchWorkExperiences: function(index, value) {
-        const updatedWorkExperiences = workExperiences;
-        updatedWorkExperiences[index] = value;
+      patchWorkExperiences: function(index, updates) {
+        const updatedWorkExperiences = [...workExperiences];
+        updatedWorkExperiences[index] = {
+          ...updatedWorkExperiences[index],
+          ...updates
+        };
         return setWorkExperiences(updatedWorkExperiences);
       },
-      patchOrganizationAffiliations: function(index, value) {
-        const updatedOrganizationAffiliations = organizationAffiliations;
-        updatedOrganizationAffiliations[index] = value;
+      patchOrganizationAffiliations: function(index, updates) {
+        const updatedOrganizationAffiliations = [...organizationAffiliations];
+        updatedOrganizationAffiliations[index] = {
+          ...updatedOrganizationAffiliations[index],
+          ...updates
+        };
         return setOrganizationAffiliations(updatedOrganizationAffiliations);
       },
       resetAvatarUrl: function() {
