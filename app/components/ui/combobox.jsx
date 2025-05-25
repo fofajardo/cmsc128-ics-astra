@@ -26,7 +26,7 @@ import {cn} from "@/lib/utils.jsx";
 import {ChevronsUpDown} from "lucide-react";
 import {useCallback, useEffect} from "react";
 
-export function ComboBoxResponsive({items, placeholder, value, onChange, ...props}) {
+export function ComboBoxResponsive({items, placeholder, value, onChange, readOnly, ...props}) {
   const [open, setOpen] = React.useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const [selectedItem, setSelectedItem] = React.useState(value);
@@ -47,14 +47,18 @@ export function ComboBoxResponsive({items, placeholder, value, onChange, ...prop
       {...props}
       className={cn(
         "w-full justify-between",
-        !selectedItem && "text-muted-foreground",
+        (!selectedItem || readOnly) && "text-muted-foreground",
         props.className
       )}
     >
       {selectedItem ? <>{selectedItem.label}</> : <>{placeholder}</>}
-      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+      {!readOnly && <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />}
     </Button>
   );
+
+  if (readOnly) {
+    return triggerButton;
+  }
 
   if (isDesktop) {
     return (

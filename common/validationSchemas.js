@@ -91,3 +91,22 @@ export const ExperienceSchema = object({
   description: string(),
   salary: number().required("Salary is required")
 });
+
+export const AffiliationSchema = object().shape({
+  org_id: string().required("Organization is required"),
+  role: string().required("Role is required"),
+  is_current: boolean(),
+  startDate: object().shape({
+    month: string().required("Start month is required"),
+    year: string().required("Start year is required")
+  }),
+  endDate: object().when("is_current", {
+    is: false,
+    then: () => object().shape({
+      month: string().required("End month is required"),
+      year: string().required("End year is required")
+    }),
+    otherwise: () => object()
+  }),
+  description: string()
+});

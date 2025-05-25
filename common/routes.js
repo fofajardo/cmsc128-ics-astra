@@ -47,6 +47,7 @@ class BaseRoutes {
       getWorkExperiences: (id) => `${this.BASE_URL}/users/${id}/work-experiences`,
       getOrganizations: (id) => `${this.BASE_URL}/users/${id}/organizations`,
       getAvatar: (id) => `${this.BASE_URL}/users/${id}/avatar`,
+      getOrganizationsWithOrgId: (id, orgId) => `${this.BASE_URL}/users/${id}/organizations/${orgId}`,
     };
 
     this.degreePrograms = {
@@ -203,6 +204,7 @@ class FrontEndRoutes extends BaseRoutes {
     this.profiles = {
       base: (id) => `${this.BASE_URL}/profile/${id}`,
       experience: (id) => `${this.BASE_URL}/profile/${id}/experience`,
+      affiliations: (id) => `${this.BASE_URL}/profile/${id}/affiliations`,
     };
 
     this.projects = {

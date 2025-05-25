@@ -11,6 +11,7 @@ const fetchAffiliations = async (supabase, page, limit, alumId) => {
             description,
             is_current,
             organizations (
+                id,
                 name,
                 location
             )
