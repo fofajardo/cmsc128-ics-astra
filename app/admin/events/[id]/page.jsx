@@ -44,7 +44,6 @@ export default function EventAdminDetailPage() {
         variant: "success"
       });
     }catch(error){
-      // console.error("Failed to delete events:", error);
       toast({
         title: "Error",
         description: "Failed to delete event!",
@@ -58,7 +57,6 @@ export default function EventAdminDetailPage() {
       const response = await axios
         .delete(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/${id}`);
 
-      // console.log("edit event - delete:", response.data);
       if (response.data.status === "DELETED") {
         handleDeleteContent(id);
       }
@@ -161,12 +159,6 @@ export default function EventAdminDetailPage() {
       recipients = Object.values(companies).flat();
     }
 
-    // console.log("Sending Event:", {
-    //   to: selectedOption,
-    //   recipients: recipients.map(r => r.name),
-    //   message: message
-    // });
-
     setMessage("");
     setSelectedOption("Everyone");
     toast({
@@ -209,10 +201,8 @@ export default function EventAdminDetailPage() {
       const response = await axios
         .get(`${process.env.NEXT_PUBLIC_API_URL}/v1/users/${id}`);
 
-      // console.log(response);
       if (response.data.status === "OK") {
         const selectUserName = response.data.user.username;
-        // console.log("select event name:",selectUserName, "type", typeof(selectUserName));
         return selectUserName;
       }
     }catch(error){
@@ -241,7 +231,7 @@ export default function EventAdminDetailPage() {
         return response.data.photo;
       }
     } catch (error) {
-      ; // console.log(`Failed to fetch photo for event_id ${contentId}:`, error);
+      ;
     }
   };
 
@@ -250,7 +240,7 @@ export default function EventAdminDetailPage() {
       const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/events-summary`);
       if (response.data.status === "OK") {
         const { active_events, past_events, total_events } = response.data.stats;
-        // console.log("stats: ", response.data.stats);
+
         const counts = {
           past : past_events || 0,
           active : active_events || 0,
@@ -259,12 +249,12 @@ export default function EventAdminDetailPage() {
         setEventCounts(counts);
         return counts;
       } else {
-        // console.error("Failed to fetch event statistics:", response.data);
+
         setEventCounts({ past: 0, active: 0, total: 0 });
         return { past: 0, active: 0, total: 0 };
       }
     } catch (error) {
-      // console.error("Failed to fetch event statistics:", error);
+
       setEventCounts({ past: 0, active: 0, total: 0 });
       return { past: 0, active: 0, total: 0 };
     }
@@ -272,24 +262,15 @@ export default function EventAdminDetailPage() {
 
   const fetchEvent = async () =>{
     try {
-      // console.log("id: ", id);
+
       const [eventRes, contentRes,interestStatsRes,interestRes, stats] = await Promise.all([
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/${id}`),
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`),
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/${id}`),
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/content/${id}`),
-        // axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events`),
-        //axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/active-events`),
         updateStats(),
-        //TODO: fetch the photo
-
       ]);
-      // if(eventsResponse.data.status === "OK" && actResponse.data.status === "OK") {
-        // console.log("events responses: ",eventsResponse);
-        // console.log("acts responses: ",actResponse);
 
-      //}
-      // console.log("eventResponse:",eventRes);
       if (eventRes.data.status === "OK" && contentRes.data.status === "OK" ) {
         const eventResponse = eventRes.data;
         const contentResponse = contentRes.data;
@@ -318,7 +299,6 @@ export default function EventAdminDetailPage() {
           attendees: interestedUsers, //
           status: eventResponse.event.status
         };
-        // console.log("mergedEvent", mergedEvent);
         setEvent(mergedEvent);
 
 
@@ -328,7 +308,6 @@ export default function EventAdminDetailPage() {
         setEventCounts(stats);
       }
     } catch (error) {
-      // console.error("Failed fetching event, content, or interests:", error);
       setEvent(null);
     }
   };

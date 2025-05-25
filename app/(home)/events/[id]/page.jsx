@@ -43,8 +43,6 @@ export default function EventDetailPage() {
         const interests = interestRes.data.list;
         const interestStats = interestStatsRes.data.list;
 
-        console.log("Event Data:", event);
-
         let interestedUsers = [];
         if( user?.state?.isAlumnus || user?.state?.isAdmin||user?.state?.isModerator){
           const isCurrentUserInterested = interests.some(user => user.user_id === user_id);
@@ -111,7 +109,7 @@ export default function EventDetailPage() {
         return response.data.photo;
       }
     } catch (error) {
-      ; // console.log(`Failed to fetch photo for event_id ${contentId}:`, error);
+      ;
     }
     return venue2.src;
   };
@@ -151,7 +149,7 @@ export default function EventDetailPage() {
       }
 
     } catch (error){
-      ; // console.log("error at addDeleteInterest: ", error.message);
+      ;
     }
   };
 

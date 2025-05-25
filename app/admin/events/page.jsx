@@ -130,11 +130,9 @@ export default function Events() {
         if (interestResponse.data.status === "OK") {
           interestMap[event.event_id] = interestResponse.data.list.interest_count || 0;
         } else {
-          // console.error("Failed to fetch interests:", interestResponse.data);
           interestMap[event.event_id] = 0; // Fallback
         }
       } catch (error) {
-        // console.error(`Failed to fetch interests for event_id ${event.event_id}:`, error);
         interestMap[event.event_id] = 0; // Fallback
       }
     });
@@ -405,10 +403,6 @@ export default function Events() {
                 },
               }
             );
-
-            // if (photoResponse.data.status === "CREATED") {
-            // console.log("Event photo uploaded successfully");
-            // }
           }
 
           if (eventResponse.data.status === "CREATED") {
@@ -513,7 +507,6 @@ export default function Events() {
     }
   };
 
-  // console.log(user);
   const isAllowed = user?.state?.isAdmin || user?.state?.isModerator;
 
   if (!isAllowed) {
