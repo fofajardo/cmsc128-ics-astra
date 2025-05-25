@@ -8,7 +8,7 @@ import BackButton from "@/components/events/IndividualEvent/BackButton";
 import HeaderEvent from "@/components/events/IndividualEvent/HeaderEvent";
 import EditEventModal from "@/components/events/IndividualEvent/EditEventModal/EditEventModal";
 import DeleteConfirmationModal from "@/components/events/IndividualEvent/DeleteEventModal/DeleteEventModal";
-import ToastNotification from "@/components/ToastNotification";
+import { toast } from "@/components/ToastNotification";
 import axios from "axios";
 import { TabContext } from "@/components/TabContext";
 
@@ -30,28 +30,26 @@ export default function EventAdminDetailPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [toastData, setToastData] = useState(null);
   const itemsPerPage = 5;
 
-  const handleSave = (updatedEvent) => {
-    handleEdit(updatedEvent);
-    // setEvent((prevEvent) => ({
-    //   ...prevEvent,
-    //   ...updatedEvent
-    // }));
-    // setShowEditModal(false);
-    // setToastData({ type: "success", message: "Event updated successfully!" });
-  };
 
   const handleDeleteContent = async (id) => {
     try{
       const response = await axios
         .delete(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`);
 
-      setToastData({ type: "success", message: "Event deleted successfully!" });
+      toast({
+        title: "Success",
+        description: "Event deleted successfully!",
+        variant: "success"
+      });
     }catch(error){
       // console.error("Failed to delete events:", error);
-      setToastData({ type: "error", message: "Failed to delete event!" });
+      toast({
+        title: "Error",
+        description: "Failed to delete event!",
+        variant: "fail"
+      });
     }
   };
 
@@ -65,7 +63,11 @@ export default function EventAdminDetailPage() {
         handleDeleteContent(id);
       }
     }catch{
-      setToastData({ type: "error", message: "Failed to delete event!" });
+      toast({
+        title: "Error",
+        description: "Failed to delete event!",
+        variant: "fail"
+      });
     } finally{
       setShowDeleteModal(false);
       router.push("/admin/events");
@@ -76,25 +78,21 @@ export default function EventAdminDetailPage() {
     try{
       const toEditId = id;
       const eventDefaults = {
-        event_date: "",
-        venue: "",
-        // external_link: "",
-        // access_link: "",
-        online: false,
+        event_date: event?.date || "",
+        venue: event?.location || "",
+        online: event?.online || false,
       };
 
       const contentDefaults = {
-        title: "",
-        details: "",
+        title: event?.title || "",
+        details: event?.description || "",
       };
 
       const eventUpdateData = getChangedFields({
         event_date: updatedEvent.date,
         venue: updatedEvent.location,
-        // external_link: addFormData.external_link,
-        // access_link: addFormData.access_link,
-        //online: addFormData.online,
       }, eventDefaults);
+
 
       const contentUpdateData = getChangedFields({
         title: updatedEvent.title,
@@ -102,49 +100,41 @@ export default function EventAdminDetailPage() {
         //tags: addFormData.tags,
       }, contentDefaults);
 
-      let eventRes, contentRes, eventOnly = 0;
-      if (Object.keys(eventUpdateData).length > 0) {
-        eventRes = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/${toEditId}`, eventUpdateData);
-        eventOnly += 1;
-        // console.log("entered event update");
 
-      }
+      const needsEventUpdate = Object.keys(eventUpdateData).length > 0;
+      const needsContentUpdate = Object.keys(contentUpdateData).length > 0;
+      const needsPhotoUpdate = updatedEvent.imageFile !== null;
 
-      if (Object.keys(contentUpdateData).length > 0) {
-        contentRes = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${toEditId}`,contentUpdateData);
-        eventOnly += 1; // 2 -> event,content updated; 1->onlyevent
-        // console.log("entered content update");
-      }
-      // TODO: POST/PUT photo
-      //
-      //
-
-      // console.log("eventOnly: ", eventOnly);
-      // console.log(eventRes);
-      // console.log(contentRes);
-      // console.log(contentRes.data.status);
-      // console.log(eventRes?.data);
+      const [eventRes, contentRes] = await Promise.all([
+        needsEventUpdate ? axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/${toEditId}`, eventUpdateData) : null,
+        needsContentUpdate ? axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${toEditId}`, contentUpdateData) : null
+      ]);
 
 
-      if (eventRes?.data?.status ==="UPDATED"  && contentRes?.data?.status === "UPDATED" && eventOnly===2){
-        setToastData({ type: "success", message: "Event edited successfully!" });
-        // console.log("here at 1dtcondition");
+      const eventSuccess = eventRes?.data?.status === "UPDATED";
+      const contentSuccess = contentRes?.data?.status === "UPDATED";
+      const eventFailed = eventRes?.data?.status === "FAILED" || eventRes?.data?.status === "FORBIDDEN";
+      const contentFailed = contentRes?.data?.status === "FAILED" || contentRes?.data?.status === "FORBIDDEN";
 
-      } else if ((eventRes?.data?.status ==="UPDATED" && eventOnly===1) || (contentRes?.data?.status === "UPDATED" && eventOnly===1)){
-        setToastData({ type: "success", message: "Event edited successfully!" });
-        // console.log("here at 2nd condition");
-
-      } else if (
-        (["FAILED", "FORBIDDEN"].includes(eventRes?.data?.status) && eventOnly === 2) ||
-        (["FAILED", "FORBIDDEN"].includes(contentRes?.data?.status) && eventOnly === 2)
-      )
-      {
-        setToastData({ type: "error", message: "Failed to edit event." });
-        // console.log("here at 3rd condition");
+      if ((needsEventUpdate && eventFailed) || (needsContentUpdate && contentFailed)) {
+        toast({
+          title: "Error",
+          description: "Failed to edit event!",
+          variant: "fail"
+        });
+      } else if ((needsEventUpdate && eventSuccess) || (needsContentUpdate && contentSuccess)) {
+        toast({
+          title: "Success",
+          description: "Event edited successfully!",
+          variant: "success"
+        });
       }
     }catch(error){
-      // console.log("error",error);
-      setToastData({ type: "error", message: "Failed to edit event." });
+        toast({
+          title: "Error",
+          description: "Failed to edit event!",
+          variant: "fail"
+        });
     } finally{
       setShowEditModal(false);
       fetchEvent();
@@ -179,10 +169,10 @@ export default function EventAdminDetailPage() {
 
     setMessage("");
     setSelectedOption("Everyone");
-
-    setToastData({
-      type: "success",
-      message: `Successfully sent "${event.title}" to ${recipients.length} users!`
+    toast({
+      title: "Success",
+      description: `Successfully sent "${event.title}" to ${recipients.length} users!`,
+      variant: "success"
     });
   };
 
@@ -224,11 +214,9 @@ export default function EventAdminDetailPage() {
         const selectUserName = response.data.user.username;
         // console.log("select event name:",selectUserName, "type", typeof(selectUserName));
         return selectUserName;
-      } else {
-        setToastData("Unexpected response:", response.data.message);
       }
     }catch(error){
-      setToastData({ type: "error", message: error.message });
+      ;
     }
     return "Unknown";
   };
@@ -357,13 +345,6 @@ export default function EventAdminDetailPage() {
     <div className="bg-astradirtyastrawhite min-h-screen px-6 sm:px-12 py-6 max-w-screen-xl mx-auto relative">
       <BackButton />
 
-      {toastData && (
-        <ToastNotification
-          type={toastData.type}
-          message={toastData.message}
-          onClose={() => setToastData(null)}
-        />
-      )}
 
       <div className="flex flex-col lg:flex-row gap-6">
         <div className="flex-1 flex flex-col">

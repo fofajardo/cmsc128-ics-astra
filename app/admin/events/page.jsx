@@ -1,7 +1,7 @@
 "use client";
 import { EventTableHeader, Table, PageTool } from "@/components/TableBuilder";
 import { useTab } from "../../components/TabContext";
-import ToastNotification from "@/components/ToastNotification";
+import {toast} from "@/components/ToastNotification";
 import EventModal from "./EventModal";
 import eventListDummy from "./eventDummy";
 import { Trash2, Eye, Pencil } from "lucide-react";
@@ -19,7 +19,6 @@ export default function Events() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const { currTab, info } = useTab();
-  const [toast, setToast] = useState(null);
   const [eventList, setEvents] = useState([]);
   const [contentMap, setContents] = useState({});
   const [eventInterests, setEventInterests] = useState({});
@@ -232,13 +231,10 @@ export default function Events() {
       }
     } catch (error) {
       // console.error("Failed to fetch events:", error);
-      setToast({
-        type: "error",
-        message: error.response
-          ? `Server error: ${error.response.status} - ${error.response.data.message || "Unknown error"}`
-          : error.code === "ERR_NETWORK"
-            ? "Network error: Cannot connect to the server. Please check your connection."
-            : "An unexpected error occurred. Please try again later.",
+      toast({
+        title: "Error",
+        description: "Failed to fetch event!",
+        variant: "fail"
       });
       setEvents([]);
     } finally {
@@ -299,14 +295,21 @@ export default function Events() {
 
       if (response.data.status === "DELETED") {
         handleDeleteContent(id);
-        setToast({ type: "success", message: `${name} deleted successfully!` });
-
+        toast({
+          title: "Succes",
+          description: `${name} deleted successfully!`,
+          variant: "success"
+        });
 
       }
 
     }catch(error){
+      toast({
+          title: "Error",
+          description: "Failed to delete event!",
+          variant: "error"
+        });
       // console.error("Failed to delete events:", error);
-      setToast({ type: "error", message: "Failed to delete event!" });
     }  finally {
       setShowDeleteModal(false);
     }
@@ -318,8 +321,12 @@ export default function Events() {
       const response = await axios
         .delete(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`);
     }catch(error){
+      toast({
+          title: "Error",
+          description: "Failed to delete event!",
+          variant: "error"
+        });
       // console.error("Failed to delete events:", error);
-      setToast({ type: "error", message: "Failed to delete event!" });
     }
     fetchEvents();
   };
@@ -331,11 +338,20 @@ export default function Events() {
       let user_id = user?.state?.user.id;
 
       if(!isValidDate(addFormData.event_date)){
-        setToast({type: "error", message:"invalid date format"});
+        toast({
+          title: "Error",
+          description: "Invalid date format!",
+          variant: "error"
+        });
+
       }
       const isOnline = addFormData.event_type === "Online";
       if (!isValidUUID(user_id)){
-        setToast({ type: "error", message: "Failed to create event." });
+        toast({
+          title: "Error",
+          description: "Failed to create event!",
+          variant: "error"
+        });
         return -1;
       }
 
@@ -396,7 +412,11 @@ export default function Events() {
           }
 
           if (eventResponse.data.status === "CREATED") {
-            setToast({ type: "success", message: "Event published successfully!" });
+            toast({
+              title: "Success",
+              description: "Event published successfully!",
+              variant: "success"
+            });
             toggleAddModal();
             resetForm();
             fetchEvents();
@@ -406,8 +426,11 @@ export default function Events() {
         }
       }
     }catch(error){
-      // console.error("Failed to create events:", error);
-      setToast({ type: "error", message: "Failed to create event." });
+      toast({
+          title: "Error",
+          description: "Failed to create event!",
+          variant: "error"
+        });
     }
     setShowAddModal(false);
     resetForm();
@@ -453,27 +476,36 @@ export default function Events() {
       const needsContentUpdate = Object.keys(contentUpdateData).length > 0;
       const needsPhotoUpdate = addFormData.imageFile !== null;
 
-      // Perform updates if needed
       const [eventRes, contentRes] = await Promise.all([
         needsEventUpdate ? axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/${toEditId}`, eventUpdateData) : null,
         needsContentUpdate ? axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${toEditId}`, contentUpdateData) : null
       ]);
 
-      // Check results and set appropriate toast message
       const eventSuccess = eventRes?.data?.status === "UPDATED";
       const contentSuccess = contentRes?.data?.status === "UPDATED";
       const eventFailed = eventRes?.data?.status === "FAILED" || eventRes?.data?.status === "FORBIDDEN";
       const contentFailed = contentRes?.data?.status === "FAILED" || contentRes?.data?.status === "FORBIDDEN";
 
       if ((needsEventUpdate && eventFailed) || (needsContentUpdate && contentFailed)) {
-        setToast({ type: "error", message: "Failed to edit event." });
+        toast({
+          title: "Error",
+          description: "Failed to edit event!",
+          variant: "error"
+        });
       } else if ((needsEventUpdate && eventSuccess) || (needsContentUpdate && contentSuccess)) {
-        setToast({ type: "success", message: "Event edited successfully!" });
+        toast({
+          title: "Success",
+          description: "Event edited successfully!",
+          variant: "success"
+        });
       }
 
     }catch(error){
-      // console.error("error",error);
-      setToast({ type: "error", message: "Failed to edit event." });
+        toast({
+          title: "Error",
+          description: "Failed to edit event!",
+          variant: "error"
+        });
     } finally{
       setShowEditModal(false);
       resetForm();
@@ -547,14 +579,6 @@ export default function Events() {
             </div>
           </div>
         </div>
-      )}
-
-      {toast && (
-        <ToastNotification
-          type={toast.type}
-          message={toast.message}
-          onClose={() => setToast(null)}
-        />
       )}
 
       {/* Table Section */}
