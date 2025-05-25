@@ -8,11 +8,10 @@ import Filter from "../../components/jobs/filters";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Eye, EyeOff } from "lucide-react";
 import { useSignedInUser } from "@/components/UserContext";
 import { JobsStatus } from "../../../common/scopes";
-import { job } from "./dummy";
 import jobVector from "../../assets/job-vector.png";
+import { ParticlesBackground } from "../../components/ParticlesBackground";
 
 export default function JobsPage() {
   const user = useSignedInUser();
@@ -138,6 +137,7 @@ export default function JobsPage() {
           style={{ backgroundImage: "url('/blue-bg.png')" }}
         >
           <div className="max-w-[1440px] mx-auto px-12 py-20 flex flex-col lg:flex-row items-center justify-between text-astrawhite gap-10">
+            <ParticlesBackground count={40} />
             <div className="max-w-[600px] space-y-6 text-center lg:text-left animate-hero-text">
               <h1 className="text-[60px] font-extrabold leading-[1.1]">
                 Careers & <br/> Opportunities
@@ -203,7 +203,6 @@ export default function JobsPage() {
 
       {filteredJobs.length === 0 ? <></> : filteredJobs.length <= jobCards ?
         <div className="text-center my-10 text-gray-400 text-sm font-medium">
-          All jobs loaded
         </div> :
         <button
           onClick={() => handleSeeMore(jobCards, setJobCards)}
@@ -234,7 +233,6 @@ export default function JobsPage() {
 
           {myJobs.length === 0 ? <></> :  myJobs.length <= myJobCards ?
             <div className="text-center my-10 text-gray-400 text-sm font-medium">
-              All my jobs loaded
             </div> :
             <button
               onClick={() => handleSeeMore(myJobCards, setMyJobCards)}

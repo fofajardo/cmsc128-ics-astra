@@ -9,6 +9,7 @@ import { ActionButton } from "@/components/Buttons";
 import Pagination from "@/components/search/GroupedEvents/Pagination";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { ParticlesBackground } from "@/components/ParticlesBackground";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -359,11 +360,12 @@ export default function Page() {
           style={{ backgroundImage: "url('/blue-bg.png')" }}
         >
           <div className="max-w-[1440px] mx-auto px-6 py-10 md:px-12 md:py-16 lg:px-12 lg:py-20 flex flex-col lg:flex-row items-center justify-between text-astrawhite gap-6 lg:gap-10">
+            <ParticlesBackground count={40} />
             <div className="max-w-[600px] space-y-4 text-center lg:text-left animate-slide-up">
-              <h1 className="font-h1 text-astrawhite leading-[1.1] text-3xl md:text-4xl lg:text-5xl">
+              <h1 className="text-[60px] font-extrabold leading-[1.1]">
                 Alumni Directory
               </h1>
-              <p className="font-l text-astrawhite text-sm md:text-base">
+              <p className="text-lg font-medium">
                 Discover, connect, and engage with alumni to expand your network!
               </p>
             </div>

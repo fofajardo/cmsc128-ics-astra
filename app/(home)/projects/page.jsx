@@ -14,6 +14,7 @@ import { LoadingSpinner } from "@/components/LoadingSpinner.jsx";
 import FilterDropdown from "@/components/events/GroupedEvents/FilterDropdown";
 import Image from "next/image";
 import donationVector from "../../assets/donation-vector.png";
+import { ParticlesBackground } from "@/components/ParticlesBackground";
 
 export default function ProjectsPage() {
   const user = useSignedInUser();
@@ -155,6 +156,7 @@ export default function ProjectsPage() {
     <div className="w-full bg-astradirtywhite">
       {/* Hero Section */}
       <div className="relative w-full bg-cover bg-center" style={{ backgroundImage: "url('/blue-bg.png')" }}>
+        <ParticlesBackground count={40} />
         <div className="max-w-[1440px] mx-auto px-12 py-20 flex flex-col lg:flex-row items-center justify-between text-astrawhite gap-10">
           <div className="max-w-[600px] space-y-6 text-center lg:text-left animate-hero-text">
             <h1 className="text-[60px] font-extrabold leading-[1.1]">
