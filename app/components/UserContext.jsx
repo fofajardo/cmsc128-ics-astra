@@ -122,6 +122,12 @@ function buildUserContext() {
         };
         return setWorkExperiences(updatedWorkExperiences);
       },
+      pushWorkExperience: function(workExperience) {
+        const updatedWorkExperiences = [...workExperiences];
+        updatedWorkExperiences.push(workExperience);
+        console.log(updatedWorkExperiences);
+        return setWorkExperiences(updatedWorkExperiences);
+      },
       patchOrganizationAffiliations: function(index, updates) {
         const updatedOrganizationAffiliations = [...organizationAffiliations];
         updatedOrganizationAffiliations[index] = {
