@@ -64,3 +64,30 @@ export const DegreeProgramSchema = object({
 export const GraduationProofSchema = object({
   proof_file: mixed().required("Proof of graduation is required")
 });
+
+export const ExperienceSchema = object({
+  company: string().required("Company or organization is required"),
+  title: string().required("Title is required"),
+  field: string().required("Field is required"),
+  employment_type: string().required("Employment type is required"),
+  location: string().required("Location is required"),
+  location_type: string().required("Location type is required"),
+  startDate: object().shape({
+    month: string().required("Start month is required"),
+    year: string().required("Start year is required")
+  }),
+  endDate: object().when("is_current", {
+    is: false,
+    then: () => object().shape({
+      month: string().required("End month is required"),
+      year: string().required("End year is required")
+    }),
+    otherwise: () => object().shape({
+      month: string(),
+      year: string()
+    })
+  }),
+  is_current: boolean(),
+  description: string(),
+  salary: number().required("Salary is required")
+});

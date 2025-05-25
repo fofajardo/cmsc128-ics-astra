@@ -3,11 +3,11 @@ import {useEffect, useState} from "react";
 import {Field, Form, Formik} from "formik";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,} from "@/components/ui/dialog";
 import {toast} from "@/components/ToastNotification.jsx";
-import * as Yup from "yup";
 import axios from "axios";
 import {clientRoutes} from "../../../../common/routes.js";
 import {EmploymentType, EMPLOYMENT_STATUS_LABELS, LocationType, LOCATION_TYPE_LABELS} from "../../../../common/scopes.js";
 import {EditIcon} from "lucide-react";
+import {ExperienceSchema} from "../../../../common/validationSchemas.js";
 
 export default function AddEditExperienceModal({ context, experience = null, experienceKey = null }) {
   const isEdit = experience !== null;
@@ -56,34 +56,6 @@ export default function AddEditExperienceModal({ context, experience = null, exp
       });
     }
   }, [open]);
-
-  // Form validation schema
-  const ExperienceSchema = Yup.object().shape({
-    company: Yup.string().required("Company or organization is required"),
-    title: Yup.string().required("Title is required"),
-    field: Yup.string().required("Field is required"),
-    employment_type: Yup.string().required("Employment type is required"),
-    location: Yup.string().required("Location is required"),
-    location_type: Yup.string().required("Location type is required"),
-    startDate: Yup.object().shape({
-      month: Yup.string().required("Start month is required"),
-      year: Yup.string().required("Start year is required")
-    }),
-    endDate: Yup.object().when("is_current", {
-      is: false,
-      then: () => Yup.object().shape({
-        month: Yup.string().required("End month is required"),
-        year: Yup.string().required("End year is required")
-      }),
-      otherwise: () => Yup.object().shape({
-        month: Yup.string(),
-        year: Yup.string()
-      })
-    }),
-    is_current: Yup.boolean(),
-    description: Yup.string(),
-    salary: Yup.number().required("Salary is required")
-  });
 
   const handleSubmit = async (aValues, { setSubmitting }) => {
     setIsChildSubmitting(true);
