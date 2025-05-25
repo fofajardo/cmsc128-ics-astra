@@ -8,12 +8,12 @@ import { FiExternalLink} from "react-icons/fi";
 
 export default function EventDetails({ event, isInterested, isGoing, handleInterestClick, handleGoingClick }) {
 
-    const formatUrl = (url) => {
+  const formatUrl = (url) => {
     if (!url) return null;
     try {
 
       if (!/^https?:\/\//i.test(url)) {
-        url = 'https://' + url;
+        url = "https://" + url;
       }
       new URL(url); // Validate URL
       return url;
@@ -40,7 +40,7 @@ export default function EventDetails({ event, isInterested, isGoing, handleInter
                 rel="noopener noreferrer"
                 className="ml-1 text-blue-600 hover:text-blue-800 break-all"
               >
-                {formattedExternalLink.replace(/^https?:\/\//, '')}
+                {formattedExternalLink.replace(/^https?:\/\//, "")}
               </Link>
             </div>
           </div>

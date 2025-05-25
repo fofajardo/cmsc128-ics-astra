@@ -5,12 +5,12 @@ import { FiExternalLink,FiLink } from "react-icons/fi";
 import Link from "next/link";
 
 export default function EventDetailsCard({ event, onEdit, onDelete }) {
-    const formatUrl = (url) => {
+  const formatUrl = (url) => {
     if (!url) return null;
     try {
 
       if (!/^https?:\/\//i.test(url)) {
-        url = 'https://' + url;
+        url = "https://" + url;
       }
       new URL(url); // Validate URL
       return url;
@@ -42,7 +42,7 @@ export default function EventDetailsCard({ event, onEdit, onDelete }) {
               rel="noopener noreferrer"
               className="ml-1 text-blue-600 hover:text-blue-800 break-all"
             >
-              {formattedExternalLink.replace(/^https?:\/\//, '')}
+              {formattedExternalLink.replace(/^https?:\/\//, "")}
             </Link>
           </div>
         </div>

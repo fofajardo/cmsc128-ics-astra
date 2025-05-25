@@ -303,10 +303,10 @@ export default function Events() {
 
     }catch(error){
       toast({
-          title: "Error",
-          description: "Failed to delete event!",
-          variant: "error"
-        });
+        title: "Error",
+        description: "Failed to delete event!",
+        variant: "error"
+      });
       // console.error("Failed to delete events:", error);
     }  finally {
       setShowDeleteModal(false);
@@ -320,10 +320,10 @@ export default function Events() {
         .delete(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`);
     }catch(error){
       toast({
-          title: "Error",
-          description: "Failed to delete event!",
-          variant: "error"
-        });
+        title: "Error",
+        description: "Failed to delete event!",
+        variant: "error"
+      });
       // console.error("Failed to delete events:", error);
     }
     fetchEvents();
@@ -421,10 +421,10 @@ export default function Events() {
       }
     }catch(error){
       toast({
-          title: "Error",
-          description: "Failed to create event!",
-          variant: "error"
-        });
+        title: "Error",
+        description: "Failed to create event!",
+        variant: "error"
+      });
     }
     setShowAddModal(false);
     resetForm();
@@ -495,11 +495,11 @@ export default function Events() {
       }
 
     }catch(error){
-        toast({
-          title: "Error",
-          description: "Failed to edit event!",
-          variant: "error"
-        });
+      toast({
+        title: "Error",
+        description: "Failed to edit event!",
+        variant: "error"
+      });
     } finally{
       setShowEditModal(false);
       resetForm();

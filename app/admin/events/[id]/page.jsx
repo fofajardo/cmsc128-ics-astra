@@ -128,11 +128,11 @@ export default function EventAdminDetailPage() {
         });
       }
     }catch(error){
-        toast({
-          title: "Error",
-          description: "Failed to edit event!",
-          variant: "fail"
-        });
+      toast({
+        title: "Error",
+        description: "Failed to edit event!",
+        variant: "fail"
+      });
     } finally{
       setShowEditModal(false);
       fetchEvent();
