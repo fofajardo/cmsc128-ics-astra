@@ -76,10 +76,10 @@ export default function AlumniSearchProfile({ params }) {
               ; // console.log("No degree Year Found:", error);
             });
           }).catch(() => {
-            console.log("No org affiliation");
+            // console.log("No org affiliation");
           });
         }).catch(() => {
-          console.log("No work experience");
+          // console.log("No work experience");
         });
       }).catch(() => {
         // console.log("No alumni profile");
