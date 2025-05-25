@@ -35,6 +35,7 @@ class BaseRoutes {
 
     this.workExperiences = {
       base: (append = "") => `${this.BASE_URL}/work-experiences${append}`,
+      withId: (id) => `${this.BASE_URL}/work-experiences/${id}`,
     };
 
     this.users = {
@@ -197,6 +198,11 @@ class FrontEndRoutes extends BaseRoutes {
 
     this.events = {
       base: () => `${this.BASE_URL}/events`
+    };
+
+    this.profiles = {
+      base: (id) => `${this.BASE_URL}/profile/${id}`,
+      experience: (id) => `${this.BASE_URL}/profile/${id}/experience`,
     };
 
     this.projects = {
