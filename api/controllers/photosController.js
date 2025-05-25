@@ -175,14 +175,14 @@ const getFiles = async (req, res) => {
   try {
     const { data, error } = await photosService.fetchAllFiles(req.supabase);
 
-    console.log("Files:", data);
+    // console.log("Files:", data);
 
-    // if (error) {
-    //   return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-    //     status: "FAILED",
-    //     message: error.message,
-    //   });
-    // }
+    if (error) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error.message,
+      });
+    }
 
     return res.status(httpStatus.OK).json({
       status: "OK",
