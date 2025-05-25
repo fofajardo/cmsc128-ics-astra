@@ -11,6 +11,7 @@ import DeleteConfirmationModal from "@/components/events/IndividualEvent/DeleteE
 import ToastNotification from "@/components/ToastNotification";
 import axios from "axios";
 import { TabContext } from "@/components/TabContext";
+import { PhotoType } from "../../../../common/scopes";
 
 import EventDetailsCard from "./EventDetails.Card";
 import SendEventCard from "./SendEventCard";
@@ -103,6 +104,7 @@ export default function EventAdminDetailPage() {
       }, contentDefaults);
 
       let eventRes, contentRes, eventOnly = 0;
+      let photoRes = 0;
       if (Object.keys(eventUpdateData).length > 0) {
         eventRes = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/${toEditId}`, eventUpdateData);
         eventOnly += 1;
@@ -118,6 +120,28 @@ export default function EventAdminDetailPage() {
       // TODO: POST/PUT photo
       //
       //
+      // console.log("updatedEvent: ", updatedEvent);
+      // console.log("updatedEvent: ", updatedEvent.photoId);
+
+      // Inside handleEdit function
+      if (updatedEvent.photoFile) {
+        const formData = new FormData();
+        formData.append("File", updatedEvent.photoFile);
+        formData.append("content_id", toEditId);
+
+        // Use the new specific endpoint for updating event photos
+        photoRes = await axios.put(
+          `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/event/${updatedEvent.photoId}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        // console.log("Event photo update response:", photoRes.data);
+      }
 
       // console.log("eventOnly: ", eventOnly);
       // console.log(eventRes);
@@ -126,11 +150,11 @@ export default function EventAdminDetailPage() {
       // console.log(eventRes?.data);
 
 
-      if (eventRes?.data?.status ==="UPDATED"  && contentRes?.data?.status === "UPDATED" && eventOnly===2){
+      if (eventRes?.data?.status ==="UPDATED"  && contentRes?.data?.status === "UPDATED" && photoRes?.data?.status === "UPDATED" && eventOnly===2){
         setToastData({ type: "success", message: "Event edited successfully!" });
         // console.log("here at 1dtcondition");
 
-      } else if ((eventRes?.data?.status ==="UPDATED" && eventOnly===1) || (contentRes?.data?.status === "UPDATED" && eventOnly===1)){
+      } else if ((eventRes?.data?.status ==="UPDATED" && eventOnly===1) || (contentRes?.data?.status === "UPDATED" && eventOnly===1) || photoRes?.data?.status === "UPDATED"){
         setToastData({ type: "success", message: "Event edited successfully!" });
         // console.log("here at 2nd condition");
 
@@ -308,6 +332,17 @@ export default function EventAdminDetailPage() {
         const interests = interestRes.data.list;
         const interestStats = interestStatsRes.data.list;
 
+        const photoResponse = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/by-content-id/${id}`
+        );
+
+        let photoId = null;
+        if (photoResponse.data.status === "OK" && photoResponse.data.photos.length > 0) {
+          // Find the event photo (type 3)
+          const eventPhoto = photoResponse.data.photos.find(photo => photo.type === 3);
+          photoId = eventPhoto ? eventPhoto.id : null;
+        }
+
         const interestedUsers = await Promise.all(
           interests.map(async (user) => ({
             id: user.user_id,
@@ -320,6 +355,7 @@ export default function EventAdminDetailPage() {
         const mergedEvent = {
           id: eventResponse.event.event_id,
           event_id: eventResponse.event.event_id,
+          photoId: photoId, // fetch this on photo entity;
           imageSrc: photoUrl, // fetch this on photo entity;
           title: contentResponse.content.title || "Untitled",
           description: contentResponse?.content.details || "No description",

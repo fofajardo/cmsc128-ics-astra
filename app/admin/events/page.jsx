@@ -12,6 +12,7 @@ import axios from "axios";
 import Fuse from "fuse.js";
 import { useSignedInUser } from "@/components/UserContext";
 import { CenteredSkeleton } from "@/components/ui/skeleton";
+import { PhotoType } from "../../../common/scopes";
 
 export default function Events() {
   const { setEventCounts } = useContext(TabContext);
@@ -198,22 +199,43 @@ export default function Events() {
         setEventInterests(interests);
         setEventCounts(stats);
 
+        // Inside fetchEvents, update the eventList mapping:
         const eventList = await Promise.all(
-          events.map((event) => ({
-            id: event.event_id,
-            event_id: event.event_id,
-            content_id: event.event_id,
-            event_name: event.title || "Unknown",
-            location: event.venue || "Unknown Location",
-            type: event.online ? "Online" : "In-Person",
-            date: new Date(event.event_date).toDateString(),
-            max_slot : event.slots,
-            status: event.status,
-            external_link: event.external_link,
-            access_link: event.access_link,
-            description: event.details || "No Description",
-            interested: interests[event.event_id] || 0,
-          }))
+          events.map(async (event) => {
+            // Try to fetch the event photo ID
+            let photoId = null;
+            try {
+              const photoRes = await axios.get(
+                `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/by-content-id/${event.event_id}`
+              );
+
+              if (photoRes.data.status === "OK" && photoRes.data.photos.length > 0) {
+                const eventPhoto = photoRes.data.photos.find(photo => photo.type === 3);
+                if (eventPhoto) {
+                  photoId = eventPhoto.id;
+                }
+              }
+            } catch (photoError) {
+              // console.error(`Error fetching photo for event ${event.event_id}:`, photoError);
+            }
+
+            return {
+              id: event.event_id,
+              event_id: event.event_id,
+              content_id: event.event_id,
+              event_name: event.title || "Unknown",
+              location: event.venue || "Unknown Location",
+              type: event.online ? "Online" : "In-Person",
+              date: new Date(event.event_date).toDateString(),
+              max_slot: event.slots,
+              status: event.status,
+              external_link: event.external_link,
+              access_link: event.access_link,
+              description: event.details || "No Description",
+              interested: interests[event.event_id] || 0,
+              photoId: photoId,
+            };
+          })
         );
         // Set events using the fetched data
         setEvents(eventList);
@@ -415,8 +437,7 @@ export default function Events() {
   };
 
   const handleEdit = async () => {
-    try{
-
+    try {
       const toEditId = editId;
 
       const eventDefaults = {
@@ -439,7 +460,7 @@ export default function Events() {
         venue: addFormData.venue,
         external_link: addFormData.external_link,
         access_link: addFormData.access_link,
-        online: addFormData.event_type==="Online" ? true : false,
+        online: addFormData.event_type === "Online" ? true : false,
         status: addFormData.status,
         slots: addFormData.max_slots
       }, eventDefaults);
@@ -449,32 +470,97 @@ export default function Events() {
         details: addFormData.description,
       }, contentDefaults);
 
-      let eventRes, contentRes, eventOnly = 0;
+      let eventRes, contentRes, photoRes, eventOnly = 0;
+
+      // Process event data
       if (Object.keys(eventUpdateData).length > 0) {
+        // console.log("Updating event with data:", eventUpdateData);
         eventRes = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/${toEditId}`, eventUpdateData);
         eventOnly += 1;
+        // console.log("Event update response:", eventRes?.data);
       }
 
+      // Process content data
       if (Object.keys(contentUpdateData).length > 0) {
-        contentRes = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${toEditId}`,contentUpdateData);
+        // console.log("Updating content with data:", contentUpdateData);
+        contentRes = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${toEditId}`, contentUpdateData);
         eventOnly += 1; // 2 -> event,content updated; 1->onlyevent
+        // console.log("Content update response:", contentRes?.data);
       }
 
-      if (eventRes?.data?.status ==="UPDATED"  && contentRes?.data?.status === "UPDATED" && eventOnly===2){
+      // Process photo if a new image was uploaded
+      if (addFormData.imageFile) {
+        // console.log("Uploading new event photo");
+        const formData = new FormData();
+        formData.append("File", addFormData.imageFile);
+        formData.append("content_id", toEditId);
+
+        try {
+          // First, check if an event photo already exists for this content
+          const existingPhotoRes = await axios.get(
+            `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/by-content-id/${toEditId}`
+          );
+
+          let photoId = null;
+
+          if (existingPhotoRes.data.status === "OK" && existingPhotoRes.data.photos.length > 0) {
+            // Find photo with type 3 (event photo)
+            const eventPhoto = existingPhotoRes.data.photos.find(photo => photo.type === 3);
+
+            if (eventPhoto) {
+              photoId = eventPhoto.id;
+              // console.log("Found existing event photo with ID:", photoId);
+            }
+          }
+
+          if (photoId) {
+            // Update existing photo
+            // console.log("Updating existing photo with ID:", photoId);
+            photoRes = await axios.put(
+              `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/event/${photoId}`,
+              formData,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                },
+              }
+            );
+          } else {
+            // Create new photo
+            // console.log("Creating new photo for event");
+            formData.append("type", PhotoType.EVENT_PIC);
+            photoRes = await axios.post(
+              `${process.env.NEXT_PUBLIC_API_URL}/v1/photos`,
+              formData,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                },
+              }
+            );
+          }
+
+          // console.log("Photo API response:", photoRes?.data);
+        } catch (photoError) {
+          // console.error("Error handling event photo:", photoError);
+        }
+      }
+
+      // Set success toast message
+      if ((eventRes?.data?.status === "UPDATED" && contentRes?.data?.status === "UPDATED" && eventOnly === 2) ||
+          (eventRes?.data?.status === "UPDATED" && eventOnly === 1) ||
+          (contentRes?.data?.status === "UPDATED" && eventOnly === 1) ||
+          photoRes?.data?.status === "UPDATED" ||
+          photoRes?.data?.status === "CREATED") {
         setToast({ type: "success", message: "Event edited successfully!" });
-      } else if ((eventRes?.data?.status ==="UPDATED" && eventOnly===1) || (contentRes?.data?.status === "UPDATED" && eventOnly===1)){
-        setToast({ type: "success", message: "Event edited successfully!" });
-      } else if (
-        ((eventRes?.data?.status === "FAILED" || eventRes?.data?.status === "FORBIDDEN") && eventOnly === 2) ||
-        ((contentRes?.data?.status === "FAILED" || contentRes?.data?.status === "FORBIDDEN") && eventOnly === 2)
-      ) {
+      } else {
         setToast({ type: "error", message: "Failed to edit event." });
       }
 
-    }catch(error){
-      // console.error("error",error);
+    } catch (error) {
+      // console.error("Error updating event:", error);
       setToast({ type: "error", message: "Failed to edit event." });
-    } finally{
+    } finally {
       setShowEditModal(false);
       resetForm();
       fetchEvents();
@@ -608,8 +694,72 @@ function renderText(text) {
   return <div className="text-center text-astradarkgray font-s">{text}</div>;
 }
 
-function renderActions(event, confirmDelete, toggleEditModal,setAddFormData) {
+function renderActions(event, confirmDelete, toggleEditModal, setAddFormData) {
   const { id, event_name } = event;
+
+  const prepareEditData = async () => {
+    // First, fetch the event photo information
+    try {
+      const photoRes = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/by-content-id/${id}`
+      );
+
+      let photoId = null;
+      let imageUrl = null;
+
+      if (photoRes.data.status === "OK" && photoRes.data.photos.length > 0) {
+        // Find photo with type 3 (event photo)
+        const eventPhoto = photoRes.data.photos.find(photo => photo.type === 3);
+        if (eventPhoto) {
+          photoId = eventPhoto.id;
+
+          // Get the event photo URL
+          const eventPhotoRes = await axios.get(
+            `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/event/${id}`
+          );
+
+          if (eventPhotoRes.data.status === "OK") {
+            imageUrl = eventPhotoRes.data.photo;
+          }
+        }
+      }
+
+      // Set form data with the event information
+      setAddFormData({
+        title: event.event_name || "",
+        venue: event.location || "",
+        event_type: event.type || "",
+        event_date: event.date || "",
+        max_slots: event.max_slot,
+        status: event.status || "open",
+        external_link: event.external_link || "",
+        access_link: event.access_link || "",
+        description: event.description || "",
+        photoId: photoId,
+        image: imageUrl,
+      });
+
+      toggleEditModal(event);
+    } catch (error) {
+      console.error("Error fetching event photo information:", error);
+
+      // Fall back to basic information without photo
+      setAddFormData({
+        title: event.event_name || "",
+        venue: event.location || "",
+        event_type: event.type || "",
+        event_date: event.date || "",
+        max_slots: event.max_slot,
+        status: event.status || "open",
+        external_link: event.external_link || "",
+        access_link: event.access_link || "",
+        description: event.description || "",
+      });
+
+      toggleEditModal(event);
+    }
+  };
+
   return (
     <div className="flex justify-center items-center gap-3 py-4">
       <div className="hidden md:flex gap-2">
@@ -620,21 +770,7 @@ function renderActions(event, confirmDelete, toggleEditModal,setAddFormData) {
           View
         </a>
         <button
-          onClick={() =>{
-            setAddFormData({
-              title: event.event_name || "",
-              venue: event.location || "",
-              event_type: event.type || "",
-              event_date: event.date || "",
-              max_slots: event.max_slot,
-              status: event.status || "open",
-              external_link: event.external_link || "",
-              access_link: event.access_link || "",
-              description: event.description || "",
-            });
-
-            toggleEditModal(event);
-          }}
+          onClick={prepareEditData}
           className="bg-astraprimary text-astrawhite px-4 py-2 rounded-md text-sm font-semibold hover:bg-[#0062cc]"
         >
           Edit
@@ -654,22 +790,7 @@ function renderActions(event, confirmDelete, toggleEditModal,setAddFormData) {
           <Eye size={20} />
         </a>
         <button
-          onClick={() => {
-            setAddFormData({
-              title: event.event_name || "",
-              venue: event.location || "",
-              event_type: event.type || "",
-              event_date: event.date || "",
-              max_slots: event.max_slot,
-              status: event.status || "open",
-              external_link: event.external_link || "",
-              access_link: event.access_link || "",
-              description: event.description || "",
-            });
-
-            toggleEditModal(event);
-
-          }}
+          onClick={prepareEditData}
           className="bg-astraprimary text-astrawhite p-2 rounded-md"
         >
           <Pencil size={20} />
