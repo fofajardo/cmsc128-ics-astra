@@ -2,7 +2,13 @@
 import SkillTag from "@/components/SkillTag";
 import TechnicalSkillsModal from "@/components/profile/modals/TechnicalSkillsModal.jsx";
 
-export const TechnicalSkills = ({ context, technicalSkills }) => {
+export const TechnicalSkills = ({ context }) => {
+  const technicalSkills = (context.state.profile.skills?.trim() ?? "") === ""
+    ? []
+    : context.state.profile.skills.split(",").map(function(skill) {
+      return { text: skill };
+    });
+
   return (
     <section className="bg-white rounded-lg p-8 mb-6">
       <h2 className="text-xl md:text-2xl font-bold text-[var(--color-astrablack)] mb-6">Technical Skills</h2>
