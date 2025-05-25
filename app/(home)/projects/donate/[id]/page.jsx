@@ -39,11 +39,11 @@ async function uploadReceiptImage(userId, projectId, file) {
     if (response.data.status === "CREATED") {
       return response.data.photo?.id || null;
     } else {
-      console.error("Failed to upload receipt:", response.data);
+      // console.error("Failed to upload receipt:", response.data);
       return null;
     }
   } catch (error) {
-    console.error("Error uploading receipt:", error);
+    // console.error("Error uploading receipt:", error);
     return null;
   }
 }
@@ -97,10 +97,10 @@ export default function DonatePage() {
           setPaymentMethod(donationLink ? "external" : "bank");
 
         } else {
-          console.error("Unexpected response: ", projectData);
+          ; // console.error("Unexpected response: ", projectData);
         }
       } catch (error) {
-        console.error("Failed to fetch project:", error);
+        ; // console.error("Failed to fetch project:", error);
       } finally {
         setLoading(false);
       }
@@ -149,12 +149,12 @@ export default function DonatePage() {
       if (donationData.status === "CREATED") {
         setStatus("success"); // Show success UI
       } else {
-        console.error("Unexpected response:", donationData);
+        // console.error("Unexpected response:", donationData);
         setShowToast({ type: "fail", message: "Failed to process donation. Please try again." });
         setStatus("idle"); // Return to idle state
       }
     } catch (error) {
-      console.error("Failed to create donation:", error);
+      // console.error("Failed to create donation:", error);
       setShowToast({ type: "fail", message: "An error occurred. Please try again." });
       setStatus("idle"); // Return to idle state
     }

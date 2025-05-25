@@ -101,7 +101,7 @@ export default function ProjectDetails({ params }) {
               date: donation.donation_date,
             }));
           } else {
-            console.error("Unexpected response:", donationData);
+            ; // console.error("Unexpected response:", donationData);
           }
 
           setProjectData({
@@ -150,17 +150,17 @@ export default function ProjectDetails({ params }) {
               setImageSrc(FALLBACK_IMAGE);
             }
           } catch (photoError) {
-            console.log(`Failed to fetch photo for project_id ${projectId}:`, photoError);
+            // console.log(`Failed to fetch photo for project_id ${projectId}:`, photoError);
             setImageError(true);
             setImageLoading(false);
             setImageSrc(FALLBACK_IMAGE);
           }
         } else {
-          console.error("Unexpected response:", projectData);
+          // console.error("Unexpected response:", projectData);
           setError("Project not found");
         }
       } catch (error) {
-        console.error("Failed to fetch projects and donations:", error);
+        // console.error("Failed to fetch projects and donations:", error);
         setError("Project not found");
       } finally {
         setLoading(false);
@@ -200,7 +200,7 @@ export default function ProjectDetails({ params }) {
       setIsContactModalOpen(false);
       setMessage("");
     } catch (error) {
-      console.error("Failed to open Gmail:", error);
+      // console.error("Failed to open Gmail:", error);
       setToast({
         type: "fail",
         message: "Failed to open Gmail. Please try again.",
@@ -316,7 +316,7 @@ export default function ProjectDetails({ params }) {
               setImageLoading(false);
             }}
             onError={(e) => {
-              console.error("Image failed to load:", e);
+              // console.error("Image failed to load:", e);
               setImageError(true);
               setImageSrc(FALLBACK_IMAGE);
               setImageLoading(false);

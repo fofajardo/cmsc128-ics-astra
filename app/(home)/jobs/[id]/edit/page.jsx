@@ -21,7 +21,7 @@ export default function JobsPage() {
   };
 
   const fetchJobAndContent = async (id) => {
-    console.log("Fetching job and content with id:", id);
+    // console.log("Fetching job and content with id:", id);
     try {
       // Fetch job data
       const jobResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs/${id}`);
@@ -52,7 +52,7 @@ export default function JobsPage() {
         setError("Job or content not found.");
       }
     } catch (error) {
-      console.error("Error fetching job/content:", error.message, error.response?.status, error.response?.data);
+      // console.error("Error fetching job/content:", error.message, error.response?.status, error.response?.data);
       setError(error.response?.status === 404 ? "Job or content not found." : "Failed to fetch job data.");
     } finally {
       setLoading(false);

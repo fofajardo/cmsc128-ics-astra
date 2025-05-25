@@ -53,7 +53,7 @@ export default function WhatsUpPage() {
             }
           })
           .catch(error => {
-            console.error(`Failed to fetch photo for content_id ${contentId}:`, error);
+            ; // console.error(`Failed to fetch photo for content_id ${contentId}:`, error);
           });
 
         photoPromises.push(photoPromise);
@@ -64,7 +64,7 @@ export default function WhatsUpPage() {
 
       return photoMap;
     } catch (error) {
-      console.error("Error fetching photos:", error);
+      // console.error("Error fetching photos:", error);
       return {};
     }
   };
@@ -117,7 +117,7 @@ export default function WhatsUpPage() {
         setTotalPages(response.data.pagination?.total_pages || 1);
       }
     } catch (error) {
-      console.error("Error fetching announcements:", error);
+      ; // console.error("Error fetching announcements:", error);
     } finally {
       setLoading(false);
     }
