@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import AdminStatCard from "@/components/AdminStatCard";
 import { GraduationCap, Calendar, Briefcase, HandHeart } from "lucide-react";
 import BarGraph from "./components/bargraph";
@@ -46,6 +46,51 @@ export default function Dashboard() {
   const [eventsSummaryStats, setEventsSummaryStats] = useState([]);
   const [tab, setTab] = useState("age");
   const isMd = useIsMd();
+
+  // Add chart references for export
+  const chartRefs = {
+    alumniAge: useRef(null),
+    alumniSex: useRef(null),
+    alumniCivil: useRef(null),
+    alumniOrg: useRef(null),
+    alumniField: useRef(null),
+    alumniIncome: useRef(null),
+    alumniEmployment: useRef(null),
+    alumniBatch: useRef(null),
+    alumniDegree: useRef(null),
+    alumniStatus: useRef(null),
+    events: useRef(null),
+    donations: useRef(null),
+  };
+
+  // Prepare chart data for export
+  const chartData = useMemo(() => ({
+    alumniAge: alumniAgeStats,
+    alumniSex: alumniSexStats,
+    alumniCivil: alumniCivilStats,
+    alumniOrg: alumniOrgStats,
+    alumniField: alumniFieldStats,
+    alumniIncome: alumniIncomeStats,
+    alumniEmployment: alumniEmploymentStats,
+    alumniBatch: alumniBatchStats,
+    alumniDegree: alumniHighestDegreeStats,
+    alumniStatus: activeAlumniStats ? [
+      { status: "Active", count: activeAlumniStats.active_alumni_count },
+      { status: "Inactive", count: activeAlumniStats.inactive_alumni_count },
+      { status: "Approved", count: activeAlumniStats.approved_alumni_count },
+      { status: "Pending", count: activeAlumniStats.pending_alumni_count },
+    ] : [],
+    events: eventsSummaryStats ? [
+      { status: "Active", count: eventsSummaryStats.active_events },
+      { status: "Past", count: eventsSummaryStats.past_events },
+    ] : [],
+    donations: projectDonationSummary,
+  }), [
+    alumniAgeStats, alumniSexStats, alumniCivilStats, alumniOrgStats,
+    alumniFieldStats, alumniIncomeStats, alumniEmploymentStats, 
+    alumniBatchStats, alumniHighestDegreeStats, activeAlumniStats,
+    eventsSummaryStats, projectDonationSummary
+  ]);
 
   useEffect(() => {
     const fetchStatistics = async () => {
@@ -177,6 +222,7 @@ export default function Dashboard() {
     case "donations":
       return (
         <FundsDonut
+          ref={chartRefs.donations}
           fundsRaisedStats={fundsRaisedStats}
           projectStatistics={projectDonationSummary}
         />
@@ -193,6 +239,7 @@ export default function Dashboard() {
       return (
         <TransitionSlide>
           <StackedBarChart
+            ref={chartRefs.alumniAge}
             data={alumniAgeStats.filter(item => item.age > 0)}
             config={{
               active: { label: "Active", color: "var(--color-astraprimary)" },
@@ -570,7 +617,12 @@ export default function Dashboard() {
 
       <div className="flex gap-4 flex-col bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24">
         <div className="flex flex-col gap-2 flex-2">
-          <NavigationMenuDemo tab={tab} setTab={setTab} />
+          <NavigationMenuDemo 
+            tab={tab} 
+            setTab={setTab} 
+            chartRefs={chartRefs} 
+            chartData={chartData}
+          />
           {renderTabContent()}
         </div>
         {/* <div className="flex flex-col md:flex-row gap-4"> */}
