@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import AdminStatCard from "@/components/AdminStatCard";
 import { GraduationCap, Calendar, Briefcase, HandHeart } from "lucide-react";
 import BarGraph from "./components/bargraph";
@@ -46,6 +46,51 @@ export default function Dashboard() {
   const [eventsSummaryStats, setEventsSummaryStats] = useState([]);
   const [tab, setTab] = useState("age");
   const isMd = useIsMd();
+
+  // Add chart references for export
+  const chartRefs = {
+    alumniAge: useRef(null),
+    alumniSex: useRef(null),
+    alumniCivil: useRef(null),
+    alumniOrg: useRef(null),
+    alumniField: useRef(null),
+    alumniIncome: useRef(null),
+    alumniEmployment: useRef(null),
+    alumniBatch: useRef(null),
+    alumniDegree: useRef(null),
+    alumniStatus: useRef(null),
+    events: useRef(null),
+    donations: useRef(null),
+  };
+
+  // Prepare chart data for export
+  const chartData = useMemo(() => ({
+    alumniAge: alumniAgeStats,
+    alumniSex: alumniSexStats,
+    alumniCivil: alumniCivilStats,
+    alumniOrg: alumniOrgStats,
+    alumniField: alumniFieldStats,
+    alumniIncome: alumniIncomeStats,
+    alumniEmployment: alumniEmploymentStats,
+    alumniBatch: alumniBatchStats,
+    alumniDegree: alumniHighestDegreeStats,
+    alumniStatus: activeAlumniStats ? [
+      { status: "Active", count: activeAlumniStats.active_alumni_count },
+      { status: "Inactive", count: activeAlumniStats.inactive_alumni_count },
+      { status: "Approved", count: activeAlumniStats.approved_alumni_count },
+      { status: "Pending", count: activeAlumniStats.pending_alumni_count },
+    ] : [],
+    events: eventsSummaryStats ? [
+      { status: "Active", count: eventsSummaryStats.active_events },
+      { status: "Past", count: eventsSummaryStats.past_events },
+    ] : [],
+    donations: projectDonationSummary,
+  }), [
+    alumniAgeStats, alumniSexStats, alumniCivilStats, alumniOrgStats,
+    alumniFieldStats, alumniIncomeStats, alumniEmploymentStats,
+    alumniBatchStats, alumniHighestDegreeStats, activeAlumniStats,
+    eventsSummaryStats, projectDonationSummary
+  ]);
 
   useEffect(() => {
     const fetchStatistics = async () => {
@@ -177,6 +222,7 @@ export default function Dashboard() {
     case "donations":
       return (
         <FundsDonut
+          ref={chartRefs.donations}
           fundsRaisedStats={fundsRaisedStats}
           projectStatistics={projectDonationSummary}
         />
@@ -193,6 +239,7 @@ export default function Dashboard() {
       return (
         <TransitionSlide>
           <StackedBarChart
+            ref={chartRefs.alumniAge}
             data={alumniAgeStats.filter(item => item.age > 0)}
             config={{
               active: { label: "Active", color: "var(--color-astraprimary)" },
@@ -209,17 +256,11 @@ export default function Dashboard() {
     }
 
     case "sex": {
-      const colorConfig = {
-        Female: "#FF69B4",
-        Male: "var(--color-astraprimary)",
-      };
-
       const pieSexStats = alumniSexStats.map(item => {
         const name = item.sex.charAt(0).toUpperCase() + item.sex.slice(1);
         return {
           name,
           value: item.count,
-          fill: colorConfig[name] || "var(--color-astralight)",
         };
       });
 
@@ -255,7 +296,7 @@ export default function Dashboard() {
         return {
           name,
           value: item.count,
-          fill: colorConfig[name] || "#a3a3a3", // fallback gray
+          // fill: colorConfig[name] || "#a3a3a3", // fallback gray
         };
       });
 
@@ -264,11 +305,11 @@ export default function Dashboard() {
           <ReusablePieChart
             data={pieCivilStats}
             config={{
-              Married: { label: "Married"},
-              Single: { label: "Single"},
-              Divorced: { label: "Divorced"},
-              Separated: { label: "Separated"},
-              Widowed: { label: "Widowed"},
+              Married: { label: "Married", color: "var(--color-astralight)" },
+              Single: { label: "Single", color: "var(--color-astradark)" },
+              Divorced: { label: "Divorced", color: "var(--color-pieastra-primary-80)" },
+              Separated: { label: "Separated", color: "var(--color-pieastra-primary-50)" },
+              Widowed: { label: "Widowed", color: "var(--color-pieastra-primary-30)" },
             }}
             title="Alumni Civil Status Distribution"
             description="active alumni by civil status"
@@ -300,7 +341,7 @@ export default function Dashboard() {
               inactive: { color: "#a3a3a3" },
             }}
             title="Alumni by Organization"
-            description="Active alumni per organization"
+            description="active alumni per organization"
             yKey={isMd ? "name" : "acronym"}
             yKeyLong="nameWithAcronym"
             barKey="count"
@@ -331,7 +372,7 @@ export default function Dashboard() {
               inactive: { color: "#a3a3a3" },
             }}
             title="Alumni by Field"
-            description="Number of alumni per field"
+            description="total alumni per field"
             yKey="field"
             barKey="count"
             barLabel="Total Alumni"
@@ -369,7 +410,7 @@ export default function Dashboard() {
               inactive: { color: "#a3a3a3" },
             }}
             title="Alumni by Income Range"
-            description="Number of alumni per income range"
+            description="total alumni per income range"
             xKey="income_range"
             barKey="count"
             barLabel="Alumni Count"
@@ -394,7 +435,6 @@ export default function Dashboard() {
         return {
           name,
           value: item.total_alumni,
-          fill: colorConfig[name] || "#a3a3a3",
         };
       });
 
@@ -403,12 +443,12 @@ export default function Dashboard() {
           <ReusablePieChart
             data={pieEmploymentStats}
             config={{
-              Employed: { label: "Employed" },
-              Unemployed: { label: "Unemployed" },
-              "Self Employed": { label: "Self Employed" },
+              Employed: { label: "Employed", color: "var(--color-pieastra-primary-90)" },
+              Unemployed: { label: "Unemployed", color: "var(--color-astradark)" },
+              "Self Employed": { label: "Self Employed", color: "var(--color-pieastra-primary-60)" },
             }}
             title="Alumni Employment Status"
-            description="Active alumni by employment status"
+            description="active alumni by employment status"
             dataKey="value"
             nameKey="name"
             maxHeight={300}
@@ -438,7 +478,6 @@ export default function Dashboard() {
       const pieDegreeStats = alumniHighestDegreeStats.map((item, idx) => ({
         name: item.level,
         value: item.count,
-        fill: colorConfig[idx % colorConfig.length],
       }));
 
       const config = {};
@@ -452,7 +491,7 @@ export default function Dashboard() {
             data={pieDegreeStats}
             config={config}
             title="Alumni Highest Degree"
-            description="Distribution of highest degrees obtained by alumni"
+            description="distribution of highest degrees obtained by alumni"
             dataKey="value"
             nameKey="name"
             maxHeight={300}
@@ -464,12 +503,12 @@ export default function Dashboard() {
     case "alumni": {
       // Prepare your data and config
       const pieAlumniStatus = [
-        { name: "Active", value: activeAlumniStats?.active_alumni_count ?? 0, fill: "var(--color-astraprimary)" },
-        { name: "Inactive", value: activeAlumniStats?.inactive_alumni_count ?? 0, fill: "#a3a3a3" },
+        { name: "Active", value: activeAlumniStats?.active_alumni_count ?? 0 },
+        { name: "Inactive", value: activeAlumniStats?.inactive_alumni_count ?? 0 },
       ];
       const pieAlumniApproval = [
-        { name: "Approved", value: activeAlumniStats?.approved_alumni_count ?? 0, fill: "var(--color-astradark)" },
-        { name: "Pending", value: activeAlumniStats?.pending_alumni_count ?? 0, fill: "var(--color-pieastra-primary-80)" },
+        { name: "Approved", value: activeAlumniStats?.approved_alumni_count ?? 0 },
+        { name: "Pending", value: activeAlumniStats?.pending_alumni_count ?? 0 },
       ];
 
       const alumniPieSelectOptions = {
@@ -514,12 +553,9 @@ export default function Dashboard() {
     case "events": {
       const pieEventsStats = [
         { name: "Active",
-          value: eventsSummaryStats?.active_events ?? 0,
-          fill: "var(--color-astradark)" },
-
+          value: eventsSummaryStats?.active_events ?? 0 },
         { name: "Past",
-          value: eventsSummaryStats?.past_events ?? 0,
-          fill: "var(--color-astralightgray" },
+          value: eventsSummaryStats?.past_events ?? 0 }
       ];
 
       return (
@@ -527,8 +563,8 @@ export default function Dashboard() {
           <ReusablePieChart
             data={pieEventsStats}
             config={{
-              Active: { label: "Active Events"},
-              Past: { label: "Past Events" },
+              Active: { label: "Active Events", color: "var(--color-astradark)" },
+              Past: { label: "Past Events", color: "var(--color-astralightgray)"},
             }}
             title="Events Breakdown"
             description="Active vs Past Events"
@@ -581,7 +617,12 @@ export default function Dashboard() {
 
       <div className="flex gap-4 flex-col bg-astradirtywhite w-full px-4 py-8 md:px-12 lg:px-24">
         <div className="flex flex-col gap-2 flex-2">
-          <NavigationMenuDemo tab={tab} setTab={setTab} />
+          <NavigationMenuDemo
+            tab={tab}
+            setTab={setTab}
+            chartRefs={chartRefs}
+            chartData={chartData}
+          />
           {renderTabContent()}
         </div>
         {/* <div className="flex flex-col md:flex-row gap-4"> */}
