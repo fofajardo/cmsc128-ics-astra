@@ -121,6 +121,35 @@ export default function EventModal({
     return false;
   };
 
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+
+    if (isEdit) {
+      // For editing, create a formatted event object that includes the photo information
+      const updatedEvent = {
+        id: id,
+        title: formData.title,
+        description: formData.description,
+        venue: formData.venue,
+        event_date: selectedDate,
+        max_slots: formData.max_slots,
+        status: formData.status,
+        event_type: formData.event_type,
+        external_link: formData.external_link,
+        access_link: formData.access_link,
+        photoId: formData.photoId, // Include the existing photoId
+        imageFile: imageFile // The new uploaded file (if any)
+      };
+
+      // Pass the structured event object to parent component
+      handleSubmit(updatedEvent);
+    } else {
+      // For new events, use existing validator
+      if (validator()) {
+        handleSubmit(e);
+      }
+    }
+  };
 
   return (
     <div
@@ -145,16 +174,7 @@ export default function EventModal({
 
         <form
           className="grid grid-cols-1 md:grid-cols-2 gap-4"
-          onSubmit={
-            (e) => {
-              e.preventDefault();
-              if (isEdit) {
-                handleSubmit(id);
-              } else {
-                if (validator()) handleSubmit(e);
-              }
-            }
-          }
+          onSubmit={handleFormSubmit}
         >
           {/* Event Name */}
           <div>
@@ -297,7 +317,7 @@ export default function EventModal({
                       or click to browse files
                     </p>
                     <p className="text-astraprimary text-xs mt-1 sm:mt-2">
-                      Supported formats: JPG, PNG, GIF (max 5MB)
+                      Supported formats: JPG, PNG
                     </p>
                   </div>
                 </div>

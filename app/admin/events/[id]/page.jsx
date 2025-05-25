@@ -11,6 +11,7 @@ import DeleteConfirmationModal from "@/components/events/IndividualEvent/DeleteE
 import { toast } from "@/components/ToastNotification";
 import axios from "axios";
 import { TabContext } from "@/components/TabContext";
+import { PhotoType } from "../../../../common/scopes";
 
 import EventDetailsCard from "./EventDetails.Card";
 import SendEventCard from "./SendEventCard";
@@ -101,26 +102,45 @@ export default function EventAdminDetailPage() {
 
       const needsEventUpdate = Object.keys(eventUpdateData).length > 0;
       const needsContentUpdate = Object.keys(contentUpdateData).length > 0;
-      const needsPhotoUpdate = updatedEvent.imageFile !== null;
+      const needsPhotoUpdate = updatedEvent.photoFile !== null;
 
       const [eventRes, contentRes] = await Promise.all([
         needsEventUpdate ? axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/${toEditId}`, eventUpdateData) : null,
         needsContentUpdate ? axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${toEditId}`, contentUpdateData) : null
       ]);
 
+      if (updatedEvent.photoFile) {
+        const formData = new FormData();
+        formData.append("File", updatedEvent.photoFile);
+        formData.append("content_id", toEditId);
 
+        // Use the new specific endpoint for updating event photos
+        photoRes = await axios.put(
+          `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/event/${updatedEvent.photoId}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        // console.log("Event photo update response:", photoRes.data);
+      }
       const eventSuccess = eventRes?.data?.status === "UPDATED";
       const contentSuccess = contentRes?.data?.status === "UPDATED";
       const eventFailed = eventRes?.data?.status === "FAILED" || eventRes?.data?.status === "FORBIDDEN";
       const contentFailed = contentRes?.data?.status === "FAILED" || contentRes?.data?.status === "FORBIDDEN";
+      const photoSuccess = photoRes?.data?.status === "UPDATED";
+      const photoFailed = photoRes?.data?.status === "FAILED" || photoRes?.data?.status === "FORBIDDEN";
 
-      if ((needsEventUpdate && eventFailed) || (needsContentUpdate && contentFailed)) {
+      if ((needsEventUpdate && eventFailed) || (needsContentUpdate && contentFailed)|| (needsPhotoUpdate && photoFailed)) {
         toast({
           title: "Error",
           description: "Failed to edit event!",
           variant: "fail"
         });
-      } else if ((needsEventUpdate && eventSuccess) || (needsContentUpdate && contentSuccess)) {
+      } else if ((needsEventUpdate && eventSuccess) || (needsContentUpdate && contentSuccess) || (needsPhotoUpdate && photoSuccess)) {
         toast({
           title: "Success",
           description: "Event edited successfully!",
@@ -277,6 +297,17 @@ export default function EventAdminDetailPage() {
         const interests = interestRes.data.list;
         const interestStats = interestStatsRes.data.list;
 
+        const photoResponse = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/by-content-id/${id}`
+        );
+
+        let photoId = null;
+        if (photoResponse.data.status === "OK" && photoResponse.data.photos.length > 0) {
+          // Find the event photo (type 3)
+          const eventPhoto = photoResponse.data.photos.find(photo => photo.type === 3);
+          photoId = eventPhoto ? eventPhoto.id : null;
+        }
+
         const interestedUsers = await Promise.all(
           interests.map(async (user) => ({
             id: user.user_id,
@@ -289,6 +320,7 @@ export default function EventAdminDetailPage() {
         const mergedEvent = {
           id: eventResponse.event.event_id,
           event_id: eventResponse.event.event_id,
+          photoId: photoId, // fetch this on photo entity;
           imageSrc: photoUrl, // fetch this on photo entity;
           title: contentResponse.content.title || "Untitled",
           description: contentResponse?.content.details || "No description",

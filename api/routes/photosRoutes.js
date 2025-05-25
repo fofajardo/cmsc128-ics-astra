@@ -27,6 +27,7 @@ const photosRouter = (aUpload) => {
   router.delete("/:id", photosController.deletePhoto);
   router.post("/newsletter", aUpload.single("File"), photosController.uploadNewsletter);
   router.delete("/newsletter/:id", photosController.deleteNewsletter);
+  router.put("/event/:id", aUpload.single("File"), photosController.updateEventPhoto);
   return router;
 };
 
