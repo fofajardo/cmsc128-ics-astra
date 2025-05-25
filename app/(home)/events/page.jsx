@@ -14,6 +14,7 @@ import { LoadingSpinner } from "@/components/LoadingSpinner.jsx";
 import EventCarousel from "@/components/events/GroupedEvents/CardCarousel/EventCarousel";
 import ExploreUPLBSection from "@/components/events/GroupedEvents/ExploreUPLBSection";
 import UPLBImageCollage from "@/components/events/GroupedEvents/UPLBImageCollage";
+import { ParticlesBackground } from "@/components/ParticlesBackground";
 
 import eventsVector from "../../assets/events-vector.png";
 import venue1 from "../../assets/venue1.jpeg";
@@ -217,6 +218,7 @@ export default function EventsPage() {
         style={{ backgroundImage: "url('/blue-bg.png')" }}
       >
         <div className="max-w-[1440px] mx-auto px-12 py-20 flex flex-col lg:flex-row items-center justify-between text-astrawhite gap-10">
+          <ParticlesBackground count={40} />
           <div className="max-w-[600px] space-y-6 text-center lg:text-left animate-hero-text">
             <h1 className="text-[60px] font-extrabold leading-[1.1]">
               User Event <br /> & Management
