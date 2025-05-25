@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import PersonalInfoModal from "@/components/profile/modals/PersonalInfoModal.jsx";
 import {CIVIL_STATUS_LABELS, SEX_LABELS} from "../../../../common/scopes.js";
 import nationalities from "i18n-nationality";
@@ -10,6 +9,10 @@ import {Badge} from "@/components/ui/badge.jsx";
 import ProfilePictureModal from "@/components/profile/modals/ProfilePictureModal.jsx";
 
 export function PersonalInfo({context}) {
+  if (!context.state.profile) {
+    return null;
+  }
+
   const profileData = {
     FirstName: context.state.profile.first_name,
     MiddleName: context.state.profile.middle_name,
