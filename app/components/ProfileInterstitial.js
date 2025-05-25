@@ -5,6 +5,7 @@ import Link from "next/link";
 import {feRoutes} from "../../common/routes.js";
 import {useSignedInUser, useUser} from "@/components/UserContext.jsx";
 import {LoadingSpinner} from "@/components/LoadingSpinner.jsx";
+import PropTypes from "prop-types";
 
 export default function ProfileInterstitial({ children }) {
   const context = useSignedInUser();
@@ -40,3 +41,7 @@ export default function ProfileInterstitial({ children }) {
     </main>
   );
 }
+
+ProfileInterstitial.propTypes = {
+  children: PropTypes.node.isRequired,
+};

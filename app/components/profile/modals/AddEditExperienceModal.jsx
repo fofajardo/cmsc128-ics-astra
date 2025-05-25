@@ -402,7 +402,7 @@ export default function AddEditExperienceModal({ context, experience = null, exp
               </div>
             ) : (
               <div className="text-sm md:text-base px-3 py-2 md:px-4 md:py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[var(--color-astradirtywhite)] rounded-md">
-              Add
+                Add
               </div>
             )
           }
