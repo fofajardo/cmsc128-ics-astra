@@ -24,18 +24,21 @@ import {
 import {useMediaQuery} from "usehooks-ts";
 import {cn} from "@/lib/utils.jsx";
 import {ChevronsUpDown} from "lucide-react";
-import {useEffect} from "react";
+import {useCallback, useEffect} from "react";
 
 export function ComboBoxResponsive({items, placeholder, value, onChange, ...props}) {
   const [open, setOpen] = React.useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const [selectedItem, setSelectedItem] = React.useState(value);
 
-  useEffect(function() {
-    if (onChange) {
-      onChange(selectedItem);
-    }
-  }, [selectedItem, onChange]);
+  const handleSelect = useCallback(
+    (item) => {
+      setSelectedItem(item);
+      onChange?.(item);
+      setOpen(false);
+    },
+    [onChange]
+  );
 
   const triggerButton = (
     <Button
@@ -60,7 +63,7 @@ export function ComboBoxResponsive({items, placeholder, value, onChange, ...prop
           {triggerButton}
         </PopoverTrigger>
         <PopoverContent className="w-full p-0" align="start">
-          <ItemList items={items} setOpen={setOpen} setSelectedItem={setSelectedItem} />
+          <ItemList items={items} setOpen={setOpen} onSelect={handleSelect} />
         </PopoverContent>
       </Popover>
     );
@@ -73,14 +76,14 @@ export function ComboBoxResponsive({items, placeholder, value, onChange, ...prop
       </DrawerTrigger>
       <DrawerContent>
         <div className="mt-4 border-t">
-          <ItemList items={items} setOpen={setOpen} setSelectedItem={setSelectedItem} />
+          <ItemList items={items} setOpen={setOpen} onSelect={handleSelect} />
         </div>
       </DrawerContent>
     </Drawer>
   );
 }
 
-function ItemList({ items, setOpen, setSelectedItem }) {
+function ItemList({ items, setOpen, onSelect }) {
   return (
     <Command>
       <CommandInput placeholder="Filter status..." />
@@ -92,7 +95,7 @@ function ItemList({ items, setOpen, setSelectedItem }) {
               key={item.value}
               value={item.value}
               onSelect={(value) => {
-                setSelectedItem(
+                onSelect(
                   items.find((priority) => priority.value === value) || null
                 );
                 setOpen(false);
