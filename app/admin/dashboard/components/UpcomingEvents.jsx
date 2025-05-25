@@ -155,10 +155,10 @@ export default function UpcomingEvents() {
 
           setUpcomingEvents(updatedUpcomingEvents);
         } else {
-          console.error("Unexpected response:", response.data);
+          ; // console.error("Unexpected response:", response.data);
         }
       } catch (error) {
-        console.log("Failed to fetch upcoming events:", error);
+        ; // console.log("Failed to fetch upcoming events:", error);
       }
     };
 
@@ -181,7 +181,7 @@ export default function UpcomingEvents() {
             See All
           </a>
         </div>
-        <div className="flex-1 px-4">
+        <div className="flex-1 px-0 md:px-4">
           {displayEvents.map((event, index) => (
             <EventItem key={index} event={event} router={router} />
           ))}

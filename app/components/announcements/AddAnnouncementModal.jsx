@@ -20,7 +20,6 @@ export default function AddAnnouncementModal({ isOpen, onClose }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Handle form submission
-    console.log(formData);
     onClose();
   };
 

@@ -22,9 +22,7 @@ export default function EditEventModal({ event, onClose, onSave }) {
       date: date,
       location: location,
       status: status,
-      description: eventDetail,
-      image: image,
-      file: file,
+      description: eventDetail
     };
 
     // Pass the updated event to the parent's onSave function

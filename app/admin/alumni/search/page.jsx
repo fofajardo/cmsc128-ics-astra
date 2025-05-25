@@ -11,7 +11,9 @@ import { Skeleton, CenteredSkeleton } from "@/components/ui/skeleton";
 export default function AlumniSearch() {
   const [showFilter, setShowFilter] = useState(false);
   const info = { title: "Registered Alumni", search: "Search for an alumni" };
-  const toggleFilter = () => { setShowFilter((prev) => !prev); };
+  const toggleFilter = () => {
+    setShowFilter((prev) => !prev);
+  };
   const [loading, setLoading] = useState(true);
   const [alumList, setAlumList] = useState([]); // Filtered/sorted data for display
   const [appliedFilters, updateFilters] = useState({
@@ -31,8 +33,14 @@ export default function AlumniSearch() {
     total: 0                // How many alum in db
   });
   const [searchQuery, setSearchQuery] = useState("");
-
   const stableFilters = useMemo(() => appliedFilters, [JSON.stringify(appliedFilters)]);
+
+  useEffect(() => {
+    setPagination((prev) => ({
+      ...prev,
+      currPage: 1
+    }));
+  }, [searchQuery, stableFilters, pagination.numToShow]);
 
   useEffect(() => {
     const fetchAlumniProfiles = async () => {
@@ -59,7 +67,7 @@ export default function AlumniSearch() {
                 graduationYear: alum.year_graduated,
                 location: alum.location,
                 fieldOfWork:
-                  alum.primary_work_experience?.field || "N/A",
+                  alum.field || "N/A",
                 skills: alum.skills ? alum.skills.split(",") : [],
                 image:
                   "https://cdn-icons-png.flaticon.com/512/145/145974.png",
@@ -77,10 +85,10 @@ export default function AlumniSearch() {
                   alumData.image = photoResponse.data.photo;
                 }
               } catch (photoError) {
-                console.log(
-                  `Failed to fetch photo for alum_id ${alum.alum_id}:`,
-                  photoError
-                );
+                ; // console.log(
+                //   `Failed to fetch photo for alum_id ${alum.alum_id}:`,
+                //   photoError
+                // );
               }
 
               return alumData;
@@ -88,7 +96,6 @@ export default function AlumniSearch() {
           );
 
           const listLength = updatedAlumList.length;
-          console.log(listLength);
           const lowerBound = listLength === 0 ? 0 : (pagination.currPage - 1) * pagination.numToShow + 1;
           const upperBound = listLength === 0 ? 0 : lowerBound + listLength - 1;
 
@@ -96,32 +103,23 @@ export default function AlumniSearch() {
             ...prev,
             display: [lowerBound, upperBound],
             total: response.data.total,
-            lastPage: Math.ceil(response.data.total / prev.numToShow),
+            lastPage: Math.ceil(response.data.total / prev.numToShow)
           }));
 
           setAlumList(updatedAlumList);
           setLoading(false);
         } else {
-          console.error("Unexpected response:", response.data);
+          // console.error("Unexpected response:", response.data);
           setLoading(false);
         }
       } catch (error) {
-        console.error("Failed to fetch alumni:", error);
+        // console.error("Failed to fetch alumni:", error);
         setLoading(false);
       }
     };
 
     fetchAlumniProfiles();
-  }, [pagination.currPage, pagination.numToShow, searchQuery, stableFilters]);
-
-  useEffect(() => {
-    if (pagination.lastPage < pagination.currPage) {
-      setPagination((prev) => ({
-        ...prev,
-        currPage: prev.lastPage
-      }));
-    }
-  }, [pagination.lastPage]);
+  }, [searchQuery, stableFilters, pagination.numToShow, pagination.currPage]);
 
   return (
     <div>
@@ -238,9 +236,10 @@ function renderSkills(skills) {
   return (
     <div className="relative group flex justify-center items-center cursor-default">
       <div className="flex flex-wrap justify-center items-center">
-        {visibleSkills.map((skill, index) => (
-          <SkillTag key={index} text={skill} />
-        ))}
+        {skills.length === 0 ? <span className="text-astradarkgray">N/A</span> :
+          visibleSkills.map((skill, index) => (
+            <SkillTag key={index} text={skill} />
+          ))}
         {remainingCount > 0 && (
           <div className="size-8 flex justify-center items-center rounded-full text-xs font-medium border border-dashed text-astradarkgray bg-astratintedwhite cursor-default">
             +{remainingCount}

@@ -3,7 +3,9 @@
 import { useRouter } from "next/navigation";
 import React from "react";
 import { useState } from "react";
+import { useSignedInUser } from "./UserContext";
 import { AlertCircle, X } from "lucide-react";
+import axios from "axios";
 import ToastNotification from "@/components/ToastNotification";
 
 export function GoBackButton() {
@@ -55,13 +57,27 @@ export function ActionButton({ label, color, size = "small", flex, onClick, rout
   );
 }
 
-export default function ReportForm({contentType, close}){
+export default function ReportForm({contentType, close, id}){
+  const user = useSignedInUser();
   const [reportDetails, setDetails] = useState("");
+  const type = {"Job": 0, "Event": 1, "Project": 2};
 
-  const submitReport = async () => {
-    // report submission logic here
+  const handleReport = async () => {
+    const payload = {
+      content_id: id,
+      details: reportDetails,
+      type: type[contentType],
+      reporter_id: user.state.user.id,
+    };
+    try {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/v1/reports`, payload);
 
-    close();
+      if (response.data.status === "CREATED") {
+        close();
+      }
+    } catch (error) {
+      ; // console.error("Failed to submit report:", error);
+    }
   };
 
   return(
@@ -84,14 +100,14 @@ export default function ReportForm({contentType, close}){
         </form>
         <div className="flex justify-end my-4 px-8 gap-2">
           <button onClick={close} className="!cursor-pointer text-astraprimary border-1 border-astraprimary font-semibold w-23 py-2 rounded-lg text-base">Cancel</button>
-          <button onClick={submitReport} className="focus:border-astraprimary !cursor-pointer text-astrawhite border-1 border-astraprimary bg-astraprimary font-semibold w-24 py-2 rounded-lg text-base">Submit</button>
+          <button onClick={handleReport} className="focus:border-astraprimary !cursor-pointer text-astrawhite border-1 border-astraprimary bg-astraprimary font-semibold w-24 py-2 rounded-lg text-base">Submit</button>
         </div>
       </div>
     </div>
   );
 }
 
-export function ReportButton({ contentType, onSubmit }) {
+export function ReportButton({ contentType, onSubmit, id }) {
   const [showForm, setShowForm] = useState(false);
 
   return (
@@ -104,7 +120,7 @@ export function ReportButton({ contentType, onSubmit }) {
         <AlertCircle size={20} className="relative z-3 text-astradark transition-colors duration-300 group-hover:text-astradark"
         />
       </div>
-      {showForm && <ReportForm contentType={contentType} close={()=>setShowForm(false)}/>}
+      {showForm && <ReportForm contentType={contentType} close={()=>setShowForm(false)} id={id}/>}
     </div>
   );
 }

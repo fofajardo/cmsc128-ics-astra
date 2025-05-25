@@ -76,7 +76,7 @@ const createReport = async (req, res) => {
 
   try {
     const requiredFields = ["reporter_id", "type", "details"];
-    const missingFields = requiredFields.filter(field => !req.body[field]);
+    const missingFields = requiredFields.filter(field => req.body[field] == null);
 
     if (missingFields.length > 0) {
       return res.status(httpStatus.BAD_REQUEST).json({

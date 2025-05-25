@@ -33,28 +33,9 @@ export default function ProjectFunds() {
         setLoading(true);
         const projectResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/requests/projects`);
         const projectData = projectResponse.data;
-        console.log("Raw API Response:", projectData);
         if (projectData.status === "OK") {
           const mappedProjects = projectData.list.map(
             project => {
-              console.log("Complete Project Data:", {
-                request_id: project.request_id,
-                status: project.status,
-                projectData: {
-                  project_id: project.projectData.project_id,
-                  title: project.projectData.title,
-                  type: project.projectData.type,
-                  goal_amount: project.projectData.goal_amount,
-                  total_donations: project.projectData.total_donations,
-                  number_of_donors: project.projectData.number_of_donors,
-                  project_status: project.projectData.project_status,
-                  due_date: project.projectData.due_date,
-                  date_complete: project.projectData.date_complete,
-                  donation_link: project.projectData.donation_link,
-                  details: project.projectData.details
-                },
-                requesterData: project.requesterData
-              });
               return {
                 id: project.projectData.project_id,
                 title: project.projectData.title,
@@ -67,13 +48,12 @@ export default function ProjectFunds() {
               };
             }
           );
-          console.log("Final Mapped Projects:", mappedProjects);
           setProjectData(mappedProjects);
         } else {
-          console.error("Unexpected response:", projectData);
+          ; // console.error("Unexpected response:", projectData);
         }
       } catch (error) {
-        console.error("Failed to fetch project:", error);
+        ; // console.error("Failed to fetch project:", error);
       } finally {
         setLoading(false);
       }
@@ -84,15 +64,14 @@ export default function ProjectFunds() {
         const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations/summary`);
         const donationSummaryData = response.data;
         if (donationSummaryData.status === "OK") {
-          console.log("Fetched donation summary:", donationSummaryData);
           setDonationsSummary({
             total_raised: donationSummaryData.summary.total_raised
           });
         } else {
-          console.error("Unexpected response:", donationSummaryData);
+          ; // console.error("Unexpected response:", donationSummaryData);
         }
       } catch (error) {
-        console.error("Failed to fetch donation summary:", error);
+        ; // console.error("Failed to fetch donation summary:", error);
       }
     };
 

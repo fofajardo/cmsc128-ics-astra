@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import * as React from "react";
-import { TrendingUp } from "lucide-react";
+import { TrendingUp, FileDown } from "lucide-react"; // Add FileDown import
 import { Label, Pie, PieChart } from "recharts";
 import {
   Card,
@@ -18,6 +18,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { Button } from "@/components/ui/button";
+import { ReusableDrawer } from "./Drawer";
 import { capitalizeTitle } from "@/utils/format";
 import {
   Select,
@@ -27,13 +29,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { NameEmailSkeleton, Skeleton } from "@/components/ui/skeleton";
+import { PROJECT_STATUS, PROJECT_STATUS_LABELS } from "../../../../common/scopes";
 
-// temporary labels
-const PROJECT_STATUS_LABELS = {
-  0: "Pending",
-  1: "Active",
-  2: "Finished",
-};
 const PROJECT_STATUS_COLORS = {
   0: "bg-yellow-100 text-yellow-800",
   1: "bg-blue-100 text-blue-800",
@@ -70,29 +67,45 @@ const chartConfig = {
   },
 };
 
-function FundDisplay({ color, title, funds, project_status, isDense }) {
-  const titleFont = isDense ? "font-s" : "font-r";
-  const fundsFont = isDense ? "font-sb" : "font-rb";
+function FundDisplay({ color, title, funds, project_status, isDense, sumFunds }) {
+  const percent = sumFunds > 0 ? (funds / sumFunds) * 100 : 0;
+  const barBg = color || "#e5e7eb";
+  const minBarWidth = 0; // px, adjust as needed
+  const barHeight = isDense ? 8 : 10;
 
   return (
-    <div className="flex items-center justify-between max-w-full gap-6">
-      <div className="flex items-center gap-2.5">
+    <div className="w-full flex items-center">
+      <div
+        className={`relative flex items-center rounded overflow-hidden transition-all h-${barHeight} w-full bg-astragray`}
+        style={{
+          minWidth: `${minBarWidth}px`,
+        }}
+      >
+        {/* Colored progress bar */}
         <div
-          className="w-5 min-h-8 rounded-lg flex-shrink-0"
-          style={{ backgroundColor: color }}
-        ></div>
-        <div className="flex flex-col">
-          <span className={`text-astrablack line-clamp-1 ${titleFont}`}>{title}</span>
+          className="absolute left-0 top-0 h-full transition-all"
+          style={{
+            width: `max(${percent}%, ${minBarWidth}px)`,
+            minWidth: `${minBarWidth}px`,
+            background: barBg,
+            zIndex: 1,
+          }}
+        />
+        {/* Content above the bar */}
+        <div className="relative flex items-center w-full z-10 px-3 py-1">
+          <span className={"font-rb truncate text-astrablack"}>
+            {title}
+          </span>
           <span
-            className={`px-1 py-0 rounded text-[11px] w-fit ${PROJECT_STATUS_COLORS[project_status] || "bg-gray-100 text-gray-700"}`}
+            className={`ml-2 px-2 py-0.5 rounded text-xs whitespace-nowrap ${PROJECT_STATUS_COLORS[project_status] || "bg-gray-100 text-gray-700"}`}
           >
             {PROJECT_STATUS_LABELS[project_status] || "Unknown"}
           </span>
+          <span className={"ml-auto font-rb"}>
+            ₱{Number(funds).toLocaleString()}
+          </span>
         </div>
       </div>
-      <span className={`text-astraprimary text-right ${fundsFont}`}>
-        ₱{Number(funds).toLocaleString()}
-      </span>
     </div>
   );
 }
@@ -159,8 +172,9 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
 export function Donut({ fundsRaised, projectStatistics }) {
   const router = useRouter();
   const [currentPage, setCurrentPage] = React.useState(1);
-  const [pageSize, setPageSize] = React.useState(6);
+  const [pageSize, setPageSize] = React.useState(5);
   const [showChart, setShowChart] = React.useState(false);
+  const chartRef = React.useRef(null); // Add chart reference for export
   const colorSteps = [
     "var(--color-pieastra-primary-100)",
     "var(--color-pieastra-primary-90)",
@@ -176,6 +190,7 @@ export function Donut({ fundsRaised, projectStatistics }) {
 
   // filter out donations with 0 funds
   const filteredStatistics = projectStatistics?.filter(item => item.funds > 0) ?? [];
+
   React.useEffect(() => {
     if (
       filteredStatistics.length > 0 &&
@@ -197,76 +212,176 @@ export function Donut({ fundsRaised, projectStatistics }) {
     }));
 
   const totalFunds = fundsRaised?.total_funds_raised ?? "Loading...";
+  const maxFunds = paginatedData.length > 0 ? Math.max(...paginatedData.map(item => item.funds)) : 1;
+  const sumFunds = paginatedData.reduce((acc, item) => acc + item.funds, 0);
+
+  // Function to render the chart - avoids duplication
+  function renderChart(showTooltip = true, forExport = false) {
+    return (
+      <ChartContainer
+        config={chartConfig}
+        className={forExport ? "mx-auto aspect-square h-[300px]" : "mx-auto aspect-square max-h-[350px]"}
+      >
+        <PieChart>
+          {showTooltip && (
+            <ChartTooltip
+              cursor={false}
+              content={<ChartTooltipContent hideLabel showPeso={true} />}
+            />
+          )}
+          <Pie
+            data={paginatedData}
+            dataKey="funds"
+            nameKey="donationTitle"
+            innerRadius={forExport ? 70 : 85}
+            strokeWidth={5}
+          >
+            <Label
+              content={({ viewBox }) => {
+                if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                  return (
+                    <text
+                      x={viewBox.cx}
+                      y={viewBox.cy}
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                    >
+                      <tspan
+                        x={viewBox.cx}
+                        y={viewBox.cy}
+                        className="fill-astradark font-lb bg-blue-red"
+                      >
+                        ₱{typeof totalFunds === "number" ? totalFunds.toLocaleString() : "Loading..."}
+                      </tspan>
+                      <tspan
+                        x={viewBox.cx}
+                        y={(viewBox.cy || 0) + 24}
+                        className="fill-muted-foreground"
+                      >
+                        Total Funds Raised
+                      </tspan>
+                    </text>
+                  );
+                }
+              }}
+            />
+          </Pie>
+        </PieChart>
+      </ChartContainer>
+    );
+  }
 
   return (
     <Card className="flex flex-col h-full py-4 gap-0">
       <CardHeader className="items-center pb-0">
         <div className="flex justify-between items-center">
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-1">
             <CardTitle>Projects by Funds Raised</CardTitle>
-            <CardDescription>
+            <CardDescription className="line-clamp-1">
               See which projects have raised the most funds.
             </CardDescription>
+
           </div>
           <a
             onClick={() => router.push("/admin/projects")}
             className="text-astraprimary font-rb hover:underline cursor-pointer"
           >
-            See All
+            View
           </a>
         </div>
         <hr className="h-2 border-astrablack"></hr>
       </CardHeader>
-      <CardContent className="flex-1 pb-0 px-0">
+      <div className="flex items-center justify-between px-6 pt-0">
+        {/* Add ReusableDrawer for export functionality */}
+        <ReusableDrawer
+          title="Export Projects by Funds Raised"
+          description="Download chart data or image"
+          triggerElement={
+            <Button variant="outline" className="max-w-max mt-0">
+              <FileDown />
+              Export Report
+            </Button>
+          }
+          chartData={paginatedData.map(item => ({
+            name: item.donationTitle,
+            value: item.funds,
+            status: PROJECT_STATUS_LABELS[item.project_status] || "Unknown"
+          }))}
+          chartRef={chartRef}
+          chartTitle="Projects by Funds Raised"
+        >
+          <div className="bg-white p-4 rounded-lg flex flex-col">
+            <h3 className="text-lg font-bold mb-0">Projects by Funds Raised</h3>
+            <p className="text-sm text-muted-foreground mb-2">
+              Top {paginatedData.length} projects by funds raised (₱{typeof totalFunds === "number" ? totalFunds.toLocaleString() : "Loading..."} total)
+            </p>
+
+            {/* Main chart section */}
+            <div className="h-[280px]">
+              {renderChart(true, true)}
+            </div>
+
+            {/* Custom legend with values in two columns */}
+            <div className="mt-2 border-t pt-2">
+              <h4 className="text-xs font-bold mb-2">Legend</h4>
+              <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                {paginatedData.map((item, index) => (
+                  <div key={index} className="flex items-center justify-between border-b border-gray-100 pb-1">
+                    <div className="flex items-center gap-1">
+                      <div
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: item.fill }}
+                      />
+                      <span className="truncate md:max-w-48 max-w-24 text-xs" title={item.donationTitle}>
+                        {item.donationTitle}
+                      </span>
+                    </div>
+                    <div className="flex flex-col items-end">
+                      <span className="font-medium text-xs whitespace-nowrap">
+                        ₱{item.funds.toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </ReusableDrawer>
+
+        {/* Page size selector */}
+        <div className="flex items-center gap-2 justify-end mr-6">
+          <span className="text-muted-foreground">Show</span>
+          <div className="min-w-[60px]">
+            <Select
+              value={pageSize.toString()}
+              onValueChange={function(value) {
+                setPageSize(Number(value));
+                setCurrentPage(1);
+              }}
+            >
+              <SelectTrigger className="w-fit">
+                <SelectValue placeholder="Page size" />
+              </SelectTrigger>
+              <SelectContent className="min-w-fit">
+                {[5, 6, 8, 10].map(function(size) {
+                  return (
+                    <SelectItem key={size} value={size.toString()}>
+                      {size}
+                    </SelectItem>
+                  );
+                })}
+              </SelectContent>
+            </Select>
+          </div>
+          <span className="text-muted-foreground">per page</span>
+        </div>
+      </div>
+
+      <CardContent className="flex-0 pb-0 px-0">
         {showChart ? (
-          <ChartContainer
-            config={chartConfig}
-            className="mx-auto aspect-square max-h-[350px]"
-          >
-            <PieChart>
-              <ChartTooltip
-                cursor={false}
-                content={<ChartTooltipContent hideLabel showPeso={true} />}
-              />
-              <Pie
-                data={paginatedData}
-                dataKey="funds"
-                nameKey="donationTitle"
-                innerRadius={85}
-                strokeWidth={5}
-              >
-                <Label
-                  content={({ viewBox }) => {
-                    if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                      return (
-                        <text
-                          x={viewBox.cx}
-                          y={viewBox.cy}
-                          textAnchor="middle"
-                          dominantBaseline="middle"
-                        >
-                          <tspan
-                            x={viewBox.cx}
-                            y={viewBox.cy}
-                            className="fill-astradark font-lb bg-blue-red"
-                          >
-                            ₱{totalFunds.toLocaleString()}
-                          </tspan>
-                          <tspan
-                            x={viewBox.cx}
-                            y={(viewBox.cy || 0) + 24}
-                            className="fill-muted-foreground"
-                          >
-                            Total Funds Raised
-                          </tspan>
-                        </text>
-                      );
-                    }
-                  }}
-                />
-              </Pie>
-            </PieChart>
-          </ChartContainer>
+          <div ref={chartRef}>
+            {renderChart(true)}
+          </div>
         ) : (
           <div className="flex flex-col items-center justify-center h-[330px] gap-4">
             <div className="relative w-[260px] h-[260px] flex items-center justify-center">
@@ -299,7 +414,7 @@ export function Donut({ fundsRaised, projectStatistics }) {
           </div>
         )}
         <CardFooter className="flex-col gap-0 font-s">
-          <div className="leading-none text-muted-foreground pb-2">
+          <div className="leading-none text-muted-foreground mt-[-20] pb-2">
             Showing <span className="font-bold">
               {filteredStatistics.length === 0 ? 0 : ((currentPage - 1) * pageSize + 1)}
             </span>
@@ -308,40 +423,14 @@ export function Donut({ fundsRaised, projectStatistics }) {
             {" "}out of <span className="font-bold">{projectStatistics?.length ?? 0}</span> Donation Drives
           </div>
 
-          {/* Page size selector */}
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-muted-foreground">Show</span>
-            <div className="min-w-[60px]">
-              <Select
-                value={pageSize.toString()}
-                onValueChange={value => {
-                  setPageSize(Number(value));
-                  setCurrentPage(1);
-                }}
-              >
-                <SelectTrigger className="w-fit">
-                  <SelectValue placeholder="Page size" />
-                </SelectTrigger>
-                <SelectContent className="min-w-fit">
-                  {[5, 6, 8, 10].map(size => (
-                    <SelectItem key={size} value={size.toString()}>
-                      {size}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <span className="text-muted-foreground">per page</span>
-          </div>
-
-          <div className="mt-0 flex flex-col space-y-1.5 min-w-full gap-2">
+          <div className="mt-0 flex flex-col space-y-0.5 min-w-full gap-0">
             {showChart
               ? paginatedData.map((item, index) => (
                 <div
                   key={index}
-                  className="transition-all cursor-pointer duration-200
-                      hover:scale-105 hover:shadow-lg hover:bg-pieastra-primary-10/40 hover:font-semibold
-                      rounded-lg px-2.5 py-0.5 group"
+                  className="transition-all duration-200
+                        hover:scale-102
+                        rounded-lg px-2.5 py-0.5 group"
                 >
                   <FundDisplay
                     title={item.donationTitle}
@@ -349,6 +438,7 @@ export function Donut({ fundsRaised, projectStatistics }) {
                     color={item.fill}
                     project_status={item.project_status}
                     isDense={paginatedData.length === 10}
+                    sumFunds={sumFunds}
                   />
                 </div>
               ))

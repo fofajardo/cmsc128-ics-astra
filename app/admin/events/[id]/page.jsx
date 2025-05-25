@@ -34,12 +34,13 @@ export default function EventAdminDetailPage() {
   const itemsPerPage = 5;
 
   const handleSave = (updatedEvent) => {
-    setEvent((prevEvent) => ({
-      ...prevEvent,
-      ...updatedEvent
-    }));
-    setShowEditModal(false);
-    setToastData({ type: "success", message: "Event updated successfully!" });
+    handleEdit(updatedEvent);
+    // setEvent((prevEvent) => ({
+    //   ...prevEvent,
+    //   ...updatedEvent
+    // }));
+    // setShowEditModal(false);
+    // setToastData({ type: "success", message: "Event updated successfully!" });
   };
 
   const handleDeleteContent = async (id) => {
@@ -49,7 +50,7 @@ export default function EventAdminDetailPage() {
 
       setToastData({ type: "success", message: "Event deleted successfully!" });
     }catch(error){
-      console.error("Failed to delete events:", error);
+      // console.error("Failed to delete events:", error);
       setToastData({ type: "error", message: "Failed to delete event!" });
     }
   };
@@ -59,7 +60,7 @@ export default function EventAdminDetailPage() {
       const response = await axios
         .delete(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/${id}`);
 
-      console.log("edit event - delete:", response.data);
+      // console.log("edit event - delete:", response.data);
       if (response.data.status === "DELETED") {
         handleDeleteContent(id);
       }
@@ -74,10 +75,10 @@ export default function EventAdminDetailPage() {
   const handleEdit = async (updatedEvent) => {
     try{
       const toEditId = id;
-      console.log("event id in ", toEditId);
-      console.log(event);
-      console.log(new Date(event.date));
-      console.log(updatedEvent);
+      // console.log("event id in ", toEditId);
+      // console.log(event);
+      // console.log(new Date(event.date));
+      // console.log(updatedEvent);
 
       const eventDefaults = {
         event_date: "",
@@ -111,33 +112,33 @@ export default function EventAdminDetailPage() {
       if (Object.keys(eventUpdateData).length > 0) {
         eventRes = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/${toEditId}`, eventUpdateData);
         eventOnly += 1;
-        console.log("entered event update");
+        // console.log("entered event update");
 
       }
 
       if (Object.keys(contentUpdateData).length > 0) {
         contentRes = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${toEditId}`,contentUpdateData);
         eventOnly += 1; // 2 -> event,content updated; 1->onlyevent
-        console.log("entered content update");
+        // console.log("entered content update");
       }
       // TODO: POST/PUT photo
       //
       //
 
-      console.log("eventOnly: ", eventOnly);
-      console.log(eventRes);
-      console.log(contentRes);
-      console.log(contentRes.data.status);
-      console.log(eventRes?.data);
+      // console.log("eventOnly: ", eventOnly);
+      // console.log(eventRes);
+      // console.log(contentRes);
+      // console.log(contentRes.data.status);
+      // console.log(eventRes?.data);
 
 
       if (eventRes?.data?.status ==="UPDATED"  && contentRes?.data?.status === "UPDATED" && eventOnly===2){
         setToastData({ type: "success", message: "Event edited successfully!" });
-        console.log("here at 1dtcondition");
+        // console.log("here at 1dtcondition");
 
       } else if ((eventRes?.data?.status ==="UPDATED" && eventOnly===1) || (contentRes?.data?.status === "UPDATED" && eventOnly===1)){
         setToastData({ type: "success", message: "Event edited successfully!" });
-        console.log("here at 2nd condition");
+        // console.log("here at 2nd condition");
 
       } else if (
         (["FAILED", "FORBIDDEN"].includes(eventRes?.data?.status) && eventOnly === 2) ||
@@ -145,10 +146,10 @@ export default function EventAdminDetailPage() {
       )
       {
         setToastData({ type: "error", message: "Failed to edit event." });
-        console.log("here at 3rd condition");
+        // console.log("here at 3rd condition");
       }
     }catch(error){
-      console.log("error",error);
+      // console.log("error",error);
       setToastData({ type: "error", message: "Failed to edit event." });
     } finally{
       setShowEditModal(false);
@@ -176,11 +177,11 @@ export default function EventAdminDetailPage() {
       recipients = Object.values(companies).flat();
     }
 
-    console.log("Sending Event:", {
-      to: selectedOption,
-      recipients: recipients.map(r => r.name),
-      message: message
-    });
+    // console.log("Sending Event:", {
+    //   to: selectedOption,
+    //   recipients: recipients.map(r => r.name),
+    //   message: message
+    // });
 
     setMessage("");
     setSelectedOption("Everyone");
@@ -224,10 +225,10 @@ export default function EventAdminDetailPage() {
       const response = await axios
         .get(`${process.env.NEXT_PUBLIC_API_URL}/v1/users/${id}`);
 
-      console.log(response);
+      // console.log(response);
       if (response.data.status === "OK") {
         const selectUserName = response.data.user.username;
-        console.log("select event name:",selectUserName, "type", typeof(selectUserName));
+        // console.log("select event name:",selectUserName, "type", typeof(selectUserName));
         return selectUserName;
       } else {
         setToastData("Unexpected response:", response.data.message);
@@ -258,40 +259,63 @@ export default function EventAdminDetailPage() {
         return response.data.photo;
       }
     } catch (error) {
-      console.log(`Failed to fetch photo for event_id ${contentId}:`, error);
+      ; // console.log(`Failed to fetch photo for event_id ${contentId}:`, error);
+    }
+  };
+
+  const updateStats = async () => {
+    try {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/events-summary`);
+      if (response.data.status === "OK") {
+        const { active_events, past_events, total_events } = response.data.stats;
+        // console.log("stats: ", response.data.stats);
+        const counts = {
+          past : past_events || 0,
+          active : active_events || 0,
+          total : total_events || 0,
+        };
+        setEventCounts(counts);
+        return counts;
+      } else {
+        // console.error("Failed to fetch event statistics:", response.data);
+        setEventCounts({ past: 0, active: 0, total: 0 });
+        return { past: 0, active: 0, total: 0 };
+      }
+    } catch (error) {
+      // console.error("Failed to fetch event statistics:", error);
+      setEventCounts({ past: 0, active: 0, total: 0 });
+      return { past: 0, active: 0, total: 0 };
     }
   };
 
   const fetchEvent = async () =>{
     try {
-      console.log("id: ", id);
-      const [eventRes, contentRes,interestStatsRes,interestRes,eventsResponse,actResponse] = await Promise.all([
+      // console.log("id: ", id);
+      const [eventRes, contentRes,interestStatsRes,interestRes,eventsResponse,actResponse, stats] = await Promise.all([
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/${id}`),
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`),
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/${id}`),
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/content/${id}`),
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events`),
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/active-events`),
+        updateStats(),
         //TODO: fetch the photo
 
       ]);
       if(eventsResponse.data.status === "OK" && actResponse.data.status === "OK") {
-        console.log("events responses: ",eventsResponse);
-        console.log("acts responses: ",actResponse);
-        setEventCounts({active:actResponse.data.list.active_events_count,
-          past: eventsResponse.data.list.length- actResponse.data.list.active_events_count,
-          total:eventsResponse.data.list.length
-        });
+        // console.log("events responses: ",eventsResponse);
+        // console.log("acts responses: ",actResponse);
+
       }
-      console.log("eventResponse:",eventRes);
+      // console.log("eventResponse:",eventRes);
       if (eventRes.data.status === "OK" && contentRes.data.status === "OK" ) {
         const eventResponse = eventRes.data;
         const contentResponse = contentRes.data;
         const interests = interestRes.data.list;
         const interestStats = interestStatsRes.data.list;
 
-        console.log("interests:", interests);
-        console.log("intereststat", interestStats.interest_count);
+        // console.log("interests:", interests);
+        // console.log("intereststat", interestStats.interest_count);
 
         const interestedUsers = await Promise.all(
           interests.map(async (user) => ({
@@ -300,14 +324,14 @@ export default function EventAdminDetailPage() {
           }))
         );
 
-        console.log("event: ", eventResponse);
-        console.log("content: ", contentResponse);
-        console.log("event: ", eventResponse.event.event_id);
-        console.log("content: ", contentResponse.content.id);
+        // console.log("event: ", eventResponse);
+        // console.log("content: ", contentResponse);
+        // console.log("event: ", eventResponse.event.event_id);
+        // console.log("content: ", contentResponse.content.id);
 
         const photoUrl = await fetchEventPhoto(eventResponse.event.event_id);
 
-        console.log("photo url: ", photoUrl);
+        // console.log("photo url: ", photoUrl);
 
 
         const mergedEvent = {
@@ -319,14 +343,19 @@ export default function EventAdminDetailPage() {
           date: new Date(eventResponse.event.event_date).toDateString(),
           location: eventResponse.event.venue,
           attendees: interestedUsers, //
-          status: eventResponse.online ? "Online" : "Offline",
-          avatars: [],
+          status: eventResponse.event.status
         };
-        console.log("mergedEvent", mergedEvent);
+        // console.log("mergedEvent", mergedEvent);
         setEvent(mergedEvent);
+
+
+      }
+
+      if (stats) {
+        setEventCounts(stats);
       }
     } catch (error) {
-      console.error("Failed fetching event, content, or interests:", error);
+      // console.error("Failed fetching event, content, or interests:", error);
       setEvent(null);
     }
   };
@@ -355,8 +384,8 @@ export default function EventAdminDetailPage() {
         <div className="flex-1 flex flex-col">
           <HeaderEvent
             event={event}
-            onSave={handleSave}
-            onDelete={handleDelete}
+            // onSave={handleSave}
+            // onDelete={handleDelete}
             className="h-full"
           />
         </div>
@@ -399,8 +428,11 @@ export default function EventAdminDetailPage() {
       {showEditModal && (
         <EditEventModal
           event={event}
-          onClose={() => setShowEditModal(false)}
-          onSave={handleEdit}
+          onClose={() => {
+            setShowEditModal(false);}}
+          onSave={
+            handleEdit
+          }
         />
       )}
       {showDeleteModal && (

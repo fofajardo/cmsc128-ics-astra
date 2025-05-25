@@ -8,10 +8,45 @@ import BackButton from "@/components/events/IndividualEvent/BackButton";
 import ToastNotification from "@/components/ToastNotification";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
-import { DONATION_MODE_OF_PAYMENT, PROJECT_STATUS, REQUEST_STATUS } from "../../../../../common/scopes";
+import { DONATION_MODE_OF_PAYMENT, PROJECT_STATUS, REQUEST_STATUS, PhotoType} from "../../../../../common/scopes";
 import { useSignedInUser } from "@/components/UserContext";
 import { formatCurrency } from "@/utils/format";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
+import { X } from "lucide-react";
+
+async function uploadReceiptImage(userId, projectId, file) {
+  try {
+    if (!file) return null;
+
+    // Create form data for the receipt upload
+    const formData = new FormData();
+    formData.append("user_id", userId);
+    formData.append("content_id", projectId);
+    formData.append("type", PhotoType.PROOF_OF_PAYMENT);
+    formData.append("File", file);
+
+    // Upload the receipt image
+    const response = await axios.post(
+      `${process.env.NEXT_PUBLIC_API_URL}/v1/photos`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    if (response.data.status === "CREATED") {
+      return response.data.photo?.id || null;
+    } else {
+      // console.error("Failed to upload receipt:", response.data);
+      return null;
+    }
+  } catch (error) {
+    // console.error("Error uploading receipt:", error);
+    return null;
+  }
+}
 
 export default function DonatePage() {
   const { id } = useParams();
@@ -39,7 +74,6 @@ export default function DonatePage() {
         setLoading(true);
         const projectResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/requests/projects/${id}`);
         const projectData = projectResponse.data;
-        console.log(projectData);
         if (projectData.status === "OK") {
           const projectId = projectData.list.projectData.project_id;
           const donationLink = projectData.list.projectData.donation_link;
@@ -63,10 +97,10 @@ export default function DonatePage() {
           setPaymentMethod(donationLink ? "external" : "bank");
 
         } else {
-          console.error("Unexpected response: ", projectData);
+          ; // console.error("Unexpected response: ", projectData);
         }
       } catch (error) {
-        console.error("Failed to fetch project:", error);
+        ; // console.error("Failed to fetch project:", error);
       } finally {
         setLoading(false);
       }
@@ -77,28 +111,52 @@ export default function DonatePage() {
 
   const createDonation = async () => {
     try {
-      const generatedRefNum = "REF" + uuidv4();
+      setStatus("loading"); // Start loading state
 
+      const generatedRefNum = "REF" + uuidv4();
+      const userId = user?.state?.user?.id;
+
+      // Upload receipt image first (if available)
+      let receiptPhotoId = null;
+      if (receipt) {
+        receiptPhotoId = await uploadReceiptImage(userId, projectData.id, receipt);
+
+        if (!receiptPhotoId) {
+          setShowToast({ type: "fail", message: "Failed to upload receipt. Please try again." });
+          setStatus("idle");
+          return;
+        }
+      }
+
+      // Create donation record with reference to the uploaded receipt
       const data = {
-        user_id: user?.state?.user?.id,
+        user_id: userId,
         project_id: projectData.id,
         donation_date: new Date().toISOString(),
         reference_num: generatedRefNum,
-        mode_of_payment: DONATION_MODE_OF_PAYMENT.BANK_TRANSFER,
+        mode_of_payment: paymentMethod === "external" ?
+          DONATION_MODE_OF_PAYMENT.PHYSICAL_PAYMENT :
+          DONATION_MODE_OF_PAYMENT.BANK_TRANSFER,
         amount: amount,
         is_anonymous: isAnonymous,
-        comment: null,  // TODO: Add comment field
+        comment: null,
+        receipt_photo_id: receiptPhotoId, // Link to the uploaded receipt photo
       };
 
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations`, data);
       const donationData = response.data;
+
       if (donationData.status === "CREATED") {
-        console.log("Created donation:", donationData);
+        setStatus("success"); // Show success UI
       } else {
-        console.error("Unexpected response:", donationData);
+        // console.error("Unexpected response:", donationData);
+        setShowToast({ type: "fail", message: "Failed to process donation. Please try again." });
+        setStatus("idle"); // Return to idle state
       }
     } catch (error) {
-      console.log("Failed to create donation:", error);
+      // console.error("Failed to create donation:", error);
+      setShowToast({ type: "fail", message: "An error occurred. Please try again." });
+      setStatus("idle"); // Return to idle state
     }
   };
 
@@ -308,15 +366,74 @@ export default function DonatePage() {
                     </div>
                   )}
 
-                  {paymentMethod === "bank" || paymentMethod === "external" && (
-                    <div className="">
-                      <h3 className="text-sm font-medium mb-4">Upload your receipt</h3>
-                      <input
-                        type="file"
-                        accept="image/*,application/pdf"
-                        onChange={(e) => setReceipt(e.target.files[0])}
-                        className="pl-6 w-full text-sm text-astradarkgray file:py-2 file:px-4 file:rounded-md file:border file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100"
-                      />
+                  {(paymentMethod === "bank" || paymentMethod === "external") && (
+                    <div className="pl-6 mt-4">
+                      <h3 className="text-sm font-medium mb-2">Upload your receipt</h3>
+                      <div className="space-y-3">
+                        {receipt ? (
+                          <div className="relative">
+                            <div className="border border-astralightgray-300 rounded-md p-2 bg-blue-50">
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm truncate max-w-[200px]">
+                                  {receipt.name}
+                                </span>
+                                <button
+                                  onClick={() => setReceipt(null)}
+                                  className="text-red-600 hover:text-red-800"
+                                  type="button"
+                                >
+                                  <X size={16} />
+                                </button>
+                              </div>
+                              {receipt.type.startsWith("image/") && (
+                                <div className="mt-2">
+                                  <img
+                                    src={URL.createObjectURL(receipt)}
+                                    alt="Receipt preview"
+                                    className="max-h-32 mx-auto object-contain"
+                                    onLoad={() => URL.revokeObjectURL(receipt)}
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="border-2 border-dashed border-astralightgray-300 rounded-md p-4 text-center">
+                            <input
+                              type="file"
+                              id="receipt-upload"
+                              accept="image/*,application/pdf"
+                              onChange={(e) => setReceipt(e.target.files[0])}
+                              className="hidden"
+                            />
+                            <label
+                              htmlFor="receipt-upload"
+                              className="flex flex-col items-center cursor-pointer"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-8 w-8 text-astralightgray-400 mb-2"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                                />
+                              </svg>
+                              <span className="text-sm text-astralightgray-500">
+                                Click to upload receipt
+                              </span>
+                              <span className="text-xs text-astralightgray-400 mt-1">
+                                JPG or PNG up to 5MB
+                              </span>
+                            </label>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>

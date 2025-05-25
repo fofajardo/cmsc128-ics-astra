@@ -35,6 +35,7 @@ class BaseRoutes {
 
     this.workExperiences = {
       base: (append = "") => `${this.BASE_URL}/work-experiences${append}`,
+      withId: (id) => `${this.BASE_URL}/work-experiences/${id}`,
     };
 
     this.users = {
@@ -45,6 +46,8 @@ class BaseRoutes {
       getAlumniProfiles: (id) => `${this.BASE_URL}/users/${id}/profile`,
       getWorkExperiences: (id) => `${this.BASE_URL}/users/${id}/work-experiences`,
       getOrganizations: (id) => `${this.BASE_URL}/users/${id}/organizations`,
+      getAvatar: (id) => `${this.BASE_URL}/users/${id}/avatar`,
+      getOrganizationsWithOrgId: (id, orgId) => `${this.BASE_URL}/users/${id}/organizations/${orgId}`,
     };
 
     this.degreePrograms = {
@@ -114,6 +117,10 @@ class BaseRoutes {
 
     this.announcements = {
       base: (append = "") => `${this.BASE_URL}/announcements${append}`,
+    };
+
+    this.email = {
+      base: (append = "") => `${this.BASE_URL}/email${append}`
     };
   }
 }
@@ -192,6 +199,12 @@ class FrontEndRoutes extends BaseRoutes {
 
     this.events = {
       base: () => `${this.BASE_URL}/events`
+    };
+
+    this.profiles = {
+      base: (id) => `${this.BASE_URL}/profile/${id}`,
+      experience: (id) => `${this.BASE_URL}/profile/${id}/experience`,
+      affiliations: (id) => `${this.BASE_URL}/profile/${id}/affiliations`,
     };
 
     this.projects = {

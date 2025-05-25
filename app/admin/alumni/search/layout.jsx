@@ -3,7 +3,7 @@ import {NavMenuItemId} from "../../../../common/scopes.js";
 
 export default function RootLayout({children}) {
   return <>
-    <ActiveNavItemMarker id={NavMenuItemId.ALUMNI_DIRECTORY}/>
+    <ActiveNavItemMarker id={NavMenuItemId.ADMIN_ALUMNI_DIRECTORY}/>
     {children}
   </>;
 }

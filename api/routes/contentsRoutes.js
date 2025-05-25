@@ -5,6 +5,7 @@ const contentsRouter = () => {
   const router = express.Router();
 
   router.get("/", contentsController.getContents);
+  router.get("/announcements", contentsController.getAnnouncements);
   router.get("/:contentId", contentsController.getContentById);
   router.post("/", contentsController.createContent);
   router.put("/:contentId", contentsController.updateContent);

@@ -45,7 +45,7 @@ export default function AlumniSearchProfile({ params }) {
                 setProfileImage(value.data.photo);
               }
             }).catch((error) => {
-              console.log("No profile photo found:", error);
+              ; // console.log("No profile photo found:", error);
             });
             axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/degree-programs/alumni/${id}`).then((value) => {
               setDegreeRes(value);
@@ -57,22 +57,22 @@ export default function AlumniSearchProfile({ params }) {
                 setCourse(sortedPrograms[0].name);
               }
             }).catch((error) => {
-              console.log("No degree Year Found:", error);
+              ; // console.log("No degree Year Found:", error);
             });
           }).catch(() => {
-            console.log("No org affiliation");
+            // console.log("No org affiliation");
             setMissing(true);
           });
         }).catch(() => {
-          console.log("No work experience");
+          // console.log("No work experience");
           setMissing(true);
         });
       }).catch(() => {
-        console.log("No alumni profile");
+        // console.log("No alumni profile");
         setMissing(true);
       });
     }).catch(() => {
-      console.log("No user");
+      // console.log("No user");
       setMissing(true);
     });
   }, []);

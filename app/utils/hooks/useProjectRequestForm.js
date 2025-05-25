@@ -25,7 +25,7 @@ export const useProjectRequestForm = () => {
           setFormData(parsedData);
         }
       } catch (error) {
-        console.error("Error loading form data from localStorage:", error);
+        ; // console.error("Error loading form data from localStorage:", error);
       }
     }
   }, []);
@@ -38,7 +38,7 @@ export const useProjectRequestForm = () => {
         setFormData(updatedData);
         localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedData));
       } catch (error) {
-        console.error("Error saving form data to localStorage:", error);
+        ; // console.error("Error saving form data to localStorage:", error);
       }
     }
   };
@@ -57,7 +57,7 @@ export const useProjectRequestForm = () => {
         });
         localStorage.removeItem(STORAGE_KEY);
       } catch (error) {
-        console.error("Error clearing form data from localStorage:", error);
+        ; // console.error("Error clearing form data from localStorage:", error);
       }
     }
   };

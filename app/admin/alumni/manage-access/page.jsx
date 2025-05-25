@@ -97,30 +97,9 @@ export default function AlumniAccess() {
                 student_num: alum.student_num,
                 image:
                   "https://cdn-icons-png.flaticon.com/512/145/145974.png",
-                degreeProgram: alum.course
+                degreeProgram: alum.course,
+                email: alum.email
               };
-
-              // Fetch email from /v1/users/{user_id}
-              try {
-                const userId = alum.user_id || alum.alum_id;
-                if (userId) {
-                  const userResponse = await axios.get(
-                    `${process.env.NEXT_PUBLIC_API_URL}/v1/users/${userId}`
-                  );
-                  if (
-                    userResponse.data.status === "OK" &&
-                    userResponse.data.user &&
-                    userResponse.data.user.email
-                  ) {
-                    alumData.email = userResponse.data.user.email;
-                  }
-                }
-              } catch (userError) {
-                console.log(
-                  `Failed to fetch user/email for alum_id ${alum.alum_id}:`,
-                  userError
-                );
-              }
 
               try {
                 const photoResponse = await axios.get(
@@ -133,10 +112,10 @@ export default function AlumniAccess() {
                   alumData.image = photoResponse.data.photo;
                 }
               } catch (photoError) {
-                console.log(
-                  `Failed to fetch photo for alum_id ${alum.alum_id}:`,
-                  photoError
-                );
+                ; // console.log(
+                //   `Failed to fetch photo for alum_id ${alum.alum_id}:`,
+                //   photoError
+                // );
               }
 
               return alumData;
@@ -157,10 +136,10 @@ export default function AlumniAccess() {
 
           setAlumList(updatedAlumList);
         } else {
-          console.error("Unexpected response:", response.data);
+          ; // console.error("Unexpected response:", response.data);
         }
       } catch (error) {
-        console.error("Failed to fetch alumni:", error);
+        ; // console.error("Failed to fetch alumni:", error);
       }
       finally {
         setLoading(false);
@@ -168,16 +147,7 @@ export default function AlumniAccess() {
     };
 
     fetchAlumniProfiles();
-  }, [pagination.currPage, pagination.numToShow, currTab, searchQuery, stableFilters, refreshTrigger]);
-
-  useEffect(() => {
-    if (pagination.lastPage < pagination.currPage) {
-      setPagination((prev) => ({
-        ...prev,
-        currPage: prev.lastPage
-      }));
-    }
-  }, [pagination.lastPage]);
+  }, [searchQuery, stableFilters, pagination.numToShow, pagination.currPage, currTab, refreshTrigger]);
 
   return (
     <div>
@@ -308,7 +278,7 @@ function BottomButtons({ selectedCount, currTab, setToast, selectedIds, setRefre
         }
 
       } catch (err) {
-        console.error("Approval failed", err);
+        // console.error("Approval failed", err);
         setToast({
           type: "error",
           message: err?.response?.data?.message || "Failed to approve selected profiles."
@@ -338,7 +308,7 @@ function BottomButtons({ selectedCount, currTab, setToast, selectedIds, setRefre
         }
 
       } catch (err) {
-        console.error("Remove failed", err);
+        // console.error("Remove failed", err);
         setToast({
           type: "error",
           message: err?.response?.data?.message || "Failed to remove selected profiles' access."
@@ -368,7 +338,7 @@ function BottomButtons({ selectedCount, currTab, setToast, selectedIds, setRefre
         }
 
       } catch (err) {
-        console.error("Reactivate failed", err);
+        // console.error("Reactivate failed", err);
         setToast({
           type: "error",
           message: err?.response?.data?.message || "Failed to reactivate selected profiles."
@@ -561,7 +531,7 @@ function renderActions(id, name, currTab, setRefreshTrigger, setToast) {
   // Based muna sa currTab pero I think mas maganda kung sa mismong account/user kukunin yung active status
   const handleApprove = async () => {
     try {
-      console.log(`Approving ID: ${id}.`);
+      // console.log(`Approving ID: ${id}.`);
 
       const getResponse = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/${id}`
@@ -598,7 +568,7 @@ function renderActions(id, name, currTab, setRefreshTrigger, setToast) {
         setToast({ type: "error", message: `Failed to approve ${name}. ${postResponse.data.message}` });
       }
     } catch (error) {
-      console.error(`Failed to approve ${name}:`, error);
+      // console.error(`Failed to approve ${name}:`, error);
       setToast({ type: "error", message: `An error occurred while approving ${name}.` });
     }
   };
@@ -640,7 +610,7 @@ function renderActions(id, name, currTab, setRefreshTrigger, setToast) {
         setToast({ type: "error", message: `Failed to remove ${name}'s access. ${postResponse.data.message}` });
       }
     } catch (error) {
-      console.error(`Failed to remove ${name}'s access:`, error);
+      // console.error(`Failed to remove ${name}'s access:`, error);
       setToast({ type: "error", message: `An error occurred while removing ${name}'s access.` });
     }
   };
@@ -680,8 +650,57 @@ function renderActions(id, name, currTab, setRefreshTrigger, setToast) {
         setToast({ type: "error", message: `Failed to reactivate ${name}. ${postResponse.data.message}` });
       }
     } catch (error) {
-      console.error(`Failed to reactivate ${name}:`, error);
+      // console.error(`Failed to reactivate ${name}:`, error);
       setToast({ type: "error", message: `An error occurred while reactivating ${name}.` });
+    }
+  };
+
+  const handleDecline = async () => {
+    const reason = prompt(`Enter a message to send to ${name}:`);
+
+    if (!reason || reason.trim() === "") {
+      setToast({ type: "error", message: "Decline message cannot be empty." });
+      return;
+    }
+
+    try {
+      const userResponse = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/users/${id}`
+      );
+
+      const userEmail = userResponse.data?.user?.email;
+
+      if (!userEmail) {
+        setToast({ type: "error", message: `Email not found for ${name}.` });
+        return;
+      }
+
+      const alumniResponse = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/${id}`
+      );
+
+      // console.log(alumniResponse.data);
+
+      const userName = `${alumniResponse.data?.alumniProfile?.honorifics} ${alumniResponse.data?.alumniProfile?.last_name}`;
+
+      const emailResponse = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/email/send`,
+        {
+          to: userEmail,
+          subject: "Your Alumni Profile Request Has Been Declined",
+          body: reason,
+          name: userName || "recipient"
+        }
+      );
+
+      if (emailResponse.data.status === "SENT") {
+        setToast({ type: "success", message: `Decline email sent to ${name}.` });
+      } else {
+        setToast({ type: "error", message: `Failed to send email. ${emailResponse.data.message}` });
+      }
+    } catch (error) {
+      // console.error("Decline error:", error);
+      setToast({ type: "error", message: `Error declining ${name}.` });
     }
   };
 
@@ -727,6 +746,7 @@ function renderActions(id, name, currTab, setRefreshTrigger, setToast) {
               color="red"
               notifyMessage={`${name} has been declined!`}
               notifyType="fail"
+              onClick={handleDecline}
             />
           </div>
           <div className="block md:hidden">
@@ -735,6 +755,7 @@ function renderActions(id, name, currTab, setRefreshTrigger, setToast) {
               color="red"
               notifyMessage={`${name} has been declined!`}
               notifyType="fail"
+              onClick={handleDecline}
             />
           </div>
         </>

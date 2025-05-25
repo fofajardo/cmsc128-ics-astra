@@ -6,6 +6,7 @@ import {RoleName} from "../../common/scopes.js";
 import axios from "axios";
 import {clientRoutes} from "../../common/routes.js";
 import httpStatus from "http-status-codes";
+import {useParams} from "next/navigation.js";
 
 function buildUserContext() {
   const [initialized, setInitialized] = useState(false);
@@ -19,6 +20,7 @@ function buildUserContext() {
   const [degreeProofUrl, setDegreeProofUrl] = useState(null);
   const [workExperiences, setWorkExperiences] = useState(null);
   const [organizationAffiliations, setOrganizationAffiliations] = useState(null);
+  const [organizations, setOrganizations] = useState(null);
   const [avatarUrl, setAvatarUrl] = useState("https://cdn-icons-png.flaticon.com/512/145/145974.png");
 
   const [rules, setRules] = useState(null);
@@ -30,6 +32,7 @@ function buildUserContext() {
   const [isAlumnus, setIsAlumnus] = useState(false);
   const [isModerator, setIsModerator] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [roleFriendlyName, setRoleFriendlyName] = useState(null);
 
   const [activeNavItem, setActiveNavItem] = useState(null);
   const [activeNavSubmenus, setActiveNavSubmenus] = useState({});
@@ -54,6 +57,7 @@ function buildUserContext() {
       degreeProofUrl,
       workExperiences,
       organizationAffiliations,
+      organizations,
       avatarUrl,
       rules,
       ability,
@@ -62,6 +66,7 @@ function buildUserContext() {
       isAlumnus,
       isModerator,
       isAdmin,
+      roleFriendlyName,
       get isVerified() {
         return profile?.approved;
       },
@@ -80,6 +85,7 @@ function buildUserContext() {
       setDegreeProofUrl,
       setWorkExperiences,
       setOrganizationAffiliations,
+      setOrganizations,
       setAvatarUrl,
       setRules,
       setAbility,
@@ -88,34 +94,63 @@ function buildUserContext() {
       setIsAlumnus,
       setIsModerator,
       setIsAdmin,
-      patchUser: function(key, value) {
+      setRoleFriendlyName,
+      patchUser: function(updates) {
         const updatedUser = {
           ...user,
-          [key]: value,
+          ...updates
         };
         return setUser(updatedUser);
       },
-      patchProfile: function(key, value) {
+      patchProfile: function(updates) {
         const updatedProfile = {
           ...profile,
-          [key]: value,
+          ...updates
         };
         return setProfile(updatedProfile);
       },
-      patchDegreePrograms: function(index, value) {
-        const updatedDegreePrograms = degreePrograms;
-        updatedDegreePrograms[index] = value;
+      patchDegreePrograms: function(index, updates) {
+        const updatedDegreePrograms = [...degreePrograms];
+        updatedDegreePrograms[index] = {
+          ...updatedDegreePrograms[index],
+          ...updates
+        };
         return setDegreePrograms(updatedDegreePrograms);
       },
-      patchWorkExperiences: function(index, value) {
-        const updatedWorkExperiences = workExperiences;
-        updatedWorkExperiences[index] = value;
+      patchWorkExperiences: function(index, updates) {
+        const updatedWorkExperiences = [...workExperiences];
+        updatedWorkExperiences[index] = {
+          ...updatedWorkExperiences[index],
+          ...updates
+        };
         return setWorkExperiences(updatedWorkExperiences);
       },
-      patchOrganizationAffiliations: function(index, value) {
-        const updatedOrganizationAffiliations = organizationAffiliations;
-        updatedOrganizationAffiliations[index] = value;
+      pushWorkExperience: function(workExperience) {
+        const updatedWorkExperiences = [...workExperiences];
+        updatedWorkExperiences.push(workExperience);
+        console.log(updatedWorkExperiences);
+        return setWorkExperiences(updatedWorkExperiences);
+      },
+      patchOrganizationAffiliations: function(index, updates) {
+        const updatedOrganizationAffiliations = [...organizationAffiliations];
+        updatedOrganizationAffiliations[index] = {
+          ...updatedOrganizationAffiliations[index],
+          ...updates
+        };
         return setOrganizationAffiliations(updatedOrganizationAffiliations);
+      },
+      pushOrganizationAffiliation: function(organizationAffiliation) {
+        const updatedOrganizationAffiliations = [...organizationAffiliations];
+        updatedOrganizationAffiliations.push(organizationAffiliation);
+        return setOrganizationAffiliations(updatedOrganizationAffiliations);
+      },
+      pushOrganization: function(organization) {
+        const updatedOrganizations = [...organizations];
+        updatedOrganizations.push(organization);
+        return setOrganizations(updatedOrganizations);
+      },
+      resetAvatarUrl: function() {
+        return setAvatarUrl(user.avatar_url);
       },
       setActiveNavItem,
       setActiveNavSubmenus,
@@ -162,6 +197,7 @@ function updateRoleProperties(aUser, aContext) {
     aContext.actions.setIsAlumnus(false);
     aContext.actions.setIsModerator(false);
     aContext.actions.setIsAdmin(false);
+    aContext.actions.setRoleFriendlyName("Unlinked");
     break;
   case RoleName.ALUMNUS:
     aContext.actions.setIsGuest(false);
@@ -169,6 +205,7 @@ function updateRoleProperties(aUser, aContext) {
     aContext.actions.setIsAlumnus(true);
     aContext.actions.setIsModerator(false);
     aContext.actions.setIsAdmin(false);
+    aContext.actions.setRoleFriendlyName("Alumnus");
     break;
   case RoleName.MODERATOR:
     aContext.actions.setIsGuest(false);
@@ -176,6 +213,7 @@ function updateRoleProperties(aUser, aContext) {
     aContext.actions.setIsAlumnus(false);
     aContext.actions.setIsModerator(true);
     aContext.actions.setIsAdmin(false);
+    aContext.actions.setRoleFriendlyName("Moderator");
     break;
   case RoleName.ADMIN:
     aContext.actions.setIsGuest(false);
@@ -183,6 +221,7 @@ function updateRoleProperties(aUser, aContext) {
     aContext.actions.setIsAlumnus(false);
     aContext.actions.setIsModerator(false);
     aContext.actions.setIsAdmin(true);
+    aContext.actions.setRoleFriendlyName("Admin");
     break;
   default:
     aContext.actions.setIsGuest(true);
@@ -190,6 +229,7 @@ function updateRoleProperties(aUser, aContext) {
     aContext.actions.setIsAlumnus(false);
     aContext.actions.setIsModerator(false);
     aContext.actions.setIsAdmin(false);
+    aContext.actions.setRoleFriendlyName("Guest");
     break;
   }
 }
@@ -238,6 +278,7 @@ async function fetchData(aUser, aContext, aIsMinimal) {
       aContext.actions.setDegreeProofUrl(null);
       aContext.actions.setWorkExperiences(null);
       aContext.actions.setOrganizationAffiliations(null);
+      aContext.actions.setOrganizations(null);
     } else {
       try {
         const degreeProof = await axios.get(clientRoutes.photos.getDegreeProof(aUser.id));
@@ -257,6 +298,12 @@ async function fetchData(aUser, aContext, aIsMinimal) {
         aContext.actions.setOrganizationAffiliations(affiliations?.data?.affiliated_organizations);
       } catch (e) {
         // Ignore missing organization affiliations.
+      }
+      try {
+        const organizations = await axios.get(clientRoutes.organizations.base());
+        aContext.actions.setOrganizations(organizations?.data?.organization);
+      } catch (e) {
+        // Ignore missing organizations.
       }
     }
     updateRoleProperties(aUser, aContext);
@@ -285,15 +332,20 @@ function useRefetchUser(aContext, aUserId = null, aIsMinimal = true) {
   });
 }
 
-function UserFetcher({userId = null, isMinimal = true}) {
+function UserFetcher({userId = null, inferId = null, isMinimal = true}) {
   const context = useUser();
+
+  if (inferId !== null) {
+    const params = useParams();
+    userId = params[inferId];
+  }
 
   useEffect(function () {
     useRefetchUser(context, userId, isMinimal);
   }, []);
 }
 
-function SignedInUserFetcher({isMinimal = true}) {
+function SignedInUserFetcher() {
   const context = useSignedInUser();
 
   useEffect(function () {

@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Back from "@/components/jobs/view/back";
 import { formatDate } from "@/utils/format";
-import { DONATION_MODE_OF_PAYMENT, DONATION_MODE_OF_PAYMENT_LABELS } from "../../../../../common/scopes";
+import { DONATION_MODE_OF_PAYMENT, DONATION_MODE_OF_PAYMENT_LABELS, PhotoType } from "../../../../../common/scopes";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { Image } from "lucide-react";
 // import BigJobCardwDelete from "@/components/jobs/admin/bigJobCardwDelete";
@@ -19,14 +19,14 @@ export default function ViewDonationIdAdminPage() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [receiptPhoto, setReceiptPhoto] = useState(null);
 
   useEffect(() => {
     const fetchDonationDetails = async () => {
-      console.log("Fetching donation with id:", id);
       try {
         // Fetch donation data
         const donationResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/donations/${id}`);
-        console.log("Donation API Response:", donationResponse.data);
+        // console.log("Donation API Response:", donationResponse.data);
 
         if (donationResponse.data.status === "OK" && donationResponse.data.donation) {
           const donationData = donationResponse.data.donation;
@@ -34,23 +34,43 @@ export default function ViewDonationIdAdminPage() {
 
           // Fetch project data
           const projectResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/projects/${donationData.project_id}`);
-          console.log("Project API Response:", projectResponse.data);
+          // console.log("Project API Response:", projectResponse.data);
           if (projectResponse.data.status === "OK" && projectResponse.data.project) {
             setProject(projectResponse.data.project);
           }
 
           // Fetch user data
           const userResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/users/${donationData.user_id}`);
-          console.log("User API Response:", userResponse.data);
+          // console.log("User API Response:", userResponse.data);
           if (userResponse.data.status === "OK" && userResponse.data.user) {
             setUser(userResponse.data.user);
+          }
+
+          // Use our new API endpoint to fetch the donation receipt
+          const receiptResponse = await axios.get(
+            `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/donation-receipt`,
+            {
+              params: {
+                user_id: donationData.user_id,
+                project_id: donationData.project_id
+              }
+            }
+          );
+
+          // console.log("Receipt Response:", receiptResponse.data);
+
+          if (receiptResponse.data.status === "OK" && receiptResponse.data.url) {
+            setReceiptPhoto({
+              ...receiptResponse.data.photo,
+              url: receiptResponse.data.url
+            });
           }
         } else {
           setError("Donation not found.");
         }
       } catch (error) {
-        console.error("Error fetching data:", error.message, error.response?.status, error.response?.data);
-        setError(error.response?.status === 404 ? "Donation not found." : "Failed to fetch data.");
+        // console.error("Error fetching data:", error);
+        setError("Failed to fetch data.");
       } finally {
         setLoading(false);
       }
@@ -58,9 +78,6 @@ export default function ViewDonationIdAdminPage() {
 
     if (id) {
       fetchDonationDetails();
-    } else {
-      setError("Invalid donation ID.");
-      setLoading(false);
     }
   }, [id]);
 
@@ -86,9 +103,28 @@ export default function ViewDonationIdAdminPage() {
           <h1 className="text-2xl font-semibold mb-4">{project?.title || "Loading project title..."}</h1>
 
           {/* Donation Photo Placeholder */}
-          <div className="mb-6 bg-gray-100 rounded-xl p-8 flex flex-col items-center justify-center min-h-[300px]">
-            <Image className="w-16 h-16 text-gray-400 mb-4" />
-            <p className="text-gray-500 text-center">Donation proof photo will be displayed here</p>
+          {/* Donation Photo */}
+          <div className="mb-6 bg-gray-100 rounded-xl p-4 flex flex-col items-center justify-center min-h-[300px]">
+            {receiptPhoto?.url ? (
+              <div className="w-full h-full">
+                <img
+                  src={receiptPhoto.url}
+                  alt="Donation Receipt"
+                  className="w-full h-full object-contain max-h-[500px]"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "/placeholder-image.jpg";
+                    // console.error("Error loading image:", receiptPhoto.url);
+                  }}
+                />
+                <p className="text-sm text-gray-500 mt-2 text-center">Receipt uploaded by donor</p>
+              </div>
+            ) : (
+              <>
+                <Image className="w-16 h-16 text-gray-400 mb-4" />
+                <p className="text-gray-500 text-center">No receipt image available for this donation</p>
+              </>
+            )}
           </div>
 
           {/* Donation Details */}

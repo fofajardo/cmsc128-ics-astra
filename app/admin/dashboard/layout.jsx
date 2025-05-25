@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function RootLayout({children}) {
   return <>
-    <ActiveNavItemMarker id={NavMenuItemId.HOME}/>
+    <ActiveNavItemMarker id={NavMenuItemId.ADMIN_HOME}/>
     {children}
   </>;
 }

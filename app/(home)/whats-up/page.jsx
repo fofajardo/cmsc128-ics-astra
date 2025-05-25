@@ -13,11 +13,12 @@ import axios from "axios";
 import LoadingOverlay from "@/components/LoadingOverlay";
 
 export default function WhatsUpPage() {
-  const router = useRouter(); // Initialize router
-
   const [loading, setLoading] = useState(true);
   const [newsList, setNewsList] = useState([]);
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [selectedYear, setSelectedYear] = useState(null);
+  const [contentPhotos, setContentPhotos] = useState({});
 
   useEffect(() => {
     // Add staggered animation to news items
@@ -25,53 +26,111 @@ export default function WhatsUpPage() {
     items.forEach((item, index) => {
       item.style.animationDelay = `${index * 0.2}s`;
     });
-  }, []);
+  }, [newsList]);
 
   useEffect(() => {
-    async function fetchNews() {
-      setLoading(true);
+    fetchAnnouncements();
+  }, [currentPage, selectedYear]);
 
-      try {
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/v1/announcements`,
-          {
-            params: {
+  // Helper function to get default image
+  const getDefaultImage = () => {
+    return "/events/default-event.jpg";
+  };
 
+  // Function to fetch photos for content
+  const fetchContentPhotos = async (contentIds) => {
+    try {
+      const photoMap = {};
+      const photoPromises = [];
+      // For each content ID, fetch the photo directly
+      contentIds.forEach((contentId) => {
+        const photoPromise = axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/by-content-id/${contentId}`
+        )
+          .then(response => {
+            if (response.data.status === "OK" && response.data.photos) {
+              photoMap[contentId] = response.data.photos;
             }
+          })
+          .catch(error => {
+            ; // console.error(`Failed to fetch photo for content_id ${contentId}:`, error);
+          });
+
+        photoPromises.push(photoPromise);
+      });
+
+      // Wait for all photo fetch operations to complete
+      await Promise.all(photoPromises);
+
+      return photoMap;
+    } catch (error) {
+      // console.error("Error fetching photos:", error);
+      return {};
+    }
+  };
+
+  const fetchAnnouncements = async () => {
+    setLoading(true);
+
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/contents?tag=announcement`,
+        {
+          params: {
+            page: currentPage,
+            limit: 10,
+            year: selectedYear || undefined
           }
-        );
-        if (response.data.status === "OK") {
-          console.log("Fetched news:", response.data);
-          const updatedNewsList = await Promise.all(
-            response.data.list.map(async (news) => {
-              const newsData = {
-                id: news.post_id,
-                category: news.category,
-                files: news.files,
-                title: news.content_data.title,
-                details: news.content_data.details,
-                // Placeholder for image URL
-                imageUrl: news.content_data.image_url || "https://cdn.builder.io/api/v1/image/assets/7687333fb4bb4909a4eab75308bcf09b/950fa1cdac6430480b31ef36a44036380a994f87?placeholderIfAbsent=true"
-              };
-              // TODO: FETCH IMAGE PROPERLY
-
-              return newsData;
-            })
-
-          );
-          setNewsList(updatedNewsList);
-          console.log("Updated news list:", updatedNewsList);
         }
+      );
 
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching news:", error);
+      if (response.data.status === "OK") {
+
+        const announcementList = response.data.list || [];
+
+        // Extract content IDs for photo fetching
+        const contentIds = announcementList.map(item => item.id);
+
+        // Fetch photos for all announcements
+        const photos = await fetchContentPhotos(contentIds);
+        setContentPhotos(photos);
+
+        const updatedNewsList = announcementList.map((news) => {
+          const photo = photos[news.id];
+          const photoUrl = photo && photo[0]?.url ? photo[0].url : getDefaultImage();
+
+          // Save photo URL to localStorage
+          if (typeof window !== "undefined" && photo && photo[0]?.url) {
+            localStorage.setItem(`article_photo_${news.id}`, photo[0].url);
+          }
+
+          return {
+            id: news.id,
+            title: news.title,
+            details: news.details,
+            imageUrl: photoUrl,
+            date: news.created_at
+          };
+        });
+
+        setNewsList(updatedNewsList);
+        setTotalPages(response.data.pagination?.total_pages || 1);
       }
-    };
+    } catch (error) {
+      ; // console.error("Error fetching announcements:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchNews();
-  }, []);
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
+  const handleYearFilter = (year) => {
+    setSelectedYear(year);
+    setCurrentPage(1); // Reset to first page when changing filters
+  };
 
   return (
     <main className={animations.fadeSlideUp}>
@@ -97,9 +156,15 @@ export default function WhatsUpPage() {
             </div>
           </div>
 
-          {/* <PaginationControls />
+          {totalPages > 1 && (
+            <PaginationControls
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          )}
 
-          <h2 className="self-start mt-24 text-3xl font-bold text-slate-900 max-md:mt-8 max-md:max-w-full max-md:text-2xl">
+          {/* <h2 className="self-start mt-24 text-3xl font-bold text-slate-900 max-md:mt-8 max-md:max-w-full max-md:text-2xl">
             Newsletter Archives
           </h2>
 
@@ -109,7 +174,7 @@ export default function WhatsUpPage() {
             our community over the years.
           </p>
 
-          <YearFilter />
+          <YearFilter onYearChange={handleYearFilter} selectedYear={selectedYear} />
           <NewsletterArchive /> */}
         </section>
       </div>
@@ -162,7 +227,6 @@ function renderNewsItems(newsItems, loading) {
       ) : null}
     </div>
   );
-
 }
 
 function newsItemBuilder(item) {
@@ -182,15 +246,13 @@ function newsItemBuilder(item) {
         <h3 className="text-2xl font-bold text-slate-900 max-md:text-xl">
           {item.title}
         </h3>
-        <p className="mt-3 text-base text-slate-500">{item.description}</p>
+        <p className="mt-3 text-base text-slate-500 line-clamp-3">{item.details}</p>
         <div className="mt-4">
-          <button
-            // TODO: UNDEFINED ROUTER
-            // onClick={() => router.push(`/whats-up/article/${item.id}`)} // Navigate to article page
-            className="py-2 text-sm font-medium text-blue-600 hover:text-blue-800"
-          >
-            Read more →
-          </button>
+          <Link href={`/whats-up/article/${item.id}`}>
+            <span className="py-2 text-sm font-medium text-blue-600 hover:text-blue-800 cursor-pointer">
+              Read more →
+            </span>
+          </Link>
         </div>
       </div>
     </div>

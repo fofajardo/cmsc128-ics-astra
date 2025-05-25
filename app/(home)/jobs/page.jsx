@@ -57,7 +57,7 @@ export default function JobsPage() {
                   hasUserContent,
                 };
               } catch (err) {
-                console.error(`Error fetching content for job ${job.job_id}`, err);
+                // console.error(`Error fetching content for job ${job.job_id}`, err);
                 return { ...job, hasUserContent: false };
               }
             })
@@ -65,10 +65,10 @@ export default function JobsPage() {
           setMyJobs(jobsWithContentFlag);
         }
       } else {
-        console.error("Unexpected response from server.");
+        ; // console.error("Unexpected response from server.");
       }
     } catch (error) {
-      console.error("Failed to fetch jobs. Please try again later.");
+      ; // console.error("Failed to fetch jobs. Please try again later.");
     }
   };
 

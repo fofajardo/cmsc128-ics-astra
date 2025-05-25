@@ -9,6 +9,8 @@ import { Building } from "lucide-react";
 import axios from "axios";
 import {NavMenuItemId} from "../../../common/scopes.js";
 import {ActiveNavItemMarker} from "@/components/Header.jsx"; // Make sure axios is installed
+import { Skeleton } from "@/components/ui/skeleton.jsx";
+import Image from "next/image";
 
 export default function AdminAlumniLayout({ children }) {
   const router = useRouter();
@@ -16,93 +18,167 @@ export default function AdminAlumniLayout({ children }) {
 
   // State to store the statistics
   const [stats, setStats] = useState({
-    total_organizations: 0,
-    universities: 0,
-    outside: 0,
+    total_organizations: null,
+    universities: null,
+    outside: null,
   });
 
   const [info, setInfo] = useState({
     title: "Organizations",
     search: "Search for an organization",
   });
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const fetchStatistics = async () => {
+    try {
+      // console.log(`${process.env.NEXT_PUBLIC_API_URL}/v1/organizations/statistics`);
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/organizations/stats`);
+
+      if (response.data.status === "OK") {
+        // Update state with the statistics data
+        const { total_organizations, universities, outside } = response.data.statistics;
+        setStats({
+          total_organizations,
+          universities,
+          outside,
+        });
+      } else {
+        ; // console.error("Failed to fetch statistics");
+      }
+    } catch (error) {
+      ; // console.error("Error fetching statistics:", error);
+    }
+  };
 
   useEffect(() => {
     // Fetch statistics from the API
-    const fetchStatistics = async () => {
-      try {
-        console.log(`${process.env.NEXT_PUBLIC_API_URL}/v1/organizations/statistics`);
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/organizations/stats`);
-
-        if (response.data.status === "OK") {
-          // Update state with the statistics data
-          const { total_organizations, universities, outside } = response.data.statistics;
-          setStats({
-            total_organizations,
-            universities,
-            outside,
-          });
-        } else {
-          console.error("Failed to fetch statistics");
-        }
-      } catch (error) {
-        console.error("Error fetching statistics:", error);
-      }
-    };
 
     fetchStatistics();
-  }, []); // Empty dependency array means this runs only once when the component mounts
+  }, [refreshTrigger]); // Empty dependency array means this runs only once when the component mounts
 
   const statData = stats;
 
   return (
     <>
       {/* Header with background */}
-      <ActiveNavItemMarker id={NavMenuItemId.ORGANIZATIONS}/>
-      <div className="relative">
-        <img
+      <ActiveNavItemMarker id={NavMenuItemId.ADMIN_ORGANIZATIONS}/>
+      {/* Header Section with Background */}
+      <div className="relative w-full h-auto overflow-hidden">
+        {/* Background Image */}
+        <Image
           src="/blue-bg.png"
           alt="Background"
-          className="h-80 w-full object-cEVENTSover"
+          fill
+          className="object-cover object-center z-0"
+          priority
         />
-        <div className="absolute inset-2 flex flex-col items-center justify-evenly text-astrawhite z-20">
-          <div className="text-center pt-6">
-            <h1 className="font-h1">Organizations</h1>
-            <p className="font-s">Empowering connections, camaraderie, and inspiring growth.</p>
-          </div>
-          <div className="pt-6 pb-4 overflow-y-scroll w-full scrollbar-hide">
-            <div className="flex flex-row gap-3 min-w-max px-4 justify-center">
+
+        {/* Overlay Content */}
+        <div className="relative z-10 px-6 pt-10 md:pt-16 pb-10 text-white">
+          <div className="max-w-7xl mx-auto flex flex-col gap-10">
+            {/* Top Section: Text and Illustration */}
+            <div className="flex flex-col md:flex-row items-center justify-between">
+              {/* Text Section */}
+              <div className="w-full md:w-1/2 text-center md:text-left">
+                <h1 className="text-5xl font-extrabold leading-tight">Organizations</h1>
+                <p className="mt-6 text-lg text-blue-100 max-w-md">
+                  Empowering connections, camaraderie, and inspiring growth.
+                </p>
+              </div>
+
+              {/* Animated SVG Illustration */}
+              <div className="w-full md:w-1/2 flex justify-center mt-8 md:mt-0">
+                <div className="transition-transform duration-300 ease-in-out hover:scale-105">
+                  <Image
+                    src="/vectors/organizations-vector.svg"
+                    alt="Organization Vector"
+                    width={500}
+                    height={300}
+                    className="w-full max-w-md h-auto animate-float hover:animate-hover-wiggle"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Stat Cards */}
+            <div className="flex flex-col md:flex-row justify-center items-center gap-6">
               <AdminStatCard
                 delay={0.0}
                 title="Total Orgs"
-                value={statData.total_organizations}
-                icon={<School className="size-13 text-astrawhite/" strokeWidth={2} />}
+                value={statData.total_organizations ?? <Skeleton className="h-7 w-12 my-2" />}
+                icon={<School className="size-13 text-white" strokeWidth={2} />}
                 route={false}
                 onClick={() => {}}
+                className="bg-blue-800/80 backdrop-blur-md border border-white/10 rounded-xl"
               />
               <AdminStatCard
                 delay={0.1}
                 title="University Orgs"
-                value={statData.universities}
-                icon={<School2 className="size-13 text-astrawhite/" strokeWidth={2} />}
+                value={statData.universities ?? <Skeleton className="h-7 w-12 my-2" />}
+                icon={<School2 className="size-13 text-white" strokeWidth={2} />}
                 route={false}
                 onClick={() => {}}
+                className="bg-blue-800/80 backdrop-blur-md border border-white/10 rounded-xl"
               />
               <AdminStatCard
                 delay={0.2}
                 title="Outside Orgs"
-                value={statData.outside}
-                icon={<Building className="size-13 text-astrawhite/" strokeWidth={2} />}
+                value={statData.outside ?? <Skeleton className="h-7 w-12 my-2" />}
+                icon={<Building className="size-13 text-white" strokeWidth={2} />}
                 route={false}
                 onClick={() => {}}
+                className="bg-blue-800/80 backdrop-blur-md border border-white/10 rounded-xl"
               />
             </div>
           </div>
         </div>
       </div>
+
       {/* pass the value of currTab and info to the children */}
-      <TabContext.Provider value={{ info, setInfo }}>
+      <TabContext.Provider value={{ info, setRefreshTrigger }}>
         {children}
       </TabContext.Provider>
+
+      {/* Custom Animation Styles */}
+      <style jsx global>{`
+        @keyframes float {
+          0% {
+            transform: translateY(0px);
+          }
+          50% {
+            transform: translateY(-10px);
+          }
+          100% {
+            transform: translateY(0px);
+          }
+        }
+
+        @keyframes hoverWiggle {
+          0% {
+            transform: rotate(0deg);
+          }
+          25% {
+            transform: rotate(2deg);
+          }
+          50% {
+            transform: rotate(-2deg);
+          }
+          75% {
+            transform: rotate(1deg);
+          }
+          100% {
+            transform: rotate(0deg);
+          }
+        }
+
+        .animate-float {
+          animation: float 3s ease-in-out infinite;
+        }
+
+        .hover\\:animate-hover-wiggle:hover {
+          animation: hoverWiggle 0.6s ease-in-out;
+        }
+      `}</style>
     </>
   );
 }

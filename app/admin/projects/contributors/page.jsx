@@ -50,11 +50,8 @@ export default function Contributors() {
         setLoading(true);
         const contributorResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/project-contributors`);
         const contributorData = contributorResponse.data;
-        console.log(contributorData);
         if (contributorData.status === "OK") {
-
           const uniqueProjectContributors = combineContributorsByNameAndProject(contributorData.list);
-
           setContributors(
             uniqueProjectContributors.map(
               (contributor, index) => ({
@@ -67,12 +64,11 @@ export default function Contributors() {
               })
             )
           );
-
         } else {
-          console.error("Unexpected response:", contributorData);
+          ; // console.error("Unexpected response:", contributorData);
         }
       } catch (error) {
-        console.error("Failed to fetch contributors:", error);
+        ; // console.error("Failed to fetch contributors:", error);
       } finally {
         setLoading(false);
       }

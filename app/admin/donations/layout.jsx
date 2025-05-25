@@ -8,6 +8,8 @@ import { Gift } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TabContext } from "@/components/TabContext";
 import Link from "next/link";
+import {ActiveNavItemMarker} from "@/components/Header.jsx";
+import {NavMenuItemId} from "../../../common/scopes.js";
 
 export default function AdminDonationsLayout({ children }) {
   const router = useRouter();
@@ -61,6 +63,7 @@ export default function AdminDonationsLayout({ children }) {
 
   return (
     <>
+      <ActiveNavItemMarker id={NavMenuItemId.ADMIN_DONATIONS}/>
       {/* Header with background */}
       <div className="relative">
         <img

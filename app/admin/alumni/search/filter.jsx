@@ -24,7 +24,7 @@ export default function SearchFilter({ onClose, initialFilters, updateFilters })
 
         setAllFields(combined);
       } catch (err) {
-        console.error("Failed to fetch fields:", err);
+        ; // console.error("Failed to fetch fields:", err);
       }
     };
 
@@ -71,23 +71,22 @@ export default function SearchFilter({ onClose, initialFilters, updateFilters })
       skills: [],
       sortCategory: "",
       sortOrder: "asc",
-    }); // Update parent state
+    });
     setFieldSearch("");
     setShowDropdown(false);
     setFilteredFields(defaultFieldOptions);
-    onClose(); // Close modal
+    onClose();
   };
 
   const handleApply = () => {
-    updateFilters(filters); // Update parent state with current filters
-    onClose(); // Close modal
+    updateFilters(filters);
+    onClose();
   };
 
   const closeModal = () => {
     setFilters(initialFilters);
     onClose();
   };
-
 
   useEffect(() => {
     const handleClickOutside = (e) => {

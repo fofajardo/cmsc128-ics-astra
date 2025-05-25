@@ -11,6 +11,7 @@ import { jobTypeMap } from "@/components/jobs/mappings";
 import axios from "axios";
 import { TabContext } from "../../components/TabContext";
 import ConfirmationPrompt from "@/components/jobs/edit/confirmation";
+import { formatDate } from "@/utils/format";
 
 export default function Jobs() {
   const [showPrompt, setPrompt] = useState(false);
@@ -26,41 +27,48 @@ export default function Jobs() {
   const [searchQuery, setSearchQuery] = useState("");
   const itemsPerPage = 5;
 
-  const toggleFilter = () => {
-    console.log("Toggling filter modal:", !showFilter);
-    setShowFilter((prev) => !prev);
+  const initialFilters = {
+    companyName: "",
+    location: "",
+    jobType: "",
+    fromDate: "",
+    toDate: "",
+    status: "",
+    sortCategory: "",
+    sortOrder: "asc",
   };
 
-  const [pagination, setPagination] = useState({
+  const initialPagination = {
     display: [1, itemsPerPage],
     currPage: 1,
     lastPage: 1,
     numToShow: itemsPerPage,
     total: 0,
     itemsPerPage
-  });
+  };
+
+  const [filter, setFilter] = useState(initialFilters);
+
+  const toggleFilter = () => {
+    // console.log("Toggling filter modal:", !showFilter);
+    setShowFilter((prev) => !prev);
+  };
+
+  const [pagination, setPagination] = useState(initialPagination);
 
   const fetchJobs = async () => {
     try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs`);
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs${currTab === "Reported" ? "/reported" : ""}`);
       if (response.data.status === "OK") {
         setJobs(response.data.list || []);
         computeCounts(response.data.list || []);
       } else {
-        console.error("Unexpected response from server.");
+        ; // console.error("Unexpected response from server.");
       }
     } catch (error) {
-      console.error("Failed to fetch jobs. Please try again later.");
+      ; // console.error("Failed to fetch jobs. Please try again later.");
     }
   };
-
-  useEffect(() => {
-    fetchJobs();
-  }, []);
-
-  useEffect(() => {
-    setFilteredJobs(jobs);
-  }, [jobs]);
 
   useEffect(() => {
     const total = filteredJobs.length;
@@ -75,6 +83,19 @@ export default function Jobs() {
       itemsPerPage
     });
   }, [filteredJobs, searchQuery]);
+
+  useEffect(() => {
+    setFilter(initialFilters);
+
+    setSearchQuery("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    fetchJobs();
+  }, [currTab]);
+
+  useEffect(() => {
+    setFilteredJobs(jobs);
+  }, [jobs]);
 
   useEffect(() => {
     const start = (pagination.currPage - 1) * pagination.itemsPerPage;
@@ -109,13 +130,32 @@ export default function Jobs() {
     setJobCounts({ active:active, expired: expired, total: total_count });
   };
 
+  const sort = (filtered, sortBy, asc) => {
+    asc = asc === "asc" ? true : false;
+    switch (sortBy) {
+    case "company":
+      return filtered.sort((a, b) => a.company_name.toLowerCase().localeCompare(b.company_name.toLowerCase())
+          * (asc ? 1 : -1));
+    case "location":
+      return filtered.sort((a, b) => a.location.toLowerCase().localeCompare(b.location.toLowerCase())
+          * (asc ? 1 : -1));
+    case "date":
+      return filtered.sort((a, b) => (new Date(a.created_at) - new Date(b.created_at)) * (asc ? 1 : -1));
+    default:
+      return filtered;
+    }
+  };
+
   const handleApply = (filters = {}) => {
+    setFilter(filters);
     const {
       companyName = "",
       location = "",
       jobType = "",
       fromDate = "",
       toDate = "",
+      sortCategory = "",
+      sortOrder = ""
     } = filters;
 
     const lowerCompany = companyName.toLowerCase();
@@ -144,27 +184,27 @@ export default function Jobs() {
       );
     });
 
-    setFilteredJobs(filtered);
+    setFilteredJobs(sort(filtered, sortCategory, sortOrder));
   };
 
   const handleDelete = async () => {
     if (!jobToDelete?.id) {
-      console.error("No job selected for deletion.");
+      // console.error("No job selected for deletion.");
       return;
     }
 
     try {
       const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/v1/jobs/${jobToDelete.id}`);
       if (response.data.status === "DELETED") {
-        console.log("Successfully deleted");
+        // console.log("Successfully deleted");
         fetchJobs();
         setPrompt(false);
         setJobToDelete(null);
       } else {
-        console.error("Failed to delete job.");
+        ; // console.error("Failed to delete job.");
       }
     } catch (error) {
-      console.error("Error deleting job:", error);
+      ; // console.error("Error deleting job:", error);
     }
   };
 
@@ -177,7 +217,7 @@ export default function Jobs() {
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
         >
           <div onClick={e => e.stopPropagation()}>
-            <SearchFilter onClose={toggleFilter} onApply={handleApply}/>
+            <SearchFilter onClose={toggleFilter} onApply={handleApply} filter={filter}/>
           </div>
         </div>
       )}
@@ -229,7 +269,7 @@ function createRows(selectedIds, setSelectedIds, currTab, filteredJobs, setPromp
     "Company": renderText(job.company_name),
     "Location": renderText(job.location),
     "Type": renderType(job.employment_type),
-    "Posted": renderText(job.created_at),
+    "Posted": renderText(formatDate(job.created_at, "short-month")),
     "Status": renderStatus(job.expires_at),
     "Quick Actions": renderActions(job.job_id, job.job_title, currTab, setPrompt, setJobtoDelete),
   }));
@@ -276,8 +316,8 @@ function renderStatus(expiresAt) {
   const isExpired = isNaN(expiryDate) || expiryDate < today;
 
   const text = isExpired ? "Expired" : "Active";
-  const color = isExpired ? "text-red-600" : "text-green-600";
-  return <div className={`text-center ${text === "Expired" ? "text-astrared" : "text-astragreen"} font-s`}>{text}</div>;
+  const color = isExpired ? "text-astrared" : "text-astragreen";
+  return <div className={`text-center ${color} font-s`}>{text}</div>;
 }
 
 function renderActions(id, name, currTab, setPrompt, setJobToDelete) {

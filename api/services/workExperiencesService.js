@@ -69,7 +69,9 @@ const fetchWorkExperiencesByAlumId = async (supabase, userId) => {
   return await supabase
     .from("work_experiences")
     .select("*")
-    .eq("user_id", userId);
+    .eq("user_id", userId)
+    .order("is_current", { ascending: false })
+    .order("year_started", { ascending: false });
 };
 
 const fetchDistinctFields = async (supabase) => {

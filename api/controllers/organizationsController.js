@@ -4,8 +4,20 @@ import organizationsService from "../services/organizationsService.js";
 const getOrganizations = async (req, res) => {
   try {
 
-    const {page, limit} = req.query;
-    const {data, error} = await organizationsService.fetchOrganizations(req.supabase, page, limit);
+    const {
+      page = 1,
+      limit = 5,
+      search = "",
+      filters = {}
+    } = req.query;
+
+    const {data, total, error} = await organizationsService.fetchOrganizations(
+      req.supabase,
+      page,
+      limit,
+      search,
+      filters
+    );
 
     if (error) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -14,11 +26,10 @@ const getOrganizations = async (req, res) => {
       });
     }
 
-    // console.log(data);
-
     return res.status(httpStatus.OK).json({
       status: "OK",
-      organization: data,
+      organization: data || [],
+      total: total
     });
 
   } catch (error) {
@@ -32,7 +43,6 @@ const getOrganizations = async (req, res) => {
 const getOrganizationById = async (req, res) => {
   try {
     const { orgId } = req.params;
-    //console.log(orgId);
 
     const { data, error } = await organizationsService.fetchOrganizationById(req.supabase, orgId);
 
@@ -42,8 +52,6 @@ const getOrganizationById = async (req, res) => {
         message: "Organization not found"
       });
     }
-
-    // console.log(data);
 
     return res.status(httpStatus.OK).json({
       status: "OK",
