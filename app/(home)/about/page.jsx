@@ -162,11 +162,6 @@ export default function AboutPage() {
         avatar: "/Placeholder.png?height=100&width=100",
       },
       {
-        name: "Bryan Kyle Delfino",
-        role: "Frontend Developer",
-        avatar: "/Placeholder.png?height=100&width=100",
-      },
-      {
         name: "Jon Alem San Gregorio",
         role: "Frontend Developer",
         avatar: "/Placeholder.png?height=100&width=100",
@@ -237,12 +232,7 @@ export default function AboutPage() {
         name: "Jake Laurence Neverida",
         role: "Backend Developer",
         avatar: "/Placeholder.png?height=100&width=100",
-      },
-      {
-        name: "Lorenzo Rafael Uichanco",
-        role: "Backend Developer",
-        avatar: "/Placeholder.png?height=100&width=100",
-      },
+      }
     ],
     "database-members": [
       {

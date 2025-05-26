@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faChevronDown, faSort, faFilter } from "@fortawesome/free-solid-svg-icons";
 import { Icon } from "@iconify/react";
 import FilterDropdown from "@/components/events/GroupedEvents/FilterDropdown";
+import { ParticlesBackground } from "@/components/ParticlesBackground";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -363,12 +364,13 @@ export default function Page() {
           className="relative w-full bg-cover bg-center"
           style={{ backgroundImage: "url('/blue-bg.png')" }}
         >
+          <ParticlesBackground count={40} />
           <div className="max-w-[1440px] mx-auto px-6 py-10 md:px-12 md:py-16 lg:px-12 lg:py-20 flex flex-col lg:flex-row items-center justify-between text-astrawhite gap-6 lg:gap-10">
             <div className="max-w-[600px] space-y-4 text-center lg:text-left animate-slide-up">
-              <h1 className="font-h1 text-astrawhite leading-[1.1] text-3xl md:text-4xl lg:text-5xl">
+              <h1 className="text-[60px] font-extrabold leading-[1.1]">
                 Alumni Directory
               </h1>
-              <p className="font-l text-astrawhite text-sm md:text-base">
+              <p className="font-l text-astrawhite text-lg font-medium">
                 Discover, connect, and engage with alumni to expand your network!
               </p>
             </div>
@@ -404,56 +406,49 @@ export default function Page() {
                   Search
                 </button>
               </div>
-
-              <div className="flex flex-wrap gap-4 mt-4 justify-start items-end">
-                {/* Graduation Year Inputs */}
-                <div className="flex flex-col items-start gap-2">
+              <div className="flex flex-col sm:flex-row flex-wrap gap-4 mt-6 items-start sm:items-end">
+                {/* Graduation Year Inputs - Now more compact */}
+                <div className="flex flex-col items-start gap-2 w-full sm:w-auto">
                   <p className="font-medium text-sm text-astradarkgray">Graduation Year</p>
-                  <div className="flex items-center gap-2">
-                    <label htmlFor="minGradYear" className="sr-only">Min Graduation Year</label>
+                  <div className="flex items-center gap-2 w-full sm:w-auto">
+                    <label htmlFor="minGradYear" className="sr-only">Min Grad Year</label>
                     <input
                       type="text"
                       id="minGradYear"
                       name="minGradYear"
                       placeholder="Min Year"
-                      className="border border-astraprimary p-2 pl-4 h-10 rounded-lg text-sm"
+                      className="border-2 border-astraprimary bg-astrawhite p-1.5 pl-3 h-10 rounded-md text-sm w-24 sm:w-28"
                       value={filters.minGradYear}
                       onChange={handleFilterChange}
                       onBlur={handleApplyFilters}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          handleApplyFilters();
-                        }
-                      }}
+                      onKeyDown={(e) => e.key === "Enter" && handleApplyFilters()}
                     />
-                    <p className="font-normal text-sm leading-6 text-astradarkgray">to</p>
-                    <label htmlFor="maxGradYear" className="sr-only">Max Graduation Year</label>
+                    <p className="font-normal text-sm text-astradarkgray">to</p>
+                    <label htmlFor="maxGradYear" className="sr-only">Max Grad Year</label>
                     <input
                       type="text"
                       id="maxGradYear"
                       name="maxGradYear"
                       placeholder="Max Year"
-                      className="border border-astraprimary p-2 pl-4 h-10 rounded-lg text-sm"
+                      className="border-2 border-astraprimary bg-astrawhite p-1.5 pl-3 h-10 rounded-md text-sm w-24 sm:w-28"
                       value={filters.maxGradYear}
                       onChange={handleFilterChange}
                       onBlur={handleApplyFilters}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          handleApplyFilters();
-                        }
-                      }}
+                      onKeyDown={(e) => e.key === "Enter" && handleApplyFilters()}
                     />
                   </div>
                 </div>
 
-                {/* Sort Dropdown */}
-                <FilterDropdown
-                  icon="material-symbols:sort"
-                  options={sortOptions}
-                  placeholder="Sort by"
-                  value={sortBy ? sortOptions.find(opt => opt.id === sortBy) : null}
-                  onChange={handleSortChange}
-                />
+                {/* Sort Dropdown - Now aligns properly */}
+                <div className="w-full sm:w-auto">
+                  <FilterDropdown
+                    icon="material-symbols:sort"
+                    options={sortOptions}
+                    placeholder="Sort by"
+                    value={sortBy ? sortOptions.find(opt => opt.id === sortBy) : null}
+                    onChange={handleSortChange}
+                  />
+                </div>
               </div>
             </div>
 
