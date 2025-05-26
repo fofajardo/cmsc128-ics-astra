@@ -322,6 +322,32 @@ const EventStatus = Object.freeze({
   },
 });
 
+// FIXME: This is a temporary solution.
+// We need to get the degree programs from the backend.
+// For now, we are hardcoding the degree programs.
+export const kICSDegreePrograms = [
+  {
+    name: "BS Computer Science",
+    level: "Bachelor of Science",
+    institution: "University of the Philippines Los Baños",
+  },
+  {
+    name: "MS Computer Science",
+    level: "Master of Science",
+    institution: "University of the Philippines Los Baños",
+  },
+  {
+    name: "Master of Information Technology",
+    level: "Master of Science",
+    institution: "University of the Philippines Los Baños",
+  },
+  {
+    name: "PhD Computer Science",
+    level: "Doctor of Philosophy",
+    institution: "University of the Philippines Los Baños",
+  },
+];
+
 export {
   RoleName,
   Subjects,
