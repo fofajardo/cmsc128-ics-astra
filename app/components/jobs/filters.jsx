@@ -1,98 +1,236 @@
 "use client";
 
 import Select from "react-select";
-import { ListFilter } from "lucide-react";
+import { ListFilter, X } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { jobTypeOptions, statusOptions, locationTypeOptions } from "@/components/jobs/mappings";
 
 export default function Filter({ onApply }) {
-  const [formData, setFormData] = useState({job_type: "", status: "", location: "", location_type: "", min_salary: "", max_salary: "", recent: true});
-  const [select, setSelect] = useState({job_type: null, status: null, location_type: null});
+  const [formData, setFormData] = useState({job_type: "", status: "", location: "", location_type: "", min_salary: "", max_salary: "", recent: true });
+
   const isMounted = useRef(false);
 
   const handleChange = (e) => {
-    e.preventDefault();
-    const {name, value} = e.target;
-    // console.log({name, value});
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
-    // put filtering logic here
+  const handleSelectChange = (selected, { name }) => {
+    setFormData((prev) => ({
+      ...prev,
+      [name]: selected ? selected.value : "",
+    }));
+  };
+
+  const clearFilter = (name) => {
+    setFormData((prev) => ({
+      ...prev,
+      [name]: "",
+    }));
   };
 
   useEffect(() => {
-    isMounted.current ? onApply(formData) : isMounted.current = true;
+    if (isMounted.current) {
+      onApply(formData);
+    } else {
+      isMounted.current = true;
+    }
   }, [formData]);
 
-  const handleSelectChange = (selected, { name }) => {
-    selected.value === "" ? setSelect({...select, [name]: null})
-      : setSelect({...select, [name]: selected});
-    setFormData({...formData, [name]: selected.value});
-    // console.log(formData)
+  const isFilled = (fieldName) =>
+    formData[fieldName] !== "" &&
+    formData[fieldName] !== null &&
+    formData[fieldName] !== undefined;
 
-    // put filtering logic here as well
-    // onApply(formData)
-  };
-
-  const queryFilter = (e) => {
-    e.preventDefault();
-    // fetch new results based on filter here
-  };
-
-  const selectStyles = {
-    control: () =>
-      "!cursor-pointer m-0 p-0 text-[var(--color-astrablack)] outline-none bg-[var(--color-astrawhite)] border border-[var(--color-astraprimary)] font-normal pl-4 w-[130px] h-[45px] rounded-lg",
-    valueContainer: () => "m-0 p-0",
-    placeholder: () => "text-[var(--color-astrablack)]",
-    dropdownIndicator: () => "px-2 py-0 text-[var(--color-astraprimary)]",
-    indicatorSeparator: () => "hidden",
-    menu: () => "mt-2 p-2 bg-[var(--color-astrawhite)] border border-[var(--color-astraprimary)] rounded-lg",
-    option: ({ isSelected, isFocused }) =>
-      `cursor-pointer px-3 py-2 text-sm text-[var(--color-astrablack)] rounded-sm ${
-        isSelected || isFocused
-          ? "bg-[var(--color-astratintedwhite)]"
-          : "bg-[var(--color-astrawhite)]"
-      }`,
-  };
+  const getSelectStyles = (fieldName) => ({
+    control: (styles, state) => ({
+      ...styles,
+      minHeight: 45,
+      backgroundColor: isFilled(fieldName)
+        ? "var(--color-astraprimary)"
+        : "var(--color-astrawhite)",
+      borderColor: isFilled(fieldName)
+        ? "var(--color-astrawhite)"
+        : state.isFocused
+          ? "var(--color-astradark)"
+          : "var(--color-astraprimary)",
+      borderRadius: 10,
+      cursor: "pointer",
+      borderWidth: 2,
+      boxShadow: state.isFocused
+        ? "0 0 0 1px var(--color-astradark)"
+        : "0 4px 6px rgba(0, 0, 0, 0.1)",
+      transition: "all 0.2s",
+      ":hover": {
+        borderColor: isFilled(fieldName)
+          ? "var(--color-astrawhite)"
+          : "var(--color-astradark)",
+        boxShadow: "0 10px 15px rgba(0, 0, 0, 0.2)",
+      },
+    }),
+    valueContainer: (styles) => ({
+      ...styles,
+      padding: "0 12px",
+    }),
+    placeholder: (styles) => ({
+      ...styles,
+      color: isFilled(fieldName)
+        ? "var(--color-astrawhite)"
+        : "var(--color-astradark)",
+      fontSize: 14,
+    }),
+    singleValue: (styles) => ({
+      ...styles,
+      color: isFilled(fieldName)
+        ? "var(--color-astrawhite)"
+        : "var(--color-astradark)",
+      fontSize: 14,
+    }),
+    dropdownIndicator: (styles) => ({
+      ...styles,
+      padding: 0,
+      color: isFilled(fieldName)
+        ? "var(--color-astrawhite)"
+        : "var(--color-astraprimary)",
+    }),
+    indicatorSeparator: () => ({ display: "none" }),
+    menu: (styles) => ({
+      ...styles,
+      marginTop: 4,
+      padding: "4px 0",
+      backgroundColor: "var(--color-astrawhite)",
+      border: "2px solid var(--color-astragray)",
+      borderRadius: 10,
+      boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+      zIndex: 50,
+    }),
+    option: (styles, state) => ({
+      ...styles,
+      padding: "8px 16px",
+      fontSize: 14,
+      cursor: "pointer",
+      backgroundColor: state.isSelected
+        ? "var(--color-astraprimary)"
+        : state.isFocused
+          ? "var(--color-astragray)"
+          : "transparent",
+      color: state.isSelected
+        ? "var(--color-astrawhite)"
+        : "var(--color-astradark)",
+      ":active": {
+        backgroundColor: "var(--color-astraprimary)",
+      },
+    }),
+  });
 
   return (
-    <form onChange={queryFilter} className="w-19/20 pb-8 flex flex-wrap items-end justify-center gap-4">
-
+    <form className="w-full pb-8 flex flex-wrap items-center justify-center gap-4">
       {/* Job Type */}
-      <Select unstyled options={jobTypeOptions} placeholder="Job Type" onChange={handleSelectChange} value={select.job_type} name={"job_type"} instanceId="jobType"
-        classNames={{...selectStyles , control: (state) => `!cursor-pointer m-0 p-0 text-[var(--color-astrablack)] outline-none bg-[var(--color-astrawhite)] border border-[var(--color-astraprimary)] font-normal pl-4 w-[130px] h-[45px] rounded-lg hover:-translate-y-1 hover:shadow-[0_2px_4px_rgba(0,0,0,0.25)] ${state.isFocused ? "-translate-y-1 shadow-[0_2px_6px_rgba(0,0,0,0.25)]" : "-translate-y-0"} transition-all duration-200 ease-out`}}/>
+      <div className="w-[180px] relative">
+        <Select
+          options={jobTypeOptions}
+          placeholder="Job Type"
+          onChange={handleSelectChange}
+          value={
+            (() => {
+              const found = jobTypeOptions.find(opt => opt.value === formData.job_type);
+              return found && found.value === "All" ? null : found;
+            })()
+          }
+          name="job_type"
+          instanceId="jobType"
+          styles={getSelectStyles("job_type")}
+          isClearable={true}
+        />
+      </div>
 
       {/* Status */}
-      <Select unstyled options={statusOptions} placeholder="Status" onChange={handleSelectChange} value={select.status} name={"status"} instanceId="status"
-        classNames={{...selectStyles, control: (state) => `!cursor-pointer m-0 p-0 text-[var(--color-astrablack)] outline-none bg-[var(--color-astrawhite)] border border-[var(--color-astraprimary)] font-normal pl-4 w-[111px] h-[45px] rounded-lg hover:-translate-y-1 hover:shadow-[0_2px_4px_rgba(0,0,0,0.25)] ${state.isFocused ? "-translate-y-1 shadow-[0_2px_6px_rgba(0,0,0,0.25)]" : "-translate-y-0"}`}}/>
+      <div className="w-[180px] relative">
+        <Select
+          options={statusOptions}
+          placeholder="Status"
+          onChange={handleSelectChange}
+          value={
+            (() => {
+              const found = statusOptions.find(opt => opt.value === formData.status);
+              return found && found.value === "All" ? null : found;
+            })()
+          }
+          name="status"
+          instanceId="status"
+          styles={getSelectStyles("status")}
+          isClearable={true}
+        />
+      </div>
 
       {/* Location */}
-      <div className="grid grid-cols-1 -translate-y-0 hover:-translate-y-1 focus:-translate-y-1 " tabIndex={0}>
-        <label className="ml-2 text-sm">Location</label>
-        <input type="text" onChange={handleChange} value={formData.location} name={"location"} className="text-astrablack bg-astrawhite outline outline-transparent border-1 border-astraprimary font-normal px-4 h-[45px] w-40 rounded-lg placeholder:text-astradarkgray hover:shadow-[0_2px_4px_rgba(0,0,0,0.25)] focus:shadow-[0_2px_6px_rgba(0,0,0,0.25)]" placeholder="City/Country"></input>
+      <div className="w-[180px]">
+        <input
+          type="text"
+          onChange={handleChange}
+          value={formData.location}
+          name="location"
+          className="w-full h-[45px] px-4 bg-astrawhite border-2 shadow-md hover:shadow-lg cursor-pointer border-astraprimary rounded-[10px] hover:border-astradark focus:border-astradark transition-all duration-200 placeholder:text-astradark text-sm"
+          placeholder="Location"
+        />
       </div>
 
       {/* Location Type */}
-      <Select unstyled options={locationTypeOptions} placeholder=" Type" onChange={handleSelectChange} value={select.location_type} name={"location_type"} instanceId="locationType"
-        classNames={{...selectStyles, control: (state) => `!cursor-pointer m-0 p-0 text-[var(--color-astrablack)] outline-none bg-[var(--color-astrawhite)] border border-[var(--color-astraprimary)] font-normal pl-4 w-[155px] h-[45px] rounded-lg hover:-translate-y-1 hover:shadow-[0_2px_4px_rgba(0,0,0,0.25)] ${state.isFocused ? "-translate-y-1 shadow-[0_2px_6px_rgba(0,0,0,0.25)]" : "-translate-y-0"}`}}/>
+      <div className="w-[180px] relative">
+        <Select
+          options={locationTypeOptions}
+          placeholder="Location Type"
+          onChange={handleSelectChange}
+          value={
+            locationTypeOptions.find(
+              (opt) => opt.value === formData.location_type
+            ) || null
+          }
+          name="location_type"
+          instanceId="locationType"
+          styles={getSelectStyles("location_type")}
+          isClearable={true}
+        />
+      </div>
 
       {/* Salary Range */}
-      <div className="grid grid-cols-1 -translate-y-0 hover:-translate-y-1 focus:-translate-y-1 " tabIndex={0}>
-        <label className="ml-2 text-sm">Salary Range (₱)</label>
-        <div className="flex gap-1 items-center">
-          <input type="number" onChange={handleChange} value={formData.min_salary} name={"min_salary"} className="[&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-astrablack bg-astrawhite outline outline-transparent border-1 border-astraprimary font-normal px-4 h-[45px] w-32 rounded-lg placeholder:text-astradarkgray hover:shadow-[0_2px_4px_rgba(0,0,0,0.25)] focus:shadow-[0_2px_6px_rgba(0,0,0,0.25)]" placeholder="Minimum"></input>
-          <hr className="w-2 h-[2px] bg-astraprimary text-transparent"></hr>
-          <input type="number" onChange={handleChange} value={formData.max_salary} name={"max_salary"} className="[&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-astrablack bg-astrawhite outline outline-transparent border-1 border-astraprimary font-normal px-4 h-[45px] w-32 rounded-lg placeholder:text-astradarkgray hover:shadow-[0_2px_4px_rgba(0,0,0,0.25)] focus:shadow-[0_2px_6px_rgba(0,0,0,0.25)]" placeholder="Maximum"></input>
-        </div>
+      <div className="flex gap-2 items-center">
+        <input
+          type="number"
+          name="min_salary"
+          value={formData.min_salary}
+          onChange={handleChange}
+          className="w-[180px] h-[45px] px-3 bg-astrawhite border-2 shadow-md hover:shadow-lg cursor-pointer border-astraprimary rounded-[10px] hover:border-astradark focus:border-astradark transition-all duration-200 placeholder:text-astradark text-sm"
+          placeholder="Salary Min ₱"
+        />
+        <input
+          type="number"
+          name="max_salary"
+          value={formData.max_salary}
+          onChange={handleChange}
+          className="w-[180px] h-[45px] px-3 bg-astrawhite border-2 shadow-md hover:shadow-lg cursor-pointer border-astraprimary rounded-[10px] hover:border-astradark focus:border-astradark transition-all duration-200 placeholder:text-astradark text-sm"
+          placeholder="Salary Max ₱"
+        />
       </div>
 
       {/* Most Recent */}
-      <button onClick={(e) => {e.preventDefault(); setFormData({...formData, recent: !formData.recent});}} value={formData.recent} name={"recent"} className={`${formData.recent ? "bg-[var(--color-astraprimary)] text-[var(--color-astrawhite)]" : "text-[var(--color-astrablack)] bg-[var(--color-astrawhite)]"} !cursor-pointer flex items-center justify-between outline outline-transparent border-1 border-astraprimary font-normal px-4 h-[45px] w-40 rounded-lg placeholder:text-astradarkgray -translate-y-0 hover:-translate-y-1 hover:shadow-[0_2px_4px_rgba(0,0,0,0.25)] hover:scale-none`} tabIndex={0}>
-        <p>Most Recent</p>
-        <ListFilter className={`${formData.recent ? "text-[var(--color-astrawhite)]" : "text-[var(--color-astraprimary)]"}`} size={29}/>
+      <button
+        type="button"
+        onClick={() =>
+          setFormData((prev) => ({ ...prev, recent: !prev.recent }))
+        }
+        className={`h-[45px] w-[160px] flex items-center justify-between px-4 rounded-[10px] border-2 shadow-md hover:shadow-lg cursor-pointer transition-all duration-200 ${
+          formData.recent
+            ? "bg-astraprimary text-white border-astraprimary"
+            : "bg-astrawhite text-astradark border-astraprimary"
+        }`}
+      >
+        <span className="text-sm">Most Recent</span>
+        <ListFilter
+          className={formData.recent ? "text-white" : "text-astraprimary"}
+          size={20}
+        />
       </button>
-
     </form>
-  );}
+  );
+}

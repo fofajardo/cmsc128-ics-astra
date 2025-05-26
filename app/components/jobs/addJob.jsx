@@ -153,7 +153,7 @@ export default function JobForm({isEdit, close, refreshJobs}){
 
           <div className=''>
             <div className='flex flex-row gap-2 items-center justify-between'>
-              <label className='text-black font-medium text-lg'>Title</label>
+              <label className='text-black font-medium text-lg'>Title <span className="text-[var(--color-astrared)]">*</span></label>
               {errors.job_title ?
                 <p className="text-sm text-astrared self-end">Required</p> : <></>
               }
@@ -163,7 +163,7 @@ export default function JobForm({isEdit, close, refreshJobs}){
 
           <div className='col-span-1 md:col-span-1'>
             <div className='flex flex-row gap-2 justify-between'>
-              <label className='text-black font-medium text-lg'>Company</label>
+              <label className='text-black font-medium text-lg'>Company <span className="text-[var(--color-astrared)]">*</span></label>
               {errors.company_name ?
                 <p className="text-sm text-astrared self-end">Required</p> : <></>
               }
@@ -173,7 +173,7 @@ export default function JobForm({isEdit, close, refreshJobs}){
 
           <div className=''>
             <div className='flex flex-row gap-2 items-center justify-between'>
-              <label className='text-black font-medium text-lg'>Location</label>
+              <label className='text-black font-medium text-lg'>Location <span className="text-[var(--color-astrared)]">*</span></label>
               {errors.location ?
                 <p className="text-sm text-astrared self-end">Required</p> : <></>
               }
@@ -183,7 +183,7 @@ export default function JobForm({isEdit, close, refreshJobs}){
 
           <div>
             <div className='flex flex-row gap-2 items-center justify-between'>
-              <label className='text-black font-medium text-lg'>Location Type</label>
+              <label className='text-black font-medium text-lg'>Location Type <span className="text-[var(--color-astrared)]">*</span></label>
               {errors.location_type ?
                 <p className="text-sm text-astrared self-end">Required</p> : <></>
               }
@@ -193,7 +193,7 @@ export default function JobForm({isEdit, close, refreshJobs}){
 
           <div className=''>
             <div className='flex flex-row gap-2 items-center justify-between'>
-              <label className='text-black font-medium text-lg'>Job Salary (₱)</label>
+              <label className='text-black font-medium text-lg'>Job Salary (₱) <span className="text-[var(--color-astrared)]">*</span></label>
               {errors.salary ?
                 <p className="text-sm text-astrared self-end">Required</p> : <></>
               }
@@ -203,7 +203,7 @@ export default function JobForm({isEdit, close, refreshJobs}){
 
           <div>
             <div className='flex flex-row gap-2 items-center justify-between'>
-              <label className='text-black font-medium text-lg'>Employment Type</label>
+              <label className='text-black font-medium text-lg'>Employment Type <span className="text-[var(--color-astrared)]">*</span></label>
               {errors.job_type ?
                 <p className="text-sm text-astrared self-end">Required</p> : <></>
               }
@@ -213,23 +213,22 @@ export default function JobForm({isEdit, close, refreshJobs}){
           </div>
 
           <div>
-            <label className="block font-medium mb-1">Deadline of Applications</label>
-            <div className="flex items-center border rounded px-3 py-2 w-full gap-2">
-              <Calendar className="text-astraprimary w-5 h-5" />
-              <DatePicker
-                selected={selectedDate}
-                onChange={handleDateChange}
-                dateFormat="yyyy-MM-dd"
-                placeholderText="Select date"
-                className="w-full outline-none cursor-pointer"
-                required={!isEdit}
-              />
+            <div className="flex flex-row gap-2 items-center justify-between">
+              <label className="text-black font-medium text-lg">Deadline of Applications <span className="text-[var(--color-astrared)]">*</span></label>
             </div>
+            <input
+              type="date"
+              placeholder="YYYY/MM/DD"
+              onChange={handleChange}
+              name="expires_at"
+              className="focus:border-astraprimary !cursor-pointer placeholder:text-astradarkgray outline-none border-1 border-[#C4C4C4] rounded-sm w-full mt-1.5 px-3 py-1 text-sm"
+              style={{ colorScheme: "light", accentColor: "#0E6CF3" }}
+            />
           </div>
 
           <div>
             <div className='flex flex-row gap-2 items-center justify-between'>
-              <label className='text-black font-medium text-lg'>Job Status</label>
+              <label className='text-black font-medium text-lg'>Job Status <span className="text-[var(--color-astrared)]">*</span></label>
               {errors.status ?
                 <p className="text-sm text-astrared self-end">Required</p> : <></>
               }
@@ -240,7 +239,7 @@ export default function JobForm({isEdit, close, refreshJobs}){
 
           <div className=''>
             <div className='flex flex-row gap-2 items-center justify-between'>
-              <label className='text-black font-medium text-lg'>Application Link</label>
+              <label className='text-black font-medium text-lg'>Application Link <span className="text-[var(--color-astrared)]">*</span></label>
               {errors.apply_link ?
                 <p className="text-sm text-astrared self-end">Required</p> : <></>
               }
@@ -251,7 +250,7 @@ export default function JobForm({isEdit, close, refreshJobs}){
 
           <div className=''>
             <div className='flex flex-row gap-2 items-center justify-between'>
-              <label className='text-black font-medium text-lg'>Contact Person</label>
+              <label className='text-black font-medium text-lg'>Contact Person <span className="text-[var(--color-astrared)]">*</span></label>
               {errors.hiring_manager ?
                 <p className="text-sm text-astrared self-end">Required</p> : <></>
               }
@@ -303,16 +302,6 @@ export default function JobForm({isEdit, close, refreshJobs}){
           </div>
         </div>
       )}
-      {showErrorModal && (
-        <div className="fixed inset-0 bg-astrablack/60 flex items-center justify-center z-100">
-          <div className="bg-astrawhite max-w-[600px] w-19/20 min-h-[100px] h-auto rounded-2xl p-7 pb-5">
-            <h2 className="text-xl font-semibold mb-4">Error Posting Job</h2>
-            <p className="mb-6 text-gray-700">Please check job fields</p>
-            <button onClick={() => setShowErrorModal(false)} className="px-4 py-2 bg-astraprimary text-white rounded hover:bg-opacity-90">
-              Confirm
-            </button>
-          </div>
-        </div>
-      )}
+      {showErrorModal}
     </div>
   );}

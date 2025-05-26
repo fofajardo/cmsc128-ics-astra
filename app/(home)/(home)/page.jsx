@@ -48,10 +48,10 @@ const ChevronDown = ({ className }) => (
 const sectionBase = "relative h-[95vh] flex items-center overflow-hidden isolate z-10";
 const absoluteInset = "absolute inset-0";
 const textWhiteCenter = "text-astrawhite text-center";
-const buttonBase = "border-1 border-astradirtywhite text-astrawhite bg-transparent hover:bg-astrawhite/5 hover:text-astrawhite rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-[200px] h-[60px]";
+const buttonBase = "border border-astradirtywhite text-astrawhite bg-transparent hover:bg-astrawhite/5 hover:text-astrawhite rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-[160px] h-[50px] sm:w-[180px] sm:h-[55px] md:w-[200px] md:h-[60px]";
 const loopContainer = "loop-container w-full overflow-hidden whitespace-nowrap py-0";
 const loopTrackBase = "inline-block";
-const imageLoopBase = "inline-block mr-3 w-80 h-46 relative";
+const imageLoopBase = "inline-block mr-3 w-80 h-56 relative";
 
 export default function Page() {
   const [init, setInit] = useState(false);
@@ -85,15 +85,15 @@ export default function Page() {
           className={`relative z-20 px-6 md:px-8 max-w-4xl ${textWhiteCenter} overflow-hidden`}
         >
           <motion.h1
-            className="font-h1 mb-2 md:mb-4 leading-tight"
+            className="font-h1 text-white text-4xl sm:text-5xl md:text-6xl font-bold mb-6 md:mb-8 leading-[1.1]"
             initial={{ opacity: 0, scale: 0.7 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1.2 }}
           >
-            WELCOME TO ICS-Astra!
+            WELCOME TO ICS-ASTRA!
           </motion.h1>
           <motion.p
-            className="font-l text-astrawhite/80 mb-6 md:mb-8"
+            className="text-astrawhite/80 mb-6 md:mb-8 sm:text-sm md:text-xl"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.4 }}
@@ -106,8 +106,9 @@ export default function Page() {
         </div>
       </section>
 
-      <section className={`${sectionBase} gap-10`}>
-        <div className="relative z-20 flex-shrink-0 mr-8 md:mr-16 mt-10 md:mt-16 hidden md:block">
+      <section className={`${sectionBase} gap-10 flex flex-col md:flex-row items-center justify-center flex-wrap`}>
+        {/* Image */}
+        <div className="relative z-20 flex-shrink-0 w-full md:w-auto hidden md:block pb-10">
           <motion.div
             initial={{ opacity: 0, x: 100, scale: 0.8, rotate: -30 }}
             whileInView={{ opacity: 1, x: 0, scale: 1, rotate: 0 }}
@@ -121,27 +122,27 @@ export default function Page() {
             viewport={{ once: true }}
           >
             <Image
-              src="/landing_page.gif"
-              alt="Institute of Computer Science Logo"
-              width={600}
-              height={400}
-              className="relative z-10 transform transition-all duration-500 hover:scale-105 object-cover"
+              src="/homepage-vector1.gif"
+              alt="Vector 1"
+              width={500}
+              height={500}
+              className="relative z-10 transform transition-all duration-500 hover:scale-105 object-cover justify-center"
             />
           </motion.div>
         </div>
 
+        {/* Text Section */}
         <motion.div
           whileInView={{ opacity: 1, y: 0 }}
           initial={{ opacity: 0, y: 50 }}
           transition={{ duration: 3, ease: "easeOut" }}
           viewport={{ once: true }}
-          className="relative z-20 px-6 md:px-8 max-w-4xl text-astrawhite mb-10 md:mb-16 md:text-left text-center"
+          className="relative z-20 px-6 md:px-8 max-w-full md:max-w-4xl text-astrawhite mb-10 md:mb-16 text-center md:text-left"
         >
-          <h1 className="font-h2 mb-4 md:mb-6 leading-tight items-center text-xl md:text-3xl lg:text-4xl">
-            Here at ICS-Astra, we keep the spirit of innovation alive by connecting
+          <h1 className="font-h2 leading-tight items-center text-xl md:text-3xl lg:text-4xl">
+            Here at ICS-ASTRA, we keep the spirit of innovation alive by connecting
             alumni, fostering collaboration, and celebrating achievements beyond
             graduation.
-            <br />
           </h1>
 
           <div className="flex justify-center md:justify-start">
@@ -162,7 +163,7 @@ export default function Page() {
           className={`relative z-20 px-6 md:px-8 max-w-4xl ${textWhiteCenter} overflow-hidden`}
         >
           <motion.h1
-            className="font-h1 mb-6 md:mb-8 leading-tight inline-block"
+            className="font-h1 leading-[1.1] inline-block"
             variants={textRevealVariants}
             initial="initial"
             animate="animate"
@@ -178,7 +179,7 @@ export default function Page() {
           </p>
         </motion.div>
 
-        <div className="flex flex-col w-full items-center p-6">
+        <div className="flex flex-col w-full items-center">
           <motion.section
             whileInView={{ opacity: 1, y: 0 }}
             initial={{ opacity: 0, y: 50 }}
@@ -245,13 +246,13 @@ export default function Page() {
           className="relative z-20 px-6 md:px-8 max-w-full md:max-w-4xl text-astrawhite mb-10 md:mb-16 text-center md:text-left"
         >
           <h1 className="font-h2 mb-4 md:mb-6 leading-tight text-xl md:text-3xl lg:text-4xl">
-            Stay connected with the latest updates from Astra-ICS. From important news
+            Stay connected with the latest updates from ICS-ASTRA. From important news
             to exciting announcements, find out what’s happening, what’s new, and
             what’s coming next — all right here.
           </h1>
-          <Link href="/about" passHref>
+          <Link href="/news" passHref>
             <button className={buttonBase}>
-              See Latest Updates
+              Latest Updates
             </button>
           </Link>
         </motion.div>
@@ -270,8 +271,8 @@ export default function Page() {
             viewport={{ once: true }}
           >
             <Image
-              src="/landing_page_2.gif"
-              alt="Institute of Computer Science Logo"
+              src="/homepage-vector2.gif"
+              alt="Vector 2"
               width={1200}
               height={900}
               className="relative z-10 transition-all duration-500 hover:scale-105 object-contain w-full h-auto"

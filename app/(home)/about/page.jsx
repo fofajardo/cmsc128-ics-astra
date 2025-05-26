@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Rocket, Users, Code, Database, Star } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { StarParticlesBackground } from "@/components/StarParticlesBackground";
 
 export default function AboutPage() {
   const timelineItems = [
@@ -311,7 +312,9 @@ export default function AboutPage() {
             transform: "scale(1.2)", // Smoother parallax
             backgroundAttachment: "fixed",
           }}
-        ></div>
+        >
+          <StarParticlesBackground count={40} />
+        </div>
         <div className="absolute inset-0 bg-black/20"></div>
 
         <motion.div
@@ -320,10 +323,10 @@ export default function AboutPage() {
           transition={{ duration: 0.8 }}
           className="relative z-20 text-center px-6 md:px-8 max-w-4xl"
         >
-          <h1 className="text-white text-4xl sm:text-5xl md:text-6xl font-bold mb-6 md:mb-8 leading-tight">
+          <h1 className="text-white text-4xl sm:text-5xl md:text-6xl font-bold mb-6 md:mb-8 leading-[1.1]">
             Building the Future:
             <br />
-            <span className="text-[var(--color-astraprimary)]">
+            <span className="text-[var(--color-astraprimary)] leading-[1.1]">
               Our Mission and Story
             </span>
           </h1>
