@@ -512,7 +512,7 @@ const uploadOrReplaceDegreeProof = async (req, res) => {
 
     // Return updated URL.
     const {data: degreeProofData, error: degreeProofError} =
-      await PhotosService.getDegreeProofUrl(req.supabase, userId);
+      await photosService.getDegreeProofUrl(req.supabase, userId);
 
     return res.status(httpStatus.CREATED).json({
       status: "SUCCESS",
