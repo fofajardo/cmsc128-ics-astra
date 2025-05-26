@@ -191,7 +191,7 @@ const RequestFundraiserPreview = () => {
   return (
     <div className="min-h-screen w-full flex flex-col bg-astrawhite">
       {/* Header */}
-      <div className="bg-astralightgray p-4 sm:p-6 md:p-8 lg:p-12">
+      <div className="bg-astralightgray/40 p-4 sm:p-6 md:p-8 lg:p-12">
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-astrablack">
           Review Your Project
         </h1>

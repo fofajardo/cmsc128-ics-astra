@@ -160,3 +160,12 @@ export const AffiliationSchema = object().shape({
   }),
   description: string()
 });
+
+export const ContactSchema = object({
+  type: number()
+    .required("Contact type is required"),
+  content: string()
+    .required("Contact information is required")
+    .min(3, "Contact information must be at least 3 characters")
+    .max(255, "Contact information must not exceed 255 characters")
+});
