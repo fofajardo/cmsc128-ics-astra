@@ -128,7 +128,6 @@ function buildUserContext() {
       pushWorkExperience: function(workExperience) {
         const updatedWorkExperiences = [...workExperiences];
         updatedWorkExperiences.push(workExperience);
-        console.log(updatedWorkExperiences);
         return setWorkExperiences(updatedWorkExperiences);
       },
       patchOrganizationAffiliations: function(index, updates) {
