@@ -57,13 +57,13 @@ export default function LoginPage() {
           <div className="text-[var(--color-astrared)] text-xs mt-1">{errors.password}</div>
         )}
 
-        {errorsForMap.length > 0 && (
-          <div className="bg-red-100 text-[var(--color-astrared)] text-sm px-3 py-2 rounded">
-            {errorsForMap.map((err, idx) => (
-              <p key={idx}>{err}</p>
-            ))}
-          </div>
-        )}
+        {/*{errorsForMap.length > 0 && (*/}
+        {/*  <div className="bg-red-100 text-[var(--color-astrared)] text-sm px-3 py-2 rounded">*/}
+        {/*    {errorsForMap.map((err, idx) => (*/}
+        {/*      <p key={idx}>{err}</p>*/}
+        {/*    ))}*/}
+        {/*  </div>*/}
+        {/*)}*/}
 
         <button
           type="submit"
@@ -119,15 +119,15 @@ export default function LoginPage() {
             component={buildForm}
           />
 
-          <div className="mt-4">
-            <Link
-              href="/recover">
-              <button
-                className="w-full border border-[var(--color-astradirtywhite)] bg-white hover:bg-gray-100 rounded-md py-2 px-4 flex items-center justify-center transition-colors">
-                <span className="text-sm md:text-base text-[var(--color-astrablack)]">Forgot password?</span>
-              </button>
-            </Link>
-          </div>
+          {/*<div className="mt-4">*/}
+          {/*  <Link*/}
+          {/*    href="/recover">*/}
+          {/*    <button*/}
+          {/*      className="w-full border border-[var(--color-astradirtywhite)] bg-white hover:bg-gray-100 rounded-md py-2 px-4 flex items-center justify-center transition-colors">*/}
+          {/*      <span className="text-sm md:text-base text-[var(--color-astrablack)]">Forgot password?</span>*/}
+          {/*    </button>*/}
+          {/*  </Link>*/}
+          {/*</div>*/}
         </div>
       </div>
 
