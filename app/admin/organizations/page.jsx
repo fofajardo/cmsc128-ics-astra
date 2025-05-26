@@ -7,7 +7,7 @@ import { useTab } from "../../components/TabContext";
 import ToastNotification from "@/components/ToastNotification";
 import { Trash2 } from "lucide-react";
 import axios from "axios";
-import { capitalizeTitle } from "@/utils/format";
+import { capitalizeTitle, formatDate } from "@/utils/format";
 
 export default function Organizations() {
   const [showFilter, setShowFilter] = useState(false);
@@ -65,8 +65,8 @@ export default function Organizations() {
               name: capitalizeTitle(organization.name),
               acronym: organization.acronym,
               type: organization.type,
-              founded_date: organization.founded_date,
-              created_at: organization.created_at
+              founded_date: formatIsoDate(organization.founded_date),
+              created_at: formatIsoDate(organization.created_at)
             };
 
             return organizationData;
@@ -201,3 +201,23 @@ function renderName(name) {
 function renderText(text) {
   return <div className="text-center text-astradarkgray font-s">{text}</div>;
 }
+
+// Add this function if formatDate doesn't support "iso" format
+const formatIsoDate = (dateString) => {
+  if (!dateString) return "N/A";
+  
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "Invalid Date";
+    
+    // Format as YYYY-MM-DD
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const day = String(date.getDate()).padStart(2, '0');
+    
+    return `${year}-${month}-${day}`;
+  } catch (error) {
+    console.error("Date formatting error:", error);
+    return "Error";
+  }
+};
