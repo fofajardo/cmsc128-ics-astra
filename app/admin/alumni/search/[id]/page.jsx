@@ -10,7 +10,8 @@ import {
   Briefcase,
   Users,
   Code,
-  Lightbulb
+  Lightbulb,
+  Loader2
 } from "lucide-react";
 import TransitionSlide from "@/components/transitions/TransitionSlide";
 import axios from "axios";
@@ -32,6 +33,8 @@ export default function AlumniSearchProfile() {
   const [organizationAffiliations, setOrganizationAffiliations] = useState([]);
   const [graduationYear, setGraduationYear] = useState(null);
   const [course, setCourse] = useState(null);
+  const [proofOfGraduation, setProofOfGraduation] = useState(null);
+  const [proofLoading, setProofLoading] = useState(true);
 
   const [missing, setMissing] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -57,6 +60,17 @@ export default function AlumniSearchProfile() {
 
         setUser(userData);
         setProfile(profileData);
+
+        // Fetch proof of graduation specifically
+        try {
+          const proofRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/photos/degree-proof/${id}`);
+          setProofOfGraduation(proofRes?.data?.photo || null);
+        } catch (error) {
+          console.log("No proof of graduation found");
+          setProofOfGraduation(null);
+        } finally {
+          setProofLoading(false);
+        }
       } catch (error) {
         setMissing(true);
         return;
@@ -161,9 +175,9 @@ export default function AlumniSearchProfile() {
           </div>
 
           {/* contact button */}
-          <button className="w-full md:w-auto text-astraprimary border-2 border-astraprimary px-10 py-0.5 font-rb rounded-md hover:bg-astraprimary hover:text-white transition">
+          {/* <button className="w-full md:w-auto text-astraprimary border-2 border-astraprimary px-10 py-0.5 font-rb rounded-md hover:bg-astraprimary hover:text-white transition">
             Contact
-          </button>
+          </button> */}
         </div>
       </TransitionSlide>
 
@@ -353,10 +367,15 @@ export default function AlumniSearchProfile() {
             <h4 className="font-rb text-astrablack mb-0">Proof of Graduation</h4>
             <hr className="h-2 border-astralightgray"></hr>
             <div className="relative flex justify-center items-center h-60 bg-gray-100 rounded-md border shadow">
-              {profile.proof_url ? (
+              {proofLoading ? (
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-astradarkgray">
+                  <Loader2 className="w-10 h-10 animate-spin text-astraprimary" />
+                  <span className="mt-2">Loading proof...</span>
+                </div>
+              ) : proofOfGraduation ? (
                 <>
                   <img
-                    src={profile.proof_url}
+                    src={proofOfGraduation}
                     alt="Proof of Graduation"
                     className="w-full h-full object-cover rounded-md"
                     onError={(e) => {

@@ -33,8 +33,16 @@ function AlumniItem({ alumni, router }) {
     <div className="flex items-center border-b py-2 min-h-[72px]">
       <div className="mr-3 py-1 px-1 hidden sm:block">
         <Avatar>
-          <AvatarImage src={alumni.avatar_url} alt={alumni?.name || "User"} />
-          <AvatarFallback>CN</AvatarFallback>
+          <AvatarImage
+            src={alumni.avatar_url}
+            alt={alumni?.name || "User"}
+            onError={(e) => {
+              e.target.src = "https://cdn-icons-png.flaticon.com/512/145/145974.png";
+            }}
+          />
+          <AvatarFallback className="rounded-md">
+            {alumni?.name ? getInitials(alumni.name) : "?"}
+          </AvatarFallback>
         </Avatar>
 
       </div>
@@ -183,8 +191,8 @@ export default function ActivityOverview() {
                   ? capitalizeName(`${user.alumni_profiles.first_name} ${user.alumni_profiles.middle_name} ${user.alumni_profiles.last_name}`)
                   : null,
                 email: user.email,
-                date: new Date(user.created_at).toLocaleDateString(),
-                avatar_url: user.avatar_url,
+                date: user.created_at,
+                avatar_url: user?.avatar_url || "https://cdn-icons-png.flaticon.com/512/145/145974.png"
               };
 
               return userData;
@@ -220,7 +228,7 @@ export default function ActivityOverview() {
                 name: capitalizeName(`${user.first_name} ${user.middle_name} ${user.last_name}`),
                 email: user.email,
                 date: user.profile_created_at,
-                avatar_url: user.avatar_url,
+                avatar_url: user?.avatar_url || "https://cdn-icons-png.flaticon.com/512/145/145974.png",
               };
 
               return userData;

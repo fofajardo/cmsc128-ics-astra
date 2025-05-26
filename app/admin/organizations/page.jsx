@@ -205,16 +205,16 @@ function renderText(text) {
 // Add this function if formatDate doesn't support "iso" format
 const formatIsoDate = (dateString) => {
   if (!dateString) return "N/A";
-  
+
   try {
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return "Invalid Date";
-    
+
     // Format as YYYY-MM-DD
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-    const day = String(date.getDate()).padStart(2, '0');
-    
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+    const day = String(date.getDate()).padStart(2, "0");
+
     return `${year}-${month}-${day}`;
   } catch (error) {
     console.error("Date formatting error:", error);
