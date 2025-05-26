@@ -4,6 +4,7 @@ import contentsService from "../services/contentsService.js";
 import fs from "fs";
 import path from "path";
 import { get } from "http";
+import PhotosService from "../services/photosService.js";
 
 const getAllPhotos = async (req, res) => {
   try {
@@ -460,10 +461,15 @@ const uploadOrReplaceAvatar = async (req, res) => {
       });
     }
 
+    // Return updated URL.
+    const {data: avatarData, error: avatarError} =
+      await PhotosService.getAvatarUrl(req.supabase, userId);
+
     return res.status(httpStatus.CREATED).json({
       status: "SUCCESS",
       message: "Avatar uploaded successfully",
       photo: data[0],
+      avatar_url: avatarData?.signedUrl,
     });
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
