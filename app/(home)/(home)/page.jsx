@@ -48,7 +48,7 @@ const ChevronDown = ({ className }) => (
 const sectionBase = "relative h-[95vh] flex items-center overflow-hidden isolate z-10";
 const absoluteInset = "absolute inset-0";
 const textWhiteCenter = "text-astrawhite text-center";
-const buttonBase = "border-1 border-astradirtywhite text-astrawhite bg-transparent hover:bg-astrawhite/5 hover:text-astrawhite rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-[200px] h-[60px]";
+const buttonBase = "border border-astradirtywhite text-astrawhite bg-transparent hover:bg-astrawhite/5 hover:text-astrawhite rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-[160px] h-[50px] sm:w-[180px] sm:h-[55px] md:w-[200px] md:h-[60px]";
 const loopContainer = "loop-container w-full overflow-hidden whitespace-nowrap py-0";
 const loopTrackBase = "inline-block";
 const imageLoopBase = "inline-block mr-3 w-80 h-56 relative";
@@ -93,7 +93,7 @@ export default function Page() {
             WELCOME TO ICS-ASTRA!
           </motion.h1>
           <motion.p
-            className="font-l text-astrawhite/80 mb-6 md:mb-8"
+            className="text-astrawhite/80 mb-6 md:mb-8 sm:text-sm md:text-xl"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.4 }}
@@ -123,9 +123,9 @@ export default function Page() {
           >
             <Image
               src="/homepage-vector1.gif"
-              alt="Institute of Computer Science Logo"
-              width={350}
-              height={350}
+              alt="Vector 1"
+              width={500}
+              height={500}
               className="relative z-10 transform transition-all duration-500 hover:scale-105 object-cover justify-center"
             />
           </motion.div>
@@ -250,9 +250,9 @@ export default function Page() {
             to exciting announcements, find out what’s happening, what’s new, and
             what’s coming next — all right here.
           </h1>
-          <Link href="/about" passHref>
+          <Link href="/news" passHref>
             <button className={buttonBase}>
-              See Latest Updates
+              Latest Updates
             </button>
           </Link>
         </motion.div>
@@ -272,7 +272,7 @@ export default function Page() {
           >
             <Image
               src="/homepage-vector2.gif"
-              alt="Institute of Computer Science Logo"
+              alt="Vector 2"
               width={1200}
               height={900}
               className="relative z-10 transition-all duration-500 hover:scale-105 object-contain w-full h-auto"
