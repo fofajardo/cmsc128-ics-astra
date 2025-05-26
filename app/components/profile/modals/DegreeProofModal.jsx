@@ -18,23 +18,23 @@ import httpStatus from "http-status-codes";
 import LoadingOverlay from "@/components/LoadingOverlay.jsx";
 import {useSignedInUser} from "@/components/UserContext.jsx";
 
-export default function ProfilePictureModal({ context }) {
+export default function DegreeProofModal({ context }) {
   const signedInUser = useSignedInUser();
   const [open, setOpen] = useState(false);
   const [isSavePage, setIsSavePage] = useState(false);
 
-  const [avatarUrl, setAvatarUrl] = useState("");
-  const [avatarUrlHasBlob, setAvatarUrlHasBlob] = useState(false);
-  const [removeProfilePicture, setRemoveProfilePicture] = useState(false);
+  const [degreeProof, setDegreeProof] = useState("");
+  const [degreeProofHasBlob, setDegreeProofHasBlob] = useState(false);
+  const [removeDegreeProof, setRemoveDegreeProof] = useState(false);
 
   const handleReset = function() {
     setIsSavePage(false);
-    if (avatarUrlHasBlob) {
-      URL.revokeObjectURL(avatarUrl);
+    if (degreeProofHasBlob) {
+      URL.revokeObjectURL(degreeProof);
     }
-    setAvatarUrlHasBlob(false);
-    setAvatarUrl(context.state.avatarUrl);
-    setRemoveProfilePicture(false);
+    setDegreeProofHasBlob(false);
+    setDegreeProof(context.state.degreeProofUrl);
+    setRemoveDegreeProof(false);
   };
 
   useEffect(function() {
@@ -44,20 +44,20 @@ export default function ProfilePictureModal({ context }) {
   }, [open]);
 
   const initialValues = {
-    profile_picture_file: null
+    degree_proof_file: null
   };
 
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
-      let response = null;
+      let response;
 
-      if (removeProfilePicture) {
-        response = await axios.delete(clientRoutes.users.getAvatar(context.state.user.id));
+      if (removeDegreeProof) {
+        response = await axios.delete(clientRoutes.users.getDegreeProof(context.state.user.id));
       } else {
         const formData = new FormData();
-        formData.append("avatar", values.profile_picture_file);
+        formData.append("degree_proof", values.degree_proof_file);
 
-        response = await axios.post(clientRoutes.users.getAvatar(context.state.user.id), formData, {
+        response = await axios.post(clientRoutes.users.getDegreeProof(context.state.user.id), formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -65,18 +65,18 @@ export default function ProfilePictureModal({ context }) {
       }
 
       if (response.status === httpStatus.CREATED) {
-        toast({ variant: "success", title: "Your profile picture has been saved!" });
-        context.actions.setAvatarUrl(response.data.avatar_url);
+        toast({ variant: "success", title: "Your proof of graduation has been saved!" });
+        context.actions.setDegreeProofUrl(response.data.degree_proof_url);
         if (context.state.user.id === signedInUser.state.user.id) {
-          signedInUser.actions.setAvatarUrl(response.data.avatar_url);
+          signedInUser.actions.setDegreeProofUrl(response.data.degree_proof_url);
         }
-        setAvatarUrlHasBlob(false);
-        URL.revokeObjectURL(avatarUrl);
-      } else if (response.status === httpStatus.OK && removeProfilePicture) {
-        toast({ variant: "success", title: "Your profile picture has been removed!" });
-        context.actions.setAvatarUrl("https://cdn-icons-png.flaticon.com/512/145/145974.png");
+        setDegreeProofHasBlob(false);
+        URL.revokeObjectURL(degreeProof);
+      } else if (response.status === httpStatus.OK && removeDegreeProof) {
+        toast({ variant: "success", title: "Your proof of graduation has been removed!" });
+        context.actions.setDegreeProofUrl("https://cdn-icons-png.flaticon.com/512/8373/8373460.png");
         if (context.state.user.id === signedInUser.state.user.id) {
-          signedInUser.actions.setAvatarUrl("https://cdn-icons-png.flaticon.com/512/145/145974.png");
+          signedInUser.actions.setDegreeProofUrl("https://cdn-icons-png.flaticon.com/512/8373/8373460.png");
         }
       }
       setOpen(false);
@@ -94,9 +94,9 @@ export default function ProfilePictureModal({ context }) {
   };
 
   const handleRemoveClick = function() {
-    setAvatarUrl("https://cdn-icons-png.flaticon.com/512/145/145974.png");
+    setDegreeProof("https://cdn-icons-png.flaticon.com/512/8373/8373460.png");
     setIsSavePage(true);
-    setRemoveProfilePicture(true);
+    setRemoveDegreeProof(true);
   };
 
   const buildForm = ({ setFieldValue, isSubmitting }) => {
@@ -117,23 +117,23 @@ export default function ProfilePictureModal({ context }) {
         return;
       }
 
-      setFieldValue("profile_picture_file", file);
-      if (avatarUrlHasBlob) {
-        URL.revokeObjectURL(avatarUrl);
+      setFieldValue("degree_proof_file", file);
+      if (degreeProofHasBlob) {
+        URL.revokeObjectURL(degreeProof);
       }
-      setAvatarUrl(URL.createObjectURL(file));
-      setAvatarUrlHasBlob(true);
+      setDegreeProof(URL.createObjectURL(file));
+      setDegreeProofHasBlob(true);
       setIsSavePage(true);
     };
     return (
       <Form className="space-y-4 flex flex-col items-center">
         <LoadingOverlay loading={isSubmitting} className="rounded-lg"/>
         <Image
-          src={avatarUrl}
-          alt="Profile Picture"
-          width={256}
-          height={256}
-          className="w-[256px] h-[256px] rounded-full border-2 border-gray-50 shadow-sm"
+          src={degreeProof}
+          alt="Proof of Graduation"
+          width={500}
+          height={300}
+          className="w-[500px] h-[300px] border-2 border-gray-50 shadow-sm object-cover"
         />
         <input
           type="file"
@@ -192,11 +192,11 @@ export default function ProfilePictureModal({ context }) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger className="relative">
         <Image
-          src={context.state.avatarUrl}
-          alt="Profile Picture"
-          width={128}
-          height={128}
-          className="w-[128px] h-[128px] rounded-full border-2 border-gray-50 shadow-sm"
+          src={context.state.degreeProofUrl}
+          alt="Proof of Graduation"
+          width={500}
+          height={300}
+          className="w-[500px] h-[300px] border-2 border-gray-50 shadow-sm object-cover"
         />
         <div className="absolute bottom-0 right-0 opacity-0 cursor-pointer w-32 h-32 rounded-full"></div>
         <div
@@ -207,9 +207,10 @@ export default function ProfilePictureModal({ context }) {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Profile Picture</DialogTitle>
+          <DialogTitle>Proof of Graduation</DialogTitle>
           <DialogDescription>
-            A picture helps people recognize you and lets you know when you’re signed in to your account.
+            This document serves as official verification of your academic achievement and will be used for alumni
+            tracking and relations advancement.
           </DialogDescription>
         </DialogHeader>
         <Formik initialValues={initialValues} onSubmit={handleSubmit} component={buildForm}/>

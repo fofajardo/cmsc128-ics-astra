@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import axios from "axios";
 import { useParams } from "next/navigation";
+import MarkdownRenderer from "@/components/MarkdownRenderer";
 
 const ArticleView = () => {
   const { id } = useParams();
@@ -24,13 +25,12 @@ const ArticleView = () => {
           const photoUrl = localStorage.getItem(`article_photo_${id}`);
           if (photoUrl) {
             setPhoto(photoUrl);
-            // console.log("Photo URL:", photoUrl);
           }
         } catch (photoError) {
-          ; // console.error("Failed to get article photo from localStorage:", photoError);
+          console.error("Failed to get article photo from localStorage:", photoError);
         }
       } catch (error) {
-        ; // console.error("Failed to fetch article:", error);
+        console.error("Failed to fetch article:", error);
       } finally {
         setLoading(false);
       }
@@ -40,11 +40,6 @@ const ArticleView = () => {
       fetchArticle();
     }
   }, [id]);
-
-  // useEffect(() => {
-  // Log the photo whenever it changes
-  // console.log("Current photo state:", photo);
-  // }, [photo]);
 
   const handleBack = () => {
     window.history.back();
@@ -116,18 +111,16 @@ const ArticleView = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.8 }}
-                className="mt-12 prose prose-lg prose-slate mx-auto"
+                className="mt-12 prose prose-lg prose-slate mx-auto max-w-none"
               >
-                <p className="leading-relaxed">
-                  {article.details}
-                </p>
+                <MarkdownRenderer content={article.details} />
               </motion.div>
             </div>
           </motion.section>
         ) : (
           <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
             <h2 className="text-2xl font-bold text-slate-800">Article not found</h2>
-            <p className="mt-4 text-slate-600">The article you`&apos;`re looking for doesn`&apos;`t exist or has been removed.</p>
+            <p className="mt-4 text-slate-600">The article you&apos;re looking for doesn&apos;t exist or has been removed.</p>
           </div>
         )}
       </motion.article>

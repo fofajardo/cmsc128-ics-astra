@@ -66,6 +66,51 @@ export const DegreeProgramSchema = object({
     .matches(/^\d{4}$/, "Year started must be a 4-digit number"),
 });
 
+export const DegreeProgramSchema2 = object().shape({
+  is_uplb: boolean(),
+  uplb_program: string().when("is_uplb", {
+    is: true,
+    then: (schema) => schema.required("Please select a UPLB ICS degree program"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  name: string().when("is_uplb", {
+    is: false,
+    then: (schema) => schema.required("Degree name is required"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  level: string().when("is_uplb", {
+    is: false,
+    then: (schema) => schema.required("Degree level is required"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  institution: string().when("is_uplb", {
+    is: false,
+    then: (schema) => schema.required("Institution is required"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  year_started: string()
+    .required("Year started is required")
+    .matches(/^\d{4}$/, "Year must be a 4-digit number")
+    .test("year_range", "Year must be between 1908 and current year", (value) => {
+      if (!value) return true;
+      const year = parseInt(value);
+      return year >= 1908 && year <= new Date().getFullYear();
+    }),
+  year_graduated: string()
+    .required("Year graduated is required")
+    .matches(/^\d{4}$/, "Year must be a 4-digit number")
+    .test("year_range", "Year must be between 1908 and current year", (value) => {
+      if (!value) return true;
+      const year = parseInt(value);
+      return year >= 1908 && year <= new Date().getFullYear();
+    })
+    .test("year_order", "Graduation year must be after or equal to start year", function(value) {
+      const startYear = this.parent.year_started;
+      if (!value || !startYear) return true;
+      return parseInt(value) >= parseInt(startYear);
+    }),
+});
+
 export const GraduationProofSchema = object({
   proof_file: mixed().required("Proof of graduation is required")
 });
@@ -114,4 +159,13 @@ export const AffiliationSchema = object().shape({
     otherwise: () => object()
   }),
   description: string()
+});
+
+export const ContactSchema = object({
+  type: number()
+    .required("Contact type is required"),
+  content: string()
+    .required("Contact information is required")
+    .min(3, "Contact information must be at least 3 characters")
+    .max(255, "Contact information must not exceed 255 characters")
 });

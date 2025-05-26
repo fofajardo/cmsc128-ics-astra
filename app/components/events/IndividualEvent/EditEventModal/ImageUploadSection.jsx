@@ -2,18 +2,18 @@
 import { useState } from "react";
 import { UploadCloud, ImageIcon, Trash2 } from "lucide-react";
 
-export default function ImageUploadSection({ image, setImage, file, setFile }) {
+export default function ImageUploadSection({ image, setImage, setPhotoFile }) {
   const [imagePreview, setImagePreview] = useState(image || "");
   const [fileName, setFileName] = useState("");
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setFile(file);
       setFileName(file.name);
+      setPhotoFile(file); // Pass the file to the parent component
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImage(reader.result);
+        setImage(reader.result); // Pass the base64 image to the parent component
         setImagePreview(reader.result);
       };
       reader.readAsDataURL(file);
@@ -22,9 +22,9 @@ export default function ImageUploadSection({ image, setImage, file, setFile }) {
 
   const handleImageRemove = () => {
     setImage("");
-    setFile(null);
     setImagePreview("");
     setFileName("");
+    setPhotoFile(null); // Clear the photo file in the parent component
   };
 
   return (

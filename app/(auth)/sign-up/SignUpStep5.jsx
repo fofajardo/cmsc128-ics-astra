@@ -20,11 +20,9 @@ export default function SignUpStep5({ onSetPage }) {
   const handleSubmit = async (values, { setSubmitting, setFieldError }) => {
     try {
       const formData = new FormData();
-      formData.append("File", values.proof_file);
-      formData.append("user_id", user.state.user?.id);
-      formData.append("type", PhotoType.PROOF_OF_GRADUATION);
+      formData.append("degree_proof", values.proof_file);
 
-      const response = await axios.post(clientRoutes.photos.base(), formData, {
+      const response = await axios.post(clientRoutes.users.getDegreeProof(user.state.user?.id), formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

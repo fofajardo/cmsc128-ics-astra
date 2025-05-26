@@ -5,11 +5,11 @@ import { clientRoutes } from "../../../common/routes.js";
 import LoadingOverlay from "@/components/LoadingOverlay.jsx";
 import AuthSignOutLink from "@/(auth)/AuthSignOutLink.jsx";
 import { CountryDropdown } from "@/components/ui/country-dropdown.jsx";
-import {PersonalInfoSchema} from "../../../common/validationSchemas.js";
-import {useSignedInUser} from "@/components/UserContext.jsx";
+import { PersonalInfoSchema } from "../../../common/validationSchemas.js";
+import { useSignedInUser } from "@/components/UserContext.jsx";
 import httpStatus from "http-status-codes";
 
-export default function SignUpStep3({onSetPage}) {
+export default function SignUpStep3({ onSetPage }) {
   const user = useSignedInUser();
 
   const initialValues = {
@@ -246,7 +246,9 @@ export default function SignUpStep3({onSetPage}) {
           <div className="bg-red-100 text-[var(--color-astrared)] text-sm px-3 py-2 rounded">
             <ul>
               {errorsForMap.map((err, idx) => (
-                <li key={idx}>{err}</li>
+                <li key={idx}>
+                  {typeof err === "string" ? err : err?.message || "Unknown error"}
+                </li>
               ))}
             </ul>
           </div>

@@ -23,7 +23,6 @@ export function PersonalInfo({context}) {
     Gender: context.state.profile.gender,
     SexAssignedAtBirth: SEX_LABELS[context.state.profile.sex],
     BirthDate: context.state.profile.birthdate,
-    Address: context.state.profile.address,
     Citizenship: nationalities.getName(context.state.profile.citizenship, "en"),
     CivilStatus: CIVIL_STATUS_LABELS[context.state.profile.civil_status],
     StudentNumber: context.state.profile.student_num,

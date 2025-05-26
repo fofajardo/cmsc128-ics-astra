@@ -372,7 +372,7 @@ export default function Page() {
                 Discover, connect, and engage with alumni to expand your network!
               </p>
             </div>
-            <div className="w-full lg:w-[550px] flex justify-center animate-fade-in">
+            <div className="w-full lg:w-[550px] flex justify-center animate-natural-float">
               <div className="relative w-full h-auto max-w-[400px] md:max-w-[550px]">
                 <Image
                   src={eventsVector}
@@ -487,6 +487,33 @@ export default function Page() {
           </div>
         </section>
       </>
+      <style jsx global>{`
+        @keyframes naturalFloat {
+          0% { transform: translate(0px, 0px) rotate(0deg); }
+          25% { transform: translate(8px, -10px) rotate(1deg); }
+          50% { transform: translate(0px, -20px) rotate(0deg); }
+          75% { transform: translate(-8px, -10px) rotate(-1deg); }
+          100% { transform: translate(0px, 0px) rotate(0deg); }
+        }
+        @keyframes fadeBounce {
+          0% { opacity: 0; transform: translateY(-10px); }
+          50% { opacity: 1; transform: translateY(5px); }
+          100% { transform: translateY(0px); }
+        }
+        @keyframes particles {
+          0% { background-position: 0 0; }
+          100% { background-position: 1000px 0; }
+        }
+        .animate-natural-float { animation: naturalFloat 8s ease-in-out infinite; }
+        .animate-fade-bounce { animation: fadeBounce 1.5s ease forwards; }
+        .animate-hero-text { animation: fadeBounce 2s ease-in-out; }
+        .animate-particles {
+          background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+          background-size: 20px 20px;
+          animation: particles 60s linear infinite;
+          pointer-events: none;
+        }
+      `}</style>
     </div>
   );
 }

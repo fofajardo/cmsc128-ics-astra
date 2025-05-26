@@ -4,6 +4,7 @@ import contentsService from "../services/contentsService.js";
 import fs from "fs";
 import path from "path";
 import { get } from "http";
+import { create } from "domain";
 
 const getAllPhotos = async (req, res) => {
   try {
@@ -460,10 +461,15 @@ const uploadOrReplaceAvatar = async (req, res) => {
       });
     }
 
+    // Return updated URL.
+    const {data: avatarData, error: avatarError} =
+      await PhotosService.getAvatarUrl(req.supabase, userId);
+
     return res.status(httpStatus.CREATED).json({
       status: "SUCCESS",
       message: "Avatar uploaded successfully",
       photo: data[0],
+      avatar_url: avatarData?.signedUrl,
     });
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -471,6 +477,85 @@ const uploadOrReplaceAvatar = async (req, res) => {
       message: error.message || "An unexpected error occurred",
     });
   }
+};
+
+const uploadOrReplaceDegreeProof = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const file = req.file;
+
+    // Validate inputs
+    if (!file || !userId) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "File and userId are required",
+      });
+    }
+
+    // Read the file content
+    const fileContent = fs.readFileSync(path.join(file.destination, file.filename));
+
+    // Call the service function
+    const { data, error } = await photosService.uploadOrReplaceDegreeProof(
+      req.supabase,
+      userId,
+      fileContent,
+      file.mimetype
+    );
+
+    if (error) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error.message || "Failed to upload degree proof",
+      });
+    }
+
+    // Return updated URL.
+    const {data: degreeProofData, error: degreeProofError} =
+      await PhotosService.getDegreeProofUrl(req.supabase, userId);
+
+    return res.status(httpStatus.CREATED).json({
+      status: "SUCCESS",
+      message: "Degree proof uploaded successfully",
+      photo: data[0],
+      degree_proof_url: degreeProofData?.signedUrl,
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message || "An unexpected error occurred",
+    });
+  }
+};
+
+const deleteDegreeProof = async function(req, res) {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "User ID is required",
+      });
+    }
+
+    // Fetch the photo details to get the file path (image_key)
+    const { error } = await photosService.deleteDegreeProof(req.supabase, id);
+    if (error) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: error.message,
+      });
+    }
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message,
+    });
+  }
+
+  return res.status(httpStatus.OK).json({
+    status: "DELETED",
+  });
 };
 
 const deleteNewsletter = async (req, res) => {
@@ -1038,6 +1123,97 @@ const getDonationReceipt = async (req, res) => {
   }
 };
 
+const updateEventPhoto = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { content_id } = req.body;
+    const file = req.file;
+
+    console.log("Event Photo update details:", {
+      id: id,
+      content_id: content_id,
+      file: file ? "File provided" : "No file"
+    });
+
+    if (!id) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "Photo ID is required",
+      });
+    }
+
+    if (!file) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "File is required for updating event photo",
+      });
+    }
+
+    // Generate a unique filename
+    const uniqueFilename = `${Date.now()}-${file.originalname}`;
+    const oldPath = path.join(file.destination, file.filename);
+
+    // Read the file content
+    const fileContent = fs.readFileSync(oldPath);
+
+    // Upload the file to storage
+    const { data: storageData, error: storageError } = await req.supabase.storage
+      .from("user-photos-bucket")
+      .upload(uniqueFilename, fileContent, {
+        contentType: file.mimetype,
+      });
+
+    if (storageError) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: `Failed to upload file to storage: ${storageError.message}`,
+      });
+    }
+
+    // Update the photo record with the new image key
+    const photoData = {
+      image_key: storageData.path,
+    };
+
+    // Add content_id if provided
+    if (content_id) {
+      photoData.content_id = content_id;
+    }
+
+    // Fixed type for event photo
+    photoData.type = 3; // Use PhotoType.EVENT_PIC in production
+
+    // Update the photo in the database
+    const { data, error } = await photosService.updatePhotoById(req.supabase, id, photoData);
+
+    if (error) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error.message,
+      });
+    }
+
+    if (!data || data.length === 0) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: "FAILED",
+        message: "Event photo not found",
+      });
+    }
+
+    return res.status(httpStatus.OK).json({
+      status: "UPDATED",
+      message: "Event photo updated successfully",
+      photo: data[0],
+    });
+  } catch (error) {
+    console.error("Error in updateEventPhoto:", error);
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message,
+    });
+  }
+};
+
 const photosController = {
   getAllPhotos,
   getPhotoById,
@@ -1060,6 +1236,9 @@ const photosController = {
   deleteNewsletter,
   deleteAvatar,
   uploadOrReplaceAvatar,
+  uploadOrReplaceDegreeProof,
+  deleteDegreeProof,
+  updateEventPhoto,
 };
 
 export default photosController;

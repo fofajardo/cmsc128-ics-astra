@@ -2,20 +2,27 @@
 
 import JobForm from "../../components/jobs/addJob";
 import { useState } from "react";
+import { Plus } from "lucide-react";
 
-export default function HiringPrompt({refreshJobs}) {
+export default function HiringPrompt({ refreshJobs }) {
   const [showForm, setForm] = useState(false);
 
   return (
-    <div className="bg-astrawhite max-w-4xl min-w-md w-7/10 h-[110px] rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] p-6 flex items-center justify-between gap-2 mb-7">
-      <div className="w-3/10 h-4/5 md:flex flex-col justify-end hidden">
-        <h1 className="font-semibold text-xl text-astrablack leading-6">Post a job</h1>
-        <p className="font-normal text-sm text-astradarkgray">Promote career opportunities</p>
-      </div>
-      <div className="md:w-7/10 w-full h-4/5 flex items-center justify-start">
-        <button onClick={()=>setForm(true)}className="!cursor-pointer text-left bg-astratintedwhite font-normal text-sm text-astradarkgray py-7 px-4 rounded-2xl inset-shadow-[0_1px_4px_rgba(0,0,0,0.25)] hover:inset-shadow-[0_1px_6px_rgba(0,0,0,0.4)] w-full">What job are you hiring for?..</button>
+    <>
+      <div className="fixed bottom-8 right-8 z-50">
+        <button
+          onClick={() => setForm(true)}
+          className="group relative bg-astraprimary hover:bg-astradark text-astrawhite rounded-full p-4 shadow-lg transition-all duration-300 flex items-center justify-center"
+          aria-label="Post a job offer"
+        >
+          <Plus size={24} />
+          <span className="absolute right-full top-1/2 transform -translate-y-1/2 mr-3 bg-astrablack text-astrawhite text-sm font-medium px-3 py-1 rounded-md opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity duration-200">
+            Post a job offer
+          </span>
+        </button>
       </div>
 
-      {showForm ? <JobForm close={() => setForm(false)} refreshJobs={refreshJobs} /> : <></>}
-    </div>
-  );}
+      {showForm && <JobForm close={() => setForm(false)} refreshJobs={refreshJobs} />}
+    </>
+  );
+}

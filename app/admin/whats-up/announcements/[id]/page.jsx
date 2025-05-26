@@ -1,12 +1,19 @@
 "use client";
 import { useParams, useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { GoBackButton } from "@/components/Buttons";
 import { Image, Trash2, Save, Send } from "lucide-react";
 import ConfirmModal from "@/components/ConfirmModal";
 import ToastNotification from "@/components/ToastNotification";
 import axios from "axios";
 import { PhotoType } from "../../../../../common/scopes.js";
+import dynamic from "next/dynamic";
+
+// Dynamically import MDX editor to avoid SSR issues
+const MDXEditor = dynamic(() => import("@/components/MDXEditor"), {
+  ssr: false,
+  loading: () => <div className="border rounded-lg p-4 min-h-[200px] bg-gray-50 animate-pulse">Loading editor...</div>
+});
 
 export default function AnnouncementDetail() {
   const router = useRouter();
@@ -19,15 +26,13 @@ export default function AnnouncementDetail() {
   const [photoError, setPhotoError] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const [existingPhotoId, setExistingPhotoId] = useState(null);
+  const editorRef = useRef(null);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     content: "",
     image: null
   });
-
-  // Simple text editor as a fallback solution
-  const [editorContent, setEditorContent] = useState("");
 
   // Load photos from localStorage
   const loadPhotosFromLocalStorage = () => {
@@ -42,15 +47,36 @@ export default function AnnouncementDetail() {
         };
       }
     } catch (error) {
-      ; // console.error("Error loading photos from localStorage:", error);
+      console.error("Error loading photos from localStorage:", error);
     }
     return { photos: {}, typesMap: {} };
+  };
+
+  // Process content for MDX editor
+  const processContentForEditor = (content) => {
+    if (!content) return "";
+
+    let processed = content;
+
+    // Convert HTML entities back to readable format
+    processed = processed
+      .replace(/&#x20;/g, " ")
+      .replace(/&nbsp;/g, " ")
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, "\"")
+      .replace(/&#39;/g, "'")
+      .replace(/&apos;/g, "'");
+
+    // The content should already have proper newlines (\n) from the database
+    // No need to convert them - the MDX editor expects \n characters
+    return processed;
   };
 
   // Handle photo upload
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
-    // console.log("File uploaded:", file);
     handleFile(file);
   };
 
@@ -69,7 +95,6 @@ export default function AnnouncementDetail() {
     e.preventDefault();
     setIsDragging(false);
     const file = e.dataTransfer.files[0];
-    // console.log("File dropped:", file);
     handleFile(file);
   };
 
@@ -97,6 +122,11 @@ export default function AnnouncementDetail() {
     }
   };
 
+  // Handle MDX editor content change
+  const handleContentChange = (markdown) => {
+    setFormData(prev => ({ ...prev, content: markdown }));
+  };
+
   const handleSubmit = async () => {
     try {
       const payload = {
@@ -106,7 +136,6 @@ export default function AnnouncementDetail() {
       };
 
       const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`, payload);
-      // console.log("Content update response:", response.data);
 
       if (photo) {
         try {
@@ -117,7 +146,6 @@ export default function AnnouncementDetail() {
 
           // If we have an existing photo ID, update it instead of creating a new one
           if (existingPhotoId) {
-            // console.log("Updating existing photo with ID:", existingPhotoId);
             const photoResponse = await axios.put(
               `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/${existingPhotoId}`,
               formData,
@@ -127,15 +155,8 @@ export default function AnnouncementDetail() {
                 }
               }
             );
-
-            // if (photoResponse.data.status === "UPDATED") {
-            ; // console.log("Photo updated successfully:", photoResponse.data);
-            // } else {
-            ; // console.error("Unexpected photo update response:", photoResponse.data);
-            // }
           } else {
             // Create new photo if no existing photo ID
-            // console.log("Creating new photo for content ID:", id);
             const photoResponse = await axios.post(
               `${process.env.NEXT_PUBLIC_API_URL}/v1/photos`,
               formData,
@@ -145,22 +166,16 @@ export default function AnnouncementDetail() {
                 }
               }
             );
-
-            // if (photoResponse.data.status === "CREATED") {
-            // console.log("Photo uploaded successfully:", photoResponse.data);
-            // } else {
-            ; // console.error("Unexpected photo upload response:", photoResponse.data);
-            // }
           }
         } catch (photoError) {
-          ; // console.error("Failed to upload announcement photo:", photoError);
+          console.error("Failed to upload announcement photo:", photoError);
         }
       }
 
       setToast({ type: "success", message: "Announcement published successfully!" });
       setTimeout(() => router.push("/admin/whats-up"), 2000);
     } catch (error) {
-      // console.error("Publish failed", error);
+      console.error("Publish failed", error);
       setToast({ type: "error", message: "Failed to publish announcement" });
     }
   };
@@ -174,7 +189,6 @@ export default function AnnouncementDetail() {
       };
 
       const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`, payload);
-      // console.log("Draft save response:", response.data);
 
       if (photo) {
         try {
@@ -185,7 +199,6 @@ export default function AnnouncementDetail() {
 
           // If we have an existing photo ID, update it instead of creating a new one
           if (existingPhotoId) {
-            // console.log("Updating existing photo with ID:", existingPhotoId);
             const photoResponse = await axios.put(
               `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/${existingPhotoId}`,
               formData,
@@ -195,15 +208,8 @@ export default function AnnouncementDetail() {
                 }
               }
             );
-
-            // if (photoResponse.data.status === "UPDATED") {
-            ; // console.log("Photo updated successfully:", photoResponse.data);
-            // } else {
-            ; // console.error("Unexpected photo update response:", photoResponse.data);
-            // }
           } else {
             // Create new photo if no existing photo ID
-            // console.log("Creating new photo for content ID:", id);
             const photoResponse = await axios.post(
               `${process.env.NEXT_PUBLIC_API_URL}/v1/photos`,
               formData,
@@ -213,21 +219,15 @@ export default function AnnouncementDetail() {
                 }
               }
             );
-
-            // if (photoResponse.data.status === "CREATED") {
-            // console.log("Photo uploaded successfully:", photoResponse.data);
-            // } else {
-            ; // console.error("Unexpected photo upload response:", photoResponse.data);
-            // }
           }
         } catch (photoError) {
-          ; // console.error("Failed to upload announcement photo:", photoError);
+          console.error("Failed to upload announcement photo:", photoError);
         }
       }
 
       setToast({ type: "success", message: "Draft saved successfully!" });
     } catch (error) {
-      // console.error("Save draft failed", error);
+      console.error("Save draft failed", error);
       setToast({ type: "error", message: "Failed to save draft" });
     }
   };
@@ -248,13 +248,13 @@ export default function AnnouncementDetail() {
       axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`)
         .then((response) => {
           const content = response.data.content;
+
           setFormData({
             title: content?.title || "",
             description: content?.description || "This is a description",
-            content: content?.details || "",
+            content: processContentForEditor(content?.details || ""),
             image: content?.image || null
           });
-          setEditorContent(content?.details || "");
 
           // If we didn't find a cached photo but content has an image, use that
           if (!cachedPhoto && content?.image) {
@@ -276,7 +276,7 @@ export default function AnnouncementDetail() {
           }
         })
         .catch((error) => {
-          // console.log("Error fetching content or photos", error);
+          console.log("Error fetching content or photos", error);
           setToast({ type: "error", message: "Failed to load announcement" });
         })
         .finally(() => {
@@ -298,7 +298,7 @@ export default function AnnouncementDetail() {
         router.push("/admin/whats-up");
       }, 1000);
     } catch (error) {
-      // console.error("Delete failed:", error);
+      console.error("Delete failed:", error);
       setToast({ type: "error", message: "Failed to delete announcement" });
     } finally {
       setShowDeleteModal(false);
@@ -368,7 +368,7 @@ export default function AnnouncementDetail() {
             {photoError && <p className="text-red-500 mt-2">{photoError}</p>}
           </div>
 
-          {/* Content Form - Updated with global styles */}
+          {/* Content Form - Updated with MDX Editor */}
           <div className="bg-astrawhite rounded-xl p-6 shadow-md">
             <input
               type="text"
@@ -378,13 +378,20 @@ export default function AnnouncementDetail() {
               placeholder="Enter announcement title"
             />
 
-            <textarea
-              value={formData.content}
-              onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-              className="w-full font-r text-astrablack p-2 border border-transparent hover:border-astragray focus:border-astraprimary rounded-lg outline-none resize-none"
-              placeholder="Enter announcement content"
-              rows={8}
-            />
+            <div className="mb-4">
+              {isLoading ? (
+                <div className="border rounded-lg p-4 min-h-[200px] bg-gray-50 animate-pulse flex items-center justify-center">
+                  <span className="text-gray-500">Loading content...</span>
+                </div>
+              ) : (
+                <MDXEditor
+                  ref={editorRef}
+                  markdown={formData.content}
+                  onChange={handleContentChange}
+                  placeholder="Write your announcement content here..."
+                />
+              )}
+            </div>
 
             {/* Action Buttons - Using global button styles */}
             <div className="flex justify-end gap-3 mt-6 pt-6 border-t border-astragray">

@@ -1,7 +1,7 @@
 import httpStatus from "http-status-codes";
 import usersService from "../services/usersService.js";
-import {Actions, Subjects} from "../../common/scopes.js";
-import {retrieveAvatarForUser} from "./common.js";
+import { Actions, Subjects } from "../../common/scopes.js";
+import { retrieveAvatarForUser } from "./common.js";
 
 const getUsers = async (req, res) => {
   if (req.you.cannot(Actions.READ, Subjects.USER)) {
@@ -23,6 +23,11 @@ const getUsers = async (req, res) => {
         message: error.message
       });
     }
+
+    await Promise.all(data.map(async (user) => {
+      await retrieveAvatarForUser(req, user.id, user);
+      return user;
+    }));
 
     return res.status(httpStatus.OK).json({
       status: "OK",
@@ -68,6 +73,11 @@ const getInactiveAlumni = async (req, res) => {
       });
     }
 
+    await Promise.all(data.map(async (user) => {
+      await retrieveAvatarForUser(req, user.id, user);
+      return user;
+    }));
+
     return res.status(httpStatus.OK).json({
       status: "OK",
       list: data || [],
@@ -106,12 +116,18 @@ const getApprovedAlumni = async (req, res) => {
       filters
     );
 
+
     if (error) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
         status: "FAILED",
         message: error.message
       });
     }
+
+    await Promise.all(data.map(async (user) => {
+      await retrieveAvatarForUser(req, user.id, user);
+      return user;
+    }));
 
     return res.status(httpStatus.OK).json({
       status: "OK",
@@ -157,6 +173,11 @@ const getPendingAlumni = async (req, res) => {
         message: error.message
       });
     }
+
+    await Promise.all(data.map(async (user) => {
+      await retrieveAvatarForUser(req, user.id, user);
+      return user;
+    }));
 
     return res.status(httpStatus.OK).json({
       status: "OK",

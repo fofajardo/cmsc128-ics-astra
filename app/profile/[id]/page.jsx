@@ -9,11 +9,27 @@ import { Affiliations } from "@/components/profile/sections/Affiliations";
 import { useUser } from "@/components/UserContext.jsx";
 import nationalities from "i18n-nationality";
 import nationalities_en from "i18n-nationality/langs/en.json";
+import DegreeProgramsSection from "@/components/profile/sections/DegreeProgramsSection.jsx";
+import {ContactsSection} from "@/components/profile/sections/ContactsSection.jsx";
+import React from "react";
+import DegreeProofSection from "@/components/profile/sections/DegreeProofSection.jsx";
 
 nationalities.registerLocale(nationalities_en);
 
 export default function Page() {
   const context = useUser();
+
+  const profile = context.state.profile ?? {};
+
+  const technicalSkills =
+    typeof profile.skills === "string" && profile.skills.trim() !== ""
+      ? profile.skills.split(",").map(skill => ({ text: skill }))
+      : [];
+
+  const fieldOfInterests =
+    typeof profile.interests === "string" && profile.interests.trim() !== ""
+      ? profile.interests.split(",").map(interest => ({ text: interest }))
+      : [];
 
   return (
     <div className="min-h-screen bg-[var(--color-astratintedwhite)]">
@@ -29,13 +45,23 @@ export default function Page() {
 
         <PersonalInfo context={context} />
 
+        {!context.state.isVerified && (
+          <DegreeProofSection context={context} />
+        )}
+
         {context.state.isVerified && (
           <>
             <TechnicalSkills
               context={context}
+              technicalSkills={technicalSkills}
             />
 
             <FieldsOfInterest
+              context={context}
+              fieldOfInterests={fieldOfInterests}
+            />
+
+            <DegreeProgramsSection
               context={context}
             />
 
@@ -44,6 +70,10 @@ export default function Page() {
             />
 
             <Affiliations
+              context={context}
+            />
+
+            <ContactsSection
               context={context}
             />
           </>

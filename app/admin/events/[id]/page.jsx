@@ -8,9 +8,10 @@ import BackButton from "@/components/events/IndividualEvent/BackButton";
 import HeaderEvent from "@/components/events/IndividualEvent/HeaderEvent";
 import EditEventModal from "@/components/events/IndividualEvent/EditEventModal/EditEventModal";
 import DeleteConfirmationModal from "@/components/events/IndividualEvent/DeleteEventModal/DeleteEventModal";
-import ToastNotification from "@/components/ToastNotification";
+import { toast } from "@/components/ToastNotification";
 import axios from "axios";
 import { TabContext } from "@/components/TabContext";
+import { PhotoType } from "../../../../common/scopes";
 
 import EventDetailsCard from "./EventDetails.Card";
 import SendEventCard from "./SendEventCard";
@@ -30,28 +31,25 @@ export default function EventAdminDetailPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [toastData, setToastData] = useState(null);
   const itemsPerPage = 5;
 
-  const handleSave = (updatedEvent) => {
-    handleEdit(updatedEvent);
-    // setEvent((prevEvent) => ({
-    //   ...prevEvent,
-    //   ...updatedEvent
-    // }));
-    // setShowEditModal(false);
-    // setToastData({ type: "success", message: "Event updated successfully!" });
-  };
 
   const handleDeleteContent = async (id) => {
     try{
       const response = await axios
         .delete(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`);
 
-      setToastData({ type: "success", message: "Event deleted successfully!" });
+      toast({
+        title: "Success",
+        description: "Event deleted successfully!",
+        variant: "success"
+      });
     }catch(error){
-      // console.error("Failed to delete events:", error);
-      setToastData({ type: "error", message: "Failed to delete event!" });
+      toast({
+        title: "Error",
+        description: "Failed to delete event!",
+        variant: "fail"
+      });
     }
   };
 
@@ -60,12 +58,15 @@ export default function EventAdminDetailPage() {
       const response = await axios
         .delete(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/${id}`);
 
-      // console.log("edit event - delete:", response.data);
       if (response.data.status === "DELETED") {
         handleDeleteContent(id);
       }
     }catch{
-      setToastData({ type: "error", message: "Failed to delete event!" });
+      toast({
+        title: "Error",
+        description: "Failed to delete event!",
+        variant: "fail"
+      });
     } finally{
       setShowDeleteModal(false);
       router.push("/admin/events");
@@ -75,32 +76,22 @@ export default function EventAdminDetailPage() {
   const handleEdit = async (updatedEvent) => {
     try{
       const toEditId = id;
-      // console.log("event id in ", toEditId);
-      // console.log(event);
-      // console.log(new Date(event.date));
-      // console.log(updatedEvent);
-
       const eventDefaults = {
-        event_date: "",
-        venue: "",
-        // external_link: "",
-        // access_link: "",
-        online: false,
+        event_date: event?.date || "",
+        venue: event?.location || "",
+        online: event?.online || false,
       };
 
       const contentDefaults = {
-        title: "",
-        details: "",
-        //tags: [],
+        title: event?.title || "",
+        details: event?.description || "",
       };
 
       const eventUpdateData = getChangedFields({
         event_date: updatedEvent.date,
         venue: updatedEvent.location,
-        // external_link: addFormData.external_link,
-        // access_link: addFormData.access_link,
-        //online: addFormData.online,
       }, eventDefaults);
+
 
       const contentUpdateData = getChangedFields({
         title: updatedEvent.title,
@@ -108,49 +99,61 @@ export default function EventAdminDetailPage() {
         //tags: addFormData.tags,
       }, contentDefaults);
 
-      let eventRes, contentRes, eventOnly = 0;
-      if (Object.keys(eventUpdateData).length > 0) {
-        eventRes = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/${toEditId}`, eventUpdateData);
-        eventOnly += 1;
-        // console.log("entered event update");
+
+      const needsEventUpdate = Object.keys(eventUpdateData).length > 0;
+      const needsContentUpdate = Object.keys(contentUpdateData).length > 0;
+      const needsPhotoUpdate = updatedEvent.photoFile !== null;
+      let photoRes;
+
+      const [eventRes, contentRes] = await Promise.all([
+        needsEventUpdate ? axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/${toEditId}`, eventUpdateData) : null,
+        needsContentUpdate ? axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${toEditId}`, contentUpdateData) : null
+      ]);
+
+      if (updatedEvent.photoFile) {
+        const formData = new FormData();
+        formData.append("File", updatedEvent.photoFile);
+        formData.append("content_id", toEditId);
+
+        // Use the new specific endpoint for updating event photos
+        photoRes = await axios.put(
+          `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/event/${updatedEvent.photoId}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
 
       }
+      const eventSuccess = eventRes?.data?.status === "UPDATED";
+      const contentSuccess = contentRes?.data?.status === "UPDATED";
+      const eventFailed = eventRes?.data?.status === "FAILED" || eventRes?.data?.status === "FORBIDDEN";
+      const contentFailed = contentRes?.data?.status === "FAILED" || contentRes?.data?.status === "FORBIDDEN";
+      const photoSuccess = photoRes?.data?.status === "UPDATED";
+      const photoFailed = photoRes?.data?.status === "FAILED" || photoRes?.data?.status === "FORBIDDEN";
 
-      if (Object.keys(contentUpdateData).length > 0) {
-        contentRes = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${toEditId}`,contentUpdateData);
-        eventOnly += 1; // 2 -> event,content updated; 1->onlyevent
-        // console.log("entered content update");
-      }
-      // TODO: POST/PUT photo
-      //
-      //
-
-      // console.log("eventOnly: ", eventOnly);
-      // console.log(eventRes);
-      // console.log(contentRes);
-      // console.log(contentRes.data.status);
-      // console.log(eventRes?.data);
-
-
-      if (eventRes?.data?.status ==="UPDATED"  && contentRes?.data?.status === "UPDATED" && eventOnly===2){
-        setToastData({ type: "success", message: "Event edited successfully!" });
-        // console.log("here at 1dtcondition");
-
-      } else if ((eventRes?.data?.status ==="UPDATED" && eventOnly===1) || (contentRes?.data?.status === "UPDATED" && eventOnly===1)){
-        setToastData({ type: "success", message: "Event edited successfully!" });
-        // console.log("here at 2nd condition");
-
-      } else if (
-        (["FAILED", "FORBIDDEN"].includes(eventRes?.data?.status) && eventOnly === 2) ||
-        (["FAILED", "FORBIDDEN"].includes(contentRes?.data?.status) && eventOnly === 2)
-      )
-      {
-        setToastData({ type: "error", message: "Failed to edit event." });
-        // console.log("here at 3rd condition");
+      if ((needsEventUpdate && eventFailed) || (needsContentUpdate && contentFailed)|| (needsPhotoUpdate && photoFailed)) {
+        toast({
+          title: "Error",
+          description: "Failed to edit event!",
+          variant: "fail"
+        });
+      } else if ((needsEventUpdate && eventSuccess) || (needsContentUpdate && contentSuccess) || (needsPhotoUpdate && photoSuccess)) {
+        toast({
+          title: "Success",
+          description: "Event edited successfully!",
+          variant: "success"
+        });
       }
     }catch(error){
-      // console.log("error",error);
-      setToastData({ type: "error", message: "Failed to edit event." });
+      toast({
+        title: "Error",
+        description: "Failed to edit event!",
+        variant: "fail"
+      });
     } finally{
       setShowEditModal(false);
       fetchEvent();
@@ -177,18 +180,12 @@ export default function EventAdminDetailPage() {
       recipients = Object.values(companies).flat();
     }
 
-    // console.log("Sending Event:", {
-    //   to: selectedOption,
-    //   recipients: recipients.map(r => r.name),
-    //   message: message
-    // });
-
     setMessage("");
     setSelectedOption("Everyone");
-
-    setToastData({
-      type: "success",
-      message: `Successfully sent "${event.title}" to ${recipients.length} users!`
+    toast({
+      title: "Success",
+      description: `Successfully sent "${event.title}" to ${recipients.length} users!`,
+      variant: "success"
     });
   };
 
@@ -225,16 +222,12 @@ export default function EventAdminDetailPage() {
       const response = await axios
         .get(`${process.env.NEXT_PUBLIC_API_URL}/v1/users/${id}`);
 
-      // console.log(response);
       if (response.data.status === "OK") {
         const selectUserName = response.data.user.username;
-        // console.log("select event name:",selectUserName, "type", typeof(selectUserName));
         return selectUserName;
-      } else {
-        setToastData("Unexpected response:", response.data.message);
       }
     }catch(error){
-      setToastData({ type: "error", message: error.message });
+      ;
     }
     return "Unknown";
   };
@@ -259,7 +252,7 @@ export default function EventAdminDetailPage() {
         return response.data.photo;
       }
     } catch (error) {
-      ; // console.log(`Failed to fetch photo for event_id ${contentId}:`, error);
+      ;
     }
   };
 
@@ -268,7 +261,7 @@ export default function EventAdminDetailPage() {
       const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/statistics/events-summary`);
       if (response.data.status === "OK") {
         const { active_events, past_events, total_events } = response.data.stats;
-        // console.log("stats: ", response.data.stats);
+
         const counts = {
           past : past_events || 0,
           active : active_events || 0,
@@ -277,12 +270,12 @@ export default function EventAdminDetailPage() {
         setEventCounts(counts);
         return counts;
       } else {
-        // console.error("Failed to fetch event statistics:", response.data);
+
         setEventCounts({ past: 0, active: 0, total: 0 });
         return { past: 0, active: 0, total: 0 };
       }
     } catch (error) {
-      // console.error("Failed to fetch event statistics:", error);
+
       setEventCounts({ past: 0, active: 0, total: 0 });
       return { past: 0, active: 0, total: 0 };
     }
@@ -290,32 +283,31 @@ export default function EventAdminDetailPage() {
 
   const fetchEvent = async () =>{
     try {
-      // console.log("id: ", id);
-      const [eventRes, contentRes,interestStatsRes,interestRes,eventsResponse,actResponse, stats] = await Promise.all([
+
+      const [eventRes, contentRes,interestStatsRes,interestRes, stats] = await Promise.all([
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/${id}`),
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/${id}`),
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/${id}`),
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/event-interests/content/${id}`),
-        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events`),
-        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/events/active-events`),
         updateStats(),
-        //TODO: fetch the photo
-
       ]);
-      if(eventsResponse.data.status === "OK" && actResponse.data.status === "OK") {
-        // console.log("events responses: ",eventsResponse);
-        // console.log("acts responses: ",actResponse);
 
-      }
-      // console.log("eventResponse:",eventRes);
       if (eventRes.data.status === "OK" && contentRes.data.status === "OK" ) {
         const eventResponse = eventRes.data;
         const contentResponse = contentRes.data;
         const interests = interestRes.data.list;
         const interestStats = interestStatsRes.data.list;
 
-        // console.log("interests:", interests);
-        // console.log("intereststat", interestStats.interest_count);
+        const photoResponse = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/by-content-id/${id}`
+        );
+
+        let photoId = null;
+        if (photoResponse.data.status === "OK" && photoResponse.data.photos.length > 0) {
+          // Find the event photo (type 3)
+          const eventPhoto = photoResponse.data.photos.find(photo => photo.type === 3);
+          photoId = eventPhoto ? eventPhoto.id : null;
+        }
 
         const interestedUsers = await Promise.all(
           interests.map(async (user) => ({
@@ -324,28 +316,21 @@ export default function EventAdminDetailPage() {
           }))
         );
 
-        // console.log("event: ", eventResponse);
-        // console.log("content: ", contentResponse);
-        // console.log("event: ", eventResponse.event.event_id);
-        // console.log("content: ", contentResponse.content.id);
-
         const photoUrl = await fetchEventPhoto(eventResponse.event.event_id);
-
-        // console.log("photo url: ", photoUrl);
-
-
         const mergedEvent = {
           id: eventResponse.event.event_id,
           event_id: eventResponse.event.event_id,
+          photoId: photoId, // fetch this on photo entity;
           imageSrc: photoUrl, // fetch this on photo entity;
           title: contentResponse.content.title || "Untitled",
           description: contentResponse?.content.details || "No description",
+          external_link: eventResponse.event.external_link|| "",
+          access_link: eventResponse.event.access_link || "",
           date: new Date(eventResponse.event.event_date).toDateString(),
           location: eventResponse.event.venue,
           attendees: interestedUsers, //
           status: eventResponse.event.status
         };
-        // console.log("mergedEvent", mergedEvent);
         setEvent(mergedEvent);
 
 
@@ -355,7 +340,6 @@ export default function EventAdminDetailPage() {
         setEventCounts(stats);
       }
     } catch (error) {
-      // console.error("Failed fetching event, content, or interests:", error);
       setEvent(null);
     }
   };
@@ -372,13 +356,6 @@ export default function EventAdminDetailPage() {
     <div className="bg-astradirtyastrawhite min-h-screen px-6 sm:px-12 py-6 max-w-screen-xl mx-auto relative">
       <BackButton />
 
-      {toastData && (
-        <ToastNotification
-          type={toastData.type}
-          message={toastData.message}
-          onClose={() => setToastData(null)}
-        />
-      )}
 
       <div className="flex flex-col lg:flex-row gap-6">
         <div className="flex-1 flex flex-col">

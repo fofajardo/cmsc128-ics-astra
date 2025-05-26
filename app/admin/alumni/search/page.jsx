@@ -15,7 +15,7 @@ export default function AlumniSearch() {
     setShowFilter((prev) => !prev);
   };
   const [loading, setLoading] = useState(true);
-  const [alumList, setAlumList] = useState([]); // Filtered/sorted data for display
+  const [alumList, setAlumList] = useState([]);
   const [appliedFilters, updateFilters] = useState({
     yearFrom: "",
     yearTo: "",
@@ -89,11 +89,9 @@ export default function AlumniSearch() {
           setAlumList(updatedAlumList);
           setLoading(false);
         } else {
-          // console.error("Unexpected response:", response.data);
           setLoading(false);
         }
       } catch (error) {
-        // console.error("Failed to fetch alumni:", error);
         setLoading(false);
       }
     };
