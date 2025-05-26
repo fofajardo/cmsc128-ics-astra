@@ -20,6 +20,7 @@ import requestsRouter from "./requestsRoutes.js";
 import jobsRouter from "./jobsRoutes.js";
 import statisticsRouter from "./statisticsRoutes.js";
 import emailRouter from "./emailRoutes.js";
+import contactsRoutes from "./contactsRoutes.js";
 import {serverRoutes} from "../../common/routes.js";
 import multer from "multer";
 
@@ -49,6 +50,7 @@ const registerRoutes = (app) => {
   app.use(serverRoutes.users.base(), usersRouter());
   app.use(serverRoutes.users.base(), usersExtensionRoutes(upload));
   app.use(serverRoutes.degreePrograms.base(), degreeProgramsRouter());
+  app.use(serverRoutes.contacts.base(), contactsRoutes());
   app.use(serverRoutes.photos.base(), photosRouter(upload));
   app.use(serverRoutes.alumniProfiles.base(), alumniProfilesRouter());
   app.use(serverRoutes.contents.base(), contentsRouter());
