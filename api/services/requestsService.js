@@ -86,6 +86,9 @@ const fetchProjectRequestById = async (supabase, requestId) => {
     .from("requests")
     .select("*")
     .eq("content_id", requestId)
+    .eq("status", 1)
+    .order("date_requested", { ascending: false })
+    .limit(1)
     .single();
 };
 
