@@ -14,7 +14,6 @@ const eventsRouter = () => {
   router.put("/:eventId", eventsController.updateEvent);
   router.delete("/",eventsController.deleteEmptyEvent);
   router.delete("/:eventId",  eventsController.deleteEvent);
-  router.post("/send-event-email", eventsController.sendEventEmail);
 
   return router;
 };
