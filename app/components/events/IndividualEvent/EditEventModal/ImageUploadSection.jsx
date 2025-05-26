@@ -9,7 +9,6 @@ export default function ImageUploadSection({ image, setImage, setPhotoFile }) {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setFile(file);
       setFileName(file.name);
       setPhotoFile(file); // Pass the file to the parent component
       const reader = new FileReader();
@@ -23,7 +22,6 @@ export default function ImageUploadSection({ image, setImage, setPhotoFile }) {
 
   const handleImageRemove = () => {
     setImage("");
-    setFile(null);
     setImagePreview("");
     setFileName("");
     setPhotoFile(null); // Clear the photo file in the parent component
