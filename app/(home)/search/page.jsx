@@ -4,12 +4,13 @@ import Image from "next/image";
 import axios from "axios";
 import eventsVector from "../../assets/search.gif";
 import { Table } from "@/components/TableBuilder";
-import SkillTag from "@/components/SkillTag";
+// import SkillTag from "@/components/SkillTag";
 import { ActionButton } from "@/components/Buttons";
 import Pagination from "@/components/search/GroupedEvents/Pagination";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { ParticlesBackground } from "@/components/ParticlesBackground";
+import { faPlus, faChevronDown, faSort, faFilter } from "@fortawesome/free-solid-svg-icons";
+import { Icon } from "@iconify/react";
+import FilterDropdown from "@/components/events/GroupedEvents/FilterDropdown";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -18,26 +19,28 @@ export default function Page() {
   const [alumList, setAlumList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState("");
+  const [sortOrder, setSortOrder] = useState("asc");
   const [filters, setFilters] = useState({
     minGradYear: "",
     maxGradYear: "",
-    location: "",
-    skills: "",
+    // location: "",
+    // skills: "",
   });
   const [appliedFilters, setAppliedFilters] = useState({
     minGradYear: "",
     maxGradYear: "",
-    location: "",
-    skills: "",
+    // location: "",
+    // skills: "",
   });
   const [showFilters, setShowFilters] = useState({
     graduationYear: false,
-    location: false,
-    skills: false,
+    // location: false,
+    // skills: false,
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [totalResults, setTotalResults] = useState(0);
+  const [showSortDropdown, setShowSortDropdown] = useState(false);
 
   const toggleFilter = (filterName) => {
     setShowFilters((prevShowFilters) => ({
@@ -64,6 +67,34 @@ export default function Page() {
     setCurrentPage(1); // Reset page on search
   };
 
+  const handleSort = (column) => {
+    if (sortBy === column) {
+      // If clicking the same column, toggle the order
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      // If clicking a new column, set it as the sort column and default to ascending
+      setSortBy(column);
+      setSortOrder("asc");
+    }
+    setCurrentPage(1);
+  };
+
+  const sortOptions = [
+    { label: "Clear", icon: "mdi:close-circle-outline" },
+    { label: "First Name", icon: "mdi:sort-alphabetical-ascending", id: "firstName" },
+    { label: "Last Name", icon: "mdi:sort-alphabetical-ascending", id: "lastName" },
+    { label: "Graduation Year", icon: "mdi:sort-numeric-ascending", id: "graduationYear" }
+  ];
+
+  const handleSortChange = (selected) => {
+    if (selected.label === "Clear") {
+      setSortBy("");
+      setSortOrder("asc");
+    } else {
+      handleSort(selected.id);
+    }
+  };
+
   useEffect(() => {
     const fetchAlumniProfiles = async () => {
       try {
@@ -79,7 +110,6 @@ export default function Page() {
           }
         );
 
-        // Rest of your code remains the same...
 
         if (response.data.status === "OK") {
           const updatedAlumList = await Promise.all(
@@ -107,16 +137,16 @@ export default function Page() {
                   alumData.image = photoResponse.data.photo;
                 }
               } catch (photoError) {
-                ; // console.log(
-                //   `Failed to fetch photo for alum_id ${alum.alum_id}:`,
-                //   photoError
-                // );
+                console.log(
+                  `Failed to fetch photo for alum_id ${alum.alum_id}:`,
+                  photoError
+                );
               }
 
               try {
                 const idForDegree = alum.user_id || alum.alum_id;
                 if (idForDegree) {
-                  // console.log("Fetching degree programs for user_id:", idForDegree);
+                  console.log("Fetching degree programs for user_id:", idForDegree);
                   const degreeResponse = await axios.get(
                     `${process.env.NEXT_PUBLIC_API_URL}/v1/degree-programs/alumni/${idForDegree}`
                   );
@@ -135,10 +165,10 @@ export default function Page() {
                   }
                 }
               } catch (degreeError) {
-                ; // console.error(
-                //   `Failed to fetch degree programs for user_id: ${alum.user_id || alum.alum_id}`,
-                //   degreeError
-                // );
+                console.error(
+                  `Failed to fetch degree programs for user_id: ${alum.user_id || alum.alum_id}`,
+                  degreeError
+                );
               }
 
               return alumData;
@@ -149,11 +179,11 @@ export default function Page() {
           setAlumList(updatedAlumList);
           setLoading(false);
         } else {
-          // console.error("Unexpected response:", response.data);
+          console.error("Unexpected response:", response.data);
           setLoading(false);
         }
       } catch (error) {
-        // console.error("Failed to fetch alumni:", error);
+        console.error("Failed to fetch alumni:", error);
         setLoading(false);
       }
     };
@@ -174,14 +204,8 @@ export default function Page() {
         const partialLastNameMatch = alum.last_name.toLowerCase().includes(lowerSearchTerm);
         const fullNameMatch = fullName.includes(lowerSearchTerm);
 
-        // Only use exact substring matches
         searchMatch = partialFirstNameMatch || partialLastNameMatch || fullNameMatch;
 
-        // const containsAllChars = [...lowerSearchTerm].every(char =>
-        //   char === ' ' || fullName.includes(char)
-        // );
-
-        // Keep initials matching if needed, but make it exact
         const initials = `${alum.first_name[0]}${alum.last_name[0]}`.toLowerCase();
         const matchesInitials = initials === lowerSearchTerm;
 
@@ -198,36 +222,43 @@ export default function Page() {
       const withinMaxYear = !appliedFilters.maxGradYear || !gradYear ||
         gradYear <= parseInt(appliedFilters.maxGradYear, 10);
 
-      const matchesLocation = !appliedFilters.location ||
-        (alum.location && alum.location.toLowerCase().includes(appliedFilters.location.toLowerCase()));
+      // const matchesLocation = !appliedFilters.location ||
+      //   (alum.location && alum.location.toLowerCase().includes(appliedFilters.location.toLowerCase()));
 
-      const skillsMatch = !appliedFilters.skills ||
-        alum.skills.some(skill =>
-          skill.toLowerCase().includes(appliedFilters.skills.toLowerCase())
-        );
+      // const skillsMatch = !appliedFilters.skills ||
+      //   alum.skills.some(skill =>
+      //     skill.toLowerCase().includes(appliedFilters.skills.toLowerCase())
+      //   );
 
-      return searchMatch && withinMinYear && withinMaxYear && matchesLocation && skillsMatch;
+      // return searchMatch && withinMinYear && withinMaxYear && matchesLocation && skillsMatch;
+      return searchMatch && withinMinYear && withinMaxYear;
     });
   }, [alumList, appliedFilters, searchTerm]);
 
   // Apply sorting only (don't filter here)
   const sortedAlumList = useMemo(() => {
-    let sortedList = [...filteredAlumList]; // Use filteredAlumList instead of alumList
+    let sortedList = [...filteredAlumList];
     if (sortBy === "firstName") {
-      sortedList.sort((a, b) => a.first_name.localeCompare(b.first_name));
+      sortedList.sort((a, b) => {
+        const comparison = a.first_name.localeCompare(b.first_name);
+        return sortOrder === "asc" ? comparison : -comparison;
+      });
     }
     if (sortBy === "lastName") {
-      sortedList.sort((a, b) => a.last_name.localeCompare(b.last_name));
+      sortedList.sort((a, b) => {
+        const comparison = a.last_name.localeCompare(b.last_name);
+        return sortOrder === "asc" ? comparison : -comparison;
+      });
     }
     if (sortBy === "graduationYear") {
       sortedList.sort((a, b) => {
         const yearA = a.year_graduated !== "N/A" ? parseInt(a.year_graduated.substring(0, 4), 10) : 0;
         const yearB = b.year_graduated !== "N/A" ? parseInt(b.year_graduated.substring(0, 4), 10) : 0;
-        return yearA - yearB;
+        return sortOrder === "asc" ? yearA - yearB : yearB - yearA;
       });
     }
     return sortedList;
-  }, [filteredAlumList, sortBy]); // Change dependency from alumList to filteredAlumList
+  }, [filteredAlumList, sortBy, sortOrder]);
 
   const totalPages = useMemo(() => {
     return Math.ceil(sortedAlumList.length / ITEMS_PER_PAGE);
@@ -285,19 +316,12 @@ export default function Page() {
     // { label: "Quick Actions", justify: "center", visible: "all" },
   ];
 
-  function handleSort(column) {
-    setCurrentPage(1);
-    setSortBy(column);
-  }
-
   function createRows(alumList) {
     return alumList.map((alum) => ({
       "Image:label-hidden": renderAvatar(alum.image, `${alum.first_name} ${alum.last_name}`),
       "First Name": renderText(alum.first_name),
       "Last Name": renderText(alum.last_name),
       "Graduation Year": renderText(alum.year_graduated !== "N/A" ? alum.year_graduated.substring(0, 4) : "N/A"),
-
-      // uncomment if you want to show location, skills, and actions
       // Location: renderText(alum.location || "N/A"),
       // Skills: renderSkills(alum.skills || []),
       // "Quick Actions": renderActions(alum.id),
@@ -322,26 +346,6 @@ export default function Page() {
     return <div className="text-center font-s text-astradarkgray p-2">{text}</div>;
   }
 
-  function renderSkills(skills) {
-    const visibleSkills = skills.slice(0, 2);
-    const remainingCount = skills.length - 2;
-
-    return (
-      <div className="relative flex justify-center items-center cursor-default p-2">
-        <div className="flex flex-wrap justify-center items-center">
-          {visibleSkills.map((skill, index) => (
-            <SkillTag key={index} text={skill} margin={"m-1"} />
-          ))}
-          {remainingCount > 0 && (
-            <div className="size-8 flex justify-center items-center rounded-full text-xs font-medium border border-dashed text-astradarkgray bg-astratintedwhite cursor-default">
-              +{remainingCount}
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  }
-
   function renderActions(id) {
     return (
       <div className="flex justify-center p-2">
@@ -360,12 +364,11 @@ export default function Page() {
           style={{ backgroundImage: "url('/blue-bg.png')" }}
         >
           <div className="max-w-[1440px] mx-auto px-6 py-10 md:px-12 md:py-16 lg:px-12 lg:py-20 flex flex-col lg:flex-row items-center justify-between text-astrawhite gap-6 lg:gap-10">
-            <ParticlesBackground count={40} />
             <div className="max-w-[600px] space-y-4 text-center lg:text-left animate-slide-up">
-              <h1 className="text-[60px] font-extrabold leading-[1.1]">
+              <h1 className="font-h1 text-astrawhite leading-[1.1] text-3xl md:text-4xl lg:text-5xl">
                 Alumni Directory
               </h1>
-              <p className="text-lg font-medium">
+              <p className="font-l text-astrawhite text-sm md:text-base">
                 Discover, connect, and engage with alumni to expand your network!
               </p>
             </div>
@@ -381,64 +384,79 @@ export default function Page() {
             </div>
           </div>
         </div>
-        <section className="py-16 md:py-24 relative">
-          <div className="w-full max-w-7xl mx-auto px-4 md:px-8">
-            <div className="flex flex-col md:flex-row md:items-center max-lg:gap-4 justify-between w-full mb-6 md:mb-8">
-              <h2 className="font-h2 text-xl md:text-2xl lg:text-3xl">Search for Alumni</h2>
-              <div className="relative w-full max-w-sm flex flex-col sm:flex-row gap-2">
-                <div className="relative w-full">
-                  <svg
-                    className="absolute top-1/2 -translate-y-1/2 left-4 z-50"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 20 20"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M16.5555 3.33203H3.44463C2.46273 3.33203 1.66675 4.12802 1.66675 5.10991C1.66675 5.56785 1.84345 6.00813 2.16004 6.33901L6.83697 11.2271C6.97021 11.3664 7.03684 11.436 7.0974 11.5068C7.57207 12.062 7.85127 12.7576 7.89207 13.4869C7.89728 13.5799 7.89728 13.6763 7.89728 13.869V16.251C7.89728 17.6854 9.30176 18.6988 10.663 18.2466C11.5227 17.961 12.1029 17.157 12.1029 16.251V14.2772C12.1029 13.6825 12.1029 13.3852 12.1523 13.1015C12.2323 12.6415 12.4081 12.2035 12.6683 11.8158C12.8287 11.5767 13.0342 11.3619 13.4454 10.9322L17.8401 6.33901C18.1567 6.00813 18.3334 5.56785 18.3334 5.10991C18.3334 4.12802 17.5374 3.33203 16.5555 3.33203Z"
-                      strokeWidth="1.6"
-                      strokeLinecap="round"
+
+        {/* Search Bar Section */}
+        <section className="py-16 md:py-24 relative w-full flex flex-col items-center">
+          <div className="w-full max-w-7xl px-4 md:px-8 flex flex-col items-center">
+            <div className="w-full max-w-[1000px] mb-6 md:mb-8 flex flex-col items-center">
+              <div className="flex items-stretch w-full border border-astragray bg-astrawhite">
+                <input
+                  type="text"
+                  placeholder="Search for alumni"
+                  className="flex-grow py-4 pl-6 focus:outline-none text-base text-astradark"
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                />
+                <button
+                  className="px-6 bg-astraprimary hover:bg-astradark text-astrawhite font-semibold transition flex items-center gap-2 cursor-pointer"
+                  onClick={handleApplyFilters}
+                >
+                  Search
+                </button>
+              </div>
+
+              <div className="flex flex-wrap gap-4 mt-4 justify-start items-end">
+                {/* Graduation Year Inputs */}
+                <div className="flex flex-col items-start gap-2">
+                  <p className="font-medium text-sm text-astradarkgray">Graduation Year</p>
+                  <div className="flex items-center gap-2">
+                    <label htmlFor="minGradYear" className="sr-only">Min Graduation Year</label>
+                    <input
+                      type="text"
+                      id="minGradYear"
+                      name="minGradYear"
+                      placeholder="Min Year"
+                      className="border border-astraprimary p-2 pl-4 h-10 rounded-lg text-sm"
+                      value={filters.minGradYear}
+                      onChange={handleFilterChange}
+                      onBlur={handleApplyFilters}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          handleApplyFilters();
+                        }
+                      }}
                     />
-                  </svg>
-                  <input
-                    type="text"
-                    id="Offer"
-                    placeholder="Search..."
-                    className="px-6 bg-astrawhite border border-astragray w-full h-12"
-                    value={searchTerm}
-                    onChange={handleSearchChange}
-                  />
+                    <p className="font-normal text-sm leading-6 text-astradarkgray">to</p>
+                    <label htmlFor="maxGradYear" className="sr-only">Max Graduation Year</label>
+                    <input
+                      type="text"
+                      id="maxGradYear"
+                      name="maxGradYear"
+                      placeholder="Max Year"
+                      className="border border-astraprimary p-2 pl-4 h-10 rounded-lg text-sm"
+                      value={filters.maxGradYear}
+                      onChange={handleFilterChange}
+                      onBlur={handleApplyFilters}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          handleApplyFilters();
+                        }
+                      }}
+                    />
+                  </div>
                 </div>
-                <select
-                  className="border border-astragray p-2 w-full sm:w-32 h-12 bg-white"
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                >
-                  <option value="" hidden>
-                    Sort by...
-                  </option>
-                  <option value="firstName">First Name</option>
-                  <option value="lastName">Last Name</option>
-                  <option value="graduationYear">Graduation Year</option>
-                </select>
-                <svg
-                  className="absolute top-1/2 -translate-y-1/2 right-4 z-50 pointer-events-none"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M12.0002 5.99845L8.00008 9.99862L3.99756 5.99609"
-                    strokeWidth="1.6"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+
+                {/* Sort Dropdown */}
+                <FilterDropdown
+                  icon="material-symbols:sort"
+                  options={sortOptions}
+                  placeholder="Sort by"
+                  value={sortBy ? sortOptions.find(opt => opt.id === sortBy) : null}
+                  onChange={handleSortChange}
+                />
               </div>
             </div>
+
             <svg
               className="my-4 md:my-7 w-full"
               xmlns="http://www.w3.org/2000/svg"
@@ -449,124 +467,22 @@ export default function Page() {
             >
               <path className="stroke-astragray" d="M0 1H1216" />
             </svg>
-            <div className="grid grid-cols-12 gap-6">
-              <div className="col-span-12 md:col-span-3 w-full max-md:max-w-md max-md:mx-auto">
-                <div className="rounded-xl border border-astragray bg-astrawhite p-4 md:p-6 w-full md:max-w-sm space-y-4 md:space-y-5">
-                  {/* Filter Buttons */}
-                  <div className="space-y-2">
-                    <div className="pb-2 border-b border-astragray">
-                      <button
-                        className="w-full py-2 rounded-md text-astrablack font-medium text-left focus:outline-none focus:ring-2 focus:ring-astraprimary flex items-center justify-between"
-                        onClick={() => toggleFilter("graduationYear")}
-                      >
-                        Graduation Year
-                        <FontAwesomeIcon icon={faPlus} className="h-4 w-4" />
-                      </button>
-                      {showFilters.graduationYear && (
-                        <div className="flex items-center gap-1 mt-2">
-                          <div className="relative w-full">
-                            <input
-                              type="text"
-                              id="minGradYear"
-                              name="minGradYear"
-                              placeholder="From"
-                              className="border border-astragray p-2 pl-4 w-full h-10"
-                              value={filters.minGradYear}
-                              onChange={handleFilterChange}
-                            />
-                          </div>
-                          <p className="px-1 font-normal text-sm leading-6 text-astradarkgray">to</p>
-                          <div className="relative w-full">
-                            <input
-                              type="text"
-                              id="maxGradYear"
-                              name="maxGradYear"
-                              placeholder="To"
-                              className="border border-astragray p-2 pl-4 w-full h-10"
-                              value={filters.maxGradYear}
-                              onChange={handleFilterChange}
-                            />
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="pb-2 border-b border-astragray">
-                      <button
-                        className="w-full py-2 rounded-md text-astrablack font-medium text-left focus:outline-none focus:ring-2 focus:ring-astraprimary flex items-center justify-between"
-                        onClick={() => toggleFilter("location")}
-                      >
-                        Location
-                        <FontAwesomeIcon icon={faPlus} className="h-4 w-4" />
-                      </button>
-                      {showFilters.location && (
-                        <div className="relative w-full mt-2">
-                          <input
-                            type="text"
-                            id="location"
-                            name="location"
-                            placeholder="Enter Location"
-                            className="border border-astragray p-2 pl-4 w-full h-10"
-                            value={filters.location}
-                            onChange={handleFilterChange}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </div>
 
-                  <div className="space-y-2">
-                    <div className="pb-2 border-b border-astragray">
-                      <button
-                        className="w-full py-2 rounded-md text-astrablack font-medium text-left focus:outline-none focus:ring-2 focus:ring-astraprimary flex items-center justify-between"
-                        onClick={() => toggleFilter("skills")}
-                      >
-                        Skills
-                        <FontAwesomeIcon icon={faPlus} className="h-4 w-4" />
-                      </button>
-                      {showFilters.skills && (
-                        <div className="relative w-full mt-2">
-                          <input
-                            type="text"
-                            id="skills"
-                            name="skills"
-                            placeholder="Enter Skills"
-                            className="border border-astragray p-2 pl-4 w-full h-10"
-                            value={filters.skills}
-                            onChange={handleFilterChange}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <button
-                    className="blue-button w-full py-2.5 flex items-center justify-center gap-2 rounded-full text-sm font-semibold shadow-sm shadow-transparent transition-all duration-300 hover:bg-astradark hover:shadow-astraprimary/20"
-                    onClick={handleApplyFilters}
-                  >
-                    Apply
-                  </button>
-                </div>
-              </div>
-              <div className="col-span-12 md:col-span-9">
-                <div className="overflow-x-auto md:pl-4">
-                  {loading ? (
-                    <Table cols={cols} data={skeletonRows} />
-                  ) : (
-                    <>
-                      <Table cols={cols} data={createRows(paginatedAlumList)} />
-                      {totalPages > 1 && (
-                        <Pagination
-                          currentPage={currentPage}
-                          totalPages={totalPages}
-                          onPageChange={(page) => setCurrentPage(page)}
-                        />
-                      )}
-                    </>
+            <div className="overflow-x-auto w-full max-w-7xl">
+              {loading ? (
+                <Table cols={cols} data={skeletonRows} />
+              ) : (
+                <>
+                  <Table cols={cols} data={createRows(paginatedAlumList)} />
+                  {totalPages > 1 && (
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={(page) => setCurrentPage(page)}
+                    />
                   )}
-                </div>
-              </div>
+                </>
+              )}
             </div>
           </div>
         </section>
