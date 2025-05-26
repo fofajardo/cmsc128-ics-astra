@@ -85,7 +85,8 @@ const fetchProjectRequestById = async (supabase, requestId) => {
   return await supabase
     .from("requests")
     .select("*")
-    .eq("id", requestId);
+    .eq("content_id", requestId)
+    .single();
 };
 
 const insertRequest = async (supabase, requestData) => {
