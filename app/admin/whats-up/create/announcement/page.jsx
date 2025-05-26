@@ -13,6 +13,8 @@ const MDXEditor = dynamic(() => import("@/components/MDXEditor"), {
   ssr: false,
   loading: () => <div className="border rounded-lg p-4 min-h-[200px] bg-gray-50 animate-pulse">Loading editor...</div>
 });
+import { PhotoType } from "../../../../../common/scopes";
+
 
 export default function CreateAnnouncement() {
   const userContext = useSignedInUser();
@@ -140,7 +142,7 @@ export default function CreateAnnouncement() {
           const formData = new FormData();
           formData.append("File", photo);
           formData.append("content_id", contentId);
-          formData.append("type", 5); // TODO: use appropriate ENUM; check photo_type.js once merged
+          formData.append("type", PhotoType.PROJECT_PIC);
 
           const photoResponse = await axios.post(
             `${process.env.NEXT_PUBLIC_API_URL}/v1/photos`,

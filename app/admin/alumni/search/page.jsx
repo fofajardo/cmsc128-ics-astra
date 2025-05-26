@@ -69,28 +69,8 @@ export default function AlumniSearch() {
                 fieldOfWork:
                   alum.field || "N/A",
                 skills: alum.skills ? alum.skills.split(",") : [],
-                image:
-                  "https://cdn-icons-png.flaticon.com/512/145/145974.png",
+                image: alum.avatar_url,
               };
-
-              try {
-                const photoResponse = await axios.get(
-                  `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/alum/${alum.alum_id}`
-                );
-
-                if (
-                  photoResponse.data.status === "OK" &&
-                  photoResponse.data.photo
-                ) {
-                  alumData.image = photoResponse.data.photo;
-                }
-              } catch (photoError) {
-                ; // console.log(
-                //   `Failed to fetch photo for alum_id ${alum.alum_id}:`,
-                //   photoError
-                // );
-              }
-
               return alumData;
             })
           );
