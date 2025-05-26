@@ -24,10 +24,15 @@ export default function ProfilePictureModal({ context }) {
   const [isSavePage, setIsSavePage] = useState(false);
 
   const [avatarUrl, setAvatarUrl] = useState("");
+  const [avatarUrlHasBlob, setAvatarUrlHasBlob] = useState(false);
   const [removeProfilePicture, setRemoveProfilePicture] = useState(false);
 
   const handleReset = function() {
     setIsSavePage(false);
+    if (avatarUrlHasBlob) {
+      URL.revokeObjectURL(avatarUrl);
+    }
+    setAvatarUrlHasBlob(false);
     setAvatarUrl(context.state.avatarUrl);
     setRemoveProfilePicture(false);
   };
@@ -61,10 +66,12 @@ export default function ProfilePictureModal({ context }) {
 
       if (response.status === httpStatus.CREATED) {
         toast({ variant: "success", title: "Your profile picture has been saved!" });
-        context.actions.setAvatarUrl(avatarUrl);
+        context.actions.setAvatarUrl(response.data.avatar_url);
         if (context.state.user.id === signedInUser.state.user.id) {
-          signedInUser.actions.setAvatarUrl(avatarUrl);
+          signedInUser.actions.setAvatarUrl(response.data.avatar_url);
         }
+        setAvatarUrlHasBlob(false);
+        URL.revokeObjectURL(avatarUrl);
       } else if (response.status === httpStatus.OK && removeProfilePicture) {
         toast({ variant: "success", title: "Your profile picture has been removed!" });
         context.actions.setAvatarUrl("https://cdn-icons-png.flaticon.com/512/145/145974.png");
@@ -94,8 +101,28 @@ export default function ProfilePictureModal({ context }) {
 
   const buildForm = ({ setFieldValue, isSubmitting }) => {
     const handleImageChange = function(e) {
-      setFieldValue("profile_picture_file", e.target.files[0]);
-      setAvatarUrl(URL.createObjectURL(e.target.files[0]));
+      const file = e.target.files[0];
+
+      if (!file) {
+        return;
+      }
+
+      if (!file.type.startsWith("image/")) {
+        toast({ variant: "fail", title: "Please select an image file" });
+        return;
+      }
+
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        toast({ variant: "fail", title: "File size should be less than 5MB" });
+        return;
+      }
+
+      setFieldValue("profile_picture_file", file);
+      if (avatarUrlHasBlob) {
+        URL.revokeObjectURL(avatarUrl);
+      }
+      setAvatarUrl(URL.createObjectURL(file));
+      setAvatarUrlHasBlob(true);
       setIsSavePage(true);
     };
     return (
