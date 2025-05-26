@@ -3,7 +3,21 @@ import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { GoBackButton } from "@/components/Buttons";
 import SkillTag from "@/components/SkillTag";
-import { MapPin, GraduationCap, Image, FileX, ArrowLeft, AlertTriangle, RefreshCw, Search } from "lucide-react";
+import { 
+  MapPin, 
+  GraduationCap, 
+  Image, 
+  FileX, 
+  ArrowLeft, 
+  AlertTriangle, 
+  RefreshCw, 
+  Search, 
+  Briefcase, 
+  Users, 
+  Code, 
+  Lightbulb,
+  Loader2
+} from "lucide-react";
 import TransitionSlide from "@/components/transitions/TransitionSlide";
 import axios from "axios";
 import { capitalizeName, formatDate } from "@/utils/format.jsx";
@@ -20,12 +34,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2 } from "lucide-react";
-import ProfileLoadingState from "@/components/ProfileLoadingState.jsx";
-import ProfileNotFound from "@/components/ProfileNotFound.jsx";
 
 nationalities.registerLocale(nationalities_en);
 import { ActionButton } from "@/components/Buttons";
+import ProfileNotFound from "@/components/ProfileNotFound.jsx";
+import ProfileLoadingState from "@/components/ProfileLoadingState.jsx";
 
 const getStatusBadge = (status) => {
   const statusMap = {
@@ -40,6 +53,16 @@ const getStatusBadge = (status) => {
     <span className={`${color} text-white font-s px-3.5 py-0.5 rounded-lg w-fit mx-auto sm:mx-0 mt-1 sm:mt-0`}>
       {text}
     </span>
+  );
+};
+
+// Reusable empty state component for consistent UI
+const EmptyState = ({ Icon, message, className = "" }) => {
+  return (
+    <div className={`w-full py-4 flex flex-col items-center justify-center text-astradarkgray ${className}`}>
+      <Icon className="w-10 h-10 mb-2 text-astralightgray" strokeWidth={1} />
+      <p className="italic text-sm">{message}</p>
+    </div>
   );
 };
 
@@ -124,7 +147,6 @@ export default function AlumniSearchProfile() {
 
         if (degreeRes.status === "fulfilled") {
           if (degreeRes.value.data?.status === "OK" && degreeRes.value.data?.degreePrograms?.length > 0) {
-            console.log("NICE!");
             const sorted = [...degreeRes.value.data.degreePrograms].sort(
               (a, b) => new Date(b.year_graduated) - new Date(a.year_graduated)
             );
@@ -355,11 +377,11 @@ export default function AlumniSearchProfile() {
                 {getStatusBadge(profile.status)}
               </div>
               <a className="block font-s text-astradark hover:underline">
-                {user.email}
+                {user.email || "No email provided"}
               </a>
               <div className="flex justify-center sm:justify-start items-center font-s text-astradarkgray mt-0.5">
                 <MapPin className="w-4 h-4 mr-1" />
-                {profile.location}
+                {profile.location || "No location specified"}
               </div>
             </div>
           </div>
@@ -368,14 +390,14 @@ export default function AlumniSearchProfile() {
           <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-3 w-full md:w-auto">
             {/* ID num */}
             <span className="text-xs bg-astragray text-astradarkgray px-2 py-1 rounded-full hidden md:block">
-              {profile.student_num}
+              {profile.student_num || "No ID"}
             </span>
 
             {/* year num badge */}
             <div className="hidden md:block">
               <span className="text-xs bg-astragray text-astradarkgray px-2 py-1 rounded-full flex items-center space-x-1">
                 <GraduationCap className="w-3 h-3" />
-                <span>{graduationYear}</span>
+                <span>{graduationYear || "N/A"}</span>
               </span>
             </div>
 
@@ -392,7 +414,7 @@ export default function AlumniSearchProfile() {
             {/* Personal Info */}
             <div className="grid grid-cols-3 gap-y-8 text-center text-sm text-astrablack py-10">
               <div>
-                <p className="font-rb">{capitalizeName(profile.first_name)}</p>
+                <p className="font-rb">{capitalizeName(profile.first_name) || "N/A"}</p>
                 <p className="text-astradarkgray">First Name</p>
               </div>
               <div>
@@ -400,33 +422,35 @@ export default function AlumniSearchProfile() {
                 <p className="text-astradarkgray">Middle Name</p>
               </div>
               <div>
-                <p className="font-rb">{capitalizeName(profile.last_name)}</p>
+                <p className="font-rb">{capitalizeName(profile.last_name) || "N/A"}</p>
                 <p className="text-astradarkgray">Surname</p>
               </div>
 
               <div>
-                <p className="font-rb">{profile.honorifics}</p>
+                <p className="font-rb">{profile.honorifics || "N?A"}</p>
                 <p className="text-astradarkgray">Title</p>
               </div>
               <div>
-                <p className="font-rb">{profile.gender}</p>
+                <p className="font-rb">{profile.gender || "N/A"}</p>
                 <p className="text-astradarkgray">Gender</p>
               </div>
               <div>
-                <p className="font-rb">{profile.birthdate}</p>
+                <p className="font-rb">{profile.birthdate || "N/A"}</p>
                 <p className="text-astradarkgray">Birthdate</p>
               </div>
 
               <div>
-                <p className="font-rb">{CIVIL_STATUS_LABELS[profile.civil_status]}</p>
+                <p className="font-rb">{CIVIL_STATUS_LABELS[profile.civil_status] || "N/A"}</p>
                 <p className="text-astradarkgray">Civil Status</p>
               </div>
               <div>
-                <p className="font-rb">{nationalities.getName(profile.citizenship, "en")}</p>
-                <p className="text-astradarkgray">Citizenship</p>
+              <p className="font-rb">
+                {profile.citizenship ? nationalities.getName(profile.citizenship, "en") : "N/A"}
+              </p>
+              <p className="text-astradarkgray">Citizenship</p>
               </div>
               <div>
-                <p className="font-rb">{course}</p>
+                <p className="font-rb">{course || "N/A"}</p>
                 <p className="text-astradarkgray">Degree Program</p>
               </div>
             </div>
@@ -436,29 +460,28 @@ export default function AlumniSearchProfile() {
               <h4 className="bg-astraprimary text-white px-4 py-2 rounded-t-md text-sm font-semibold">
                 Experience
               </h4>
-              <div className="space-y-4 p-4 bg-astratintedwhite rounded-b-md text-sm">
+              <div className="p-4 bg-astratintedwhite rounded-b-md">
                 {workExperience?.length > 0 ? (
-                  workExperience.map((experience, idx) => (
-                    <div key={idx} className="border-l-4 border-astralight rounded">
-                      <div className="ml-5">
-                        <p className="font-semibold text-astrablack">{experience.title}</p>
-                        <p className="font-semibold text-astrablack">{experience.company}</p>
-                        <p className="text-astradarkgray">
-                          {experience.year_started} - {experience.year_ended ? experience.year_ended : "Present"}
-                        </p>
-                        <p className="italic text-astradarkgray">{experience.location}</p>
-                        <p className="italic text-astradarkgray">{experience.salary}</p>
+                  <div className="space-y-4">
+                    {workExperience.map((experience, idx) => (
+                      <div key={idx} className="border-l-4 border-astralight rounded">
+                        <div className="ml-5">
+                          <p className="font-semibold text-astrablack">{experience.title}</p>
+                          <p className="font-semibold text-astrablack">{experience.company}</p>
+                          <p className="text-astradarkgray">
+                            {experience.year_started} - {experience.year_ended ? experience.year_ended : "Present"}
+                          </p>
+                          <p className="italic text-astradarkgray">{experience.location}</p>
+                          <p className="italic text-astradarkgray">{experience.salary}</p>
+                        </div>
                       </div>
-                    </div>
-                  ))) : (
-                  {/*
-                                      TODO: FIX DISPLAY, text div is not centered and does not flex
-                                  */},
-                  <div className="border-l-4 border-astralight rounded">
-                    <div className="text-center mt-50 text-astradarkgray">
-                      {"No work experience"}
-                    </div>
+                    ))}
                   </div>
+                ) : (
+                  <EmptyState
+                    Icon={Briefcase}
+                    message="No work experience to display"
+                  />
                 )}
               </div>
             </div>
@@ -468,25 +491,28 @@ export default function AlumniSearchProfile() {
               <h4 className="bg-astraprimary text-white px-4 py-2 rounded-t-md text-sm font-semibold">
                 Affiliations
               </h4>
-              <div className="space-y-4 p-4 bg-astratintedwhite rounded-b-md text-sm">
+              <div className="p-4 bg-astratintedwhite rounded-b-md">
                 {organizationAffiliations?.length > 0 ? (
-                  organizationAffiliations.map((affiliation, idx) => (
-                    <div key={idx} className="border-l-4 border-astralight rounded">
-                      <div className="ml-5">
-                        <p className="font-semibold text-astrablack">{affiliation.organizations.name}</p>
-                        <p className="italic text-astradarkgray">{affiliation.role}</p>
-                        <p className="text-astradarkgray">
-                          {formatDate(affiliation.joined_date, "month-year")}
-                          <br />
-                          {affiliation.location}
-                        </p>
+                  <div className="space-y-4">
+                    {organizationAffiliations.map((affiliation, idx) => (
+                      <div key={idx} className="border-l-4 border-astralight rounded">
+                        <div className="ml-5">
+                          <p className="font-semibold text-astrablack">{affiliation.organizations.name}</p>
+                          <p className="italic text-astradarkgray">{affiliation.role}</p>
+                          <p className="text-astradarkgray">
+                            {formatDate(affiliation.joined_date, "month-year")}
+                            <br />
+                            {affiliation.location}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center mt-50 text-astradarkgray">
-                    {"No affiliations found."}
+                    ))}
                   </div>
+                ) : (
+                  <EmptyState
+                    Icon={Users}
+                    message="No affiliations to display"
+                  />
                 )}
               </div>
             </div>
@@ -499,25 +525,32 @@ export default function AlumniSearchProfile() {
               <h4 className="font-rb text-astrablack mb-0">Technical Skills</h4>
               <hr className="h-2 border-astralightgray"></hr>
               <div className="flex gap-3 flex-wrap text-sm">
-                {profile.skills
-                  ?.split(",")
-                  .map(skill => skill.trim())
-                  .filter(skill => skill.length > 0)
-                  .map((skill, idx) => {
-                    const colors = [
-                      "bg-blue-100 text-blue-700",
-                      "bg-pink-100 text-pink-700",
-                      "bg-green-100 text-green-700",
-                    ];
-                    const color = colors[idx % colors.length];
-                    return (
-                      <SkillTag
-                        key={idx}
-                        text={skill}
-                        color={color}
-                      />
-                    );
-                  })}
+                {profile.skills && profile.skills.trim() ? (
+                  profile.skills
+                    .split(",")
+                    .map(skill => skill.trim())
+                    .filter(skill => skill.length > 0)
+                    .map((skill, idx) => {
+                      const colors = [
+                        "bg-blue-100 text-blue-700",
+                        "bg-pink-100 text-pink-700",
+                        "bg-green-100 text-green-700",
+                      ];
+                      const color = colors[idx % colors.length];
+                      return (
+                        <SkillTag
+                          key={idx}
+                          text={skill}
+                          color={color}
+                        />
+                      );
+                    })
+                ) : (
+                  <EmptyState 
+                    Icon={Code}
+                    message="No technical skills listed"
+                  />
+                )}
               </div>
             </div>
 
@@ -526,26 +559,30 @@ export default function AlumniSearchProfile() {
               <h4 className="font-rb text-astrablack mb-0">Fields of Interest</h4>
               <hr className="h-2 border-astralightgray"></hr>
               <div className="flex gap-3 flex-wrap text-sm">
-                {workExperience?.length > 0 ? (
-                  workExperience.map((experience, idx) => {
-                    const colors = [
-                      "bg-blue-100 text-blue-700",
-                      "bg-pink-100 text-pink-700",
-                      "bg-green-100 text-green-700",
-                    ];
-                    const color = colors[idx % colors.length];
-                    return (
-                      <SkillTag
-                        key={idx}
-                        text={experience.field}
-                        color={color}
-                      />
-                    );
-                  })
+                {workExperience?.length > 0 && 
+                 workExperience.some(exp => exp.field && exp.field.trim()) ? (
+                  workExperience
+                    .filter(exp => exp.field && exp.field.trim())
+                    .map((experience, idx) => {
+                      const colors = [
+                        "bg-blue-100 text-blue-700",
+                        "bg-pink-100 text-pink-700",
+                        "bg-green-100 text-green-700",
+                      ];
+                      const color = colors[idx % colors.length];
+                      return (
+                        <SkillTag
+                          key={idx}
+                          text={experience.field}
+                          color={color}
+                        />
+                      );
+                    })
                 ) : (
-                  <div className="text-center mt-50 text-astradarkgray">
-                    {"No particular field of interest"}
-                  </div>
+                  <EmptyState 
+                    Icon={Lightbulb}
+                    message="No fields of interest specified"
+                  />
                 )}
               </div>
             </div>
@@ -555,22 +592,28 @@ export default function AlumniSearchProfile() {
               <h4 className="font-rb text-astrablack mb-0">Proof of Graduation</h4>
               <hr className="h-2 border-astralightgray"></hr>
               <div className="relative flex justify-center items-center h-60 bg-gray-100 rounded-md border shadow">
-                {/* main image */}
-                <img
-                  src="https://media.licdn.com/dms/image/v2/D5622AQG1fAsAsQh6HQ/feedshare-shrink_800/feedshare-shrink_800/0/1722688761782?e=2147483647&v=beta&t=uINCPcGEVdl801U3Zbcg5tkbeqgKzePV0R4TT6q6q0E"
-                  alt="Proof"
-                  className="w-full h-full object-cover rounded-md"
-                  onError={(e) => {
-                    e.target.style.display = "none";
-                    e.target.nextElementSibling.style.display = "flex";
-                  }}
-                />
-
-                {/* fallback icon (hidden by default) */}
-                <div className="hidden absolute inset-0 flex-col items-center justify-center text-gray-400">
-                  <Image className="w-16 h-16" strokeWidth="1" />
-                  <span className="mt-2">Image not available</span>
-                </div>
+                {profile.proof_url ? (
+                  <>
+                    <img
+                      src={profile.proof_url}
+                      alt="Proof of Graduation"
+                      className="w-full h-full object-cover rounded-md"
+                      onError={(e) => {
+                        e.target.style.display = "none";
+                        e.target.nextElementSibling.style.display = "flex";
+                      }}
+                    />
+                    <div className="hidden absolute inset-0 flex-col items-center justify-center text-gray-400">
+                      <Image className="w-16 h-16" strokeWidth="1" />
+                      <span className="mt-2">Image failed to load</span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
+                    <Image className="w-16 h-16" strokeWidth="1" />
+                    <span className="mt-2 italic">No proof of graduation provided</span>
+                  </div>
+                )}
               </div>
             </div>
             <div className='flex justify-center gap-2'>
