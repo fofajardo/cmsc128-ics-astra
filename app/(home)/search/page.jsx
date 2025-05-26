@@ -11,7 +11,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faChevronDown, faSort, faFilter } from "@fortawesome/free-solid-svg-icons";
 import { Icon } from "@iconify/react";
 import FilterDropdown from "@/components/events/GroupedEvents/FilterDropdown";
-import { ParticlesBackground } from "@/components/ParticlesBackground";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -364,13 +363,12 @@ export default function Page() {
           className="relative w-full bg-cover bg-center"
           style={{ backgroundImage: "url('/blue-bg.png')" }}
         >
-          <ParticlesBackground count={40} />
-          <div className="max-w-[1440px] mx-auto px-4 py-10 md:px-12 md:py-16 lg:px-12 lg:py-20 flex flex-col lg:flex-row items-center justify-between text-astrawhite gap-8">
+          <div className="max-w-[1440px] mx-auto px-6 py-10 md:px-12 md:py-16 lg:px-12 lg:py-20 flex flex-col lg:flex-row items-center justify-between text-astrawhite gap-6 lg:gap-10">
             <div className="max-w-[600px] space-y-4 text-center lg:text-left animate-slide-up">
-              <h1 className="text-[60px] font-extrabold leading-[1.1]">
+              <h1 className="font-h1 text-astrawhite leading-[1.1] text-3xl md:text-4xl lg:text-5xl">
                 Alumni Directory
               </h1>
-              <p className="text-lg font-medium">
+              <p className="font-l text-astrawhite text-sm md:text-base">
                 Discover, connect, and engage with alumni to expand your network!
               </p>
             </div>
@@ -388,7 +386,7 @@ export default function Page() {
         </div>
 
         {/* Search Bar Section */}
-        <section className="py-16 md:py-20 relative w-full flex flex-col items-center">
+        <section className="py-16 md:py-24 relative w-full flex flex-col items-center">
           <div className="w-full max-w-7xl px-4 md:px-8 flex flex-col items-center">
             <div className="w-full max-w-[1000px] mb-6 md:mb-8 flex flex-col items-center">
               <div className="flex items-stretch w-full border border-astragray bg-astrawhite">
@@ -407,7 +405,7 @@ export default function Page() {
                 </button>
               </div>
 
-              <div className="flex flex-wrap gap-4 mt-4 justify-center items-end">
+              <div className="flex flex-wrap gap-4 mt-4 justify-start items-end">
                 {/* Graduation Year Inputs */}
                 <div className="flex flex-col items-start gap-2">
                   <p className="font-medium text-sm text-astradarkgray">Graduation Year</p>
@@ -418,7 +416,7 @@ export default function Page() {
                       id="minGradYear"
                       name="minGradYear"
                       placeholder="Min Year"
-                      className="border-2 border-astraprimary p-2 pl-4 h-10 w-40 rounded-lg text-sm bg-astrawhite text-astrablack"
+                      className="border border-astraprimary p-2 pl-4 h-10 rounded-lg text-sm"
                       value={filters.minGradYear}
                       onChange={handleFilterChange}
                       onBlur={handleApplyFilters}
@@ -428,14 +426,14 @@ export default function Page() {
                         }
                       }}
                     />
-                    <p className="font-normal text-sm leading-6 text-astrablack">to</p>
+                    <p className="font-normal text-sm leading-6 text-astradarkgray">to</p>
                     <label htmlFor="maxGradYear" className="sr-only">Max Graduation Year</label>
                     <input
                       type="text"
                       id="maxGradYear"
                       name="maxGradYear"
                       placeholder="Max Year"
-                      className="border-2 border-astraprimary p-2 pl-4 h-10 w-40 rounded-lg text-sm bg-astrawhite text-astrablack"
+                      className="border border-astraprimary p-2 pl-4 h-10 rounded-lg text-sm"
                       value={filters.maxGradYear}
                       onChange={handleFilterChange}
                       onBlur={handleApplyFilters}

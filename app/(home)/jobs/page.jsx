@@ -130,7 +130,7 @@ export default function JobsPage() {
   const [showExpired, setExpired] = useState(false);
 
   return (
-    <div className="overflow-hidden pb-10 bg-astratintedwhite w-full flex flex-col items-center">
+    <div className="overflow-hidden pb-10 bg-astradirtywhite w-full flex flex-col items-center">
       <div className="w-full bg-astradirtywhite mb-8">
         <div
           className="relative w-full bg-cover bg-center"
