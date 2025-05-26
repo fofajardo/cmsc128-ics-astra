@@ -49,6 +49,7 @@ class BaseRoutes {
       getContacts: (id) => `${this.BASE_URL}/users/${id}/contacts`,
       getAvatar: (id) => `${this.BASE_URL}/users/${id}/avatar`,
       getOrganizationsWithOrgId: (id, orgId) => `${this.BASE_URL}/users/${id}/organizations/${orgId}`,
+      getDegreeProof: (id) => `${this.BASE_URL}/users/${id}/degree-proof`,
     };
 
     this.degreePrograms = {

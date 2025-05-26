@@ -19,6 +19,8 @@ const usersExtensionRoutes = (aUpload) => {
   router.delete("/:alumId/organizations/:orgId", organizationAffiliationsController.deleteAffiliatedOrganization);
   router.post("/:userId/avatar", aUpload.single("avatar"), photosController.uploadOrReplaceAvatar);
   router.delete("/:id/avatar", photosController.deleteAvatar);
+  router.post("/:userId/degree-proof", aUpload.single("degree_proof"), photosController.uploadOrReplaceDegreeProof);
+  router.delete("/:id/degree-proof", photosController.deleteDegreeProof);
   router.get("/:id/contacts", contactsController.getContactsByUserId);
 
   return router;

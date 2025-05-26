@@ -17,7 +17,7 @@ function buildUserContext() {
   const [profile, setProfile] = useState(null);
   const [degreePrograms, setDegreePrograms] = useState(null);
   const [degreeProofUploaded, setDegreeProofUploaded] = useState(false);
-  const [degreeProofUrl, setDegreeProofUrl] = useState(null);
+  const [degreeProofUrl, setDegreeProofUrl] = useState("https://cdn-icons-png.flaticon.com/512/8373/8373460.png");
   const [workExperiences, setWorkExperiences] = useState(null);
   const [contacts, setContacts] = useState(null);
   const [organizationAffiliations, setOrganizationAffiliations] = useState(null);
@@ -281,6 +281,12 @@ async function fetchData(aUser, aContext, aIsMinimal) {
     } catch (e) {
       // Ignore missing profile.
     }
+    try {
+      const degreePrograms = await axios.get(clientRoutes.users.getOneDegreePrograms(aUser.id));
+      aContext.actions.setDegreePrograms(degreePrograms?.data?.degreePrograms);
+    } catch (e) {
+      // Ignore missing degree programs.
+    }
 
     if (aIsMinimal) {
       try {
@@ -290,7 +296,6 @@ async function fetchData(aUser, aContext, aIsMinimal) {
         // Ignore missing degree proof.
       }
       aContext.actions.setContacts(null);
-      aContext.actions.setDegreePrograms(null);
       aContext.actions.setDegreeProofUrl(null);
       aContext.actions.setWorkExperiences(null);
       aContext.actions.setOrganizationAffiliations(null);
@@ -301,6 +306,7 @@ async function fetchData(aUser, aContext, aIsMinimal) {
         aContext.actions.setDegreeProofUploaded(degreeProof.status === httpStatus.OK);
         aContext.actions.setDegreeProofUrl(degreeProof?.data?.photo);
       } catch (e) {
+        aContext.actions.setDegreeProofUrl("https://cdn-icons-png.flaticon.com/512/8373/8373460.png");
         // Ignore missing degree proof.
       }
       try {
@@ -308,12 +314,6 @@ async function fetchData(aUser, aContext, aIsMinimal) {
         aContext.actions.setWorkExperiences(workExperiences?.data?.work_experiences);
       } catch (e) {
         // Ignore missing work experiences.
-      }
-      try {
-        const degreePrograms = await axios.get(clientRoutes.users.getOneDegreePrograms(aUser.id));
-        aContext.actions.setDegreePrograms(degreePrograms?.data?.degreePrograms);
-      } catch (e) {
-        // Ignore missing degree programs.
       }
       try {
         const contacts = await axios.get(clientRoutes.users.getContacts(aUser.id));

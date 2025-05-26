@@ -11,6 +11,8 @@ import nationalities from "i18n-nationality";
 import nationalities_en from "i18n-nationality/langs/en.json";
 import DegreeProgramsSection from "@/components/profile/sections/DegreeProgramsSection.jsx";
 import {ContactsSection} from "@/components/profile/sections/ContactsSection.jsx";
+import React from "react";
+import DegreeProofSection from "@/components/profile/sections/DegreeProofSection.jsx";
 
 nationalities.registerLocale(nationalities_en);
 
@@ -42,6 +44,10 @@ export default function Page() {
         )}
 
         <PersonalInfo context={context} />
+
+        {!context.state.isVerified && (
+          <DegreeProofSection context={context} />
+        )}
 
         {context.state.isVerified && (
           <>

@@ -479,6 +479,85 @@ const uploadOrReplaceAvatar = async (req, res) => {
   }
 };
 
+const uploadOrReplaceDegreeProof = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const file = req.file;
+
+    // Validate inputs
+    if (!file || !userId) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "File and userId are required",
+      });
+    }
+
+    // Read the file content
+    const fileContent = fs.readFileSync(path.join(file.destination, file.filename));
+
+    // Call the service function
+    const { data, error } = await photosService.uploadOrReplaceDegreeProof(
+      req.supabase,
+      userId,
+      fileContent,
+      file.mimetype
+    );
+
+    if (error) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error.message || "Failed to upload degree proof",
+      });
+    }
+
+    // Return updated URL.
+    const {data: degreeProofData, error: degreeProofError} =
+      await PhotosService.getDegreeProofUrl(req.supabase, userId);
+
+    return res.status(httpStatus.CREATED).json({
+      status: "SUCCESS",
+      message: "Degree proof uploaded successfully",
+      photo: data[0],
+      degree_proof_url: degreeProofData?.signedUrl,
+    });
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message || "An unexpected error occurred",
+    });
+  }
+};
+
+const deleteDegreeProof = async function(req, res) {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "User ID is required",
+      });
+    }
+
+    // Fetch the photo details to get the file path (image_key)
+    const { error } = await photosService.deleteDegreeProof(req.supabase, id);
+    if (error) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: error.message,
+      });
+    }
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message,
+    });
+  }
+
+  return res.status(httpStatus.OK).json({
+    status: "DELETED",
+  });
+};
+
 const deleteNewsletter = async (req, res) => {
   try {
     const { id } = req.params;
@@ -1157,6 +1236,8 @@ const photosController = {
   deleteNewsletter,
   deleteAvatar,
   uploadOrReplaceAvatar,
+  uploadOrReplaceDegreeProof,
+  deleteDegreeProof,
   updateEventPhoto,
 };
 
