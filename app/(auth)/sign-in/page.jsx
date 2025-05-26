@@ -57,13 +57,13 @@ export default function LoginPage() {
           <div className="text-[var(--color-astrared)] text-xs mt-1">{errors.password}</div>
         )}
 
-        {/* {errorsForMap.length > 0 && (
+        {errorsForMap.length > 0 && (
           <div className="bg-red-100 text-[var(--color-astrared)] text-sm px-3 py-2 rounded">
             {errorsForMap.map((err, idx) => (
               <p key={idx}>{err}</p>
             ))}
           </div>
-        )} */}
+        )}
 
         <button
           type="submit"

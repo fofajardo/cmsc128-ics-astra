@@ -102,13 +102,13 @@ export default function SignUpStep4({ onSetPage }) {
           )}
         </div>
 
-        {/* {errorsForMap.length > 0 && (
+        {errorsForMap.length > 0 && (
           <div className="bg-red-100 text-[var(--color-astrared)] text-sm px-3 py-2 rounded">
             {errorsForMap.map((err, idx) => (
               <p key={idx}>{err}</p>
             ))}
           </div>
-        )} */}
+        )}
 
         <button
           type="submit"
