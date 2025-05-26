@@ -312,7 +312,7 @@ const getProjectRequestById = async (req, res) => {
       });
     };
 
-    const requestData = requestsData[0];
+    const requestData = requestsData;
 
     // get name and role from alumni profiles table
     const { data: alumData, error: alumError } = await alumniService.fetchAlumniProfileById(req.supabase, requestData.user_id);
