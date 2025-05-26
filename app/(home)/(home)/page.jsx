@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion, useAnimation } from "framer-motion";
 import { RouteGuard } from "@/components/RouteGuard.jsx";
 import React, { useEffect, useState } from "react";
-import Particles, { initParticlesEngine } from "@tsparticles/react";
+import Particles, { initParticlesEngine } from "@tsparticles/react"; //
 import { loadSlim } from "@tsparticles/slim";
 
 const baseLoopImages1 = ["/icsloop1.jpg", "/icsloop2.jpg", "/icsloop3.jpg", "/icsloop4.jpg", "/icsloop5.jpg"];
