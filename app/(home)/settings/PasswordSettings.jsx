@@ -51,14 +51,14 @@ export default function PasswordSettings() {
   };
 
   const PasswordInput = ({
-                           field,
-                           form,
-                           id,
-                           label,
-                           showPassword,
-                           toggleShowPassword,
-                           ...props
-                         }) => (
+    field,
+    form,
+    id,
+    label,
+    showPassword,
+    toggleShowPassword,
+    ...props
+  }) => (
     <div>
       <label htmlFor={id} className="block text-sm md:text-base font-medium text-[var(--color-astrablack)]">
         {label} <span className="text-[var(--color-astrared)]">*</span>
