@@ -15,17 +15,17 @@ nationalities.registerLocale(nationalities_en);
 export default function Page() {
   const context = useUser();
 
-  const technicalSkills = (context.state.profile.skills?.trim() ?? "") === ""
-    ? []
-    : context.state.profile.skills.split(",").map(function(skill) {
-      return { text: skill };
-    });
+  const profile = context.state.profile ?? {};
 
-  const fieldOfInterests = (context.state.profile.interests?.trim() ?? "") === ""
-    ? []
-    : context.state.profile.interests.split(",").map(function(interest) {
-      return { text: interest };
-    });
+  const technicalSkills =
+    typeof profile.skills === "string" && profile.skills.trim() !== ""
+      ? profile.skills.split(",").map(skill => ({ text: skill }))
+      : [];
+
+  const fieldOfInterests =
+    typeof profile.interests === "string" && profile.interests.trim() !== ""
+      ? profile.interests.split(",").map(interest => ({ text: interest }))
+      : [];
 
   return (
     <div className="min-h-screen bg-[var(--color-astratintedwhite)]">
