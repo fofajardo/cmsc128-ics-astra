@@ -165,11 +165,13 @@ export default function ProjectsPage() {
             <p className="text-lg font-medium">
               Discover, support, and contribute to meaningful causes initiated by people like you.
             </p>
-            <Link href="/projects/request/goal" passHref>
-              <button className="mt-4 px-8 py-3 border-2 border-white text-white hover:bg-white hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer">
-                Request a Project
-              </button>
-            </Link>
+            {!user.state.isGuest && (
+              <Link href="/projects/request/goal" passHref>
+                <button className="mt-4 px-8 py-3 border-2 border-white text-white hover:bg-white hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer">
+                  Request a Project
+                </button>
+              </Link>
+            )}
           </div>
           <div className="w-full lg:w-[550px] flex justify-center">
             <div className="relative w-full h-auto max-w-[550px] animate-natural-float">
