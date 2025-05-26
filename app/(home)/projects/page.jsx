@@ -541,7 +541,7 @@ export default function ProjectsPage() {
           </p>
 
           <div className="relative">
-            {/* Left Arrow */}
+            {/* Left Arrow*/}
             <button
               onClick={handlePrev}
               disabled={startIndex === 0}
