@@ -147,7 +147,7 @@ export default function ProjectCard({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              window.open(donationLink, '_blank');
+              window.open(donationLink, "_blank");
             }}
             className="w-full py-3 px-4 bg-astraprimary text-astrawhite rounded-lg hover:bg-astraprimary/90 transition-all duration-300 text-sm sm:text-base font-medium touch-target"
           >
