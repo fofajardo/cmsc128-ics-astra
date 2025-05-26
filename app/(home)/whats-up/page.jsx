@@ -233,9 +233,9 @@ function newsItemBuilder(item) {
   return (
     <div
       key={item.id}
-      className={`news-item ${animations.staggered} flex flex-row gap-6 bg-white rounded-lg shadow-sm hover:shadow-xl hover:scale-102 transition-all duration-300 max-md:flex-col`}
+      className={`news-item ${animations.staggered} flex flex-row gap-2 bg-white rounded-lg shadow-sm hover:shadow-xl hover:scale-102 transition-all duration-300 max-md:flex-col`}
     >
-      <div className="w-2/5 max-md:w-full">
+      <div className="w-2/5 max-md:w-full" style={{ height: "300px", flexShrink: 0 }}>
         <img
           src={item.imageUrl}
           alt={`News thumbnail for ${item.title}`}
@@ -243,10 +243,10 @@ function newsItemBuilder(item) {
         />
       </div>
       <div className="w-3/5 p-6 flex flex-col justify-center max-md:w-full">
-        <h3 className="text-2xl font-bold text-slate-900 max-md:text-xl">
+        <h3 className="text-2xl font-bold text-slate-900 max-md:text-xl mr-10">
           {item.title}
         </h3>
-        <p className="mt-3 text-base text-slate-500 line-clamp-3">{item.details}</p>
+        <p className="mt-3 text-base text-slate-500 line-clamp-3 mr-10">{item.details}</p>
         <div className="mt-4">
           <Link href={`/whats-up/article/${item.id}`}>
             <span className="py-2 text-sm font-medium text-blue-600 hover:text-blue-800 cursor-pointer">

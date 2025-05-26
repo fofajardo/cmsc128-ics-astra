@@ -6,6 +6,7 @@ import { Image, Send } from "lucide-react";
 import ToastNotification from "@/components/ToastNotification";
 import axios from "axios";
 import { useSignedInUser } from "@/components/UserContext";
+import { PhotoType } from "../../../../../common/scopes";
 
 export default function CreateAnnouncement() {
   const userContext = useSignedInUser();
@@ -142,7 +143,7 @@ export default function CreateAnnouncement() {
           const formData = new FormData();
           formData.append("File", photo);
           formData.append("content_id", contentId);
-          formData.append("type", 5); // TODO: use appropriate ENUM; check photo_type.js once merged
+          formData.append("type", PhotoType.PROJECT_PIC);
 
           // console.log("Uploading photo for announcement ID:", contentId);
 

@@ -1,7 +1,7 @@
 import httpStatus from "http-status-codes";
 import usersService from "../services/usersService.js";
-import { Actions, Subjects } from "../../common/scopes.js";
-import PhotosService from "../services/photosService.js";
+import {Actions, Subjects} from "../../common/scopes.js";
+import {retrieveAvatarForUser} from "./common.js";
 
 const getUsers = async (req, res) => {
   if (req.you.cannot(Actions.READ, Subjects.USER)) {
@@ -192,16 +192,7 @@ const getUserById = async (req, res) => {
       });
     }
 
-    // FIXME: commit this image to the repository, don't reference externally!
-    let avatarUrl = "https://cdn-icons-png.flaticon.com/512/145/145974.png";
-    const {data: avatarData, error: avatarError} =
-      await PhotosService.getAvatarUrl(req.supabase, userId);
-    if (avatarError) {
-      data.avatar_exists = false;
-    } else {
-      avatarUrl = avatarData?.signedUrl;
-    }
-    data.avatar_url = avatarUrl;
+    await retrieveAvatarForUser(req, userId, data);
 
     return res.status(httpStatus.OK).json({
       status: "OK",

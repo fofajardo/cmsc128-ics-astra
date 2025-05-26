@@ -172,12 +172,11 @@ export default function ProfilePictureModal({ context }) {
           className="w-[128px] h-[128px] rounded-full border-2 border-gray-50 shadow-sm"
         />
         <div className="absolute bottom-0 right-0 opacity-0 cursor-pointer w-32 h-32 rounded-full"></div>
-        <label
-          htmlFor="profile-picture-upload"
+        <div
           className="absolute bottom-0 right-0 p-2 bg-black bg-opacity-50 rounded-full cursor-pointer"
         >
           <Camera className="text-white" size={16}/>
-        </label>
+        </div>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

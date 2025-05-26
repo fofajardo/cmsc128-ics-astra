@@ -51,6 +51,11 @@ export const PersonalInfoUpdateSchema = object({
   is_profile_public: boolean(),
 });
 
+export const AddressInfoUpdateSchema = object({
+  location: string().required("Location is required"),
+  address: string().required("Address is required"),
+});
+
 export const DegreeProgramSchema = object({
   degree_program_const: string().required("Degree program is required"),
   year_started: string()

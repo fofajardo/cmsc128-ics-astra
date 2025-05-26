@@ -77,8 +77,8 @@ export default function AddEditAffiliationModal({ context, affiliation = null, a
         context.actions.patchOrganizationAffiliations(affiliationKey, values);
       } else {
         values.user_id = context.state.user.id;
-        const response = await axios.post(clientRoutes.users.getOrganizations(context.state.user?.id), values);
-        values.id = response.data.id;
+        await axios.post(clientRoutes.users.getOrganizations(context.state.user?.id), values);
+        values.organizations = aValues.organizations;
         context.actions.pushOrganizationAffiliation(values);
       }
 
@@ -101,7 +101,7 @@ export default function AddEditAffiliationModal({ context, affiliation = null, a
   const handleDelete = async () => {
     setIsChildSubmitting(true);
     try {
-      await axios.delete(clientRoutes.users.getOrganizationsWithOrgId(context.state.user.id, context.state.user?.id));
+      await axios.delete(clientRoutes.users.getOrganizationsWithOrgId(context.state.user.id, affiliation.organizations.id));
       context.actions.patchOrganizationAffiliations(affiliationKey, { is_deleted: true });
       setOpen(false);
       toast({
@@ -121,7 +121,7 @@ export default function AddEditAffiliationModal({ context, affiliation = null, a
   const organizations = context.state.organizations?.map(function(org) {
     const searchValue = org.name + " (" + org.acronym + ")";
     return {
-      id: org.id,
+      ...org,
       value: searchValue,
       label: org.name,
     };
