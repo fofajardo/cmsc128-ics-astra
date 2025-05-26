@@ -164,6 +164,14 @@ async function signInRedirectFe(aRequest, aResponse) {
   return aResponse.redirect(process.env.ICSA_FE_URL + "/");
 }
 
+async function signInRedirectFeSettingsEmail(aRequest, aResponse) {
+  return aResponse.redirect(absFeRoutes.settings.email());
+}
+
+async function signInRedirectFeSettingsPassword(aRequest, aResponse) {
+  return aResponse.redirect(absFeRoutes.settings.password());
+}
+
 async function signInGate(aRequest, aResponse, aNext) {
   if (aRequest.isAuthenticated()) {
     return aResponse.status(httpStatus.BAD_REQUEST).json({
@@ -192,6 +200,39 @@ async function signOut(aRequest, aResponse) {
   return aResponse.status(httpStatus.OK).json({status: "OK"});
 }
 
+async function updateUser(aRequest, aResponse) {
+  if (aRequest.isUnauthenticated()) {
+    return aResponse.status(httpStatus.NO_CONTENT).json({status: "NO_CONTENT"});
+  }
+
+  const {body} = aRequest;
+
+  let update = {};
+  if (body.email) {
+    update.email = body.email;
+    update.options = {
+      emailRedirectTo: absFeRoutes.settings.email(),
+    };
+  } else if (body.password) {
+    update.password = body.password;
+    update.options = {
+      emailRedirectTo: absFeRoutes.settings.password(),
+    };
+  }
+  if (body.nonce) {
+    update.nonce = body.nonce;
+  }
+
+  console.log(body, update);
+  const {data, error} = await aRequest.supabase.auth.updateUser(update);
+
+  if (error) {
+    return aResponse.sendErrorClient(error.message);
+  }
+
+  return aResponse.sendOk(data);
+}
+
 const authController = {
   signUp,
   signUpResendEmail,
@@ -201,8 +242,11 @@ const authController = {
   signInSbExternalCallback,
   signInGate,
   signInRedirectFe,
+  signInRedirectFeSettingsEmail,
+  signInRedirectFeSettingsPassword,
   signedInUser,
   signOut,
+  updateUser,
 };
 
 export default authController;

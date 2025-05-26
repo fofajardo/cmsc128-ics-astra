@@ -41,11 +41,23 @@ const authRouter = () => {
     controller.signedInUser
   ]);
 
+  router.get("/confirm/change-email", [
+    controller.signInSbConfirm,
+    controller.signInRedirectFeSettingsEmail
+  ]);
+
+  router.get("/confirm/reset-password", [
+    controller.signInSbConfirm,
+    controller.signInRedirectFeSettingsPassword
+  ]);
+
   router.post("/sign-up/email/resend", controller.signUpResendEmail);
 
   router.get("/signed-in-user", controller.signedInUser);
 
   router.post("/sign-out", controller.signOut);
+
+  router.post("/update", controller.updateUser);
 
   return router;
 };

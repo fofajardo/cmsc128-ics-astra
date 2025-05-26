@@ -30,7 +30,8 @@ class BaseRoutes {
       signInExternalCallback: () => `${this.BASE_URL}/auth/sign-in/external/callback`,
       signInConfirm: () => `${this.BASE_URL}/auth/confirm`,
       signedInUser: () => `${this.BASE_URL}/auth/signed-in-user`,
-      signOut: () => `${this.BASE_URL}/auth/sign-out`
+      signOut: () => `${this.BASE_URL}/auth/sign-out`,
+      update: () => `${this.BASE_URL}/auth/update`,
     };
 
     this.workExperiences = {
@@ -244,6 +245,13 @@ class FrontEndRoutes extends BaseRoutes {
       base: () => `${this.BASE_URL}/jobs`,
       view: (id) => `${this.BASE_URL}/jobs/${id}/view`,
       edit: (id) => `${this.BASE_URL}/jobs/${id}/edit`
+    };
+
+    this.settings = {
+      base: () => `${this.BASE_URL}/settings`,
+      email: (append= "") => `${this.BASE_URL}/settings?tab=email${append}`,
+      password: (append= "") => `${this.BASE_URL}/settings?tab=password${append}`,
+      twofactor: (append= "") => `${this.BASE_URL}/settings?tab=twofactor${append}`,
     };
 
     this.admin = {

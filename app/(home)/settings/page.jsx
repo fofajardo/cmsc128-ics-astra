@@ -1,6 +1,7 @@
 "use client";
-import { useState } from "react";
+
 import { Mail, User, Bell, Lock } from "lucide-react";
+import { useTabNavigation } from "@/hooks/useTabNavigation";
 import EmailSettings from "./EmailSettings";
 import PasswordSettings from "./PasswordSettings";
 import NewsletterSettings from "./NewsletterSettings";
@@ -8,13 +9,14 @@ import TwoFactorSettings from "./TwoFactorSettings";
 import TabNavigation from "./TabNavigation";
 
 export default function AccountSettings() {
-  const [activeTab, setActiveTab] = useState("email");
+  const validTabs = ["email", "password", "newsletter", "twofactor"];
+  const { activeTab, handleTabChange, isLoading } = useTabNavigation("email", validTabs);
 
   const tabs = [
     { id: "email", label: "Email Settings", icon: <Mail className="h-5 w-5" /> },
     { id: "password", label: "Password Settings", icon: <User className="h-5 w-5" /> },
     // { id: "newsletter", label: "Newsletter Settings", icon: <Bell className="h-5 w-5" /> },
-    { id: "twofactor", label: "Two-Factor Auth", icon: <Lock className="h-5 w-5" /> },
+    // { id: "twofactor", label: "Two-Factor Auth", icon: <Lock className="h-5 w-5" /> },
   ];
 
   const renderActiveTab = () => {
@@ -32,6 +34,14 @@ export default function AccountSettings() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-[600px] bg-[var(--color-astratintedwhite)] flex items-center justify-center">
+        <div>Loading...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-[600px] bg-[var(--color-astratintedwhite)] flex flex-col py-8 px-4">
       <div className="w-full max-w-5xl mx-auto p-6">
@@ -42,7 +52,7 @@ export default function AccountSettings() {
           <TabNavigation
             tabs={tabs}
             activeTab={activeTab}
-            setActiveTab={setActiveTab}
+            setActiveTab={handleTabChange}
           />
           <div className="flex-1 p-8">
             {renderActiveTab()}

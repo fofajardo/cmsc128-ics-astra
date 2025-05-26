@@ -1,7 +1,12 @@
 import { useState } from "react";
 import {toast} from "@/components/ToastNotification.jsx";
+import {useSignedInUser} from "@/components/UserContext.jsx";
+import axios from "axios";
+import {clientRoutes} from "../../../common/routes.js";
 
 export default function EmailSettings() {
+  const context = useSignedInUser();
+
   const [newEmail, setNewEmail] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -11,18 +16,31 @@ export default function EmailSettings() {
   const isValidEmail = (email) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  const handleUpdateEmail = () => {
+  const handleUpdateEmail = async () => {
     if (!newEmail || !isValidEmail(newEmail)) {
       setEmailError("Please enter a valid email address.");
       return;
     }
     setEmailError("");
+    context.actions.patchUser({email: newEmail});
 
-    toast({
-      variant: "success",
-      title: "Verification code sent to email!"
-    });
-    setIsVerificationVisible(true);
+    try {
+      await axios.post(clientRoutes.auth.update(), {
+        email: newEmail,
+      });
+
+      toast({
+        variant: "success",
+        title: "Email address updated."
+      });
+
+      // setIsVerificationVisible(true);
+    } catch (e) {
+      toast({
+        variant: "fail",
+        title: "Failed to update email address."
+      });
+    }
   };
 
   const handleVerifyCode = () => {
@@ -60,7 +78,7 @@ export default function EmailSettings() {
           <input
             id="current-email"
             type="email"
-            value="jmdelacruz@up.edu.ph"
+            value={context.state.user?.email}
             readOnly
             className="text-sm md:text-base bg-[var(--color-astradirtywhite)] text-gray-500 w-full py-2 px-3 border border-gray-300 rounded-md"
           />
