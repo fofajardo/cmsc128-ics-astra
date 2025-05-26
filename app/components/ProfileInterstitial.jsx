@@ -3,7 +3,7 @@
 import {Info} from "lucide-react";
 import Link from "next/link";
 import {feRoutes} from "../../common/routes.js";
-import {useSignedInUser, useUser} from "@/components/UserContext.jsx";
+import {useSignedInUser} from "@/components/UserContext.jsx";
 import {LoadingSpinner} from "@/components/LoadingSpinner.jsx";
 import PropTypes from "prop-types";
 

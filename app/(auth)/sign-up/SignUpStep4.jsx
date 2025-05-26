@@ -7,32 +7,7 @@ import AuthSignOutLink from "@/(auth)/AuthSignOutLink.jsx";
 import { useSignedInUser } from "@/components/UserContext.jsx";
 import httpStatus from "http-status-codes";
 import {DegreeProgramSchema} from "../../../common/validationSchemas.js";
-
-// FIXME: This is a temporary solution.
-// We need to get the degree programs from the backend.
-// For now, we are hardcoding the degree programs.
-const kICSDegreePrograms = [
-  {
-    name: "BS Computer Science",
-    level: "Bachelor of Science",
-    institution: "University of the Philippines Los Baños",
-  },
-  {
-    name: "MS Computer Science",
-    level: "Master of Science",
-    institution: "University of the Philippines Los Baños",
-  },
-  {
-    name: "Master of Information Technology",
-    level: "Master of Science",
-    institution: "University of the Philippines Los Baños",
-  },
-  {
-    name: "PhD Computer Science",
-    level: "Doctor of Philosophy",
-    institution: "University of the Philippines Los Baños",
-  },
-];
+import {kICSDegreePrograms} from "../../../common/scopes.js";
 
 export default function SignUpStep4({ onSetPage }) {
   const user = useSignedInUser();

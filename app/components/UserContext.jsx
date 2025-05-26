@@ -117,6 +117,11 @@ function buildUserContext() {
         };
         return setDegreePrograms(updatedDegreePrograms);
       },
+      pushDegreeProgram: function(degreeProgram) {
+        const updatedDegreePrograms = [...degreePrograms];
+        updatedDegreePrograms.push(degreeProgram);
+        return setDegreePrograms(updatedDegreePrograms);
+      },
       patchWorkExperiences: function(index, updates) {
         const updatedWorkExperiences = [...workExperiences];
         updatedWorkExperiences[index] = {
@@ -128,7 +133,6 @@ function buildUserContext() {
       pushWorkExperience: function(workExperience) {
         const updatedWorkExperiences = [...workExperiences];
         updatedWorkExperiences.push(workExperience);
-        console.log(updatedWorkExperiences);
         return setWorkExperiences(updatedWorkExperiences);
       },
       patchOrganizationAffiliations: function(index, updates) {

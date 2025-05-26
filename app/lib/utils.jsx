@@ -13,3 +13,10 @@ export function formatMonthYear(input) {
   const options = { year: "numeric", month: "long" };
   return date.toLocaleDateString("en-US", options);
 }
+
+export function formatYear(dateString) {
+  if (!dateString) {
+    return "";
+  }
+  return new Date(dateString).getFullYear().toString();
+}

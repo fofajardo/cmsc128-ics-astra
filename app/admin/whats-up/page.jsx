@@ -317,6 +317,56 @@ export default function CommunicationPage() {
     router.push(path);
   };
 
+  // Helper function to strip markdown and HTML, get plain text preview
+  const getPlainTextPreview = (content, maxLength = 100) => {
+    if (!content) return "";
+
+    let plainText = content
+      // Remove HTML tags
+      .replace(/<[^>]*>/g, "")
+      // Decode common HTML entities
+      .replace(/&nbsp;/g, " ")
+      .replace(/&#x20;/g, " ")
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, "\"")
+      .replace(/&#39;/g, "'")
+      .replace(/&apos;/g, "'")
+      // Remove markdown headers (# ## ### etc.)
+      .replace(/^#{1,6}\s+(.*)$/gm, "$1")
+      // Remove markdown bold (**text** or __text__)
+      .replace(/\*\*(.*?)\*\*/g, "$1")
+      .replace(/__(.*?)__/g, "$1")
+      // Remove markdown italic (*text* or _text_)
+      .replace(/\*(.*?)\*/g, "$1")
+      .replace(/_(.*?)_/g, "$1")
+      // Remove inline code (`code`)
+      .replace(/`([^`]+)`/g, "$1")
+      // Remove links ([text](url))
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, "$1")
+      // Remove blockquotes (> text)
+      .replace(/^>\s+(.*)$/gm, "$1")
+      // Remove horizontal rules (--- or ***)
+      .replace(/^[-*]{3,}$/gm, "")
+      // Remove list markers (- item, * item, 1. item)
+      .replace(/^[\s]*[-*+]\s+/gm, "")
+      .replace(/^[\s]*\d+\.\s+/gm, "")
+      // Convert multiple newlines to single space, but preserve some line breaks
+      .replace(/\n\s*\n/g, " ")
+      .replace(/\n/g, " ")
+      // Remove extra whitespace
+      .replace(/\s+/g, " ")
+      .trim();
+
+    // Truncate if too long
+    if (plainText.length > maxLength) {
+      plainText = plainText.substring(0, maxLength).trim() + "...";
+    }
+
+    return plainText;
+  };
+
   return (
     <div>
       {/* {showFilter && (
@@ -425,7 +475,7 @@ export default function CommunicationPage() {
                               </span>
                             </div>
                             <p className="text-sm text-astrawhite/80 mt-2 line-clamp-2">
-                              {announcement.details}
+                              {getPlainTextPreview(announcement.details)}
                             </p>
                           </div>
                         </div>

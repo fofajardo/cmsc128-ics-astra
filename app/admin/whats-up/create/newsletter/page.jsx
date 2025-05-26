@@ -6,6 +6,7 @@ import { Upload, Send } from "lucide-react";
 import ToastNotification from "@/components/ToastNotification";
 import axios from "axios";
 import { useSignedInUser } from "@/components/UserContext";
+import { PhotoType } from "../../../../../common/scopes";
 
 export default function UploadNewsletter() {
   const userContext = useSignedInUser();
@@ -114,7 +115,7 @@ export default function UploadNewsletter() {
           fileFormData.append("user_id", userContext?.state?.authUser?.id);
           fileFormData.append("content_id", contentId);
           fileFormData.append("title", formData.title);
-          fileFormData.append("type", 6); // TODO: use appropriate ENUM for newsletter
+          fileFormData.append("type", PhotoType.POSTS_PIC);
 
           const response = await axios.post(
             `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/newsletter`,

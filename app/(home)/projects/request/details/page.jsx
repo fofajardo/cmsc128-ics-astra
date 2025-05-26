@@ -86,7 +86,7 @@ const RequestFundraiserDetails = () => {
   return (
     <div className="min-h-screen w-full flex flex-col md:flex-row">
       {/* Left side */}
-      <div className="w-full md:w-[35%] bg-astralightgray flex py-8 md:py-0">
+      <div className="w-full md:w-[35%] bg-astralightgray/40 flex py-8 md:py-0">
         <div className="flex flex-col items-start space-y-4 md:space-y-6 pl-6 md:pl-10 pt-20 md:pt-60 ml-4 md:ml-6">
           {/* Header text */}
           <h2 className="text-3xl md:text-5xl text-astrablack text-left">

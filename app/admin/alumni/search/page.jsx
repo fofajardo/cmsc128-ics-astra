@@ -15,7 +15,7 @@ export default function AlumniSearch() {
     setShowFilter((prev) => !prev);
   };
   const [loading, setLoading] = useState(true);
-  const [alumList, setAlumList] = useState([]); // Filtered/sorted data for display
+  const [alumList, setAlumList] = useState([]);
   const [appliedFilters, updateFilters] = useState({
     yearFrom: "",
     yearTo: "",
@@ -69,28 +69,8 @@ export default function AlumniSearch() {
                 fieldOfWork:
                   alum.field || "N/A",
                 skills: alum.skills ? alum.skills.split(",") : [],
-                image:
-                  "https://cdn-icons-png.flaticon.com/512/145/145974.png",
+                image: alum.avatar_url,
               };
-
-              try {
-                const photoResponse = await axios.get(
-                  `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/alum/${alum.alum_id}`
-                );
-
-                if (
-                  photoResponse.data.status === "OK" &&
-                  photoResponse.data.photo
-                ) {
-                  alumData.image = photoResponse.data.photo;
-                }
-              } catch (photoError) {
-                ; // console.log(
-                //   `Failed to fetch photo for alum_id ${alum.alum_id}:`,
-                //   photoError
-                // );
-              }
-
               return alumData;
             })
           );
@@ -109,11 +89,9 @@ export default function AlumniSearch() {
           setAlumList(updatedAlumList);
           setLoading(false);
         } else {
-          // console.error("Unexpected response:", response.data);
           setLoading(false);
         }
       } catch (error) {
-        // console.error("Failed to fetch alumni:", error);
         setLoading(false);
       }
     };

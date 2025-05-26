@@ -109,7 +109,7 @@ export default function AdminAlumniLayout({ children }) {
             <div className="flex flex-col md:flex-row justify-center items-center gap-6">
               <AdminStatCard
                 title="Announcements"
-                value={255}
+                value={dashboard.announcements}
                 icon={<Megaphone className="size-13 text-white" strokeWidth={1.5} />}
                 route={false}
                 onClick={() => dynamicTabClick("Announcements")}
@@ -117,17 +117,10 @@ export default function AdminAlumniLayout({ children }) {
               />
               <AdminStatCard
                 title="Newsletters"
-                value={59}
+                value={dashboard.newsletters}
                 icon={<Newspaper className="size-13 text-white" strokeWidth={1.5} />}
                 route={false}
                 onClick={() => dynamicTabClick("Newsletters")}
-                className="bg-blue-800/80 backdrop-blur-md border border-white/10 rounded-xl"
-              />
-              <AdminStatCard
-                title="Active Events"
-                value={179}
-                icon={<CalendarDays className="size-13 text-white" strokeWidth={1.5} />}
-                route={"/admin/events"}
                 className="bg-blue-800/80 backdrop-blur-md border border-white/10 rounded-xl"
               />
             </div>
@@ -141,7 +134,7 @@ export default function AdminAlumniLayout({ children }) {
           )}
           {currTab === "Newsletters" && (
             <Link href="/admin/whats-up/create/newsletter" passHref>
-              <button className="mt-2 border-2 border-astrawhite text-astrawhite hover:bg-astrawhite hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-[200px] h-[60px]">
+              <button className="mt-7 mx-auto block border-2 border-astrawhite text-astrawhite hover:bg-astrawhite hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer w-[200px] h-[60px]">
                 Add a newsletter
               </button>
             </Link>

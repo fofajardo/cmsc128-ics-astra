@@ -1,7 +1,7 @@
 import httpStatus from "http-status-codes";
 import usersService from "../services/usersService.js";
 import { Actions, Subjects } from "../../common/scopes.js";
-import PhotosService from "../services/photosService.js";
+import { retrieveAvatarForUser } from "./common.js";
 
 const getUsers = async (req, res) => {
   if (req.you.cannot(Actions.READ, Subjects.USER)) {
@@ -68,6 +68,11 @@ const getInactiveAlumni = async (req, res) => {
       });
     }
 
+    await Promise.all(data.map(async (alumniProfile) => {
+      await retrieveAvatarForUser(req, alumniProfile.alum_id, alumniProfile);
+      return alumniProfile;
+    }));
+
     return res.status(httpStatus.OK).json({
       status: "OK",
       list: data || [],
@@ -106,12 +111,18 @@ const getApprovedAlumni = async (req, res) => {
       filters
     );
 
+
     if (error) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
         status: "FAILED",
         message: error.message
       });
     }
+
+    await Promise.all(data.map(async (alumniProfile) => {
+      await retrieveAvatarForUser(req, alumniProfile.alum_id, alumniProfile);
+      return alumniProfile;
+    }));
 
     return res.status(httpStatus.OK).json({
       status: "OK",
@@ -158,6 +169,11 @@ const getPendingAlumni = async (req, res) => {
       });
     }
 
+    await Promise.all(data.map(async (alumniProfile) => {
+      await retrieveAvatarForUser(req, alumniProfile.alum_id, alumniProfile);
+      return alumniProfile;
+    }));
+
     return res.status(httpStatus.OK).json({
       status: "OK",
       list: data || [],
@@ -192,16 +208,7 @@ const getUserById = async (req, res) => {
       });
     }
 
-    // FIXME: commit this image to the repository, don't reference externally!
-    let avatarUrl = "https://cdn-icons-png.flaticon.com/512/145/145974.png";
-    const {data: avatarData, error: avatarError} =
-      await PhotosService.getAvatarUrl(req.supabase, userId);
-    if (avatarError) {
-      data.avatar_exists = false;
-    } else {
-      avatarUrl = avatarData?.signedUrl;
-    }
-    data.avatar_url = avatarUrl;
+    await retrieveAvatarForUser(req, userId, data);
 
     return res.status(httpStatus.OK).json({
       status: "OK",

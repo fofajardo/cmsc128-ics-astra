@@ -14,6 +14,7 @@ import { LoadingSpinner } from "@/components/LoadingSpinner.jsx";
 import FilterDropdown from "@/components/events/GroupedEvents/FilterDropdown";
 import Image from "next/image";
 import donationVector from "../../assets/donation-vector.png";
+import { ParticlesBackground } from "@/components/ParticlesBackground";
 
 export default function ProjectsPage() {
   const user = useSignedInUser();
@@ -155,6 +156,7 @@ export default function ProjectsPage() {
     <div className="w-full bg-astradirtywhite">
       {/* Hero Section */}
       <div className="relative w-full bg-cover bg-center" style={{ backgroundImage: "url('/blue-bg.png')" }}>
+        <ParticlesBackground count={40} />
         <div className="max-w-[1440px] mx-auto px-12 py-20 flex flex-col lg:flex-row items-center justify-between text-astrawhite gap-10">
           <div className="max-w-[600px] space-y-6 text-center lg:text-left animate-hero-text">
             <h1 className="text-[60px] font-extrabold leading-[1.1]">
@@ -163,11 +165,13 @@ export default function ProjectsPage() {
             <p className="text-lg font-medium">
               Discover, support, and contribute to meaningful causes initiated by people like you.
             </p>
-            <Link href="/projects/request/goal" passHref>
-              <button className="mt-4 px-8 py-3 border-2 border-white text-white hover:bg-white hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer">
-                Request a Project
-              </button>
-            </Link>
+            {!user.state.isGuest && (
+              <Link href="/projects/request/goal" passHref>
+                <button className="mt-4 px-8 py-3 border-2 border-white text-white hover:bg-white hover:text-astraprimary rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer">
+                  Request a Project
+                </button>
+              </Link>
+            )}
           </div>
           <div className="w-full lg:w-[550px] flex justify-center">
             <div className="relative w-full h-auto max-w-[550px] animate-natural-float">
@@ -323,7 +327,7 @@ export default function ProjectsPage() {
           )}
 
           {/* My Projects Section */}
-          {user?.state?.user && <div className="mt-10 bg-astralightgray py-10 px-6 rounded-xl shadow-md">
+          {user?.state?.user && <div className="mt-10 bg-astralightgray/30 py-10 px-6 rounded-xl shadow-md">
             <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
               <div className="text-left">
                 <h3 className="font-lb text-2xl text-astrablack mb-3">Track Your Fundraisers</h3>
@@ -394,7 +398,7 @@ export default function ProjectsPage() {
       </section>
 
       {/* Why Your Support Matters*/}
-      <section className="bg-astralightgray pt-20 pb-40 px-4 text-center">
+      <section className="bg-astralightgray/30 pt-20 pb-40 px-4 text-center">
         <h2 className="font-h2 mb-2 text-astrablack">
           Why Your Support Matters
         </h2>
@@ -529,7 +533,7 @@ export default function ProjectsPage() {
       </section>
 
       {/* Finished Fundraisers*/}
-      <section className="bg-astralightgray pt-20 pb-30">
+      <section className="bg-astralightgray/30 pt-20 pb-30">
         <div className="max-w-7xl mx-auto px-4 relative">
           <h2 className="font-h2 text-astrablack mb-3">
             Inactive Projects
@@ -539,7 +543,7 @@ export default function ProjectsPage() {
           </p>
 
           <div className="relative">
-            {/* Left Arrow */}
+            {/* Left Arrow*/}
             <button
               onClick={handlePrev}
               disabled={startIndex === 0}
