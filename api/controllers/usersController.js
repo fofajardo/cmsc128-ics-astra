@@ -24,6 +24,11 @@ const getUsers = async (req, res) => {
       });
     }
 
+    await Promise.all(data.map(async (user) => {
+      await retrieveAvatarForUser(req, user.id, user);
+      return user;
+    }));
+
     return res.status(httpStatus.OK).json({
       status: "OK",
       list: data || [],
@@ -68,9 +73,9 @@ const getInactiveAlumni = async (req, res) => {
       });
     }
 
-    await Promise.all(data.map(async (alumniProfile) => {
-      await retrieveAvatarForUser(req, alumniProfile.alum_id, alumniProfile);
-      return alumniProfile;
+    await Promise.all(data.map(async (user) => {
+      await retrieveAvatarForUser(req, user.id, user);
+      return user;
     }));
 
     return res.status(httpStatus.OK).json({
@@ -119,9 +124,9 @@ const getApprovedAlumni = async (req, res) => {
       });
     }
 
-    await Promise.all(data.map(async (alumniProfile) => {
-      await retrieveAvatarForUser(req, alumniProfile.alum_id, alumniProfile);
-      return alumniProfile;
+    await Promise.all(data.map(async (user) => {
+      await retrieveAvatarForUser(req, user.id, user);
+      return user;
     }));
 
     return res.status(httpStatus.OK).json({
@@ -169,9 +174,9 @@ const getPendingAlumni = async (req, res) => {
       });
     }
 
-    await Promise.all(data.map(async (alumniProfile) => {
-      await retrieveAvatarForUser(req, alumniProfile.alum_id, alumniProfile);
-      return alumniProfile;
+    await Promise.all(data.map(async (user) => {
+      await retrieveAvatarForUser(req, user.id, user);
+      return user;
     }));
 
     return res.status(httpStatus.OK).json({
