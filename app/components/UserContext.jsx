@@ -19,6 +19,7 @@ function buildUserContext() {
   const [degreeProofUploaded, setDegreeProofUploaded] = useState(false);
   const [degreeProofUrl, setDegreeProofUrl] = useState(null);
   const [workExperiences, setWorkExperiences] = useState(null);
+  const [contacts, setContacts] = useState(null);
   const [organizationAffiliations, setOrganizationAffiliations] = useState(null);
   const [organizations, setOrganizations] = useState(null);
   const [avatarUrl, setAvatarUrl] = useState("https://cdn-icons-png.flaticon.com/512/145/145974.png");
@@ -56,6 +57,7 @@ function buildUserContext() {
       degreeProofUploaded,
       degreeProofUrl,
       workExperiences,
+      contacts,
       organizationAffiliations,
       organizations,
       avatarUrl,
@@ -84,6 +86,7 @@ function buildUserContext() {
       setDegreeProofUploaded,
       setDegreeProofUrl,
       setWorkExperiences,
+      setContacts,
       setOrganizationAffiliations,
       setOrganizations,
       setAvatarUrl,
@@ -121,6 +124,19 @@ function buildUserContext() {
         const updatedDegreePrograms = [...degreePrograms];
         updatedDegreePrograms.push(degreeProgram);
         return setDegreePrograms(updatedDegreePrograms);
+      },
+      patchContacts: function(index, updates) {
+        const updatedContacts = [...contacts];
+        updatedContacts[index] = {
+          ...updatedContacts[index],
+          ...updates
+        };
+        return setContacts(updatedContacts);
+      },
+      pushContact: function(degreeProgram) {
+        const updatedContacts = [...contacts];
+        updatedContacts.push(degreeProgram);
+        return setContacts(updatedContacts);
       },
       patchWorkExperiences: function(index, updates) {
         const updatedWorkExperiences = [...workExperiences];
@@ -245,6 +261,7 @@ async function fetchData(aUser, aContext, aIsMinimal) {
     aContext.actions.setProfile(null);
     aContext.actions.setDegreePrograms(null);
     aContext.actions.setDegreeProofUploaded(false);
+    aContext.actions.setContacts(null);
     aContext.actions.setInitialized(true);
     updateRoleProperties(aUser, aContext);
     return;
@@ -265,13 +282,6 @@ async function fetchData(aUser, aContext, aIsMinimal) {
       // Ignore missing profile.
     }
 
-    try {
-      const degreePrograms = await axios.get(clientRoutes.users.getOneDegreePrograms(aUser.id));
-      aContext.actions.setDegreePrograms(degreePrograms?.data?.degreePrograms);
-    } catch (e) {
-      // Ignore missing degree programs.
-    }
-
     if (aIsMinimal) {
       try {
         const degreeProofJson = await axios.get(clientRoutes.photos.getDegreeProofJson(aUser.id));
@@ -279,6 +289,8 @@ async function fetchData(aUser, aContext, aIsMinimal) {
       } catch (e) {
         // Ignore missing degree proof.
       }
+      aContext.actions.setContacts(null);
+      aContext.actions.setDegreePrograms(null);
       aContext.actions.setDegreeProofUrl(null);
       aContext.actions.setWorkExperiences(null);
       aContext.actions.setOrganizationAffiliations(null);
@@ -296,6 +308,18 @@ async function fetchData(aUser, aContext, aIsMinimal) {
         aContext.actions.setWorkExperiences(workExperiences?.data?.work_experiences);
       } catch (e) {
         // Ignore missing work experiences.
+      }
+      try {
+        const degreePrograms = await axios.get(clientRoutes.users.getOneDegreePrograms(aUser.id));
+        aContext.actions.setDegreePrograms(degreePrograms?.data?.degreePrograms);
+      } catch (e) {
+        // Ignore missing degree programs.
+      }
+      try {
+        const contacts = await axios.get(clientRoutes.users.getContacts(aUser.id));
+        aContext.actions.setContacts(contacts?.data?.contacts);
+      } catch (e) {
+        // Ignore missing contacts.
       }
       try {
         const affiliations = await axios.get(clientRoutes.users.getOrganizations(aUser.id));

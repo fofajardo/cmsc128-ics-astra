@@ -46,6 +46,7 @@ class BaseRoutes {
       getAlumniProfiles: (id) => `${this.BASE_URL}/users/${id}/profile`,
       getWorkExperiences: (id) => `${this.BASE_URL}/users/${id}/work-experiences`,
       getOrganizations: (id) => `${this.BASE_URL}/users/${id}/organizations`,
+      getContacts: (id) => `${this.BASE_URL}/users/${id}/contacts`,
       getAvatar: (id) => `${this.BASE_URL}/users/${id}/avatar`,
       getOrganizationsWithOrgId: (id, orgId) => `${this.BASE_URL}/users/${id}/organizations/${orgId}`,
     };
@@ -53,6 +54,11 @@ class BaseRoutes {
     this.degreePrograms = {
       base: (append = "") => `${this.BASE_URL}/degree-programs${append}`,
       getOne: (id) => `${this.BASE_URL}/degree-programs/${id}`,
+    };
+
+    this.contacts = {
+      base: (append = "") => `${this.BASE_URL}/contacts${append}`,
+      getOne: (id) => `${this.BASE_URL}/contacts/${id}`,
     };
 
     this.photos = {
@@ -69,6 +75,11 @@ class BaseRoutes {
     this.alumniProfiles = {
       base: (append = "") => `${this.BASE_URL}/alumni-profiles${append}`,
       withId: (id) => `${this.BASE_URL}/alumni-profiles/${id}`,
+    };
+
+    this.contacts = {
+      base: (append = "") => `${this.BASE_URL}/contacts${append}`,
+      withId: (id) => `${this.BASE_URL}/contacts/${id}`,
     };
 
     this.contents = {
@@ -207,6 +218,7 @@ class FrontEndRoutes extends BaseRoutes {
       experience: (id) => `${this.BASE_URL}/profile/${id}/experience`,
       affiliations: (id) => `${this.BASE_URL}/profile/${id}/affiliations`,
       degreePrograms: (id) => `${this.BASE_URL}/profile/${id}/degree-programs`,
+      contacts: (id) => `${this.BASE_URL}/profile/${id}/contacts`,
     };
 
     this.projects = {

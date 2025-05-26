@@ -1,3 +1,5 @@
+import {Facebook, HelpCircle, Linkedin, Mail, MessageCircle, Phone, Send} from "lucide-react";
+
 export const RouteGuardMode = Object.freeze({
   AUTO: "auto",
   AUTHENTICATED: "auth",
@@ -321,6 +323,35 @@ const EventStatus = Object.freeze({
     return parseInt(aValue);
   },
 });
+
+export const CONTACT_TYPE = {
+  EMAIL: 0,
+  PHONE: 1,
+  DISCORD: 2,
+  TELEGRAM: 3,
+  FACEBOOK: 4,
+  LINKEDIN: 5,
+  OTHER: 6,
+
+  isDefined: function(type) {
+    const typeInt = parseInt(type);
+    return Object.values(this)
+      .filter(value => typeof value === "number")
+      .includes(typeInt);
+  }
+};
+
+export const CONTACT_TYPE_LABELS = {
+  [CONTACT_TYPE.EMAIL]: "Email",
+  [CONTACT_TYPE.PHONE]: "Phone",
+  [CONTACT_TYPE.DISCORD]: "Discord",
+  [CONTACT_TYPE.TELEGRAM]: "Telegram",
+  [CONTACT_TYPE.FACEBOOK]: "Facebook",
+  [CONTACT_TYPE.LINKEDIN]: "LinkedIn",
+  [CONTACT_TYPE.OTHER]: "Other"
+};
+
+export const CONTACT_TYPE_ICONS = { [CONTACT_TYPE.EMAIL]: Mail, [CONTACT_TYPE.PHONE]: Phone, [CONTACT_TYPE.DISCORD]: MessageCircle, [CONTACT_TYPE.TELEGRAM]: Send, [CONTACT_TYPE.FACEBOOK]: Facebook, [CONTACT_TYPE.LINKEDIN]: Linkedin, [CONTACT_TYPE.OTHER]: HelpCircle };
 
 // FIXME: This is a temporary solution.
 // We need to get the degree programs from the backend.

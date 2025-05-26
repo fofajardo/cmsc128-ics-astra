@@ -4,6 +4,7 @@ import degreeProgramsController from "../controllers/degreeProgramController.js"
 import alumniProfilesController from "../controllers/alumniProfilesController.js";
 import workExperiencesController from "../controllers/workExperiencesController.js";
 import photosController from "../controllers/photosController.js";
+import contactsController from "../controllers/contactsController.js";
 
 const usersExtensionRoutes = (aUpload) => {
   const router = express.Router();
@@ -18,6 +19,7 @@ const usersExtensionRoutes = (aUpload) => {
   router.delete("/:alumId/organizations/:orgId", organizationAffiliationsController.deleteAffiliatedOrganization);
   router.post("/:userId/avatar", aUpload.single("avatar"), photosController.uploadOrReplaceAvatar);
   router.delete("/:id/avatar", photosController.deleteAvatar);
+  router.get("/:id/contacts", contactsController.getContactsByUserId);
 
   return router;
 };
