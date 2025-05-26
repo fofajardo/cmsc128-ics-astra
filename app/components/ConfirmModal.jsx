@@ -36,13 +36,13 @@ export default function ConfirmModal({
         <div className="flex justify-end gap-3">
           <button
             onClick={onClose}
-            className="px-4 py-1.5 rounded-md bg-astralightgray hover:bg-astradarkgray text-astrawhite font-rb transition"
+            className="px-4 py-1.5 rounded-md bg-astragray/20 text-astradarkgray hover:bg-astragray/50 transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
-            className={`px-4 py-1.5 rounded-md text-white font-rb transition ${colorVariants[confirmColor]}`}
+            className={`px-4 py-1.5 rounded-md text-white font-semibold transition ${colorVariants[confirmColor]}`}
           >
             {count ? `${confirmLabel} (${count})` : confirmLabel}
           </button>
