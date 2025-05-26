@@ -4,11 +4,17 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 export default function EventFormFields({
-  isEdit, title, setTitle,
-  date, setDate,
-  location, setLocation,
-  status, setStatus,
-  eventDetail, setEventDetail
+  isEdit,
+  title,
+  setTitle,
+  date,
+  setDate,
+  location,
+  setLocation,
+  status,
+  setStatus,
+  eventDetail,
+  setEventDetail,
 }) {
   return (
     <>

@@ -49,7 +49,7 @@ export default function EventsPage() {
         return response.data.photo;
       }
     } catch (error) {
-      ; // console.log(`Failed to fetch photo for event_id ${contentId}:`, error);
+      ;
     }
     return venue2.src; // Return default image if fetch fails
   };
@@ -87,7 +87,7 @@ export default function EventsPage() {
         return interestedUserNames;
       }
     } catch(error) {
-      ; // console.log("Error fetching attendees", error);
+      ;
     }
     return [];
   };
@@ -303,7 +303,6 @@ export default function EventsPage() {
               placeholder="End Date"
               value={endDateFilter}
               onChange={(date) => {
-                // console.log("date:", date);
                 setEndDateFilter(date);
               }}
             />
@@ -348,7 +347,7 @@ export default function EventsPage() {
                 description={event.description}
                 date={event.date}
                 location={event.location}
-                attendees={event.attendees}
+                attendees={event.attendees.length}
                 status={event.status}
                 avatars={event.avatars}
               />

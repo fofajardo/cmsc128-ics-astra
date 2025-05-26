@@ -11,7 +11,7 @@ export default function HeaderImage({ imageSrc, title }) {
   }
 
   return (
-    <img
+    <Image
       src={imageSrc}
       alt={title}
       width={800}

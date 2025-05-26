@@ -4,7 +4,7 @@ import contentsService from "../services/contentsService.js";
 import fs from "fs";
 import path from "path";
 import { get } from "http";
-import PhotosService from "../services/photosService.js";
+import { create } from "domain";
 
 const getAllPhotos = async (req, res) => {
   try {
@@ -1044,6 +1044,97 @@ const getDonationReceipt = async (req, res) => {
   }
 };
 
+const updateEventPhoto = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { content_id } = req.body;
+    const file = req.file;
+
+    console.log("Event Photo update details:", {
+      id: id,
+      content_id: content_id,
+      file: file ? "File provided" : "No file"
+    });
+
+    if (!id) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "Photo ID is required",
+      });
+    }
+
+    if (!file) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: "FAILED",
+        message: "File is required for updating event photo",
+      });
+    }
+
+    // Generate a unique filename
+    const uniqueFilename = `${Date.now()}-${file.originalname}`;
+    const oldPath = path.join(file.destination, file.filename);
+
+    // Read the file content
+    const fileContent = fs.readFileSync(oldPath);
+
+    // Upload the file to storage
+    const { data: storageData, error: storageError } = await req.supabase.storage
+      .from("user-photos-bucket")
+      .upload(uniqueFilename, fileContent, {
+        contentType: file.mimetype,
+      });
+
+    if (storageError) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: `Failed to upload file to storage: ${storageError.message}`,
+      });
+    }
+
+    // Update the photo record with the new image key
+    const photoData = {
+      image_key: storageData.path,
+    };
+
+    // Add content_id if provided
+    if (content_id) {
+      photoData.content_id = content_id;
+    }
+
+    // Fixed type for event photo
+    photoData.type = 3; // Use PhotoType.EVENT_PIC in production
+
+    // Update the photo in the database
+    const { data, error } = await photosService.updatePhotoById(req.supabase, id, photoData);
+
+    if (error) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        status: "FAILED",
+        message: error.message,
+      });
+    }
+
+    if (!data || data.length === 0) {
+      return res.status(httpStatus.NOT_FOUND).json({
+        status: "FAILED",
+        message: "Event photo not found",
+      });
+    }
+
+    return res.status(httpStatus.OK).json({
+      status: "UPDATED",
+      message: "Event photo updated successfully",
+      photo: data[0],
+    });
+  } catch (error) {
+    console.error("Error in updateEventPhoto:", error);
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      status: "FAILED",
+      message: error.message,
+    });
+  }
+};
+
 const photosController = {
   getAllPhotos,
   getPhotoById,
@@ -1066,6 +1157,7 @@ const photosController = {
   deleteNewsletter,
   deleteAvatar,
   uploadOrReplaceAvatar,
+  updateEventPhoto,
 };
 
 export default photosController;
