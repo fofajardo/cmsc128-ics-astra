@@ -4,6 +4,7 @@ import contentsService from "../services/contentsService.js";
 import fs from "fs";
 import path from "path";
 import { get } from "http";
+import PhotosService from "../services/photosService.js";
 
 const getAllPhotos = async (req, res) => {
   try {
@@ -106,12 +107,12 @@ const uploadPhoto = async (req, res) => {
     const { user_id, content_id, type } = req.body;
     const file = req.file;
 
-    console.log("File upload details:", {
-      file: file,
-      user_id: user_id,
-      content_id: content_id,
-      type: type
-    });
+    // console.log("File upload details:", {
+    //   file: file,
+    //   user_id: user_id,
+    //   content_id: content_id,
+    //   type: type
+    // });
 
     // Validate that at least one of user_id or content_id exists, and file is provided
     if (!file || (!user_id && !content_id) || type === undefined) {
@@ -175,7 +176,7 @@ const getFiles = async (req, res) => {
   try {
     const { data, error } = await photosService.fetchAllFiles(req.supabase);
 
-    console.log("Files:", data);
+    // console.log("Files:", data);
 
     if (error) {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -201,10 +202,10 @@ const uploadNewsletter = async (req, res) => {
     const { title, user_id, content_id } = req.body;
     const file = req.file;
 
-    console.log("Newsletter upload details:", {
-      title: title,
-      file: file
-    });
+    // console.log("Newsletter upload details:", {
+    //   title: title,
+    //   file: file
+    // });
 
     if (!file) {
       return res.status(httpStatus.BAD_REQUEST).json({
@@ -266,13 +267,13 @@ const updatePhoto = async (req, res) => {
     const { id } = req.params;
     const { user_id, content_id, type, file } = req.body;
 
-    console.log("Photo update details:", {
-      id: id,
-      user_id: user_id,
-      content_id: content_id,
-      type: type,
-      file: file ? "File provided" : "No file"
-    });
+    // console.log("Photo update details:", {
+    //   id: id,
+    //   user_id: user_id,
+    //   content_id: content_id,
+    //   type: type,
+    //   file: file ? "File provided" : "No file"
+    // });
 
     if (!id) {
       return res.status(httpStatus.BAD_REQUEST).json({
@@ -290,10 +291,15 @@ const updatePhoto = async (req, res) => {
       // Generate a unique filename for the new file
       const uniqueFilename = `${Date.now()}-${file.originalname}`;
 
-      // Upload directly from buffer
+      // Get the file from disk since we're using diskStorage
+      const oldPath = path.join(file.destination, file.filename);
+
+      // Read the file content
+      const fileContent = fs.readFileSync(oldPath);
+
       const { data: storageData, error: storageError } = await req.supabase.storage
         .from("user-photos-bucket")
-        .upload(uniqueFilename, file.buffer, {
+        .upload(uniqueFilename, fileContent, {
           contentType: file.mimetype,
         });
 
@@ -350,8 +356,8 @@ const deletePhoto = async (req, res) => {
     // Fetch the photo details to get the file path (image_key)
     const { data: photo, error: fetchError } = await photosService.fetchPhotoById(req.supabase, id);
 
-    console.log("Fetched photo:", photo);
-    console.log("Fetch error:", fetchError);
+    // console.log("Fetched photo:", photo);
+    // console.log("Fetch error:", fetchError);
 
     if (fetchError || !photo) {
       return res.status(httpStatus.NOT_FOUND).json({
@@ -455,10 +461,15 @@ const uploadOrReplaceAvatar = async (req, res) => {
       });
     }
 
+    // Return updated URL.
+    const {data: avatarData, error: avatarError} =
+      await PhotosService.getAvatarUrl(req.supabase, userId);
+
     return res.status(httpStatus.CREATED).json({
       status: "SUCCESS",
       message: "Avatar uploaded successfully",
       photo: data[0],
+      avatar_url: avatarData?.signedUrl,
     });
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
@@ -583,7 +594,7 @@ const getPhotoByAlumId = async (req, res) => {
         .createSignedUrl(data.image_key, 60 * 60);
 
       if (signedUrlError) {
-        console.log("Will use public URL.");
+        // console.log("Will use public URL.");
 
         // Try public URL as fallback
         const { data: publicUrlData } = req.supabase
@@ -695,8 +706,8 @@ const getJsonOfDegreeProofPhotoByAlumId = async (req, res) => {
 const getEventPhotoByContentId = async (req, res) => {
   try {
     const { content_id } = req.params;
-    console.log("Content ID:", content_id);
-    console.log("Looking for photo with content_id:", content_id, "and type: 3");
+    // console.log("Content ID:", content_id);
+    // console.log("Looking for photo with content_id:", content_id, "and type: 3");
 
     // Fetch the photo record from the database
     const { data, error } = await photosService.fetchEventPhotos(req.supabase, content_id);
@@ -720,7 +731,7 @@ const getEventPhotoByContentId = async (req, res) => {
         .createSignedUrl(data.image_key, 60 * 60);
 
       if (signedUrlError) {
-        console.log("Will use public URL.");
+        // console.log("Will use public URL.");
 
         // Try public URL as fallback
         const { data: publicUrlData } = req.supabase
@@ -778,7 +789,7 @@ const getProjectPhotoByContentId = async (req, res) => {
       // console.log("Photo not found for project_id:", project_id, "Error:", error);
       return res.status(httpStatus.OK).json({
         status: "OK",
-        photo: "/projects/assets/Donation.jpg" // Default project image
+        photo: "/projects/assets/Donation.png" // Default project image
       });
     }
 
@@ -790,7 +801,7 @@ const getProjectPhotoByContentId = async (req, res) => {
         .createSignedUrl(data.image_key, 60 * 60);
 
       if (signedUrlError) {
-        console.log("Will use public URL.");
+        // console.log("Will use public URL.");
 
         // Try public URL as fallback
         const { data: publicUrlData } = req.supabase
@@ -807,7 +818,7 @@ const getProjectPhotoByContentId = async (req, res) => {
         } else {
           return res.status(httpStatus.OK).json({
             status: "OK",
-            photo: "/projects/assets/Donation.jpg" // Default project image
+            photo: "/projects/assets/Donation.png" // Default project image
           });
         }
       }
@@ -820,14 +831,14 @@ const getProjectPhotoByContentId = async (req, res) => {
       console.error("Error generating URL for project:", urlError);
       return res.status(httpStatus.OK).json({
         status: "OK",
-        photo: "/projects/assets/Donation.jpg" // Default project image
+        photo: "/projects/assets/Donation.png" // Default project image
       });
     }
   } catch (error) {
     console.error("Error in getProjectPhotoByContentId:", error);
     return res.status(httpStatus.OK).json({
       status: "OK",
-      photo: "/projects/assets/Donation.jpg" // Default project image
+      photo: "/projects/assets/Donation.png" // Default project image
     });
   }
 };

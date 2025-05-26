@@ -2,13 +2,14 @@
 
 import AddEditExperienceModal from "@/components/profile/modals/AddEditExperienceModal.jsx";
 import {formatMonthYear} from "@/lib/utils.jsx";
-import {useState} from "react";
 import {EMPLOYMENT_STATUS_LABELS, LOCATION_TYPE_LABELS} from "../../../../common/scopes.js";
-import {redirect} from "next/navigation";
 import {feRoutes} from "../../../../common/routes.js";
+import {useRouter} from "next/navigation";
 
 export const Experience = ({ context, editMode }) => {
+  const router = useRouter();
   const experiences = context.state.workExperiences ?? [];
+
   return (
     <section className="bg-white rounded-lg p-8 mb-6">
       <div className="flex justify-between items-center mb-6">
@@ -18,13 +19,12 @@ export const Experience = ({ context, editMode }) => {
 
           {
             !editMode && (
-              <a href={feRoutes.profiles.experience(context.state.user?.id)}>
-                <button
-                  className="text-sm md:text-base px-3 py-2 md:px-4 md:py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[var(--color-astradirtywhite)] rounded-md"
-                >
-                  Edit
-                </button>
-              </a>
+              <button
+                className="text-sm md:text-base px-3 py-2 md:px-4 md:py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[var(--color-astradirtywhite)] rounded-md"
+                onClick={() => router.push(feRoutes.profiles.experience(context.state.user?.id))}
+              >
+                Edit
+              </button>
             )
           }
         </div>

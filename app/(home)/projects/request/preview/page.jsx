@@ -8,6 +8,7 @@ import { useProjectRequestForm } from "@/utils/hooks/useProjectRequestForm";
 import ToastNotification from "@/components/ToastNotification";
 import { useSignedInUser } from "@/components/UserContext";
 import axios from "axios";
+import { PhotoType } from "../../../../../common/scopes";
 
 const RequestFundraiserPreview = () => {
   const router = useRouter();
@@ -146,7 +147,7 @@ const RequestFundraiserPreview = () => {
           const formData = new FormData();
           formData.append("File", photo);
           formData.append("content_id", contentId);
-          formData.append("type", 5); // TODO: use appropriate ENUM; check photo_type.js once merged
+          formData.append("type", PhotoType.PROJECT_PIC);
 
           const photoResponse = await axios.post(
             `${process.env.NEXT_PUBLIC_API_URL}/v1/photos`,
@@ -190,7 +191,7 @@ const RequestFundraiserPreview = () => {
   return (
     <div className="min-h-screen w-full flex flex-col bg-astrawhite">
       {/* Header */}
-      <div className="bg-astralightgray p-4 sm:p-6 md:p-8 lg:p-12">
+      <div className="bg-astralightgray/40 p-4 sm:p-6 md:p-8 lg:p-12">
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-astrablack">
           Review Your Project
         </h1>

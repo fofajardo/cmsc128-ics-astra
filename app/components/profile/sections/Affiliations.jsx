@@ -3,8 +3,10 @@
 import {formatMonthYear} from "@/lib/utils.jsx";
 import {feRoutes} from "../../../../common/routes.js";
 import AddEditAffiliationModal from "@/components/profile/modals/AddEditAffiliationModal.jsx";
+import {useRouter} from "next/navigation";
 
 export const Affiliations = ({ context, editMode }) => {
+  const router = useRouter();
   const affiliations = context.state.organizationAffiliations ?? [];
 
   return (
@@ -15,13 +17,12 @@ export const Affiliations = ({ context, editMode }) => {
           <AddEditAffiliationModal context={context} />
           {
             !editMode && (
-              <a href={feRoutes.profiles.affiliations(context.state.user?.id)}>
-                <button
-                  className="text-sm md:text-base px-3 py-2 md:px-4 md:py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[var(--color-astradirtywhite)] rounded-md"
-                >
-                  Edit
-                </button>
-              </a>
+              <button
+                className="text-sm md:text-base px-3 py-2 md:px-4 md:py-2 text-[var(--color-astraprimary)] border border-[var(--color-astraprimary)] hover:bg-[var(--color-astradirtywhite)] rounded-md"
+                onClick={() => router.push(feRoutes.profiles.affiliations(context.state.user?.id))}
+              >
+                Edit
+              </button>
             )
           }
         </div>

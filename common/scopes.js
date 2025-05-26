@@ -193,19 +193,6 @@ const JobsStatus = Object.freeze({
     }
     return false;
   },
-  isDefined: function(aValue) {
-    if (typeof aValue === "string" || aValue instanceof String) {
-      const value = aValue.toLowerCase().trim();
-      switch (value) {
-      case JobsStatus.OPEN:
-      case JobsStatus.CLOSED:
-        return true;
-      default:
-        break;
-      }
-    }
-    return false;
-  },
   parse: function(aValue) {
     if (!this.isDefined(aValue)) {
       return null;
@@ -215,6 +202,7 @@ const JobsStatus = Object.freeze({
 });
 
 export const NavMenuItemId = Object.freeze({
+  NONE: "none",
   HOME: "home",
   ABOUT: "about",
   EVENTS: "events",
@@ -333,6 +321,32 @@ const EventStatus = Object.freeze({
     return parseInt(aValue);
   },
 });
+
+// FIXME: This is a temporary solution.
+// We need to get the degree programs from the backend.
+// For now, we are hardcoding the degree programs.
+export const kICSDegreePrograms = [
+  {
+    name: "BS Computer Science",
+    level: "Bachelor of Science",
+    institution: "University of the Philippines Los Baños",
+  },
+  {
+    name: "MS Computer Science",
+    level: "Master of Science",
+    institution: "University of the Philippines Los Baños",
+  },
+  {
+    name: "Master of Information Technology",
+    level: "Master of Science",
+    institution: "University of the Philippines Los Baños",
+  },
+  {
+    name: "PhD Computer Science",
+    level: "Doctor of Philosophy",
+    institution: "University of the Philippines Los Baños",
+  },
+];
 
 export {
   RoleName,
