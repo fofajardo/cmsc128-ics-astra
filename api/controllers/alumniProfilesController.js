@@ -3,7 +3,7 @@ import usersService from "../services/usersService.js";
 import alumniProfilesService from "../services/alumniProfilesService.js";
 import { isValidUUID } from "../utils/validators.js";
 import { Actions, Subjects } from "../../common/scopes.js";
-import {retrieveAvatarForUser} from "./common.js";
+import { retrieveAvatarForUser } from "./common.js";
 
 const getAlumniProfiles = async (req, res) => {
   try {

@@ -16,6 +16,18 @@ nationalities.registerLocale(nationalities_en);
 export default function Page() {
   const context = useUser();
 
+  const profile = context.state.profile ?? {};
+
+  const technicalSkills =
+    typeof profile.skills === "string" && profile.skills.trim() !== ""
+      ? profile.skills.split(",").map(skill => ({ text: skill }))
+      : [];
+
+  const fieldOfInterests =
+    typeof profile.interests === "string" && profile.interests.trim() !== ""
+      ? profile.interests.split(",").map(interest => ({ text: interest }))
+      : [];
+
   return (
     <div className="min-h-screen bg-[var(--color-astratintedwhite)]">
       <main className="container mx-auto py-8 px-4 max-w-7xl">
@@ -34,10 +46,12 @@ export default function Page() {
           <>
             <TechnicalSkills
               context={context}
+              technicalSkills={technicalSkills}
             />
 
             <FieldsOfInterest
               context={context}
+              fieldOfInterests={fieldOfInterests}
             />
 
             <DegreeProgramsSection
