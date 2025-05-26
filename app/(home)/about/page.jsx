@@ -5,7 +5,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Rocket, Users, Code, Database, Star } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { StarParticlesBackground } from "@/components/StarParticlesBackground";
-import { ParticlesBackground } from "@/components/ParticlesBackground";
 
 export default function AboutPage() {
   const timelineItems = [
