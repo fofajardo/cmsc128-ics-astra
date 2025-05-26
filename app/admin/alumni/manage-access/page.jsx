@@ -175,32 +175,32 @@ export default function AlumniAccess() {
             toggleFilter={toggleFilter}
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery} />
-          <Table 
-            cols={cols} 
+          <Table
+            cols={cols}
             data={loading ? skeletonRows : createRows(
-              alumList, 
-              selectedIds, 
-              setSelectedIds, 
-              currTab, 
-              setRefreshTrigger, 
+              alumList,
+              selectedIds,
+              setSelectedIds,
+              currTab,
+              setRefreshTrigger,
               setToast,
               setDeclineTarget,
               setDeclineReason,
               setDeclineDialogOpen
-            )} 
+            )}
           />
           <PageTool pagination={pagination} setPagination={setPagination} />
         </div>
         <div className="flex flex-row justify-between md:pl-4 lg:pl-8">
           <ActionButton label="Reset Selection" color="blue" onClick={() => setSelectedIds([])} />
-          <BottomButtons 
-            selectedCount={selectedIds.length} 
-            currTab={currTab} 
-            setToast={setToast} 
-            selectedIds={selectedIds} 
-            setRefreshTrigger={setRefreshTrigger} 
-            alumList={alumList} 
-            pagination={pagination} 
+          <BottomButtons
+            selectedCount={selectedIds.length}
+            currTab={currTab}
+            setToast={setToast}
+            selectedIds={selectedIds}
+            setRefreshTrigger={setRefreshTrigger}
+            alumList={alumList}
+            pagination={pagination}
             setPagination={setPagination}
             setDeclineTarget={setDeclineTarget}
             setDeclineReason={setDeclineReason}
@@ -212,7 +212,7 @@ export default function AlumniAccess() {
       <Dialog open={declineDialogOpen} onOpenChange={setDeclineDialogOpen}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
-            <DialogTitle>Decline {declineTarget.name}'s Account</DialogTitle>
+            <DialogTitle>Decline {declineTarget.name}&apos;s Account</DialogTitle>
             <DialogDescription>
               Enter a message explaining why this account is being declined.
               This message will be sent via email to the user.
@@ -256,11 +256,11 @@ export default function AlumniAccess() {
                 onClick={() => {
                   setDeclineLoading(true);
                   handleSubmitDecline(
-                    declineTarget.id, 
-                    declineTarget.name, 
-                    declineReason, 
-                    setToast, 
-                    setDeclineDialogOpen, 
+                    declineTarget.id,
+                    declineTarget.name,
+                    declineReason,
+                    setToast,
+                    setDeclineDialogOpen,
                     setRefreshTrigger
                   ).finally(() => setDeclineLoading(false));
                 }}
@@ -315,14 +315,14 @@ function getNotifyContent(action, selectedCount) {
   return { notifyMessage: message, notifyType: type };
 }
 
-function BottomButtons({ 
-  selectedCount, 
-  currTab, 
-  setToast, 
-  selectedIds, 
-  setRefreshTrigger, 
-  alumList, 
-  pagination, 
+function BottomButtons({
+  selectedCount,
+  currTab,
+  setToast,
+  selectedIds,
+  setRefreshTrigger,
+  alumList,
+  pagination,
   setPagination,
   setDeclineTarget,
   setDeclineReason,
@@ -337,11 +337,11 @@ function BottomButtons({
 
   const openModal = (actionType) => {
     if (actionType === "decline") {
-      const targetName = selectedCount > 0 
-        ? `${selectedCount} selected accounts` 
+      const targetName = selectedCount > 0
+        ? `${selectedCount} selected accounts`
         : "all pending accounts";
-      
-      setDeclineTarget({ 
+
+      setDeclineTarget({
         id: selectedCount > 0 ? selectedIds : alumList.map(alum => alum.id),
         name: targetName,
         isBulk: true
@@ -353,7 +353,7 @@ function BottomButtons({
       setModal({ open: true, action: actionType, notifyMessage, notifyType });
     }
   };
-  
+
   const closeModal = () => {
     setModal({ open: false, action: null });
   };
@@ -570,11 +570,11 @@ const cols = [
 ];
 
 function createRows(
-  alumList, 
-  selectedIds, 
-  setSelectedIds, 
-  currTab, 
-  setRefreshTrigger, 
+  alumList,
+  selectedIds,
+  setSelectedIds,
+  currTab,
+  setRefreshTrigger,
   setToast,
   setDeclineTarget,
   setDeclineReason,
@@ -588,10 +588,10 @@ function createRows(
     "Student ID": renderText(alum.student_num),
     "Course": renderText(alum.degreeProgram),
     "Quick Actions": renderActions(
-      alum.id, 
-      alum.alumname, 
-      currTab, 
-      setRefreshTrigger, 
+      alum.id,
+      alum.alumname,
+      currTab,
+      setRefreshTrigger,
       setToast,
       setDeclineTarget,
       setDeclineReason,
@@ -656,10 +656,10 @@ function renderText(text) {
 }
 
 function renderActions(
-  id, 
-  name, 
-  currTab, 
-  setRefreshTrigger, 
+  id,
+  name,
+  currTab,
+  setRefreshTrigger,
   setToast,
   setDeclineTarget,
   setDeclineReason,
@@ -916,22 +916,22 @@ const handleSubmitDecline = async (id, name, reason, setToast, setDeclineDialogO
           const userResponse = await axios.get(
             `${process.env.NEXT_PUBLIC_API_URL}/v1/users/${userId}`
           );
-          
+
           const userEmail = userResponse.data?.user?.email;
-          
+
           if (!userEmail) {
             failCount++;
             continue;
           }
-          
+
           const alumniResponse = await axios.get(
             `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/${userId}`
           );
-          
-          const userName = alumniResponse.data?.alumniProfile 
-            ? `${alumniResponse.data.alumniProfile.honorifics} ${alumniResponse.data.alumniProfile.last_name}` 
+
+          const userName = alumniResponse.data?.alumniProfile
+            ? `${alumniResponse.data.alumniProfile.honorifics} ${alumniResponse.data.alumniProfile.last_name}`
             : "recipient";
-          
+
           const emailResponse = await axios.post(
             `${process.env.NEXT_PUBLIC_API_URL}/v1/email/send`,
             {
@@ -941,7 +941,7 @@ const handleSubmitDecline = async (id, name, reason, setToast, setDeclineDialogO
               name: userName
             }
           );
-          
+
           if (emailResponse.data.status === "SENT") {
             successCount++;
           } else {
@@ -951,7 +951,7 @@ const handleSubmitDecline = async (id, name, reason, setToast, setDeclineDialogO
           failCount++;
         }
       }
-      
+
       let message = "";
       if (successCount > 0 && failCount > 0) {
         message = `Declined ${successCount} accounts successfully. Failed to decline ${failCount} accounts.`;
@@ -960,16 +960,16 @@ const handleSubmitDecline = async (id, name, reason, setToast, setDeclineDialogO
       } else {
         message = "Failed to decline any accounts.";
       }
-      
-      setToast({ 
-        type: successCount > 0 ? "success" : "error", 
-        message 
+
+      setToast({
+        type: successCount > 0 ? "success" : "error",
+        message
       });
-      
+
       if (successCount > 0) {
         setRefreshTrigger(prev => prev + 1);
       }
-      
+
       setDeclineDialogOpen(false);
       return;
     }

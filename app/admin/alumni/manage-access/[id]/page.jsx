@@ -3,18 +3,18 @@ import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { GoBackButton } from "@/components/Buttons";
 import SkillTag from "@/components/SkillTag";
-import { 
-  MapPin, 
-  GraduationCap, 
-  Image, 
-  FileX, 
-  ArrowLeft, 
-  AlertTriangle, 
-  RefreshCw, 
-  Search, 
-  Briefcase, 
-  Users, 
-  Code, 
+import {
+  MapPin,
+  GraduationCap,
+  Image,
+  FileX,
+  ArrowLeft,
+  AlertTriangle,
+  RefreshCw,
+  Search,
+  Briefcase,
+  Users,
+  Code,
   Lightbulb,
   Loader2
 } from "lucide-react";
@@ -295,7 +295,7 @@ export default function AlumniSearchProfile() {
       setToast({ type: "error", message: "Decline message cannot be empty." });
       return;
     }
-    
+
     setDeclineLoading(true);
     try {
       const userResponse = await axios.get(
@@ -444,10 +444,10 @@ export default function AlumniSearchProfile() {
                 <p className="text-astradarkgray">Civil Status</p>
               </div>
               <div>
-              <p className="font-rb">
-                {profile.citizenship ? nationalities.getName(profile.citizenship, "en") : "N/A"}
-              </p>
-              <p className="text-astradarkgray">Citizenship</p>
+                <p className="font-rb">
+                  {profile.citizenship ? nationalities.getName(profile.citizenship, "en") : "N/A"}
+                </p>
+                <p className="text-astradarkgray">Citizenship</p>
               </div>
               <div>
                 <p className="font-rb">{course || "N/A"}</p>
@@ -546,7 +546,7 @@ export default function AlumniSearchProfile() {
                       );
                     })
                 ) : (
-                  <EmptyState 
+                  <EmptyState
                     Icon={Code}
                     message="No technical skills listed"
                   />
@@ -559,31 +559,31 @@ export default function AlumniSearchProfile() {
               <h4 className="font-rb text-astrablack mb-0">Fields of Interest</h4>
               <hr className="h-2 border-astralightgray"></hr>
               <div className="flex gap-3 flex-wrap text-sm">
-                {workExperience?.length > 0 && 
+                {workExperience?.length > 0 &&
                  workExperience.some(exp => exp.field && exp.field.trim()) ? (
-                  workExperience
-                    .filter(exp => exp.field && exp.field.trim())
-                    .map((experience, idx) => {
-                      const colors = [
-                        "bg-blue-100 text-blue-700",
-                        "bg-pink-100 text-pink-700",
-                        "bg-green-100 text-green-700",
-                      ];
-                      const color = colors[idx % colors.length];
-                      return (
-                        <SkillTag
-                          key={idx}
-                          text={experience.field}
-                          color={color}
-                        />
-                      );
-                    })
-                ) : (
-                  <EmptyState 
-                    Icon={Lightbulb}
-                    message="No fields of interest specified"
-                  />
-                )}
+                    workExperience
+                      .filter(exp => exp.field && exp.field.trim())
+                      .map((experience, idx) => {
+                        const colors = [
+                          "bg-blue-100 text-blue-700",
+                          "bg-pink-100 text-pink-700",
+                          "bg-green-100 text-green-700",
+                        ];
+                        const color = colors[idx % colors.length];
+                        return (
+                          <SkillTag
+                            key={idx}
+                            text={experience.field}
+                            color={color}
+                          />
+                        );
+                      })
+                  ) : (
+                    <EmptyState
+                      Icon={Lightbulb}
+                      message="No fields of interest specified"
+                    />
+                  )}
               </div>
             </div>
 
@@ -625,7 +625,7 @@ export default function AlumniSearchProfile() {
                     notifyType="success"
                     onClick={handleApprove}
                   />
-                  <ActionButton 
+                  <ActionButton
                     label="Decline" color="red" size='large' flex='flex-1'
                     notifyMessage={`${profile.first_name} ${profile.middle_name} ${profile.last_name} has been declined!`}
                     notifyType="fail"
@@ -659,69 +659,69 @@ export default function AlumniSearchProfile() {
 
         {/* Decline Reason Dialog */}
         <Dialog open={declineDialogOpen} onOpenChange={(isOpen) => {
-      if (!declineLoading && !isOpen) {
-        setDeclineDialogOpen(false);
-      }
-    }}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>Decline {profile?.first_name} {profile?.last_name}'s Account</DialogTitle>
-          <DialogDescription>
-            Enter a message explaining why this account is being declined.
-            This message will be sent via email to the user.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="py-4">
-          <div className="mb-2">
-            <label htmlFor="decline-reason" className="block text-sm font-medium mb-1">
-              Message to {profile?.first_name} {profile?.last_name}:
-            </label>
-            <Textarea
-              id="decline-reason"
-              value={declineReason}
-              onChange={(e) => setDeclineReason(e.target.value)}
-              placeholder="Please explain why this account request is being declined..."
-              className="w-full min-h-[120px] resize-none"
-              disabled={declineLoading}
-            />
-          </div>
-          <div className="flex justify-end mt-1">
-            <p className={`text-xs ${declineReason.length > 500 ? "text-astrared" : "text-astradarkgray"}`}>
-              {declineReason.length}/500 characters
-            </p>
-          </div>
-        </div>
-        <DialogFooter>
-          <div className="flex justify-end gap-2 w-full">
-            <button
-              className="px-4 py-2 rounded-lg bg-astragray/20 text-astradarkgray hover:bg-astragray/30 transition-colors"
-              onClick={() => setDeclineDialogOpen(false)}
-              disabled={declineLoading}
-            >
-              Cancel
-            </button>
-            <button
-              disabled={!declineReason.trim() || declineLoading}
-              className={`px-4 py-2 rounded-lg flex items-center justify-center ${
-                !declineReason.trim() || declineLoading
-                  ? "bg-astrared/50 text-astrawhite/70 cursor-not-allowed"
-                  : "bg-astrared text-astrawhite hover:bg-astrared/90"
-              }`}
-              onClick={handleSubmitDecline}
-            >
-              {declineLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Processing...
-                </>
-              ) : (
-                "Send and Decline"
-              )}
-            </button>
-          </div>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          if (!declineLoading && !isOpen) {
+            setDeclineDialogOpen(false);
+          }
+        }}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle>Decline {profile?.first_name} {profile?.last_name}&apos;s Account</DialogTitle>
+              <DialogDescription>
+                Enter a message explaining why this account is being declined.
+                This message will be sent via email to the user.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+              <div className="mb-2">
+                <label htmlFor="decline-reason" className="block text-sm font-medium mb-1">
+                  Message to {profile?.first_name} {profile?.last_name}:
+                </label>
+                <Textarea
+                  id="decline-reason"
+                  value={declineReason}
+                  onChange={(e) => setDeclineReason(e.target.value)}
+                  placeholder="Please explain why this account request is being declined..."
+                  className="w-full min-h-[120px] resize-none"
+                  disabled={declineLoading}
+                />
+              </div>
+              <div className="flex justify-end mt-1">
+                <p className={`text-xs ${declineReason.length > 500 ? "text-astrared" : "text-astradarkgray"}`}>
+                  {declineReason.length}/500 characters
+                </p>
+              </div>
+            </div>
+            <DialogFooter>
+              <div className="flex justify-end gap-2 w-full">
+                <button
+                  className="px-4 py-2 rounded-lg bg-astragray/20 text-astradarkgray hover:bg-astragray/30 transition-colors"
+                  onClick={() => setDeclineDialogOpen(false)}
+                  disabled={declineLoading}
+                >
+                  Cancel
+                </button>
+                <button
+                  disabled={!declineReason.trim() || declineLoading}
+                  className={`px-4 py-2 rounded-lg flex items-center justify-center ${
+                    !declineReason.trim() || declineLoading
+                      ? "bg-astrared/50 text-astrawhite/70 cursor-not-allowed"
+                      : "bg-astrared text-astrawhite hover:bg-astrared/90"
+                  }`}
+                  onClick={handleSubmitDecline}
+                >
+                  {declineLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    "Send and Decline"
+                  )}
+                </button>
+              </div>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </>
   );

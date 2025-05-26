@@ -8,14 +8,14 @@ export default function ProfileLoadingState() {
       <div className="max-w-6xl mx-auto flex justify-between items-center my-1">
         {/* Back button skeleton */}
         <Skeleton className="h-10 w-24" />
-        
+
         {/* Loading indicator */}
         <div className="flex items-center text-astraprimary">
           <Loader2 className="h-5 w-5 mr-2 animate-spin" />
           <span className="font-medium text-sm">Loading profile...</span>
         </div>
       </div>
-      
+
       {/* Profile header skeleton */}
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between bg-white border border-astralightgray rounded-xl px-6 py-4 shadow-sm gap-4">
         {/* Left section with proper responsive design */}
@@ -24,7 +24,7 @@ export default function ProfileLoadingState() {
           <div className="mx-auto sm:mx-0">
             <Skeleton className="w-18 h-18 rounded-full" />
           </div>
-          
+
           {/* Name and details with responsive alignment */}
           <div className="mt-2 sm:mt-0 space-y-2 text-center sm:text-left w-full sm:w-auto">
             <Skeleton className="h-6 w-48 mx-auto sm:mx-0" />
@@ -35,7 +35,7 @@ export default function ProfileLoadingState() {
             </div>
           </div>
         </div>
-        
+
         {/* Right section with proper responsive design */}
         <div className="flex flex-col md:flex-row items-center md:items-center gap-2 md:gap-3 w-full md:w-auto mt-3 md:mt-0">
           <Skeleton className="hidden md:block h-6 w-24 rounded-full" />
@@ -43,7 +43,7 @@ export default function ProfileLoadingState() {
           <Skeleton className="h-8 w-full md:w-32 rounded-md" />
         </div>
       </div>
-      
+
       {/* Main content skeletons */}
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
         {/* Left column */}
@@ -57,7 +57,7 @@ export default function ProfileLoadingState() {
               </div>
             ))}
           </div>
-          
+
           {/* Experience section */}
           <div className="mt-6">
             <Skeleton className="h-10 w-full rounded-t-md" />
@@ -72,7 +72,7 @@ export default function ProfileLoadingState() {
               ))}
             </div>
           </div>
-          
+
           {/* Affiliations section */}
           <div className="mt-6">
             <Skeleton className="h-10 w-full rounded-t-md" />
@@ -85,7 +85,7 @@ export default function ProfileLoadingState() {
             </div>
           </div>
         </div>
-        
+
         {/* Right column */}
         <div className="space-y-4">
           {/* Skills section */}
@@ -98,7 +98,7 @@ export default function ProfileLoadingState() {
               <Skeleton className="h-6 w-16 rounded-full" />
             </div>
           </div>
-          
+
           {/* Interests section */}
           <div className="bg-white border border-astralightgray rounded-xl p-4 shadow-md">
             <Skeleton className="h-5 w-40 mb-2" />
@@ -108,14 +108,14 @@ export default function ProfileLoadingState() {
               <Skeleton className="h-6 w-20 rounded-full" />
             </div>
           </div>
-          
+
           {/* Proof of graduation */}
           <div className="bg-white border border-astralightgray rounded-xl p-4 shadow-md">
             <Skeleton className="h-5 w-36 mb-2" />
             <hr className="h-2 border-astralightgray" />
             <Skeleton className="h-60 w-full mt-2 rounded-md" />
           </div>
-          
+
           {/* Action buttons */}
           <div className="flex justify-center gap-2">
             {/* <Skeleton className="h-10 w-full rounded-md" />

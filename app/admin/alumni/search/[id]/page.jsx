@@ -3,14 +3,14 @@ import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { GoBackButton } from "@/components/Buttons";
 import SkillTag from "@/components/SkillTag";
-import { 
-  MapPin, 
-  GraduationCap, 
-  Image, 
-  Briefcase, 
-  Users, 
-  Code, 
-  Lightbulb 
+import {
+  MapPin,
+  GraduationCap,
+  Image,
+  Briefcase,
+  Users,
+  Code,
+  Lightbulb
 } from "lucide-react";
 import TransitionSlide from "@/components/transitions/TransitionSlide";
 import axios from "axios";
@@ -114,7 +114,7 @@ export default function AlumniSearchProfile() {
       <div className="max-w-6xl mx-auto my-1">
         <GoBackButton />
       </div>
-      
+
       {/* PROFILE SECTION */}
       <TransitionSlide className="max-w-6xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between bg-white border border-astralightgray rounded-xl px-6 py-4 shadow-sm gap-4">
         {/* left section */}
@@ -246,7 +246,7 @@ export default function AlumniSearchProfile() {
               )}
             </div>
           </div>
-          
+
           {/* Affiliations Section */}
           <div className="mt-6">
             <h4 className="bg-astraprimary text-white px-4 py-2 rounded-t-md text-sm font-semibold">
@@ -307,7 +307,7 @@ export default function AlumniSearchProfile() {
                     );
                   })
               ) : (
-                <EmptyState 
+                <EmptyState
                   Icon={Code}
                   message="No technical skills listed"
                 />
@@ -320,31 +320,31 @@ export default function AlumniSearchProfile() {
             <h4 className="font-rb text-astrablack mb-0">Fields of Interest</h4>
             <hr className="h-2 border-astralightgray"></hr>
             <div className="flex gap-3 flex-wrap text-sm">
-              {workExperience?.length > 0 && 
+              {workExperience?.length > 0 &&
                workExperience.some(exp => exp.field && exp.field.trim()) ? (
-                workExperience
-                  .filter(exp => exp.field && exp.field.trim())
-                  .map((experience, idx) => {
-                    const colors = [
-                      "bg-blue-100 text-blue-700",
-                      "bg-pink-100 text-pink-700",
-                      "bg-green-100 text-green-700",
-                    ];
-                    const color = colors[idx % colors.length];
-                    return (
-                      <SkillTag
-                        key={idx}
-                        text={experience.field}
-                        color={color}
-                      />
-                    );
-                  })
-              ) : (
-                <EmptyState 
-                  Icon={Lightbulb}
-                  message="No fields of interest specified"
-                />
-              )}
+                  workExperience
+                    .filter(exp => exp.field && exp.field.trim())
+                    .map((experience, idx) => {
+                      const colors = [
+                        "bg-blue-100 text-blue-700",
+                        "bg-pink-100 text-pink-700",
+                        "bg-green-100 text-green-700",
+                      ];
+                      const color = colors[idx % colors.length];
+                      return (
+                        <SkillTag
+                          key={idx}
+                          text={experience.field}
+                          color={color}
+                        />
+                      );
+                    })
+                ) : (
+                  <EmptyState
+                    Icon={Lightbulb}
+                    message="No fields of interest specified"
+                  />
+                )}
             </div>
           </div>
 

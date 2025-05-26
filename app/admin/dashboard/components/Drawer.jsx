@@ -194,7 +194,7 @@ export function ReusableDrawer({
                     Chart Preview
                   </TabsTrigger>
                 </TabsList>
-                
+
                 {/* Conditional button on the right based on active tab */}
                 {buttons && (
                   <div>
@@ -213,7 +213,7 @@ export function ReusableDrawer({
                   </div>
                 )}
               </div>
-              
+
               {/* Content panels */}
               <TabsContent value="csv" className="p-0">
                 {renderCSVPreview()}

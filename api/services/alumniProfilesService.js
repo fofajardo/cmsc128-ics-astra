@@ -49,24 +49,24 @@ const fetchAlumniSearch = async (supabase, page = 1, limit = 10, search = "", fi
   let filteredData = data;
   filteredData = applyArraySearch(filteredData, search, fuseOptions);
   filteredData = applyArrayFilter(filteredData, filters);
-  
+
   // Before pagination, ensure emails are present by fetching them if needed
   if (filteredData.length > 0 && !filteredData[0].email) {
     const alumIds = filteredData.map(alumni => alumni.alum_id);
-    
+
     // Get emails from users table
     const { data: users, error: usersError } = await supabase
-      .from('users')  // Adjust table name as needed
-      .select('id, email')
-      .in('id', alumIds);
-    
+      .from("users")  // Adjust table name as needed
+      .select("id, email")
+      .in("id", alumIds);
+
     if (!usersError && users) {
       // Create a mapping of user IDs to emails
       const emailMap = {};
       users.forEach(user => {
         emailMap[user.id] = user.email;
       });
-      
+
       // Add the emails to the data
       filteredData = filteredData.map(alumni => ({
         ...alumni,
@@ -74,7 +74,7 @@ const fetchAlumniSearch = async (supabase, page = 1, limit = 10, search = "", fi
       }));
     }
   }
-  
+
   const paginatedData = applyPagination(filteredData, page, limit);
 
   return {
