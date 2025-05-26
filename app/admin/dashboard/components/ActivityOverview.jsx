@@ -25,29 +25,6 @@ function getRelativeTime(dateString) {
 }
 
 function AlumniItem({ alumni, router }) {
-
-  const [profilePhoto, setProfilePhoto] = useState("https://cdn-icons-png.flaticon.com/512/145/145974.png");
-
-  useEffect(() => {
-    if (alumni && alumni.id) {
-      fetchUserPhoto(alumni.id);
-    }
-  }, [alumni]);
-
-  const fetchUserPhoto = async (userId) => {
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/v1/photos/alum/${userId}`
-      );
-
-      if (response.data.status === "OK" && response.data.photo) {
-        setProfilePhoto(response.data.photo);
-      }
-    } catch (error) {
-      ; // console.error(`Failed to fetch photo for user ${userId}:`, error);
-    }
-  };
-
   if (!alumni) {
     return <div className="min-h-[72px]" />;
   }
@@ -56,7 +33,7 @@ function AlumniItem({ alumni, router }) {
     <div className="flex items-center border-b py-2 min-h-[72px]">
       <div className="mr-3 py-1 px-1 hidden sm:block">
         <Avatar>
-          <AvatarImage src={profilePhoto} alt={alumni?.name || "User"} />
+          <AvatarImage src={alumni.avatar_url} alt={alumni?.name || "User"} />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
 
@@ -206,7 +183,8 @@ export default function ActivityOverview() {
                   ? capitalizeName(`${user.alumni_profiles.first_name} ${user.alumni_profiles.middle_name} ${user.alumni_profiles.last_name}`)
                   : null,
                 email: user.email,
-                date: new Date(user.created_at).toLocaleDateString()
+                date: new Date(user.created_at).toLocaleDateString(),
+                avatar_url: user.avatar_url,
               };
 
               return userData;
@@ -241,7 +219,8 @@ export default function ActivityOverview() {
                 id: user.user_id,
                 name: capitalizeName(`${user.first_name} ${user.middle_name} ${user.last_name}`),
                 email: user.email,
-                date: user.profile_created_at
+                date: user.profile_created_at,
+                avatar_url: user.avatar_url,
               };
 
               return userData;
