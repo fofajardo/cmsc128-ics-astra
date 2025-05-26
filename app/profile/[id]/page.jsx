@@ -9,6 +9,7 @@ import { Affiliations } from "@/components/profile/sections/Affiliations";
 import { useUser } from "@/components/UserContext.jsx";
 import nationalities from "i18n-nationality";
 import nationalities_en from "i18n-nationality/langs/en.json";
+import DegreeProgramsSection from "@/components/profile/sections/DegreeProgramsSection.jsx";
 
 nationalities.registerLocale(nationalities_en);
 
@@ -36,6 +37,10 @@ export default function Page() {
             />
 
             <FieldsOfInterest
+              context={context}
+            />
+
+            <DegreeProgramsSection
               context={context}
             />
 

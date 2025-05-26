@@ -117,6 +117,11 @@ function buildUserContext() {
         };
         return setDegreePrograms(updatedDegreePrograms);
       },
+      pushDegreeProgram: function(degreeProgram) {
+        const updatedDegreePrograms = [...degreePrograms];
+        updatedDegreePrograms.push(degreeProgram);
+        return setDegreePrograms(updatedDegreePrograms);
+      },
       patchWorkExperiences: function(index, updates) {
         const updatedWorkExperiences = [...workExperiences];
         updatedWorkExperiences[index] = {

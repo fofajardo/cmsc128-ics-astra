@@ -52,6 +52,7 @@ class BaseRoutes {
 
     this.degreePrograms = {
       base: (append = "") => `${this.BASE_URL}/degree-programs${append}`,
+      getOne: (id) => `${this.BASE_URL}/degree-programs/${id}`,
     };
 
     this.photos = {
@@ -205,6 +206,7 @@ class FrontEndRoutes extends BaseRoutes {
       base: (id) => `${this.BASE_URL}/profile/${id}`,
       experience: (id) => `${this.BASE_URL}/profile/${id}/experience`,
       affiliations: (id) => `${this.BASE_URL}/profile/${id}/affiliations`,
+      degreePrograms: (id) => `${this.BASE_URL}/profile/${id}/degree-programs`,
     };
 
     this.projects = {
