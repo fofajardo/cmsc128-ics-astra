@@ -103,7 +103,6 @@ export default function AlumniAccess() {
         if (response.data.status === "OK") {
           const updatedAlumList = await Promise.all(
             response.data.list.map(async (alum) => {
-              console.log(alum.avatar_url);
               const alumData = {
                 id: alum.alum_id,
                 alumname: capitalizeName(`${alum.first_name} ${alum.middle_name} ${alum.last_name}`),
