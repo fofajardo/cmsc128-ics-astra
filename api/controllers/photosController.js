@@ -463,7 +463,7 @@ const uploadOrReplaceAvatar = async (req, res) => {
 
     // Return updated URL.
     const {data: avatarData, error: avatarError} =
-      await PhotosService.getAvatarUrl(req.supabase, userId);
+      await photosService.getAvatarUrl(req.supabase, userId);
 
     return res.status(httpStatus.CREATED).json({
       status: "SUCCESS",
