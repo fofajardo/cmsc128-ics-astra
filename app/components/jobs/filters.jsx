@@ -18,7 +18,7 @@ export default function Filter({ onApply }) {
   const handleSelectChange = (selected, { name }) => {
     setFormData((prev) => ({
       ...prev,
-      [name]: selected && selected.value !== "" ? selected.value : "",
+      [name]: selected ? selected.value : "",
     }));
   };
 
@@ -132,9 +132,10 @@ export default function Filter({ onApply }) {
           placeholder="Job Type"
           onChange={handleSelectChange}
           value={
-            jobTypeOptions.find(
-              (opt) => opt.value === formData.job_type
-            )
+            (() => {
+              const found = jobTypeOptions.find(opt => opt.value === formData.job_type);
+              return found && found.value === "All" ? null : found;
+            })()
           }
           name="job_type"
           instanceId="jobType"
@@ -150,7 +151,10 @@ export default function Filter({ onApply }) {
           placeholder="Status"
           onChange={handleSelectChange}
           value={
-            statusOptions.find((opt) => opt.value === formData.status) || null
+            (() => {
+              const found = statusOptions.find(opt => opt.value === formData.status);
+              return found && found.value === "All" ? null : found;
+            })()
           }
           name="status"
           instanceId="status"
