@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faChevronDown, faSort, faFilter } from "@fortawesome/free-solid-svg-icons";
 import { Icon } from "@iconify/react";
 import FilterDropdown from "@/components/events/GroupedEvents/FilterDropdown";
+import { ParticlesBackground } from "@/components/ParticlesBackground";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -363,16 +364,17 @@ export default function Page() {
           className="relative w-full bg-cover bg-center"
           style={{ backgroundImage: "url('/blue-bg.png')" }}
         >
-          <div className="max-w-[1440px] mx-auto px-6 py-10 md:px-12 md:py-16 lg:px-12 lg:py-20 flex flex-col lg:flex-row items-center justify-between text-astrawhite gap-6 lg:gap-10">
+          <ParticlesBackground count={40} />
+          <div className="max-w-[1440px] mx-auto px-4 py-10 md:px-12 md:py-16 lg:px-12 lg:py-20 flex flex-col lg:flex-row items-center justify-between text-astrawhite gap-8">
             <div className="max-w-[600px] space-y-4 text-center lg:text-left animate-slide-up">
-              <h1 className="font-h1 text-astrawhite leading-[1.1] text-3xl md:text-4xl lg:text-5xl">
+              <h1 className="text-[60px] font-extrabold leading-[1.1]">
                 Alumni Directory
               </h1>
-              <p className="font-l text-astrawhite text-sm md:text-base">
+              <p className="text-lg font-medium">
                 Discover, connect, and engage with alumni to expand your network!
               </p>
             </div>
-            <div className="w-full lg:w-[550px] flex justify-center animate-fade-in">
+            <div className="w-full lg:w-[550px] flex justify-center animate-natural-float">
               <div className="relative w-full h-auto max-w-[400px] md:max-w-[550px]">
                 <Image
                   src={eventsVector}
@@ -386,7 +388,7 @@ export default function Page() {
         </div>
 
         {/* Search Bar Section */}
-        <section className="py-16 md:py-24 relative w-full flex flex-col items-center">
+        <section className="py-16 md:py-20 relative w-full flex flex-col items-center">
           <div className="w-full max-w-7xl px-4 md:px-8 flex flex-col items-center">
             <div className="w-full max-w-[1000px] mb-6 md:mb-8 flex flex-col items-center">
               <div className="flex items-stretch w-full border border-astragray bg-astrawhite">
@@ -416,7 +418,7 @@ export default function Page() {
                       id="minGradYear"
                       name="minGradYear"
                       placeholder="Min Year"
-                      className="border border-astraprimary p-2 pl-4 h-10 rounded-lg text-sm"
+                      className="border-2 border-astraprimary p-2 pl-4 h-10 w-40 rounded-lg text-sm bg-astrawhite text-astrablack"
                       value={filters.minGradYear}
                       onChange={handleFilterChange}
                       onBlur={handleApplyFilters}
@@ -426,14 +428,14 @@ export default function Page() {
                         }
                       }}
                     />
-                    <p className="font-normal text-sm leading-6 text-astradarkgray">to</p>
+                    <p className="font-normal text-sm leading-6 text-astrablack">to</p>
                     <label htmlFor="maxGradYear" className="sr-only">Max Graduation Year</label>
                     <input
                       type="text"
                       id="maxGradYear"
                       name="maxGradYear"
                       placeholder="Max Year"
-                      className="border border-astraprimary p-2 pl-4 h-10 rounded-lg text-sm"
+                      className="border-2 border-astraprimary p-2 pl-4 h-10 w-40 rounded-lg text-sm bg-astrawhite text-astrablack"
                       value={filters.maxGradYear}
                       onChange={handleFilterChange}
                       onBlur={handleApplyFilters}
@@ -487,6 +489,33 @@ export default function Page() {
           </div>
         </section>
       </>
+      <style jsx global>{`
+        @keyframes naturalFloat {
+          0% { transform: translate(0px, 0px) rotate(0deg); }
+          25% { transform: translate(8px, -10px) rotate(1deg); }
+          50% { transform: translate(0px, -20px) rotate(0deg); }
+          75% { transform: translate(-8px, -10px) rotate(-1deg); }
+          100% { transform: translate(0px, 0px) rotate(0deg); }
+        }
+        @keyframes fadeBounce {
+          0% { opacity: 0; transform: translateY(-10px); }
+          50% { opacity: 1; transform: translateY(5px); }
+          100% { transform: translateY(0px); }
+        }
+        @keyframes particles {
+          0% { background-position: 0 0; }
+          100% { background-position: 1000px 0; }
+        }
+        .animate-natural-float { animation: naturalFloat 8s ease-in-out infinite; }
+        .animate-fade-bounce { animation: fadeBounce 1.5s ease forwards; }
+        .animate-hero-text { animation: fadeBounce 2s ease-in-out; }
+        .animate-particles {
+          background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+          background-size: 20px 20px;
+          animation: particles 60s linear infinite;
+          pointer-events: none;
+        }
+      `}</style>
     </div>
   );
 }
