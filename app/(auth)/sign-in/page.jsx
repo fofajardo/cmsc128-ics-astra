@@ -33,7 +33,7 @@ export default function LoginPage() {
     });
   };
 
-  const buildForm = function({errors, isSubmitting}) {
+  const buildForm = function({errors, touched, isSubmitting}) {
     const errorsForMap = Object.values(errors);
     return (
       <Form className="space-y-4">
@@ -44,12 +44,18 @@ export default function LoginPage() {
           placeholder="Email"
           className="w-full px-3 py-2 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-gray-900 text-sm md:text-base"
         />
+        {touched.username && errors.username && (
+          <div className="text-[var(--color-astrared)] text-xs mt-1">{errors.username}</div>
+        )}
         <Field
           type="password"
           name="password"
           placeholder="Password"
           className="w-full px-3 py-2 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-gray-900 text-sm md:text-base"
         />
+        {touched.password && errors.password && (
+          <div className="text-[var(--color-astrared)] text-xs mt-1">{errors.password}</div>
+        )}
 
         {errorsForMap.length > 0 && (
           <div className="bg-red-100 text-[var(--color-astrared)] text-sm px-3 py-2 rounded">
