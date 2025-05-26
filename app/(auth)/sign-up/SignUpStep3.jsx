@@ -52,7 +52,7 @@ export default function SignUpStep3({ onSetPage }) {
     }
   };
 
-  const buildForm = ({ handleChange, handleBlur, values, errors, isSubmitting }) => {
+  const buildForm = ({ handleChange, handleBlur, values, errors, touched, isSubmitting }) => {
     const errorsForMap = Object.values(errors);
 
     return (
@@ -74,6 +74,9 @@ export default function SignUpStep3({ onSetPage }) {
             <option value="Mrs.">Mrs.</option>
             <option value="Mx.">Mx.</option>
           </Field>
+          {touched.honorifics && errors.honorifics && (
+            <div className="text-[var(--color-astrared)] text-xs mt-1">{errors.honorifics}</div>
+          )}
         </div>
 
         <div>
@@ -86,6 +89,9 @@ export default function SignUpStep3({ onSetPage }) {
             name="first_name"
             className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md bg-white text-gray-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
           />
+          {touched.first_name && errors.first_name && (
+            <div className="text-[var(--color-astrared)] text-xs mt-1">{errors.first_name}</div>
+          )}
         </div>
 
         <div>
@@ -98,6 +104,9 @@ export default function SignUpStep3({ onSetPage }) {
             name="middle_name"
             className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md bg-white text-gray-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
           />
+          {touched.middle_name && errors.middle_name && (
+            <div className="text-[var(--color-astrared)] text-xs mt-1">{errors.middle_name}</div>
+          )}
         </div>
 
         <div className="flex space-x-4">
@@ -111,6 +120,9 @@ export default function SignUpStep3({ onSetPage }) {
               name="last_name"
               className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md bg-white text-gray-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
             />
+            {touched.last_name && errors.last_name && (
+              <div className="text-[var(--color-astrared)] text-xs mt-1">{errors.last_name}</div>
+            )}
           </div>
           <div className="flex-1">
             <label htmlFor="suffix" className="block text-sm font-medium text-[var(--color-astrablack)] mb-1">
@@ -123,6 +135,9 @@ export default function SignUpStep3({ onSetPage }) {
               placeholder="Jr., Sr., III..."
               className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md bg-white text-gray-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
             />
+            {touched.suffix && errors.suffix && (
+              <div className="text-[var(--color-astrared)] text-xs mt-1">{errors.suffix}</div>
+            )}
           </div>
         </div>
 
@@ -137,6 +152,9 @@ export default function SignUpStep3({ onSetPage }) {
               name="birthdate"
               className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md bg-white text-gray-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
             />
+            {touched.birthdate && errors.birthdate && (
+              <div className="text-[var(--color-astrared)] text-xs mt-1">{errors.birthdate}</div>
+            )}
           </div>
         </div>
 
@@ -154,6 +172,9 @@ export default function SignUpStep3({ onSetPage }) {
               <option value="Male">Male</option>
               <option value="Female">Female</option>
             </Field>
+            {touched.sex && errors.sex && (
+              <div className="text-[var(--color-astrared)] text-xs mt-1">{errors.sex}</div>
+            )}
           </div>
           <div className="flex-1">
             <label htmlFor="sex" className="block text-sm font-medium text-[var(--color-astrablack)] mb-1">
@@ -164,6 +185,9 @@ export default function SignUpStep3({ onSetPage }) {
               name="gender"
               className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md bg-white text-gray-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
             />
+            {touched.gender && errors.gender && (
+              <div className="text-[var(--color-astrared)] text-xs mt-1">{errors.gender}</div>
+            )}
           </div>
         </div>
 
@@ -184,6 +208,9 @@ export default function SignUpStep3({ onSetPage }) {
               <option value="2">Divorced</option>
               <option value="3">Separated</option>
             </Field>
+            {touched.civil_status && errors.civil_status && (
+              <div className="text-[var(--color-astrared)] text-xs mt-1">{errors.civil_status}</div>
+            )}
           </div>
         </div>
 
@@ -197,6 +224,9 @@ export default function SignUpStep3({ onSetPage }) {
             name="address"
             className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md bg-white text-gray-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
           />
+          {touched.address && errors.address && (
+            <div className="text-[var(--color-astrared)] text-xs mt-1">{errors.address}</div>
+          )}
         </div>
 
         <div className="flex space-x-4">
@@ -211,6 +241,9 @@ export default function SignUpStep3({ onSetPage }) {
               placeholder="e.g. Manila"
               className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md bg-white text-gray-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
             />
+            {touched.location && errors.location && (
+              <div className="text-[var(--color-astrared)] text-xs mt-1">{errors.location}</div>
+            )}
           </div>
           <div className="flex-1">
             <label htmlFor="country-of-citizenship" className="block text-sm font-medium text-[var(--color-astrablack)] mb-1">
@@ -224,6 +257,9 @@ export default function SignUpStep3({ onSetPage }) {
               onBlur={handleBlur}
               value={values.citizenship}
             />
+            {touched.citizenship && errors.citizenship && (
+              <div className="text-[var(--color-astrared)] text-xs mt-1">{errors.citizenship}</div>
+            )}
           </div>
         </div>
 
@@ -239,6 +275,9 @@ export default function SignUpStep3({ onSetPage }) {
               placeholder="XXXX-XXXXX"
               className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md bg-white text-gray-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)]"
             />
+            {touched.student_num && errors.student_num && (
+              <div className="text-[var(--color-astrared)] text-xs mt-1">{errors.student_num}</div>
+            )}
           </div>
         </div>
 

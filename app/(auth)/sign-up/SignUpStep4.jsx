@@ -42,7 +42,7 @@ export default function SignUpStep4({ onSetPage }) {
     }
   };
 
-  const buildForm = ({ errors, isSubmitting }) => {
+  const buildForm = ({ errors, touched, isSubmitting }) => {
     const errorsForMap = Object.values(errors);
 
     return (
@@ -64,6 +64,9 @@ export default function SignUpStep4({ onSetPage }) {
             <option value="2">Master of Information Technology</option>
             <option value="3">PhD Computer Science</option>
           </Field>
+          {touched.degree_program_const && errors.degree_program_const && (
+            <div className="text-[var(--color-astrared)] text-xs mt-1">{errors.degree_program_const}</div>
+          )}
         </div>
 
         <div>
@@ -77,6 +80,9 @@ export default function SignUpStep4({ onSetPage }) {
             placeholder="XXXX"
             className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-[var(--color-astrablack)] text-sm md:text-base"
           />
+          {touched.year_started && errors.year_started && (
+            <div className="text-[var(--color-astrared)] text-xs mt-1">{errors.year_started}</div>
+          )}
         </div>
 
 
@@ -91,15 +97,18 @@ export default function SignUpStep4({ onSetPage }) {
             placeholder="XXXX"
             className="w-full px-3 py-1 border border-[var(--color-astradirtywhite)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-astraprimary)] bg-white text-[var(--color-astrablack)] text-sm md:text-base"
           />
+          {touched.year_graduated && errors.year_graduated && (
+            <div className="text-[var(--color-astrared)] text-xs mt-1">{errors.year_graduated}</div>
+          )}
         </div>
 
-        {errorsForMap.length > 0 && (
+        {/* {errorsForMap.length > 0 && (
           <div className="bg-red-100 text-[var(--color-astrared)] text-sm px-3 py-2 rounded">
             {errorsForMap.map((err, idx) => (
               <p key={idx}>{err}</p>
             ))}
           </div>
-        )}
+        )} */}
 
         <button
           type="submit"
