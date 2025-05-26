@@ -64,12 +64,13 @@ export default function AlumniSearch() {
               const alumData = {
                 id: alum.alum_id,
                 alumname: capitalizeName(`${alum.first_name} ${alum.middle_name} ${alum.last_name}`),
-                graduationYear: alum.year_graduated,
+                graduationYear: alum.year_graduated || "N/A",
                 location: alum.location,
                 fieldOfWork:
                   alum.field || "N/A",
                 skills: alum.skills ? alum.skills.split(",") : [],
                 image: alum.avatar_url,
+                email: alum.email,
               };
               return alumData;
             })
