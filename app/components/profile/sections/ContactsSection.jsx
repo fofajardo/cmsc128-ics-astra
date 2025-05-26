@@ -49,9 +49,9 @@ export function ContactsSection({context, editMode}) {
         </div>
         <div className="flex-1">
           <h3 className="text-lg font-semibold text-[var(--color-astrablack)]">
-            {CONTACT_TYPE_LABELS[contact.type]}
+            {contact.content}
           </h3>
-          <p className="text-sm text-[var(--color-astrablack)]">{contact.content}</p>
+          <p className="text-sm text-[var(--color-astrablack)]">{CONTACT_TYPE_LABELS[contact.type]}</p>
         </div>
         {
           editMode && <AddEditContactModal context={context} contact={contact} contactKey={index}/>
