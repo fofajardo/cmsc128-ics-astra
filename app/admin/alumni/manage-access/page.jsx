@@ -95,8 +95,7 @@ export default function AlumniAccess() {
                 alumname: capitalizeName(`${alum.first_name} ${alum.middle_name} ${alum.last_name}`),
                 graduationYear: alum.year_graduated,
                 student_num: alum.student_num,
-                image:
-                  "https://cdn-icons-png.flaticon.com/512/145/145974.png",
+                image: alum.avatar.url,
                 degreeProgram: alum.course,
                 email: alum.email
               };
