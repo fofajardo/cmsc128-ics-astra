@@ -33,7 +33,7 @@ export default function AddEditDegreeProgramModal({ context, degreeProgram = nul
         year_started: new Date(degreeProgram.year_started).getFullYear().toString(),
         year_graduated: new Date(degreeProgram.year_graduated).getFullYear().toString(),
         is_uplb: degreeProgram.is_uplb,
-        uplb_program: kICSDegreePrograms.findIndex(p => p.name === degreeProgram.name) !== -1 
+        uplb_program: kICSDegreePrograms.findIndex(p => p.name === degreeProgram.name) !== -1
           ? kICSDegreePrograms.findIndex(p => p.name === degreeProgram.name).toString()
           : ""
       });

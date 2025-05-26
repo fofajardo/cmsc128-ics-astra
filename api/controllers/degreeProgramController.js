@@ -62,7 +62,7 @@ const createDegreeProgram = async (req, res) => {
     const {body} = req;
     const requiredProps = [
       "name",
-      "level", 
+      "level",
       "user_id",
       "institution",
       "year_started",
