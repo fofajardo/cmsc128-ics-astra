@@ -10,6 +10,7 @@ import { capitalizeName, formatDate } from "@/utils/format.jsx";
 import {CIVIL_STATUS_LABELS} from "../../../../../common/scopes.js";
 import nationalities from "i18n-nationality";
 import nationalities_en from "i18n-nationality/langs/en.json";
+import ToastNotification from "@/components/ToastNotification.jsx";
 
 nationalities.registerLocale(nationalities_en);
 import { ActionButton } from "@/components/Buttons";
@@ -32,6 +33,7 @@ const getStatusBadge = (status) => {
 
 export default function AlumniSearchProfile() {
   const { id } = useParams();
+  const { toast, setToast } = useState(null);
 
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -115,7 +117,7 @@ export default function AlumniSearchProfile() {
           }
         }
       } catch {
-        // fail silently
+        ;
       } finally {
         setLoading(false);
       }
@@ -134,8 +136,6 @@ export default function AlumniSearchProfile() {
 
   const handleApprove = async () => {
     try {
-      // console.log(`Approving ID: ${id}.`);
-
       const getResponse = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/${id}`
       );
@@ -167,7 +167,7 @@ export default function AlumniSearchProfile() {
         setRefreshTrigger(prev => prev + 1);
       }
     } catch (error) {
-      ; // console.error(`Failed to approve ${name}:`, error);
+      setToast({ type: "error", message: `An error occurred while approving ${name}.` });
     }
   };
 
@@ -202,9 +202,11 @@ export default function AlumniSearchProfile() {
 
       if (postResponse.data.status === "CREATED") {
         setRefreshTrigger(prev => prev + 1);
+      } else {
+        setToast({ type: "error", message: `Failed to remove ${name}'s access. ${postResponse.data.message}` });
       }
     } catch (error) {
-      ; // console.error(`Failed to remove ${name}'s access:`, error);
+      setToast({ type: "error", message: `An error occurred while removing ${name}'s access.` });
     }
   };
 
@@ -237,15 +239,71 @@ export default function AlumniSearchProfile() {
 
       if (postResponse.data.status === "CREATED") {
         setRefreshTrigger(prev => prev + 1);
+      } else {
+        setToast({ type: "error", message: `Failed to reactivate ${name}. ${postResponse.data.message}` });
       }
     } catch (error) {
-      ; // console.error(`Failed to reactivate ${name}:`, error);
+      setToast({ type: "error", message: `An error occurred while reactivating ${name}.` });
+    }
+  };
+
+  const handleDecline = async () => {
+    const reason = prompt(`Enter a message to send to ${name}:`);
+
+    if (!reason || reason.trim() === "") {
+      setToast({ type: "error", message: "Decline message cannot be empty." });
+      return;
+    }
+
+    try {
+      const userResponse = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/users/${id}`
+      );
+
+      const userEmail = userResponse.data?.user?.email;
+
+      if (!userEmail) {
+        setToast({ type: "error", message: `Email not found for ${name}.` });
+        return;
+      }
+
+      const alumniResponse = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/${id}`
+      );
+
+      const userName = `${alumniResponse.data?.alumniProfile?.honorifics} ${alumniResponse.data?.alumniProfile?.last_name}`;
+
+      const emailResponse = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/email/send`,
+        {
+          to: userEmail,
+          subject: "Your Alumni Profile Request Has Been Declined",
+          body: reason,
+          name: userName || "recipient"
+        }
+      );
+
+      if (emailResponse.data.status === "SENT") {
+        setToast({ type: "success", message: `Decline email sent to ${name}.` });
+      } else {
+        setToast({ type: "error", message: `Failed to send email. ${emailResponse.data.message}` });
+      }
+    } catch (error) {
+      setToast({ type: "error", message: `Error declining ${name}.` });
     }
   };
 
   return (
     <>
       <div className="p-4 bg-astradirtywhite min-h-screen">
+        {toast && (
+          <ToastNotification
+            type={toast.type}
+            message={toast.message}
+            onClose={() => setToast(null)}
+          />
+        )}
+
         <div className="max-w-6xl mx-auto my-1">
           <GoBackButton />
         </div>
@@ -503,6 +561,7 @@ export default function AlumniSearchProfile() {
                   <ActionButton label="Decline" color = "red" size = 'large' flex = 'flex-1'
                     notifyMessage={`${profile.first_name} ${profile.middle_name} ${profile.last_name} has been declined!`}
                     notifyType="fail"
+                    onClick={handleDecline}
                   />
                 </>
               )}
