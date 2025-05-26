@@ -231,9 +231,9 @@ export default function ProjectDetails({ params }) {
       <div className="bg-astradirtywhite min-h-screen">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="flex flex-col items-center justify-center py-16 sm:py-24 md:py-32">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-astraprimary mb-3 sm:mb-4">404</h1>
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-astradarkgray mb-3 sm:mb-4">Project Not Found</h2>
-            <p className="text-sm sm:text-base text-astradarkgray mb-6 sm:mb-8 text-center max-w-md px-4">The project you&apos;re looking for doesn&apos;t exist or has been removed.</p>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-astraprimary mb-3 sm:mb-4">500</h1>
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-astradarkgray mb-3 sm:mb-4">An error occured while fetching the project</h2>
+            <p className="text-sm sm:text-base text-astradarkgray mb-6 sm:mb-8 text-center max-w-md px-4">Please try again later.</p>
             <button
               onClick={() => router.push("/projects")}
               className="bg-astraprimary text-astrawhite px-5 sm:px-6 py-2 sm:py-2.5 rounded-lg hover:bg-astraprimary/90 transition-colors text-sm sm:text-base"
