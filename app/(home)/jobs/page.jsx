@@ -183,13 +183,26 @@ export default function JobsPage() {
 
       <HiringPrompt refreshJobs={fetchJobs}/>
 
-      <SearchBar onSearch={(query) => {
-        const lower = query.toLowerCase();
-        const filtered = jobs.filter(job =>
-          (job.job_title || "").toLowerCase().includes(lower) || (job.company_name || "").toLowerCase().includes(lower));
-        setFilteredJobs(filtered);}}/>
-
-      <Filter onApply={handleApplyFilter}/>
+      <div className="relative z-20 bg-astradirtywhite w-full py-14 -mt-10">
+        <div className="max-w-[1440px] mx-auto flex flex-col items-center gap-8 px-4">
+          {/* Search Bar Container */}
+          <div className="w-full max-w-[1000px]">
+            <SearchBar
+              onSearch={(query) => {
+                const lower = query.toLowerCase();
+                const filtered = jobs.filter(
+                  (job) =>
+                    (job.job_title || "").toLowerCase().includes(lower) ||
+                    (job.company_name || "").toLowerCase().includes(lower)
+                );
+                setFilteredJobs(filtered);
+              }}
+            />
+          </div>
+          {/* Filters Container */}
+          <Filter onApply={handleApplyFilter} />
+        </div>
+      </div>
 
       {filteredJobs.length == 0 ? <Image src="/jobs/empty.png" width={181} height={224} alt='empty' className="shrink-0 col-span-3"/>
         : <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
