@@ -77,60 +77,67 @@ body {
 }
 
 @layer utilities {
-  /* Base font classes (to be used for desktop version) */
+  /* Base font classes with mobile-first approach */
   .font-h1 {
-    @apply text-5xl font-semibold;
+    @apply text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight;
   }
   .font-h2 {
-    @apply text-4xl font-semibold;
+    @apply text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight;
   }
   .font-l {
-    @apply text-2xl;
+    @apply text-lg sm:text-xl md:text-2xl tracking-normal;
   }
   .font-lb {
-    @apply text-2xl font-semibold;
+    @apply text-lg sm:text-xl md:text-2xl font-semibold tracking-normal;
   }
   .font-r {
-    @apply text-lg;
+    @apply text-base sm:text-lg md:text-lg tracking-normal;
   }
   .font-rb {
-    @apply text-lg font-semibold;
+    @apply text-base sm:text-lg md:text-lg font-semibold tracking-normal;
   }
   .font-s {
-    @apply text-sm;
+    @apply text-sm sm:text-base tracking-normal;
   }
   .font-sb {
-    @apply text-sm font-semibold;
+    @apply text-sm sm:text-base font-semibold tracking-normal;
   }
 
-  /* Responsive variants */
-  @media (max-width: 768px) {
-    .font-h1 {
-      @apply text-4xl font-semibold;
-    }
-    .font-h2 {
-      @apply text-3xl font-semibold;
-    }
-    .font-l {
-      @apply text-xl;
-    }
-    .font-lb {
-      @apply text-xl font-semibold;
-    }
-    .font-r {
-      @apply text-base;
-    }
-    .font-rb {
-      @apply text-base font-semibold;
-    }
-    .font-s {
-      @apply text-sm;
-    }
-    .font-sb {
-      @apply text-sm font-semibold;
-    }
+  /* Additional responsive utilities */
+  .responsive-container {
+    @apply w-full max-w-[90vw] sm:max-w-[85vw] md:max-w-[80vw] lg:max-w-[1200px] mx-auto px-4 sm:px-6 md:px-8;
   }
 
+  .responsive-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8;
+  }
+
+  .responsive-flex {
+    @apply flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 md:gap-8;
+  }
+
+  .responsive-padding {
+    @apply p-4 sm:p-6 md:p-8 lg:p-10;
+  }
+
+  .responsive-margin {
+    @apply m-4 sm:m-6 md:m-8 lg:m-10;
+  }
+
+  .responsive-text {
+    @apply text-sm sm:text-base md:text-lg lg:text-xl;
+  }
+
+  /* Touch-friendly improvements */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
+  }
+
+  .touch-padding {
+    @apply p-3 sm:p-2;
+  }
+
+  /* Improved animations for mobile */
   .animate-fade-in {
     animation: fadeIn 0.5s ease-in-out;
   }
@@ -139,42 +146,48 @@ body {
     animation: slideUp 0.5s ease-in-out;
   }
 
-  @keyframes shimmer {
-    100% {
-      transform: translateX(100%);
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
     }
   }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  /* Improved skeleton loading for mobile */
   .skeleton-shimmer {
     position: relative;
     overflow: hidden;
-    background: #e0e0e0;
+    @apply bg-gray-200 rounded-md;
   }
+
   .skeleton-shimmer::after {
     content: "";
     position: absolute;
-    top: 0; left: -150px; height: 100%; width: 150px;
+    top: 0;
+    left: -150px;
+    height: 100%;
+    width: 150px;
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
     animation: shimmer 1.5s infinite;
   }
-}
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
+  @keyframes shimmer {
+    100% {
+      transform: translateX(200%);
+    }
   }
 }
 

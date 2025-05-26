@@ -83,65 +83,75 @@ export default function ProjectCard({
 
   return (
     <div
-      onClick={handleCardClick}
-      className="group bg-astrawhite rounded-2xl shadow hover:shadow-lg transition-all duration-300 cursor-pointer border-2 border-transparent hover:border-astraprimary overflow-hidden h-full flex flex-col">
-      {/* Project Image */}
-      <div className={`relative ${getImageHeight()} w-full overflow-hidden`}>
+      className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 h-full flex flex-col overflow-hidden"
+      onClick={() => router.push(`/projects/about/${id}`)}
+    >
+      {/* Image Container */}
+      <div className="relative w-full pt-[56.25%]">
         <Image
           src={image}
           alt={title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          width={400}
-          height={200}
+          fill
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+          sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
         />
-        <div className="absolute top-2 right-2 bg-astradark text-astrawhite px-2 py-1 rounded-lg text-xs font-s flex items-center gap-1">
-          {type === PROJECT_TYPE.SCHOLARSHIP ? (
-            <GraduationCap className="w-3 h-3" />
-          ) : (
-            <HeartHandshake className="w-3 h-3" />
-          )}
-          {capitalizeName(type)}
-        </div>
       </div>
 
-      {/* Content */}
-      <div className="p-4 flex flex-col flex-1">
-        <h3 className="font-lb text-lg line-clamp-1">{title}</h3>
-        <p className={`text-astradarkgray font-s mt-2 text-sm ${getDescriptionClamp()}`}>{description}</p>
+      {/* Content Container */}
+      <div className="p-4 sm:p-6 flex-grow flex flex-col">
+        <h3 className="font-rb text-astrablack mb-2 line-clamp-2 min-h-[2.5rem]">
+          {title}
+        </h3>
+        <p className="font-r text-astradarkgray mb-4 line-clamp-3 flex-grow">
+          {description}
+        </p>
 
-        {/* Progress bar */}
-        <div className="mt-auto pt-3">
-          <div className="flex justify-between text-xs font-s mb-1 line-clamp-1">
-            <span>{formatCurrency(raised)} raised</span>
-            <span>Goal: {formatCurrency(goal)}</span>
+        {/* Progress Bar */}
+        <div className="space-y-2 mb-4">
+          <div className="flex justify-between items-center text-sm">
+            <span className="font-rb text-astrablack">{formatCurrency(raised)}</span>
+            <span className="font-r text-astradarkgray">of {formatCurrency(goal)}</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="h-2 bg-astralightgray rounded-full overflow-hidden">
             <div
-              className={`${getProgressColor()} h-2 rounded-full transition-all duration-500`}
+              className={`h-full ${getProgressColor()} transition-all duration-500 ease-out`}
               style={{ width: `${progressPercent}%` }}
-            ></div>
-          </div>
-          <div className="flex justify-between items-center mt-2 text-xs text-astradarkgray">
-            <div className="flex items-center gap-1">
-              <Users className="w-3 h-3" />
-              <span>{donors} donors</span>
-            </div>
-            {endDate && (
-              <div className="flex items-center gap-1">
-                <Calendar className="w-3 h-3" />
-                <span className="line-clamp-1">Until {formatDate(endDate, "long")}</span>
-              </div>
-            )}
+            />
           </div>
         </div>
 
-        {/* Action Button */}
+        {/* Stats */}
+        <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
+          <div className="flex items-center gap-2">
+            <Users className="w-4 h-4 text-astradarkgray" />
+            <span className="font-r text-astradarkgray">{donors} Donors</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Calendar className="w-4 h-4 text-astradarkgray" />
+            <span className="font-r text-astradarkgray">{formatDate(endDate)}</span>
+          </div>
+        </div>
+
+        {/* Project Type */}
+        <div className="flex items-center gap-2 mb-4">
+          {type === PROJECT_TYPE.FUNDRAISER ? (
+            <HeartHandshake className="w-4 h-4 text-astraprimary" />
+          ) : (
+            <GraduationCap className="w-4 h-4 text-astraprimary" />
+          )}
+          <span className="font-rb text-astraprimary text-sm">{type}</span>
+        </div>
+
+        {/* Donate Button */}
         {showDonate && (
           <button
-            onClick={handleDonateClick}
-            className="mt-3 w-full blue-button font-s py-1"
+            onClick={(e) => {
+              e.stopPropagation();
+              window.open(donationLink, '_blank');
+            }}
+            className="w-full py-3 px-4 bg-astraprimary text-astrawhite rounded-lg hover:bg-astraprimary/90 transition-all duration-300 text-sm sm:text-base font-medium touch-target"
           >
-            Donate
+            Donate Now
           </button>
         )}
       </div>
