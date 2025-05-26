@@ -13,7 +13,7 @@ export default function AccountSettings() {
   const tabs = [
     { id: "email", label: "Email Settings", icon: <Mail className="h-5 w-5" /> },
     { id: "password", label: "Password Settings", icon: <User className="h-5 w-5" /> },
-    { id: "newsletter", label: "Newsletter Settings", icon: <Bell className="h-5 w-5" /> },
+    // { id: "newsletter", label: "Newsletter Settings", icon: <Bell className="h-5 w-5" /> },
     { id: "twofactor", label: "Two-Factor Auth", icon: <Lock className="h-5 w-5" /> },
   ];
 

@@ -30,24 +30,12 @@ export default function Footer() {
               <h1 className="text-2xl font-bold text-astraprimary">ICS-ASTRA</h1>
             </div>
             <p className="text-sm text-astradarkgray">
-              Welcome to our official platform where alumni and students stay connected. Subscribe now and stay updated on upcoming events, access exclusive job opportunities, and explore our growing network.
+              Welcome to our official platform where alumni and students stay connected. Register now and stay updated on upcoming events, access exclusive job opportunities, and explore our growing network.
             </p>
-            <form className="flex flex-wrap items-center gap-4 sm:gap-6">
-              <input
-                type="email"
-                placeholder="Enter your email address"
-                className="text-astradarkgray placeholder-astradarkgray text-sm bg-astratintedwhite border-astradarkgray border-2 outline-none pl-3 py-2 w-full sm:w-1/2"
-              />
-              <input
-                type="submit"
-                value="Subscribe"
-                className="bg-astraprimary text-white text-sm font-medium py-2 px-6 rounded-md w-full sm:w-auto hover:bg-astrablue transition-colors duration-300"
-              />
-            </form>
           </div>
 
           {/* Right Side - Services and Contact Us */}
-          <div className="flex flex-col lg:flex-row gap-8 flex-1">
+          <div className="flex flex-col lg:flex-row gap-8 flex-2">
             <div className="flex flex-wrap gap-4 flex-1">
               <div className="flex-1 min-w-[140px]">
                 <h2 className="text-xl font-semibold text-astraprimary mb-4">Services</h2>
@@ -75,7 +63,7 @@ export default function Footer() {
 
 
             {/* Contact Us (Right Side, Separate Below) */}
-            <div className="flex flex-col w-full lg:w-auto lg:ml-auto">
+            <div className="flex flex-col w-full lg:w-auto lg:ml-auto flex-1">
               <h2 className="text-xl font-semibold text-astraprimary mb-4">Contact Us</h2>
               <ul className="text-sm text-astradarkgray space-y-4">
                 {contacts.map((contact) => (
