@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import {toast} from "@/components/ToastNotification.jsx";
 
-export default function PasswordSettings({ setShowToast }) {
+export default function PasswordSettings() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -22,9 +23,9 @@ export default function PasswordSettings({ setShowToast }) {
     }
 
     setPasswordError("");
-    setShowToast({
-      type: "success",
-      message: "Password updated successfully!"
+    toast({
+      variant: "success",
+      title: "Password updated successfully!"
     });
 
     // Clear form
@@ -34,13 +35,13 @@ export default function PasswordSettings({ setShowToast }) {
   };
 
   const PasswordInput = ({
-                           id,
-                           label,
-                           value,
-                           onChange,
-                           showPassword,
-                           toggleShowPassword
-                         }) => (
+    id,
+    label,
+    value,
+    onChange,
+    showPassword,
+    toggleShowPassword
+  }) => (
     <div>
       <label htmlFor={id} className="block text-sm md:text-base font-medium text-[var(--color-astrablack)]">
         {label} <span className="text-[var(--color-astrared)]">*</span>

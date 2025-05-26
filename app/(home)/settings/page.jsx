@@ -6,11 +6,9 @@ import PasswordSettings from "./PasswordSettings";
 import NewsletterSettings from "./NewsletterSettings";
 import TwoFactorSettings from "./TwoFactorSettings";
 import TabNavigation from "./TabNavigation";
-import ToastNotification from "@/components/ToastNotification";
 
 export default function AccountSettings() {
   const [activeTab, setActiveTab] = useState("email");
-  const [showToast, setShowToast] = useState(false);
 
   const tabs = [
     { id: "email", label: "Email Settings", icon: <Mail className="h-5 w-5" /> },
@@ -22,15 +20,15 @@ export default function AccountSettings() {
   const renderActiveTab = () => {
     switch (activeTab) {
     case "email":
-      return <EmailSettings setShowToast={setShowToast} />;
+      return <EmailSettings />;
     case "password":
-      return <PasswordSettings setShowToast={setShowToast} />;
+      return <PasswordSettings />;
     case "newsletter":
-      return <NewsletterSettings setShowToast={setShowToast} />;
+      return <NewsletterSettings />;
     case "twofactor":
-      return <TwoFactorSettings setShowToast={setShowToast} />;
+      return <TwoFactorSettings />;
     default:
-      return <EmailSettings setShowToast={setShowToast} />;
+      return <EmailSettings />;
     }
   };
 
@@ -51,14 +49,6 @@ export default function AccountSettings() {
           </div>
         </div>
       </div>
-
-      {showToast && (
-        <ToastNotification
-          type={showToast.type}
-          message={showToast.message}
-          onClose={() => setShowToast(false)}
-        />
-      )}
     </div>
   );
 }

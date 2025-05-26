@@ -1,6 +1,7 @@
 import { useState } from "react";
+import {toast} from "@/components/ToastNotification.jsx";
 
-export default function EmailSettings({ setShowToast }) {
+export default function EmailSettings() {
   const [newEmail, setNewEmail] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -16,9 +17,10 @@ export default function EmailSettings({ setShowToast }) {
       return;
     }
     setEmailError("");
-    setShowToast({
-      type: "success",
-      message: "Verification code sent to email!"
+
+    toast({
+      variant: "success",
+      title: "Verification code sent to email!"
     });
     setIsVerificationVisible(true);
   };
@@ -28,9 +30,9 @@ export default function EmailSettings({ setShowToast }) {
       setCodeError("Please enter the verification code.");
     } else {
       setCodeError("");
-      setShowToast({
-        type: "success",
-        message: "Email updated successfully!"
+      toast({
+        variant: "success",
+        title: "Email updated successfully!"
       });
       setIsVerificationVisible(false);
       setNewEmail("");
@@ -39,9 +41,9 @@ export default function EmailSettings({ setShowToast }) {
   };
 
   const handleResendCode = () => {
-    setShowToast({
-      type: "success",
-      message: "Verification code resent!"
+    toast({
+      variant: "success",
+      title: "Verification code resent!"
     });
   };
 

@@ -1,31 +1,32 @@
 import { useState } from "react";
+import {toast} from "@/components/ToastNotification.jsx";
 
-export default function TwoFactorSettings({ setShowToast }) {
+export default function TwoFactorSettings() {
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const [requestingCode, setRequestingCode] = useState(false);
   const [code, setCode] = useState("");
 
   const handleEnable2FA = () => {
     if (code === "123456") {
-      setShowToast({
-        type: "success",
-        message: "Two-Factor Authentication Enabled!"
+      toast({
+        variant: "success",
+        title: "Two-Factor Authentication Enabled!"
       });
       setTwoFactorEnabled(true);
       setRequestingCode(false);
       setCode("");
     } else {
-      setShowToast({
-        type: "fail",
-        message: "Invalid verification code. Please try again."
+      toast({
+        variant: "fail",
+        title: "Invalid verification code. Please try again."
       });
     }
   };
 
   const handleDisable2FA = () => {
-    setShowToast({
-      type: "success",
-      message: "Two-Factor Authentication Disabled!"
+    toast({
+      variant: "success",
+      title: "Two-Factor Authentication Disabled!"
     });
     setTwoFactorEnabled(false);
   };
