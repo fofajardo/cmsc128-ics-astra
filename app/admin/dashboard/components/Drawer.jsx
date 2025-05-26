@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useState } from "react"; // Add this import
 import { Download, FileDown, ImageDown, Table } from "lucide-react";
 import html2canvas from "html2canvas-pro";
 
@@ -29,6 +30,7 @@ export function ReusableDrawer({
   onOpenChange,
   buttons = true
 }) {
+  const [activeTab, setActiveTab] = useState("csv");
 
   function convertToCSV(data) {
     if (!data || !data.length) return "";
@@ -172,42 +174,60 @@ export function ReusableDrawer({
       <DrawerTrigger asChild>
         {triggerElement}
       </DrawerTrigger>
-      <DrawerContent>
+      <DrawerContent className>
         <div className="mx-auto w-full max-w-4xl">
           <DrawerHeader className="grid flex-1 gap-0 px-4 py-1">
             <DrawerTitle className="font-rb">{title}</DrawerTitle>
             <DrawerDescription>{description}</DrawerDescription>
           </DrawerHeader>
-          <div className="px-4 pb-0">
-            <Tabs defaultValue="csv">
-              <TabsList className="mb-0">
-                <TabsTrigger value="csv">
-                  <Table className="mr-1 h-4 w-4" />
-                  Data Preview
-                </TabsTrigger>
-                <TabsTrigger value="chart">
-                  <ImageDown className="mr-1 h-4 w-4" />
-                  Chart Preview
-                </TabsTrigger>
-              </TabsList>
+          <div className="px-4 pb-4">
+            <Tabs defaultValue="csv" value={activeTab} onValueChange={setActiveTab}>
+              <div className="flex justify-between items-center mb-0">
+                {/* Tabs on the left */}
+                <TabsList className="mb-0">
+                  <TabsTrigger value="csv">
+                    <Table className="mr-1 h-4 w-4" />
+                    Data Preview
+                  </TabsTrigger>
+                  <TabsTrigger value="chart">
+                    <ImageDown className="mr-1 h-4 w-4" />
+                    Chart Preview
+                  </TabsTrigger>
+                </TabsList>
+
+                {/* Conditional button on the right based on active tab */}
+                {buttons && (
+                  <div>
+                    {activeTab === "csv" && (
+                      <Button size="sm" onClick={downloadCSV} disabled={!chartData || !chartData.length}>
+                        <FileDown className="mr-1 h-4 w-4" />
+                        Download CSV
+                      </Button>
+                    )}
+                    {activeTab === "chart" && (
+                      <Button size="sm" onClick={downloadImage}>
+                        <Download className="mr-1 h-4 w-4" />
+                        Save Image
+                      </Button>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Content panels */}
               <TabsContent value="csv" className="p-0">
                 {renderCSVPreview()}
-                <div className="mt-4 mb-4 flex justify-end">
-                  {buttons && <Button onClick={downloadCSV}>
-                    <FileDown />
-                    Download CSV
-                  </Button> }
-                </div>
               </TabsContent>
               <TabsContent value="chart" data-tab="chart">
-                <div className="bg-white p-2 rounded-lg border">
-                  {children}
-                </div>
-                <div className="mt-4 mb-4 flex justify-end">
-                  {buttons && <Button onClick={downloadImage}>
-                    <Download />
-                    Save Image
-                  </Button> }
+                <div className="bg-white px-2 rounded-lg border">
+                  {children || (
+                    <div className="h-64 flex items-center justify-center text-muted-foreground">
+                      <div className="text-center">
+                        <ImageDown className="mx-auto h-12 w-12 opacity-20" />
+                        <p className="mt-2">No chart preview available</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </TabsContent>
             </Tabs>

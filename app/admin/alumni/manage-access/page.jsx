@@ -2,7 +2,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { TableHeader, Table, PageTool } from "@/components/TableBuilder";
 import SearchFilter from "admin/alumni/search/filter";
-import { Check, Eye, Trash2, CheckCircle2, ShieldCheck } from "lucide-react";
+import { Check, Eye, Trash2, CheckCircle2, ShieldCheck, Loader2 } from "lucide-react";
 import { ActionButton } from "@/components/Buttons";
 import { useTab } from "@/components/TabContext";
 import ConfirmModal from "@/components/ConfirmModal";
@@ -10,6 +10,15 @@ import ToastNotification from "@/components/ToastNotification";
 import axios from "axios";
 import { capitalizeName } from "@/utils/format";
 import { CenteredSkeleton, NameEmailSkeleton, Skeleton } from "@/components/ui/skeleton";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function AlumniAccess() {
   const { currTab, info, refreshTrigger, setRefreshTrigger } = useTab();
@@ -19,6 +28,9 @@ export default function AlumniAccess() {
   const toggleFilter = () => { setShowFilter((prev) => !prev); };
   const [loading, setLoading] = useState(true);
   const [alumList, setAlumList] = useState([]);
+  const [declineDialogOpen, setDeclineDialogOpen] = useState(false);
+  const [declineReason, setDeclineReason] = useState("");
+  const [declineTarget, setDeclineTarget] = useState({ id: "", name: "" });
   const [appliedFilters, updateFilters] = useState({
     yearFrom: "",
     yearTo: "",
@@ -36,6 +48,7 @@ export default function AlumniAccess() {
     total: 0                // How many alum in db
   });
   const [searchQuery, setSearchQuery] = useState("");
+  const [declineLoading, setDeclineLoading] = useState(false);
   const stableFilters = useMemo(() => appliedFilters, [JSON.stringify(appliedFilters)]);
 
   useEffect(() => {
@@ -94,10 +107,10 @@ export default function AlumniAccess() {
               const alumData = {
                 id: alum.alum_id,
                 alumname: capitalizeName(`${alum.first_name} ${alum.middle_name} ${alum.last_name}`),
-                graduationYear: alum.year_graduated,
+                graduationYear: alum.year_graduated || "N/A",
                 student_num: alum.student_num,
                 image: alum.avatar_url,
-                degreeProgram: alum.course,
+                degreeProgram: alum.course || "N/A",
                 email: alum.email
               };
               return alumData;
@@ -129,7 +142,7 @@ export default function AlumniAccess() {
   }, [searchQuery, stableFilters, pagination.numToShow, pagination.currPage, currTab, refreshTrigger]);
 
   return (
-    <div>
+    <div id="alumni-access-component">
       {/* Filter Modal */}
       <div
         onClick={toggleFilter}
@@ -162,14 +175,109 @@ export default function AlumniAccess() {
             toggleFilter={toggleFilter}
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery} />
-          <Table cols={cols} data={loading ? skeletonRows : createRows(alumList, selectedIds, setSelectedIds, currTab, setRefreshTrigger, setToast)} />
+          <Table
+            cols={cols}
+            data={loading ? skeletonRows : createRows(
+              alumList,
+              selectedIds,
+              setSelectedIds,
+              currTab,
+              setRefreshTrigger,
+              setToast,
+              setDeclineTarget,
+              setDeclineReason,
+              setDeclineDialogOpen
+            )}
+          />
           <PageTool pagination={pagination} setPagination={setPagination} />
         </div>
         <div className="flex flex-row justify-between md:pl-4 lg:pl-8">
           <ActionButton label="Reset Selection" color="blue" onClick={() => setSelectedIds([])} />
-          <BottomButtons selectedCount={selectedIds.length} currTab={currTab} setToast={setToast} selectedIds={selectedIds} setRefreshTrigger={setRefreshTrigger} alumList={alumList} pagination={pagination} setPagination={setPagination} />
+          <BottomButtons
+            selectedCount={selectedIds.length}
+            currTab={currTab}
+            setToast={setToast}
+            selectedIds={selectedIds}
+            setRefreshTrigger={setRefreshTrigger}
+            alumList={alumList}
+            pagination={pagination}
+            setPagination={setPagination}
+            setDeclineTarget={setDeclineTarget}
+            setDeclineReason={setDeclineReason}
+            setDeclineDialogOpen={setDeclineDialogOpen}
+          />
         </div>
       </div>
+
+      <Dialog open={declineDialogOpen} onOpenChange={setDeclineDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Decline {declineTarget.name}&apos;s Account</DialogTitle>
+            <DialogDescription>
+              Enter a message explaining why this account is being declined.
+              This message will be sent via email to the user.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <div className="mb-2">
+              <label htmlFor="decline-reason" className="block text-sm font-medium mb-1">
+                Message to {declineTarget.name}:
+              </label>
+              <Textarea
+                id="decline-reason"
+                value={declineReason}
+                onChange={(e) => setDeclineReason(e.target.value)}
+                placeholder="Please explain why this account request is being declined..."
+                className="w-full min-h-[120px] resize-none"
+              />
+            </div>
+            <div className="flex justify-end mt-1">
+              <p className={`text-xs ${declineReason.length > 500 ? "text-astrared" : "text-astradarkgray"}`}>
+                {declineReason.length}/500 characters
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <div className="flex justify-end gap-2 w-full">
+              <button
+                className="px-4 py-2 rounded-lg bg-astragray/20 text-astradarkgray hover:bg-astragray/50 transition-colors"
+                onClick={() => setDeclineDialogOpen(false)}
+                disabled={declineLoading} // Disable during loading
+              >
+                Cancel
+              </button>
+              <button
+                disabled={!declineReason.trim() || declineLoading}
+                className={`px-4 py-2 rounded-lg flex items-center justify-center ${
+                  !declineReason.trim() || declineLoading
+                    ? "bg-astrared/50 text-astrawhite/70 cursor-not-allowed"
+                    : "bg-astrared text-astrawhite hover:bg-astrared/90"
+                }`}
+                onClick={() => {
+                  setDeclineLoading(true);
+                  handleSubmitDecline(
+                    declineTarget.id,
+                    declineTarget.name,
+                    declineReason,
+                    setToast,
+                    setDeclineDialogOpen,
+                    setRefreshTrigger
+                  ).finally(() => setDeclineLoading(false));
+                }}
+              >
+                {declineLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  "Send and Decline"
+                )}
+              </button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -207,7 +315,19 @@ function getNotifyContent(action, selectedCount) {
   return { notifyMessage: message, notifyType: type };
 }
 
-function BottomButtons({ selectedCount, currTab, setToast, selectedIds, setRefreshTrigger, alumList, pagination, setPagination }) {
+function BottomButtons({
+  selectedCount,
+  currTab,
+  setToast,
+  selectedIds,
+  setRefreshTrigger,
+  alumList,
+  pagination,
+  setPagination,
+  setDeclineTarget,
+  setDeclineReason,
+  setDeclineDialogOpen
+}) {
   const [modal, setModal] = useState({
     open: false,
     action: null, // "approve", "decline", etc.
@@ -216,8 +336,22 @@ function BottomButtons({ selectedCount, currTab, setToast, selectedIds, setRefre
   });
 
   const openModal = (actionType) => {
-    const { notifyMessage, notifyType } = getNotifyContent(actionType, selectedCount);
-    setModal({ open: true, action: actionType, notifyMessage, notifyType });
+    if (actionType === "decline") {
+      const targetName = selectedCount > 0
+        ? `${selectedCount} selected accounts`
+        : "all pending accounts";
+
+      setDeclineTarget({
+        id: selectedCount > 0 ? selectedIds : alumList.map(alum => alum.id),
+        name: targetName,
+        isBulk: true
+      });
+      setDeclineReason("");
+      setDeclineDialogOpen(true);
+    } else {
+      const { notifyMessage, notifyType } = getNotifyContent(actionType, selectedCount);
+      setModal({ open: true, action: actionType, notifyMessage, notifyType });
+    }
   };
 
   const closeModal = () => {
@@ -435,7 +569,17 @@ const cols = [
   { label: "Quick Actions", justify: "center", visible: "all" },
 ];
 
-function createRows(alumList, selectedIds, setSelectedIds, currTab, setRefreshTrigger, setToast) {
+function createRows(
+  alumList,
+  selectedIds,
+  setSelectedIds,
+  currTab,
+  setRefreshTrigger,
+  setToast,
+  setDeclineTarget,
+  setDeclineReason,
+  setDeclineDialogOpen
+) {
   return alumList.map((alum) => ({
     "Checkbox:label-hidden": renderCheckboxes(alum.id, selectedIds, setSelectedIds),
     "Image:label-hidden": renderAvatar(alum.image, alum.alumname),
@@ -443,7 +587,16 @@ function createRows(alumList, selectedIds, setSelectedIds, currTab, setRefreshTr
     "Graduation Year": renderText(alum.graduationYear),
     "Student ID": renderText(alum.student_num),
     "Course": renderText(alum.degreeProgram),
-    "Quick Actions": renderActions(alum.id, alum.alumname, currTab, setRefreshTrigger, setToast),
+    "Quick Actions": renderActions(
+      alum.id,
+      alum.alumname,
+      currTab,
+      setRefreshTrigger,
+      setToast,
+      setDeclineTarget,
+      setDeclineReason,
+      setDeclineDialogOpen
+    ),
   }));
 }
 
@@ -502,7 +655,16 @@ function renderText(text) {
   return <div className="text-center text-astradarkgray font-s">{text}</div>;
 }
 
-function renderActions(id, name, currTab, setRefreshTrigger, setToast) {
+function renderActions(
+  id,
+  name,
+  currTab,
+  setRefreshTrigger,
+  setToast,
+  setDeclineTarget,
+  setDeclineReason,
+  setDeclineDialogOpen
+) {
   const handleApprove = async () => {
     try {
       const getResponse = await axios.get(
@@ -624,51 +786,10 @@ function renderActions(id, name, currTab, setRefreshTrigger, setToast) {
     }
   };
 
-  const handleDecline = async () => {
-    const reason = prompt(`Enter a message to send to ${name}:`);
-
-    if (!reason || reason.trim() === "") {
-      setToast({ type: "error", message: "Decline message cannot be empty." });
-      return;
-    }
-
-    try {
-      const userResponse = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/v1/users/${id}`
-      );
-
-      const userEmail = userResponse.data?.user?.email;
-
-      if (!userEmail) {
-        setToast({ type: "error", message: `Email not found for ${name}.` });
-        return;
-      }
-
-      const alumniResponse = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/${id}`
-      );
-
-      const userName = `${alumniResponse.data?.alumniProfile?.honorifics} ${alumniResponse.data?.alumniProfile?.last_name}`;
-
-      const emailResponse = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/v1/email/send`,
-        {
-          to: userEmail,
-          subject: "Your Alumni Profile Request Has Been Declined",
-          body: reason,
-          name: userName || "recipient"
-        }
-      );
-
-      if (emailResponse.data.status === "SENT") {
-        setToast({ type: "success", message: `Decline email sent to ${name}.` });
-      } else {
-        setToast({ type: "error", message: `Failed to send email. ${emailResponse.data.message}` });
-      }
-    } catch (error) {
-      // console.error("Decline error:", error);
-      setToast({ type: "error", message: `Error declining ${name}.` });
-    }
+  const handleDecline = () => {
+    setDeclineTarget({ id, name });
+    setDeclineReason("");
+    setDeclineDialogOpen(true);
   };
 
   return (
@@ -776,3 +897,119 @@ function renderActions(id, name, currTab, setRefreshTrigger, setToast) {
     </div>
   );
 }
+
+const handleSubmitDecline = async (id, name, reason, setToast, setDeclineDialogOpen, setRefreshTrigger) => {
+  if (!reason || reason.trim() === "") {
+    setToast({ type: "error", message: "Decline message cannot be empty." });
+    return;
+  }
+
+  try {
+    // Check if this is a bulk decline operation
+    if (Array.isArray(id)) {
+      // Handle bulk decline here
+      let successCount = 0;
+      let failCount = 0;
+
+      for (const userId of id) {
+        try {
+          const userResponse = await axios.get(
+            `${process.env.NEXT_PUBLIC_API_URL}/v1/users/${userId}`
+          );
+
+          const userEmail = userResponse.data?.user?.email;
+
+          if (!userEmail) {
+            failCount++;
+            continue;
+          }
+
+          const alumniResponse = await axios.get(
+            `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/${userId}`
+          );
+
+          const userName = alumniResponse.data?.alumniProfile
+            ? `${alumniResponse.data.alumniProfile.honorifics} ${alumniResponse.data.alumniProfile.last_name}`
+            : "recipient";
+
+          const emailResponse = await axios.post(
+            `${process.env.NEXT_PUBLIC_API_URL}/v1/email/send`,
+            {
+              to: userEmail,
+              subject: "Your Alumni Profile Request Has Been Declined",
+              body: reason,
+              name: userName
+            }
+          );
+
+          if (emailResponse.data.status === "SENT") {
+            successCount++;
+          } else {
+            failCount++;
+          }
+        } catch (error) {
+          failCount++;
+        }
+      }
+
+      let message = "";
+      if (successCount > 0 && failCount > 0) {
+        message = `Declined ${successCount} accounts successfully. Failed to decline ${failCount} accounts.`;
+      } else if (successCount > 0) {
+        message = `Successfully declined ${successCount} accounts.`;
+      } else {
+        message = "Failed to decline any accounts.";
+      }
+
+      setToast({
+        type: successCount > 0 ? "success" : "error",
+        message
+      });
+
+      if (successCount > 0) {
+        setRefreshTrigger(prev => prev + 1);
+      }
+
+      setDeclineDialogOpen(false);
+      return;
+    }
+
+    // Single user decline
+    const userResponse = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/v1/users/${id}`
+    );
+
+    const userEmail = userResponse.data?.user?.email;
+
+    if (!userEmail) {
+      setToast({ type: "error", message: `Email not found for ${name}.` });
+      return;
+    }
+
+    const alumniResponse = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/v1/alumni-profiles/${id}`
+    );
+
+    const userName = `${alumniResponse.data?.alumniProfile?.honorifics} ${alumniResponse.data?.alumniProfile?.last_name}`;
+
+    const emailResponse = await axios.post(
+      `${process.env.NEXT_PUBLIC_API_URL}/v1/email/send`,
+      {
+        to: userEmail,
+        subject: "Your Alumni Profile Request Has Been Declined",
+        body: reason,
+        name: userName || "recipient"
+      }
+    );
+
+    if (emailResponse.data.status === "SENT") {
+      setToast({ type: "success", message: `Decline email sent to ${name}.` });
+      setDeclineDialogOpen(false);
+      setRefreshTrigger(prev => prev + 1);
+    } else {
+      setToast({ type: "error", message: `Failed to send email. ${emailResponse.data.message}` });
+    }
+  } catch (error) {
+    setToast({ type: "error", message: `Error declining ${name}.` });
+  }
+};

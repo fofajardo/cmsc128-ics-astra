@@ -3,26 +3,51 @@ import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { GoBackButton } from "@/components/Buttons";
 import SkillTag from "@/components/SkillTag";
-import { MapPin, GraduationCap, Image } from "lucide-react";
+import {
+  MapPin,
+  GraduationCap,
+  Image,
+  FileX,
+  ArrowLeft,
+  AlertTriangle,
+  RefreshCw,
+  Search,
+  Briefcase,
+  Users,
+  Code,
+  Lightbulb,
+  Loader2
+} from "lucide-react";
 import TransitionSlide from "@/components/transitions/TransitionSlide";
 import axios from "axios";
 import { capitalizeName, formatDate } from "@/utils/format.jsx";
-import {CIVIL_STATUS_LABELS} from "../../../../../common/scopes.js";
+import { CIVIL_STATUS_LABELS } from "../../../../../common/scopes.js";
 import nationalities from "i18n-nationality";
 import nationalities_en from "i18n-nationality/langs/en.json";
 import ToastNotification from "@/components/ToastNotification.jsx";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 
 nationalities.registerLocale(nationalities_en);
 import { ActionButton } from "@/components/Buttons";
+import ProfileNotFound from "@/components/ProfileNotFound.jsx";
+import ProfileLoadingState from "@/components/ProfileLoadingState.jsx";
 
 const getStatusBadge = (status) => {
   const statusMap = {
-    0: {text: "Pending", color: "bg-astrayellow"},
-    1: {text: "Approved", color: "bg-astragreen"},
-    2: {text: "Inactive", color: "bg-astrared"},
+    0: { text: "Pending", color: "bg-astrayellow" },
+    1: { text: "Approved", color: "bg-astragreen" },
+    2: { text: "Inactive", color: "bg-astrared" },
   };
 
-  const {text, color} = statusMap[status] || {};
+  const { text, color } = statusMap[status] || {};
 
   return (
     <span className={`${color} text-white font-s px-3.5 py-0.5 rounded-lg w-fit mx-auto sm:mx-0 mt-1 sm:mt-0`}>
@@ -31,9 +56,19 @@ const getStatusBadge = (status) => {
   );
 };
 
+// Reusable empty state component for consistent UI
+const EmptyState = ({ Icon, message, className = "" }) => {
+  return (
+    <div className={`w-full py-4 flex flex-col items-center justify-center text-astradarkgray ${className}`}>
+      <Icon className="w-10 h-10 mb-2 text-astralightgray" strokeWidth={1} />
+      <p className="italic text-sm">{message}</p>
+    </div>
+  );
+};
+
 export default function AlumniSearchProfile() {
   const { id } = useParams();
-  const { toast, setToast } = useState(null);
+  const [toast, setToast] = useState(null);
 
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -41,15 +76,22 @@ export default function AlumniSearchProfile() {
   const [organizationAffiliations, setOrganizationAffiliations] = useState([]);
   const [graduationYear, setGraduationYear] = useState(null);
   const [course, setCourse] = useState(null);
+  const [proofOfGraduation, setProofOfGraduation] = useState(null);
+  const [proofLoading, setProofLoading] = useState(true);
 
   const [missing, setMissing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
+  const [declineDialogOpen, setDeclineDialogOpen] = useState(false);
+  const [declineReason, setDeclineReason] = useState("");
+  const [declineLoading, setDeclineLoading] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
       setMissing(false);
       setLoading(true);
+      setProofLoading(true);
 
       try {
         const [userRes, profileRes] = await Promise.all([
@@ -81,8 +123,20 @@ export default function AlumniSearchProfile() {
 
         setUser(localUser);
         setProfile(localProfile);
+
+        // Fetch proof of graduation specifically
+        try {
+          const proofRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/photos/degree-proof/${id}`);
+          setProofOfGraduation(proofRes?.data?.photo || null);
+        } catch (error) {
+          console.log("No proof of graduation found");
+          setProofOfGraduation(null);
+        } finally {
+          setProofLoading(false);
+        }
       } catch (error) {
         setMissing(true);
+        setProofLoading(false);
         return;
       }
 
@@ -108,7 +162,6 @@ export default function AlumniSearchProfile() {
 
         if (degreeRes.status === "fulfilled") {
           if (degreeRes.value.data?.status === "OK" && degreeRes.value.data?.degreePrograms?.length > 0) {
-            console.log("NICE!");
             const sorted = [...degreeRes.value.data.degreePrograms].sort(
               (a, b) => new Date(b.year_graduated) - new Date(a.year_graduated)
             );
@@ -117,7 +170,7 @@ export default function AlumniSearchProfile() {
           }
         }
       } catch {
-        ;
+        // fail silently
       } finally {
         setLoading(false);
       }
@@ -127,11 +180,11 @@ export default function AlumniSearchProfile() {
   }, [id, refreshTrigger]);
 
   if (missing) {
-    return <div className="text-center mt-20 text-red-500">{"Alumnus not found."}</div>;
+    return <ProfileNotFound id={id} />;
   }
 
   if (loading || !user || !profile) {
-    return <div className="text-center mt-20">{"Loading..."}</div>;
+    return <ProfileLoadingState />;
   }
 
   const handleApprove = async () => {
@@ -247,14 +300,18 @@ export default function AlumniSearchProfile() {
     }
   };
 
-  const handleDecline = async () => {
-    const reason = prompt(`Enter a message to send to ${name}:`);
+  const handleDecline = () => {
+    setDeclineReason("");
+    setDeclineDialogOpen(true);
+  };
 
-    if (!reason || reason.trim() === "") {
+  const handleSubmitDecline = async () => {
+    if (!declineReason || declineReason.trim() === "") {
       setToast({ type: "error", message: "Decline message cannot be empty." });
       return;
     }
 
+    setDeclineLoading(true);
     try {
       const userResponse = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/v1/users/${id}`
@@ -263,7 +320,7 @@ export default function AlumniSearchProfile() {
       const userEmail = userResponse.data?.user?.email;
 
       if (!userEmail) {
-        setToast({ type: "error", message: `Email not found for ${name}.` });
+        setToast({ type: "error", message: `Email not found for ${profile.first_name} ${profile.last_name}.` });
         return;
       }
 
@@ -278,18 +335,22 @@ export default function AlumniSearchProfile() {
         {
           to: userEmail,
           subject: "Your Alumni Profile Request Has Been Declined",
-          body: reason,
+          body: declineReason,
           name: userName || "recipient"
         }
       );
 
       if (emailResponse.data.status === "SENT") {
-        setToast({ type: "success", message: `Decline email sent to ${name}.` });
+        setToast({ type: "success", message: `Decline email sent to ${profile.first_name} ${profile.last_name}.` });
+        setDeclineDialogOpen(false);
+        setRefreshTrigger(prev => prev + 1);
       } else {
         setToast({ type: "error", message: `Failed to send email. ${emailResponse.data.message}` });
       }
     } catch (error) {
-      setToast({ type: "error", message: `Error declining ${name}.` });
+      setToast({ type: "error", message: `Error declining ${profile.first_name} ${profile.last_name}.` });
+    } finally {
+      setDeclineLoading(false);
     }
   };
 
@@ -331,11 +392,11 @@ export default function AlumniSearchProfile() {
                 {getStatusBadge(profile.status)}
               </div>
               <a className="block font-s text-astradark hover:underline">
-                {user.email}
+                {user.email || "No email provided"}
               </a>
               <div className="flex justify-center sm:justify-start items-center font-s text-astradarkgray mt-0.5">
                 <MapPin className="w-4 h-4 mr-1" />
-                {profile.location}
+                {profile.location || "No location specified"}
               </div>
             </div>
           </div>
@@ -344,21 +405,21 @@ export default function AlumniSearchProfile() {
           <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-3 w-full md:w-auto">
             {/* ID num */}
             <span className="text-xs bg-astragray text-astradarkgray px-2 py-1 rounded-full hidden md:block">
-              {profile.student_num}
+              {profile.student_num || "No ID"}
             </span>
 
             {/* year num badge */}
             <div className="hidden md:block">
               <span className="text-xs bg-astragray text-astradarkgray px-2 py-1 rounded-full flex items-center space-x-1">
                 <GraduationCap className="w-3 h-3" />
-                <span>{graduationYear}</span>
+                <span>{graduationYear || "N/A"}</span>
               </span>
             </div>
 
             {/* contact button */}
-            <button className="w-full md:w-auto text-astraprimary border-2 border-astraprimary px-10 py-0.5 font-rb rounded-md hover:bg-astraprimary hover:text-white transition">
+            {/* <button className="w-full md:w-auto text-astraprimary border-2 border-astraprimary px-10 py-0.5 font-rb rounded-md hover:bg-astraprimary hover:text-white transition">
               Contact
-            </button>
+            </button> */}
           </div>
         </TransitionSlide >
 
@@ -368,7 +429,7 @@ export default function AlumniSearchProfile() {
             {/* Personal Info */}
             <div className="grid grid-cols-3 gap-y-8 text-center text-sm text-astrablack py-10">
               <div>
-                <p className="font-rb">{capitalizeName(profile.first_name)}</p>
+                <p className="font-rb">{capitalizeName(profile.first_name) || "N/A"}</p>
                 <p className="text-astradarkgray">First Name</p>
               </div>
               <div>
@@ -376,33 +437,35 @@ export default function AlumniSearchProfile() {
                 <p className="text-astradarkgray">Middle Name</p>
               </div>
               <div>
-                <p className="font-rb">{capitalizeName(profile.last_name)}</p>
+                <p className="font-rb">{capitalizeName(profile.last_name) || "N/A"}</p>
                 <p className="text-astradarkgray">Surname</p>
               </div>
 
               <div>
-                <p className="font-rb">{profile.honorifics}</p>
+                <p className="font-rb">{profile.honorifics || "N?A"}</p>
                 <p className="text-astradarkgray">Title</p>
               </div>
               <div>
-                <p className="font-rb">{profile.gender}</p>
+                <p className="font-rb">{profile.gender || "N/A"}</p>
                 <p className="text-astradarkgray">Gender</p>
               </div>
               <div>
-                <p className="font-rb">{profile.birthdate}</p>
+                <p className="font-rb">{profile.birthdate || "N/A"}</p>
                 <p className="text-astradarkgray">Birthdate</p>
               </div>
 
               <div>
-                <p className="font-rb">{CIVIL_STATUS_LABELS[profile.civil_status]}</p>
+                <p className="font-rb">{CIVIL_STATUS_LABELS[profile.civil_status] || "N/A"}</p>
                 <p className="text-astradarkgray">Civil Status</p>
               </div>
               <div>
-                <p className="font-rb">{nationalities.getName(profile.citizenship, "en")}</p>
+                <p className="font-rb">
+                  {profile.citizenship ? nationalities.getName(profile.citizenship, "en") : "N/A"}
+                </p>
                 <p className="text-astradarkgray">Citizenship</p>
               </div>
               <div>
-                <p className="font-rb">{course}</p>
+                <p className="font-rb">{course || "N/A"}</p>
                 <p className="text-astradarkgray">Degree Program</p>
               </div>
             </div>
@@ -412,29 +475,28 @@ export default function AlumniSearchProfile() {
               <h4 className="bg-astraprimary text-white px-4 py-2 rounded-t-md text-sm font-semibold">
                 Experience
               </h4>
-              <div className="space-y-4 p-4 bg-astratintedwhite rounded-b-md text-sm">
+              <div className="p-4 bg-astratintedwhite rounded-b-md">
                 {workExperience?.length > 0 ? (
-                  workExperience.map((experience, idx) => (
-                    <div key={idx} className="border-l-4 border-astralight rounded">
-                      <div className="ml-5">
-                        <p className="font-semibold text-astrablack">{experience.title}</p>
-                        <p className="font-semibold text-astrablack">{experience.company}</p>
-                        <p className="text-astradarkgray">
-                          {experience.year_started} - {experience.year_ended ? experience.year_ended : "Present"}
-                        </p>
-                        <p className="italic text-astradarkgray">{experience.location}</p>
-                        <p className="italic text-astradarkgray">{experience.salary}</p>
+                  <div className="space-y-4">
+                    {workExperience.map((experience, idx) => (
+                      <div key={idx} className="border-l-4 border-astralight rounded">
+                        <div className="ml-5">
+                          <p className="font-semibold text-astrablack">{experience.title}</p>
+                          <p className="font-semibold text-astrablack">{experience.company}</p>
+                          <p className="text-astradarkgray">
+                            {experience.year_started} - {experience.year_ended ? experience.year_ended : "Present"}
+                          </p>
+                          <p className="italic text-astradarkgray">{experience.location}</p>
+                          <p className="italic text-astradarkgray">{experience.salary}</p>
+                        </div>
                       </div>
-                    </div>
-                  ))) : (
-                  {/*
-                                      TODO: FIX DISPLAY, text div is not centered and does not flex
-                                  */},
-                  <div className="border-l-4 border-astralight rounded">
-                    <div className="text-center mt-50 text-astradarkgray">
-                      {"No work experience"}
-                    </div>
+                    ))}
                   </div>
+                ) : (
+                  <EmptyState
+                    Icon={Briefcase}
+                    message="No work experience to display"
+                  />
                 )}
               </div>
             </div>
@@ -444,56 +506,66 @@ export default function AlumniSearchProfile() {
               <h4 className="bg-astraprimary text-white px-4 py-2 rounded-t-md text-sm font-semibold">
                 Affiliations
               </h4>
-              <div className="space-y-4 p-4 bg-astratintedwhite rounded-b-md text-sm">
+              <div className="p-4 bg-astratintedwhite rounded-b-md">
                 {organizationAffiliations?.length > 0 ? (
-                  organizationAffiliations.map((affiliation, idx) => (
-                    <div key={idx} className="border-l-4 border-astralight rounded">
-                      <div className="ml-5">
-                        <p className="font-semibold text-astrablack">{affiliation.organizations.name}</p>
-                        <p className="italic text-astradarkgray">{affiliation.role}</p>
-                        <p className="text-astradarkgray">
-                          {formatDate(affiliation.joined_date, "month-year")}
-                          <br />
-                          {affiliation.location}
-                        </p>
+                  <div className="space-y-4">
+                    {organizationAffiliations.map((affiliation, idx) => (
+                      <div key={idx} className="border-l-4 border-astralight rounded">
+                        <div className="ml-5">
+                          <p className="font-semibold text-astrablack">{affiliation.organizations.name}</p>
+                          <p className="italic text-astradarkgray">{affiliation.role}</p>
+                          <p className="text-astradarkgray">
+                            {formatDate(affiliation.joined_date, "month-year")}
+                            <br />
+                            {affiliation.location}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center mt-50 text-astradarkgray">
-                    {"No affiliations found."}
+                    ))}
                   </div>
+                ) : (
+                  <EmptyState
+                    Icon={Users}
+                    message="No affiliations to display"
+                  />
                 )}
               </div>
             </div>
           </TransitionSlide >
 
           {/* Right Column */}
-          <div  className="space-y-4">
+          <TransitionSlide className="space-y-4">
             {/* Skills */}
             <div className="bg-white border border-astralightgray rounded-xl p-4 shadow-md">
               <h4 className="font-rb text-astrablack mb-0">Technical Skills</h4>
               <hr className="h-2 border-astralightgray"></hr>
               <div className="flex gap-3 flex-wrap text-sm">
-                {profile.skills
-                  ?.split(",")
-                  .map(skill => skill.trim())
-                  .filter(skill => skill.length > 0)
-                  .map((skill, idx) => {
-                    const colors = [
-                      "bg-blue-100 text-blue-700",
-                      "bg-pink-100 text-pink-700",
-                      "bg-green-100 text-green-700",
-                    ];
-                    const color = colors[idx % colors.length];
-                    return (
-                      <SkillTag
-                        key={idx}
-                        text={skill}
-                        color={color}
-                      />
-                    );
-                  })}
+                {profile.skills && profile.skills.trim() ? (
+                  profile.skills
+                    .split(",")
+                    .map(skill => skill.trim())
+                    .filter(skill => skill.length > 0)
+                    .map((skill, idx) => {
+                      const colors = [
+                        "bg-blue-100 text-blue-700",
+                        "bg-pink-100 text-pink-700",
+                        "bg-green-100 text-green-700",
+                      ];
+                      const color = colors[idx % colors.length];
+                      return (
+                        <SkillTag
+                          key={idx}
+                          text={skill}
+                          color={color}
+                        />
+                      );
+                    })
+                ) : (
+                  <EmptyState
+                    Icon={Code}
+                    message="No technical skills listed"
+                  />
+                )}
               </div>
             </div>
 
@@ -502,27 +574,31 @@ export default function AlumniSearchProfile() {
               <h4 className="font-rb text-astrablack mb-0">Fields of Interest</h4>
               <hr className="h-2 border-astralightgray"></hr>
               <div className="flex gap-3 flex-wrap text-sm">
-                {workExperience?.length > 0 ? (
-                  workExperience.map((experience, idx) => {
-                    const colors = [
-                      "bg-blue-100 text-blue-700",
-                      "bg-pink-100 text-pink-700",
-                      "bg-green-100 text-green-700",
-                    ];
-                    const color = colors[idx % colors.length];
-                    return (
-                      <SkillTag
-                        key={idx}
-                        text={experience.field}
-                        color={color}
-                      />
-                    );
-                  })
-                ) : (
-                  <div className="text-center mt-50 text-astradarkgray">
-                    {"No particular field of interest"}
-                  </div>
-                )}
+                {workExperience?.length > 0 &&
+                 workExperience.some(exp => exp.field && exp.field.trim()) ? (
+                    workExperience
+                      .filter(exp => exp.field && exp.field.trim())
+                      .map((experience, idx) => {
+                        const colors = [
+                          "bg-blue-100 text-blue-700",
+                          "bg-pink-100 text-pink-700",
+                          "bg-green-100 text-green-700",
+                        ];
+                        const color = colors[idx % colors.length];
+                        return (
+                          <SkillTag
+                            key={idx}
+                            text={experience.field}
+                            color={color}
+                          />
+                        );
+                      })
+                  ) : (
+                    <EmptyState
+                      Icon={Lightbulb}
+                      message="No fields of interest specified"
+                    />
+                  )}
               </div>
             </div>
 
@@ -531,34 +607,46 @@ export default function AlumniSearchProfile() {
               <h4 className="font-rb text-astrablack mb-0">Proof of Graduation</h4>
               <hr className="h-2 border-astralightgray"></hr>
               <div className="relative flex justify-center items-center h-60 bg-gray-100 rounded-md border shadow">
-                {/* main image */}
-                <img
-                  src="https://media.licdn.com/dms/image/v2/D5622AQG1fAsAsQh6HQ/feedshare-shrink_800/feedshare-shrink_800/0/1722688761782?e=2147483647&v=beta&t=uINCPcGEVdl801U3Zbcg5tkbeqgKzePV0R4TT6q6q0E"
-                  alt="Proof"
-                  className="w-full h-full object-cover rounded-md"
-                  onError={(e) => {
-                    e.target.style.display = "none";
-                    e.target.nextElementSibling.style.display = "flex";
-                  }}
-                />
-
-                {/* fallback icon (hidden by default) */}
-                <div className="hidden absolute inset-0 flex-col items-center justify-center text-gray-400">
-                  <Image className="w-16 h-16" strokeWidth="1" />
-                  <span className="mt-2">Image not available</span>
-                </div>
+                {proofLoading ? (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-astradarkgray">
+                    <Loader2 className="w-10 h-10 animate-spin text-astraprimary" />
+                    <span className="mt-2">Loading proof...</span>
+                  </div>
+                ) : proofOfGraduation ? (
+                  <>
+                    <img
+                      src={proofOfGraduation}
+                      alt="Proof of Graduation"
+                      className="w-full h-full object-cover rounded-md"
+                      onError={(e) => {
+                        e.target.style.display = "none";
+                        e.target.nextElementSibling.style.display = "flex";
+                      }}
+                    />
+                    <div className="hidden absolute inset-0 flex-col items-center justify-center text-gray-400">
+                      <Image className="w-16 h-16" strokeWidth="1" />
+                      <span className="mt-2">Image failed to load</span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
+                    <Image className="w-16 h-16" strokeWidth="1" />
+                    <span className="mt-2 italic">No proof of graduation provided</span>
+                  </div>
+                )}
               </div>
             </div>
             <div className='flex justify-center gap-2'>
               {profile.status === 0 && (
                 <>
                   <ActionButton
-                    label="Approve" color = "green" size = 'large' flex = 'flex-1'
+                    label="Approve" color="green" size='large' flex='flex-1'
                     notifyMessage={`${profile.first_name} ${profile.middle_name} ${profile.last_name} has been approved!`}
                     notifyType="success"
                     onClick={handleApprove}
                   />
-                  <ActionButton label="Decline" color = "red" size = 'large' flex = 'flex-1'
+                  <ActionButton
+                    label="Decline" color="red" size='large' flex='flex-1'
                     notifyMessage={`${profile.first_name} ${profile.middle_name} ${profile.last_name} has been declined!`}
                     notifyType="fail"
                     onClick={handleDecline}
@@ -586,9 +674,74 @@ export default function AlumniSearchProfile() {
                 </>
               )}
             </div>
-          </div >
+          </TransitionSlide >
         </div>
 
+        {/* Decline Reason Dialog */}
+        <Dialog open={declineDialogOpen} onOpenChange={(isOpen) => {
+          if (!declineLoading && !isOpen) {
+            setDeclineDialogOpen(false);
+          }
+        }}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle>Decline {profile?.first_name} {profile?.last_name}&apos;s Account</DialogTitle>
+              <DialogDescription>
+                Enter a message explaining why this account is being declined.
+                This message will be sent via email to the user.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+              <div className="mb-2">
+                <label htmlFor="decline-reason" className="block text-sm font-medium mb-1">
+                  Message to {profile?.first_name} {profile?.last_name}:
+                </label>
+                <Textarea
+                  id="decline-reason"
+                  value={declineReason}
+                  onChange={(e) => setDeclineReason(e.target.value)}
+                  placeholder="Please explain why this account request is being declined..."
+                  className="w-full min-h-[120px] resize-none"
+                  disabled={declineLoading}
+                />
+              </div>
+              <div className="flex justify-end mt-1">
+                <p className={`text-xs ${declineReason.length > 500 ? "text-astrared" : "text-astradarkgray"}`}>
+                  {declineReason.length}/500 characters
+                </p>
+              </div>
+            </div>
+            <DialogFooter>
+              <div className="flex justify-end gap-2 w-full">
+                <button
+                  className="px-4 py-2 rounded-lg bg-astragray/20 text-astradarkgray hover:bg-astragray/30 transition-colors"
+                  onClick={() => setDeclineDialogOpen(false)}
+                  disabled={declineLoading}
+                >
+                  Cancel
+                </button>
+                <button
+                  disabled={!declineReason.trim() || declineLoading}
+                  className={`px-4 py-2 rounded-lg flex items-center justify-center ${
+                    !declineReason.trim() || declineLoading
+                      ? "bg-astrared/50 text-astrawhite/70 cursor-not-allowed"
+                      : "bg-astrared text-astrawhite hover:bg-astrared/90"
+                  }`}
+                  onClick={handleSubmitDecline}
+                >
+                  {declineLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    "Send and Decline"
+                  )}
+                </button>
+              </div>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </>
   );
