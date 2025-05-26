@@ -1,12 +1,20 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { GoBackButton } from "@/components/Buttons";
 import { Image, Send } from "lucide-react";
 import ToastNotification from "@/components/ToastNotification";
 import axios from "axios";
 import { useSignedInUser } from "@/components/UserContext";
+import dynamic from "next/dynamic";
+
+// Dynamically import MDX editor to avoid SSR issues
+const MDXEditor = dynamic(() => import("@/components/MDXEditor"), {
+  ssr: false,
+  loading: () => <div className="border rounded-lg p-4 min-h-[200px] bg-gray-50 animate-pulse">Loading editor...</div>
+});
 import { PhotoType } from "../../../../../common/scopes";
+
 
 export default function CreateAnnouncement() {
   const userContext = useSignedInUser();
@@ -17,10 +25,10 @@ export default function CreateAnnouncement() {
   const [photoError, setPhotoError] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const editorRef = useRef(null);
   const [formData, setFormData] = useState({
     title: "",
-    description: "",
-    content: "",
+    content: "", // Ensure this is always a string
     image: null,
     type: "Event"
   });
@@ -73,58 +81,50 @@ export default function CreateAnnouncement() {
     }
   };
 
+  // Handle MDX editor content change
+  const handleContentChange = (markdown) => {
+    setFormData(prev => ({ ...prev, content: markdown }));
+  };
+
   const submitAnnouncement = async () => {
-    try {
-      const payload = {
-        user_id: userContext?.state?.authUser?.id,
-        title: formData.title,
-        details: formData.content,
-        views: 0,
-        tags: ["announcement", "published"]
+    const payload = {
+      user_id: userContext?.state?.authUser?.id,
+      title: formData.title,
+      details: formData.content, // Send markdown content
+      views: 0,
+      tags: ["announcement", "published"]
+    };
+
+    const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/`, payload);
+    const announcementData = response.data;
+
+    if (announcementData.status === "CREATED") {
+      return {
+        status: announcementData.status,
+        id: announcementData.content.id
       };
-
-      const response =  await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/v1/contents/`, payload);
-      const announcementData = response.data;
-
-      if (announcementData.status === "CREATED") {
-        // console.log("Created announcement:", announcementData);
-        return {
-          status: announcementData.status,
-          id: announcementData.content.id // Return the content ID
-        };
-      } else {
-        // console.error("Unexpected response:", announcementData);
-        return false;
-      }
-    } catch (error) {
-      ; // console.error("Failed to create announcement:", error);
-      throw error;
+    } else {
+      return false;
     }
-    //   const contentId = response.data.data.id;
-    //   await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/v1/photos/event/${contentId}`, {
-    //     photo: formData.image,
-    //     content_id: contentId
-    //   });
-    //   console.log(response.data.data.id);
-
-    //   setToast({ type: "success", message: "Announcement published successfully!" });
-    //   setTimeout(() => router.push("/admin/whats-up"), 2000);
-    // } catch (error) {
-    //   console.error("Publish failed", error);
-    //   setToast({ type: "error", message: "Failed to publish announcement" });
-    // }
   };
 
   const handleSubmit = async () => {
+    // Basic validation
+    if (!formData.title.trim()) {
+      setToast({
+        type: "fail",
+        message: "Please enter a title for the announcement"
+      });
+      return;
+    }
 
-    // Check if user is ADMIN
-    // if (!userContext?.state?.isAdmin) {
-    //   setToast({
-    //     type: "fail",
-    //     message: "You are not authorized to publish announcements"
-    //   });
-    //   return;
-    // }
+    if (!formData.content.trim()) {
+      setToast({
+        type: "fail",
+        message: "Please enter content for the announcement"
+      });
+      return;
+    }
 
     setIsSubmitting(true);
 
@@ -136,7 +136,6 @@ export default function CreateAnnouncement() {
       }
 
       const contentId = announcementResponse.id;
-      // console.log("Announcement created with ID:", contentId);
 
       if (photo) {
         try {
@@ -144,8 +143,6 @@ export default function CreateAnnouncement() {
           formData.append("File", photo);
           formData.append("content_id", contentId);
           formData.append("type", PhotoType.PROJECT_PIC);
-
-          // console.log("Uploading photo for announcement ID:", contentId);
 
           const photoResponse = await axios.post(
             `${process.env.NEXT_PUBLIC_API_URL}/v1/photos`,
@@ -156,14 +153,8 @@ export default function CreateAnnouncement() {
               }
             }
           );
-
-          // if (photoResponse.data.status === "CREATED") {
-          // console.log("Photo uploaded successfully:", photoResponse.data);
-          // } else {
-          ; // console.error("Unexpected photo upload response:", photoResponse.data);
-          // }
         } catch (photoError) {
-          ; // console.error("Failed to upload project photo:", photoError);
+          console.error("Failed to upload photo:", photoError);
         }
       }
 
@@ -183,7 +174,6 @@ export default function CreateAnnouncement() {
         router.push("/admin/whats-up");
       }, 2000);
     } catch (error) {
-      // console.error("Error submitting announcement:", error);
       setToast({
         type: "fail",
         message: "Failed to submit announcement. Please try again."
@@ -191,7 +181,6 @@ export default function CreateAnnouncement() {
     } finally {
       setIsSubmitting(false);
     }
-
   };
 
   return (
@@ -254,31 +243,30 @@ export default function CreateAnnouncement() {
               placeholder="Enter announcement title"
             />
 
-            {/* <select
-              value={formData.type}
-              onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value }))}
-              className="w-full mb-4 p-2 border border-astragray rounded-lg font-rb"
-            >
-              <option value="Event">Event</option>
-              <option value="News">News</option>
-              <option value="Update">Update</option>
-            </select> */}
-
-            <textarea
-              value={formData.content}
-              onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-              className="w-full font-r text-astrablack p-2 border border-transparent hover:border-astragray focus:border-astraprimary rounded-lg outline-none resize-none"
-              placeholder="Enter announcement content"
-              rows={8}
-            />
+            <div className="mb-4">
+              <MDXEditor
+                ref={editorRef}
+                markdown={formData.content}
+                onChange={handleContentChange}
+                placeholder="Write your announcement content here..."
+              />
+            </div>
 
             <div className="flex justify-end gap-3 mt-6 pt-6 border-t border-astragray">
-              <button onClick={() => router.back()} className="gray-button">
+              <button
+                onClick={() => router.back()}
+                className="gray-button"
+                disabled={isSubmitting}
+              >
                 Cancel
               </button>
-              <button onClick={handleSubmit} className="blue-button flex items-center gap-2">
+              <button
+                onClick={handleSubmit}
+                className="blue-button flex items-center gap-2"
+                disabled={isSubmitting}
+              >
                 <Send className="w-4 h-4" />
-                Publish
+                {isSubmitting ? "Publishing..." : "Publish"}
               </button>
             </div>
           </div>
