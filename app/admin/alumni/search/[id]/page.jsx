@@ -10,6 +10,8 @@ import { capitalizeName, formatDate } from "@/utils/format.jsx";
 import {CIVIL_STATUS_LABELS} from "../../../../../common/scopes.js";
 import nationalities from "i18n-nationality";
 import nationalities_en from "i18n-nationality/langs/en.json";
+import ProfileNotFound from "@/components/ProfileNotFound.jsx";
+import ProfileLoadingState from "@/components/ProfileLoadingState.jsx";
 
 nationalities.registerLocale(nationalities_en);
 
@@ -93,11 +95,11 @@ export default function AlumniSearchProfile() {
   }, [id]);
 
   if (missing) {
-    return <div className="text-center mt-20 text-red-500">{"Alumnus not found."}</div>;
+    return <ProfileNotFound id={id} />;
   }
 
   if (loading || !user || !profile) {
-    return <div className="text-center mt-20">{"Loading..."}</div>;
+    return <ProfileLoadingState />;
   }
 
   return (
