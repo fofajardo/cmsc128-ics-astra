@@ -1,0 +1,89 @@
+## Comms and Issues
+
+### Communication Platform
+- GitHub Issues
+- Discord
+
+### Issue Assignment
+- Front-end
+- Back-end
+- Database
+
+### Feature Submissions
+- Pushing to master is **restricted** to the project manager.
+- Each feature branch should be prefixed with `work-surname`, followed by `/feature-name` (e.g., `work-delacruz/api-refactor`).
+    * Once a feature is complete, create a pull request with the `master` branch as the `base` and compare it against your work branch.
+    * Request a review.
+    * Include in the PR description the issue that it resolves.
+      **Example: This resolves issue #400.**
+    * If it only addresses a part of the issue, mention:
+      **Example: Tag #400.**
+- Follow the prescribed commit message style and [rebase](https://git-scm.com/book/en/v2/Git-Branching-Rebasing) if necessary.
+
+### Commit Message
+- docs: (changes to the documentation)
+- style: (formatting, coding style, etc; no production code change)
+- test: (adding missing tests, refactoring tests; no production code change)
+- ui: (user interface changes)
+- fix: (bug fix for the user, missing semicolons)
+- refactor: (refactoring production code, eg. renaming a variable)
+- feat: (new feature for the user)
+- chore: (updating some resource, eg. change value of a variable)
+
+## Code Conventions
+- Always use 2 spaces for indentation, never use tabs!
+- Always use double quotes for strings or backticks (if it uses substitution).
+- Put a space between a keyword and parenthesis (e.g., `if ()`)
+- Do **not** put a space between a function/type-assignment name and its parenthesis (e.g., `function(somevar)`).
+- Do **not** use arrow functions unless necessary.
+The following is not allowed:
+```js
+const doSomething = (aArgs) => {};
+```
+Use this instead:
+```js
+function doSomething(aArgs) {}
+```
+OR
+```js
+const doSomething = function(aArgs) {};
+```
+- Prefix function arguments with the letter a. For example:
+```js
+function doSomething(aApple, aBook, aCoconut) {}
+```
+- Put a space between variables and operators (e.g., `a == b`).
+- Put a space after a comma or semicolon in variable lists. For example:
+```js
+const a = function(a, b, c) {}
+for (i = 1; i < 10; i++) {}
+```
+- Indentation of long lines is variable-aligned or expression-aligned (see "long line wrapping").
+- Maximum line length is 80 characters.
+- Variables passed to functions are passed on one line unless the line would exceed the maximum length, in which case variables will be passed 1-per-line, expression-aligned (see "long line wrapping").
+- Comment blocks are line-quoted if they appear within functions.
+- Comment blocks are block-quoted if they appear outside of functions (e.g., as function definition headers).
+- Use special comments (Sun Microsystems, 1997):
+    - Use **XXX** in a comment to flag something that is bogus but works.
+    - Use **FIXME** to flag something that is bogus and broken.
+    - Use **TODO** to mark a section that is incomplete.
+
+### Full code sample
+```js
+somelongobjectname.somelongfunction(var1, var2, var3,
+                                    var4, var5);
+if (somelongvariable == somelongothervariable ||
+    somelongvariable2 == somelongothervariable2) {
+somelongvariable = somelongexpression ?
+                   somevalue1 :
+                   somevalue2;
+var iShouldntBeUsingThisLongOfAVarName =
+    someValueToAdd + someValueToAdd + someValueToAdd +
+    someValueToAdd;
+Cu.import("resource:///modules/DownloadsCommon.jsm", {})
+    .DownloadsCommon.initializeAllDataLinks();
+let sessionStartup = Cc["@mozilla.org/browser/sessionstartup;1"]
+    .getService(Ci.nsISessionStartup);
+```
+
+*Derived from the [UXP Coding Style Guide](https://github.com/FranklinDM/UXP/blob/master/docs/UXP%20Coding%20Style.md).*
